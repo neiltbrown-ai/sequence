@@ -109,14 +109,14 @@ export default function AboutPage() {
               research and years of practitioner experience.
             </p>
             <div className="book-buttons rv rv-d2">
-              <button className="btn btn--white">
+              <Link href="/contact" className="btn btn--white">
                 DOWNLOAD BOOK
                 <ButtonArrow />
-              </button>
-              <button className="btn btn--white">
+              </Link>
+              <Link href="/contact" className="btn btn--white">
                 AUDIOBOOK
                 <ButtonArrow />
-              </button>
+              </Link>
             </div>
           </div>
         </div>

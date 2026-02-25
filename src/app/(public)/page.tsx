@@ -273,10 +273,10 @@ export default function HomePage() {
               strategies, and learn from others navigating the same transition.
               Peer-driven, practitioner-focused.
             </p>
-            <button className="btn">
+            <Link href="/contact" className="btn">
               PUBLIC CHANNEL
               <ButtonArrow />
-            </button>
+            </Link>
           </div>
           <div className="conn rv rv-d4">
             <span className="conn-num">[04]</span>
@@ -287,10 +287,10 @@ export default function HomePage() {
               deal structures, ownership, and the forces shaping your career.
               Your data drives the framework.
             </p>
-            <button className="btn">
+            <Link href="/contact" className="btn">
               ONLINE SURVEY
               <ButtonArrow />
-            </button>
+            </Link>
           </div>
         </div>
       </section>

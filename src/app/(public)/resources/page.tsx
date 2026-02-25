@@ -138,7 +138,8 @@ export default function ResourcesPage() {
                 SIGN UP &mdash; $89/YEAR
                 <ButtonArrow />
               </Link>
-              <span
+              <Link
+                href="/signup"
                 style={{
                   fontFamily: "var(--mono)",
                   fontSize: "10px",
@@ -148,7 +149,7 @@ export default function ResourcesPage() {
                 }}
               >
                 VIEW EXAMPLE STRUCTURE &rarr;
-              </span>
+              </Link>
             </div>
           </div>
           <div className="structures-gate-right">
@@ -228,8 +229,8 @@ export default function ResourcesPage() {
         </div>
 
         <div className="cases-grid">
-          <a
-            href="#"
+          <Link
+            href="/signup"
             className="case-card rv"
             style={{
               backgroundImage:
@@ -248,9 +249,9 @@ export default function ResourcesPage() {
               <span className="case-structures">STRUCTURES #13, #9, #14</span>
               <span className="case-link">READ &rarr;</span>
             </div>
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/signup"
             className="case-card rv rv-d1"
             style={{
               backgroundImage:
@@ -269,9 +270,9 @@ export default function ResourcesPage() {
               <span className="case-structures">STRUCTURES #5, #9, #11</span>
               <span className="case-link">READ &rarr;</span>
             </div>
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/signup"
             className="case-card rv rv-d2"
             style={{
               backgroundImage:
@@ -292,9 +293,9 @@ export default function ResourcesPage() {
               </span>
               <span className="case-link">READ &rarr;</span>
             </div>
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/signup"
             className="case-card rv rv-d3"
             style={{
               backgroundImage:
@@ -315,7 +316,7 @@ export default function ResourcesPage() {
               </span>
               <span className="case-link">READ &rarr;</span>
             </div>
-          </a>
+          </Link>
         </div>
 
         {/* Cases gate callout */}
@@ -587,11 +588,11 @@ export default function ResourcesPage() {
               from execution to ownership.
             </p>
             <div className="book-buttons rv rv-d2">
-              <Link href="#" className="btn btn--white">
+              <Link href="/contact" className="btn btn--white">
                 DOWNLOAD BOOK
                 <ButtonArrow />
               </Link>
-              <Link href="#" className="btn btn--white">
+              <Link href="/contact" className="btn btn--white">
                 AUDIOBOOK
                 <ButtonArrow />
               </Link>

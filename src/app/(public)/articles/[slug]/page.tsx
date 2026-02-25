@@ -432,27 +432,27 @@ export default function ArticlePage() {
         <div className="art-footer-grid">
           <div className="art-footer-inner rv">
             <div className="art-footer-tags">
-              <a href="#" className="art-footer-tag">
+              <Link href="/articles" className="art-footer-tag">
                 Discernment Premium
-              </a>
-              <a href="#" className="art-footer-tag">
+              </Link>
+              <Link href="/articles" className="art-footer-tag">
                 Missing Middle
-              </a>
-              <a href="#" className="art-footer-tag">
+              </Link>
+              <Link href="/articles" className="art-footer-tag">
                 Thesis
-              </a>
-              <a href="#" className="art-footer-tag">
+              </Link>
+              <Link href="/articles" className="art-footer-tag">
                 Ownership
-              </a>
-              <a href="#" className="art-footer-tag">
+              </Link>
+              <Link href="/articles" className="art-footer-tag">
                 Deal Structures
-              </a>
+              </Link>
             </div>
             <div className="art-footer-share">
               <span className="art-footer-share-lbl">Share</span>
-              <a href="#">X</a>
-              <a href="#">LinkedIn</a>
-              <a href="#">Email</a>
+              <a href="https://x.com/intent/tweet?url=https%3A%2F%2Finsequence.co%2Farticles%2Fthe-discernment-premium&text=The%20Discernment%20Premium" target="_blank" rel="noopener noreferrer">X</a>
+              <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Finsequence.co%2Farticles%2Fthe-discernment-premium" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href="mailto:?subject=The%20Discernment%20Premium&body=https%3A%2F%2Finsequence.co%2Farticles%2Fthe-discernment-premium">Email</a>
             </div>
           </div>
         </div>
@@ -570,7 +570,7 @@ export default function ArticlePage() {
             ownership-based compensation.
           </p>
           <div className="art-cta-actions">
-            <Link href="#" className="btn btn--white">
+            <Link href="/resources" className="btn btn--white">
               Explore the Library
               <ButtonArrow />
             </Link>
