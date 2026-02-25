@@ -71,7 +71,7 @@ export default function StructuresTable() {
   const items = activeTab === "models" ? models : deals;
 
   return (
-    <div className={`structures-table rv rv-d1${scrolledBottom ? " scrolled-bottom" : ""}`}>
+    <div className={`structures-table rv vis rv-d1${scrolledBottom ? " scrolled-bottom" : ""}`}>
       <div className="structures-tabs">
         <button
           className={`structures-tab${activeTab === "models" ? " active" : ""}`}
