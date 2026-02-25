@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+/* ============================================
+   TAILWIND v4 THEME — Design Tokens
+   ============================================ */
+@theme inline {
+  --color-bg: #f5f3f0;
+  --color-black: #1a1a1a;
+  --color-white: #ffffff;
+  --color-mid: #555555;
+  --color-light: #999999;
+  --color-border: #d9d6d1;
+  --color-grid-line: rgba(0, 0, 0, 0.055);
+
+  --font-sans: var(--font-geist-sans), -apple-system, sans-serif;
+  --font-mono: var(--font-pt-mono), 'PT Mono', monospace;
+
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1100px;
+}
+
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+:root {
+  --bg: #f5f3f0;
+  --black: #1a1a1a;
+  --white: #fff;
+  --mid: #555;
+  --light: #999;
+  --border: #d9d6d1;
+  --grid-line: rgba(0, 0, 0, 0.055);
+
+  --mono: var(--font-pt-mono), 'PT Mono', monospace;
+  --sans: var(--font-geist-sans), -apple-system, sans-serif;
+
+  --gutter: 25px;
+  --margin: 50px;
+
+  /* Portal / Admin layout */
+  --sidebar-w: 248px;
+  --topbar-h: 56px;
+  --content-max: 1080px;
+}
+
+/* ============================================
+   GLOBAL RESET
+   ============================================ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--black);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+h2 {
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: clamp(56px, 9vw, 110px);
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+.anim-text-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.anim-text-up.vis {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.rv {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.rv.vis {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays */
+.rv-d1 { transition-delay: 0.06s; }
+.rv-d2 { transition-delay: 0.12s; }
+.rv-d3 { transition-delay: 0.18s; }
+.rv-d4 { transition-delay: 0.24s; }
+.rv-d5 { transition-delay: 0.30s; }
+
+/* Reveal-down (for hero images, etc.) */
+.anim-reveal-down {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.anim-reveal-down.vis {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ============================================
+   SHARED BUTTON STYLES
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--black);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+.btn--white {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: var(--white);
+}
+.btn--white:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Button arrow animation */
+.btn-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+.btn-arrow svg {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.btn-arrow svg:first-child {
+  position: relative;
+}
+.btn-arrow svg:last-child {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-14px, 14px);
+}
+.btn:hover .btn-arrow svg:first-child {
+  transform: translate(14px, -14px);
+}
+.btn:hover .btn-arrow svg:last-child {
+  transform: translate(0, 0);
+}
+
+/* ============================================
+   GRID (8-col public site grid)
+   ============================================ */
+.g8 {
+  padding: 0 var(--margin);
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--gutter);
+}
+
+/* ============================================
+   GRID OVERLAY (decorative background lines)
+   ============================================ */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  padding: 0 var(--margin);
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--gutter);
+}
+.grid-col {
+  border-left: 1px solid var(--grid-line);
+  border-right: 1px solid var(--grid-line);
+}
+
+/* ============================================
+   MONO LABEL (shared pattern)
+   ============================================ */
+.mono-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--light);
+}
+
+.mono-label-sm {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--light);
+}
+
+/* ============================================
+   RESPONSIVE — Mobile
+   ============================================ */
+@media (max-width: 900px) {
+  :root {
+    --margin: 20px;
+    --gutter: 16px;
+  }
+
+  .grid-overlay {
+    display: none;
+  }
+}
