@@ -1,5 +1,7 @@
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
+import CustomCursor from "@/components/cursor";
+import RevealProvider from "@/components/reveal-provider";
 
 export default function PublicLayout({
   children,
@@ -8,6 +10,7 @@ export default function PublicLayout({
 }) {
   return (
     <>
+      <CustomCursor />
       <Nav />
       {/* Decorative 8-column grid overlay */}
       <div className="grid-overlay">
@@ -22,6 +25,7 @@ export default function PublicLayout({
       </div>
       <main style={{ position: "relative", zIndex: 1 }}>{children}</main>
       <Footer />
+      <RevealProvider />
     </>
   );
 }

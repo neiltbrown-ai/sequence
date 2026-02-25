@@ -1,97 +1,83 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export default function Nav() {
+interface NavProps {
+  activePage?: string;
+}
+
+export default function Nav({ activePage }: NavProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  const currentPage = activePage ?? pathname;
+
   return (
-    <nav
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        padding: "16px var(--margin)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        background: "rgba(245,243,240,0.92)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-      }}
-    >
-      <Link
-        href="/"
-        style={{
-          fontFamily: "var(--mono)",
-          fontSize: "10px",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-        }}
-      >
-        SEQUENCE
-      </Link>
+    <>
+      <nav className="nav">
+        <Link href="/" className="nav-logo">
+          SEQUENCE
+        </Link>
 
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          fontFamily: "var(--mono)",
-          fontSize: "10px",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-        }}
-      >
-        <Link href="/" style={{ color: "var(--light)", transition: "color 0.2s" }}>
-          HOME
+        <div className="nav-mid">
+          <Link href="/" className={currentPage === "/" ? "active" : ""}>
+            HOME
+          </Link>
+          <span className="s">/</span>
+          <Link href="/about" className={currentPage === "/about" ? "active" : ""}>
+            ABOUT
+          </Link>
+          <span className="s">/</span>
+          <Link href="/resources" className={currentPage === "/resources" ? "active" : ""}>
+            RESOURCES
+          </Link>
+          <span className="s">/</span>
+          <Link href="/contact" className={currentPage === "/contact" ? "active" : ""}>
+            CONTACT
+          </Link>
+        </div>
+
+        <div className="nav-right">
+          <Link href="/signup" className="nav-signup">
+            SIGN UP
+          </Link>
+          <Link href="/login" className="nav-login">
+            LOGIN
+          </Link>
+          <button
+            className={`nav-hamburger${isOpen ? " open" : ""}`}
+            aria-label="Menu"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </nav>
+
+      <div className={`nav-mobile-menu${isOpen ? " open" : ""}`}>
+        <Link href="/" className={currentPage === "/" ? "active" : ""} onClick={() => setIsOpen(false)}>
+          Home
         </Link>
-        <span style={{ color: "var(--light)" }}>/</span>
-        <Link href="/about" style={{ color: "var(--light)", transition: "color 0.2s" }}>
-          ABOUT
+        <Link href="/about" className={currentPage === "/about" ? "active" : ""} onClick={() => setIsOpen(false)}>
+          About
         </Link>
-        <span style={{ color: "var(--light)" }}>/</span>
-        <Link href="/resources" style={{ color: "var(--light)", transition: "color 0.2s" }}>
-          RESOURCES
+        <Link href="/resources" className={currentPage === "/resources" ? "active" : ""} onClick={() => setIsOpen(false)}>
+          Resources
         </Link>
-        <span style={{ color: "var(--light)" }}>/</span>
-        <Link href="/contact" style={{ color: "var(--light)", transition: "color 0.2s" }}>
-          CONTACT
+        <Link href="/contact" className={currentPage === "/contact" ? "active" : ""} onClick={() => setIsOpen(false)}>
+          Contact
+        </Link>
+        <Link href="/signup" className={currentPage === "/signup" ? "active" : ""} onClick={() => setIsOpen(false)}>
+          Sign Up
+        </Link>
+        <Link href="/login" className={currentPage === "/login" ? "active" : ""} onClick={() => setIsOpen(false)}>
+          Login
         </Link>
       </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-        <Link
-          href="/signup"
-          style={{
-            fontFamily: "var(--mono)",
-            fontSize: "10px",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "var(--light)",
-            transition: "color 0.2s",
-          }}
-        >
-          SIGN UP
-        </Link>
-        <Link
-          href="/login"
-          style={{
-            fontFamily: "var(--mono)",
-            fontSize: "10px",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            background: "var(--black)",
-            color: "var(--white)",
-            padding: "8px 14px",
-            borderRadius: "4px",
-            transition: "opacity 0.2s",
-          }}
-        >
-          LOGIN
-        </Link>
-      </div>
-    </nav>
+    </>
   );
 }
