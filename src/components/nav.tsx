@@ -34,6 +34,10 @@ export default function Nav({ activePage }: NavProps) {
             RESOURCES
           </Link>
           <span className="s">/</span>
+          <Link href="/articles" className={currentPage.startsWith("/articles") ? "active" : ""}>
+            ARTICLES
+          </Link>
+          <span className="s">/</span>
           <Link href="/contact" className={currentPage === "/contact" ? "active" : ""}>
             CONTACT
           </Link>
@@ -67,6 +71,9 @@ export default function Nav({ activePage }: NavProps) {
         </Link>
         <Link href="/resources" className={currentPage === "/resources" ? "active" : ""} onClick={() => setIsOpen(false)}>
           Resources
+        </Link>
+        <Link href="/articles" className={currentPage.startsWith("/articles") ? "active" : ""} onClick={() => setIsOpen(false)}>
+          Articles
         </Link>
         <Link href="/contact" className={currentPage === "/contact" ? "active" : ""} onClick={() => setIsOpen(false)}>
           Contact

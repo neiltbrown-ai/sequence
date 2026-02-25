@@ -134,7 +134,7 @@ export default function ArticlesFilter() {
           {filteredArticles.map((article, i) => (
             <Link
               href={`/articles/${article.slug}`}
-              className={`art-card rv${i % 2 === 1 ? " rv-d2" : ""}`}
+              className={`art-card rv vis${i % 2 === 1 ? " rv-d2" : ""}`}
               key={article.slug}
               data-category={article.category}
             >

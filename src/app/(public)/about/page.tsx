@@ -183,20 +183,20 @@ export default function AboutPage() {
       </section>
 
       {/* ===== ARTICLES ===== */}
-      <section className="articles">
-        <div className="articles-head">
+      <section className="about-articles">
+        <div className="about-articles-head">
           <h2 className="anim-text-up">Articles</h2>
         </div>
-        <div className="articles-intro">
-          <div className="articles-intro-grid">
-            <p className="articles-intro-text rv">
+        <div className="about-articles-intro">
+          <div className="about-articles-intro-grid">
+            <p className="about-articles-intro-text rv">
               <strong>A growing series</strong> of essays on the forces
               reshaping creative value — featuring the leaders, structures, and
               stories of the creative economy.
             </p>
           </div>
         </div>
-        <div className="articles-list">
+        <div className="about-articles-list">
           <div className="a-row rv">
             <span className="a-num">[01]</span>
             <div className="a-title">
@@ -306,7 +306,7 @@ export default function AboutPage() {
             </span>
           </div>
         </div>
-        <div className="articles-foot">
+        <div className="about-articles-foot">
           <Link href="/articles" className="btn rv">
             VIEW ALL ARTICLES
             <ButtonArrow />
