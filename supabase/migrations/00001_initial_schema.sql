@@ -3,9 +3,6 @@
 -- Phase 1: Core tables for membership platform
 -- ============================================
 
--- Enable necessary extensions
-create extension if not exists "uuid-ossp";
-
 -- ============================================
 -- PROFILES (extends auth.users)
 -- ============================================
@@ -58,7 +55,7 @@ create trigger profiles_updated_at
 -- SUBSCRIPTIONS (Stripe sync)
 -- ============================================
 create table public.subscriptions (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   stripe_customer_id text unique,
   stripe_subscription_id text unique,
@@ -81,7 +78,7 @@ create trigger subscriptions_updated_at
 -- STUDENT VERIFICATIONS
 -- ============================================
 create table public.student_verifications (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   edu_email text not null,
   university_name text,
@@ -99,7 +96,7 @@ comment on table public.student_verifications is 'Student .edu email verificatio
 -- UNIVERSITY CODES
 -- ============================================
 create table public.university_codes (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   code text unique not null,
   university_name text not null,
   discount_percent integer not null default 100,
@@ -116,7 +113,7 @@ comment on table public.university_codes is 'University partner access codes';
 -- DISCOUNT CODES
 -- ============================================
 create table public.discount_codes (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   code text unique not null,
   description text,
   discount_type text not null default 'percent' check (discount_type in ('percent', 'fixed')),
@@ -134,7 +131,7 @@ comment on table public.discount_codes is 'Promotional discount codes';
 -- LIBRARY CONTENT
 -- ============================================
 create table public.library_content (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   type text not null check (type in ('structure', 'case_study', 'article', 'guide')),
   title text not null,
   slug text unique not null,
@@ -167,7 +164,7 @@ create index idx_library_content_published on public.library_content(published, 
 -- BOOKMARKS (saved items)
 -- ============================================
 create table public.bookmarks (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   content_id uuid references public.library_content(id) on delete cascade not null,
   created_at timestamptz not null default now(),
@@ -180,7 +177,7 @@ comment on table public.bookmarks is 'User saved/bookmarked content items';
 -- READING PROGRESS
 -- ============================================
 create table public.reading_progress (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   content_id uuid references public.library_content(id) on delete cascade not null,
   progress_percent integer not null default 0 check (progress_percent >= 0 and progress_percent <= 100),
@@ -196,7 +193,7 @@ comment on table public.reading_progress is 'Tracks user reading progress per co
 -- ADMIN NOTES
 -- ============================================
 create table public.admin_notes (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   admin_id uuid references public.profiles(id) not null,
   note text not null,
@@ -209,7 +206,7 @@ comment on table public.admin_notes is 'Admin notes about members';
 -- EMAIL LOG
 -- ============================================
 create table public.email_log (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete set null,
   email_type text not null,
   recipient_email text not null,
