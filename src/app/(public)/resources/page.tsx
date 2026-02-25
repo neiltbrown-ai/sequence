@@ -4,12 +4,22 @@ import ButtonArrow from "@/components/ui/button-arrow";
 import NewsletterForm from "@/components/newsletter-form";
 import StructuresTable from "@/components/structures-table";
 import TestimonialsCarousel from "@/components/testimonials-carousel";
+import {
+  getStructuresTableData,
+  getAllCaseStudies,
+  getTestimonials,
+} from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Resources \u2014 In Sequence",
 };
 
 export default function ResourcesPage() {
+  // Read content at build time from MDX files
+  const { models, deals } = getStructuresTableData();
+  const caseStudies = getAllCaseStudies();
+  const testimonials = getTestimonials();
+
   return (
     <>
       {/* ===== HERO -- THE LIBRARY ===== */}
@@ -112,7 +122,7 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        <StructuresTable />
+        <StructuresTable models={models} deals={deals} />
 
         {/* Gate callout */}
         <div className="structures-gate rv">
@@ -229,94 +239,32 @@ export default function ResourcesPage() {
         </div>
 
         <div className="cases-grid">
-          <Link
-            href="/signup"
-            className="case-card rv"
-            style={{
-              backgroundImage:
-                "url('https://placehold.co/800x600/1a1a1a/333?text=A24')",
-            }}
-          >
-            <span className="case-lbl">[CASE 01]</span>
-            <span className="case-name">A24</span>
-            <span className="case-discipline">Film / Production</span>
-            <p className="case-desc">
-              From indie distributor to cultural institution. Constraint-based
-              production, profit participation, and catalog value that rewrote
-              how independent film captures returns.
-            </p>
-            <div className="case-bottom">
-              <span className="case-structures">STRUCTURES #13, #9, #14</span>
-              <span className="case-link">READ &rarr;</span>
-            </div>
-          </Link>
-          <Link
-            href="/signup"
-            className="case-card rv rv-d1"
-            style={{
-              backgroundImage:
-                "url('https://placehold.co/800x600/1a1a1a/333?text=Virgil+Abloh')",
-            }}
-          >
-            <span className="case-lbl">[CASE 02]</span>
-            <span className="case-name">Virgil Abloh</span>
-            <span className="case-discipline">Fashion / Design</span>
-            <p className="case-desc">
-              Off-White to Louis Vuitton. Building a $500M brand through
-              co-creation joint ventures, product partnerships, and a holding
-              company that transcended any single role.
-            </p>
-            <div className="case-bottom">
-              <span className="case-structures">STRUCTURES #5, #9, #11</span>
-              <span className="case-link">READ &rarr;</span>
-            </div>
-          </Link>
-          <Link
-            href="/signup"
-            className="case-card rv rv-d2"
-            style={{
-              backgroundImage:
-                "url('https://placehold.co/800x600/1a1a1a/333?text=Temi+Coker')",
-            }}
-          >
-            <span className="case-lbl">[CASE 03]</span>
-            <span className="case-name">Temi Coker</span>
-            <span className="case-discipline">Design / Product</span>
-            <p className="case-desc">
-              From freelance designer to Apple, Adobe, and Google
-              collaborations. Product partnerships and licensing deals that
-              turned a personal aesthetic into scalable IP.
-            </p>
-            <div className="case-bottom">
-              <span className="case-structures">
-                STRUCTURES #6, #27, #28
+          {caseStudies.map((cs, i) => (
+            <Link
+              key={cs.slug}
+              href="/signup"
+              className={`case-card rv${i > 0 ? ` rv-d${i}` : ""}`}
+              style={{
+                backgroundImage: cs.coverImage
+                  ? `url('${cs.coverImage}')`
+                  : undefined,
+              }}
+            >
+              <span className="case-lbl">
+                [CASE {String(cs.number).padStart(2, "0")}]
               </span>
-              <span className="case-link">READ &rarr;</span>
-            </div>
-          </Link>
-          <Link
-            href="/signup"
-            className="case-card rv rv-d3"
-            style={{
-              backgroundImage:
-                "url('https://placehold.co/800x600/1a1a1a/333?text=Tash+Sultana')",
-            }}
-          >
-            <span className="case-lbl">[CASE 04]</span>
-            <span className="case-name">Tash Sultana</span>
-            <span className="case-discipline">Music</span>
-            <p className="case-desc">
-              Self-produced, self-managed, self-owned. From bedroom loops to
-              arena tours and a label &mdash; retaining master rights and
-              building a catalog with full creative and financial control.
-            </p>
-            <div className="case-bottom">
-              <span className="case-structures">
-                STRUCTURES #1, #25, #30
-              </span>
-              <span className="case-link">READ &rarr;</span>
-            </div>
-          </Link>
+              <span className="case-name">{cs.title}</span>
+              <span className="case-discipline">{cs.discipline}</span>
+              <p className="case-desc">{cs.excerpt}</p>
+              <div className="case-bottom">
+                <span className="case-structures">
+                  STRUCTURES{" "}
+                  {cs.structures.map((n) => `#${n}`).join(", ")}
+                </span>
+                <span className="case-link">READ &rarr;</span>
+              </div>
+            </Link>
+          ))}
         </div>
 
         {/* Cases gate callout */}
@@ -566,7 +514,7 @@ export default function ResourcesPage() {
       </section>
 
       {/* ===== TESTIMONIALS CAROUSEL ===== */}
-      <TestimonialsCarousel />
+      <TestimonialsCarousel testimonials={testimonials} />
 
       {/* ===== BOOK CALLOUT ===== */}
       <section className="book">

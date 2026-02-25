@@ -1,12 +1,27 @@
 import type { Metadata } from "next";
 import NewsletterForm from "@/components/newsletter-form";
 import ArticlesFilter from "@/components/articles-filter";
+import type { ArticleCard } from "@/components/articles-filter";
+import { getAllArticles } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Articles — In Sequence",
 };
 
 export default function ArticlesPage() {
+  // Read article listing data from MDX frontmatter at build time
+  const allArticles = getAllArticles();
+
+  const articles: ArticleCard[] = allArticles.map((a) => ({
+    slug: a.slug,
+    category: a.category,
+    tag: a.tag,
+    date: a.date,
+    title: a.title,
+    excerpt: a.excerpt,
+    image: a.heroImage,
+  }));
+
   return (
     <>
       {/* PAGE HERO */}
@@ -27,7 +42,7 @@ export default function ArticlesPage() {
       </section>
 
       {/* FILTER + ARTICLE CARDS + LOAD MORE (client component) */}
-      <ArticlesFilter />
+      <ArticlesFilter articles={articles} />
 
       {/* NEWSLETTER */}
       <section className="newsletter">

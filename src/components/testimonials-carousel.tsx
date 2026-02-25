@@ -2,38 +2,18 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
-const testimonials = [
-  {
-    img: "https://placehold.co/800x600/2a2a2a/555?text=Portrait+1",
-    name: "Sarah M.",
-    role: "CREATIVE DIRECTOR / STAGE 2",
-    quote:
-      "\u201cI\u2019d been underpricing advisory work for years. The structures gave me the language and the framework to restructure two client relationships. One equity deal later, I\u2019m thinking in entirely different terms.\u201d",
-  },
-  {
-    img: "https://placehold.co/800x600/2a2a2a/555?text=Portrait+2",
-    name: "James T.",
-    role: "BRAND STRATEGIST / STAGE 1",
-    quote:
-      "\u201cThe case studies alone are worth it. Seeing how Virgil Abloh and A24 actually structured their deals \u2014 the specific terms, the reasoning \u2014 changed how I approach every new project.\u201d",
-  },
-  {
-    img: "https://placehold.co/800x600/2a2a2a/555?text=Portrait+3",
-    name: "Maria L.",
-    role: "PRODUCT DESIGNER / STAGE 2",
-    quote:
-      "\u201cI was stuck at $180K wondering why more hours wasn\u2019t translating to more value. The progression framework showed me I was solving the wrong problem. Now I\u2019m building toward ownership.\u201d",
-  },
-  {
-    img: "https://placehold.co/800x600/2a2a2a/555?text=Portrait+4",
-    name: "David K.",
-    role: "FOUNDER / STAGE 3",
-    quote:
-      "\u201cThe negotiation scripts and manipulation red flags saved me from a terrible net profit participation deal. I restructured it as a revenue share instead. That single change was worth 10x the membership.\u201d",
-  },
-];
+export interface TestimonialItem {
+  name: string;
+  role: string;
+  quote: string;
+  image: string;
+}
 
-export default function TestimonialsCarousel() {
+export default function TestimonialsCarousel({
+  testimonials,
+}: {
+  testimonials: TestimonialItem[];
+}) {
   const [index, setIndex] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
@@ -86,6 +66,8 @@ export default function TestimonialsCarousel() {
     };
   }, [stopAutoplay, startAutoplay]);
 
+  if (total === 0) return null;
+
   return (
     <section className="testimonials" ref={sectionRef}>
       <div className="testimonials-track">
@@ -97,14 +79,14 @@ export default function TestimonialsCarousel() {
             <div className="testimonial" key={i}>
               <div className="testimonial-img">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={t.img} alt="" />
+                <img src={t.image} alt="" />
               </div>
               <div className="testimonial-content">
                 <div className="testimonial-meta">
                   <span className="testimonial-name">{t.name}</span>
                   <span className="testimonial-role">{t.role}</span>
                 </div>
-                <p className="testimonial-quote">{t.quote}</p>
+                <p className="testimonial-quote">&ldquo;{t.quote}&rdquo;</p>
               </div>
             </div>
           ))}
