@@ -27,7 +27,11 @@ export default function LoginPage() {
     });
 
     if (authError) {
-      setError(authError.message);
+      if (authError.message === "Email not confirmed") {
+        setError("Check your inbox — we sent a confirmation link to verify your email before you can sign in.");
+      } else {
+        setError(authError.message);
+      }
       setLoading(false);
       return;
     }

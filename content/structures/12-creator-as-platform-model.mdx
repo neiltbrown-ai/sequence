@@ -5,13 +5,283 @@ type: structure
 subtype: business-model
 number: 12
 risk: "AGGRESSIVE"
-stage: "STAGE 4"
-excerpt: "Creating tools, systems, or platforms for other creatives. Transitioning from practitioner to infrastructure provider."
-tags: [business-model, stage-4, aggressive]
+stage: "STAGE 3"
+excerpt: "Build infrastructure — tools, marketplaces, or platforms — that other creatives use, capturing value through fees, subscriptions, or transaction commissions."
+tags: [business-model, platform, infrastructure, aggressive, stage-3]
 access: member
 sortOrder: 12
 published: true
-updatedAt: "2026-02-25"
+updatedAt: "2026-02-26"
+category: "Ownership Models"
+tagline: "Stop selling your creative output — build the infrastructure other creatives use to create, distribute, and monetize theirs. Capture 10–30% of every transaction on your platform."
+stats:
+  - { label: "Risk Profile", value: "Aggressive" }
+  - { label: "Asset Class", value: "Platform / Infrastructure" }
+  - { label: "Time to Value", value: "18–36 months to product-market fit" }
+  - { label: "Best For", value: "Creatives ready to become tech founders" }
+sections:
+  - { id: "overview", label: "Overview" }
+  - { id: "tiers", label: "Career Tiers" }
+  - { id: "when-to-use", label: "When to Use" }
+  - { id: "protect", label: "Protections" }
+  - { id: "manipulations", label: "Manipulations" }
+  - { id: "negotiate", label: "Negotiate" }
+  - { id: "value", label: "Value Example" }
+  - { id: "cases", label: "Case Studies" }
+  - { id: "related", label: "Related" }
 ---
 
-*Full structure detail coming soon.*
+<SbSection id="overview">
+
+<SbHeading>Overview</SbHeading>
+
+The Creator-as-Platform Model represents a fundamental business model shift: instead of selling your creative work, you build infrastructure — software tools, marketplaces, distribution platforms, systems — that other creatives use to create, distribute, or monetize their work. You capture value through **platform fees (5–30%)**, **subscriptions ($10–100/month)**, or **transaction commissions** while leveraging the collective productivity of thousands of platform users.
+
+The transformation: photographer becomes stock photography platform owner. Designer becomes design tool creator. Writer becomes publishing platform. Instead of being one creator producing work, you become the infrastructure enabling thousands of creators — and you take 10–30% of their transactions. The economics are compelling: platforms scale infinitely (supporting 10,000 users costs marginally more than 100), network effects create moats, recurring revenue is predictable, and enterprise value multiplies (**8–15x revenue** vs. 2–4x for creative services).
+
+The disadvantages are significant: requires technical or product development skills (not just creative skills), **$50K–500K+** to build MVP, **18–36 months** to product-market fit, competitive (every category has 5–10 platforms competing), and requires shifting identity from creative practitioner to entrepreneur. Failure rates are high — but successful platforms create wealth orders of magnitude beyond what individual creative practice ever could.
+
+</SbSection>
+
+<SbSection id="tiers">
+
+<SbHeading>Career Tiers</SbHeading>
+
+<SbTabs tabsJson='["Early Career", "Mid-Career", "Established"]'>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Users" value="100–500" />
+      <SbTabItem label="MRR" value="$5–25K" />
+      <SbTabItem label="Enterprise Value" value="$500K–3M" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="20" />
+      <SbTabBarRow label="Upside" pct="90" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Achieve product-market fit. 50–100 paying users who love the product. Revenue secondary — retention is the metric. Build with first 100 users, not for imagined millions.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Users" value="1,000–5,000" />
+      <SbTabItem label="MRR" value="$50–200K" />
+      <SbTabItem label="Enterprise Value" value="$5–25M" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="55" />
+      <SbTabBarRow label="Upside" pct="85" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Scale what works. Hire team (3–10). Unit economics proven (LTV > 3x CAC). Network effects emerging. Fundraising possible at $5–25M valuation.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Users" value="10,000+" />
+      <SbTabItem label="MRR" value="$500K–5M+" />
+      <SbTabItem label="Enterprise Value" value="$50M–500M+" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="85" />
+      <SbTabBarRow label="Upside" pct="95" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Market leadership. Strong moat from network effects. Exit opportunities: strategic acquisition ($50–500M+) or IPO. Platform runs without founder daily involvement.</SbTabNote>
+  </SbTabPanel>
+</SbTabs>
+
+<SbSubheading>Platform Revenue Models</SbSubheading>
+
+<SbTable
+  headersJson='["Model", "Take Rate", "Examples", "Best For"]'
+  rowsJson='[["Transaction Fees", "10–30%", "Patreon (5–12%), Creative Market (30%)", "Marketplaces, commerce"], ["Subscription SaaS", "$10–100/mo", "Adobe CC ($55/mo), ConvertKit ($29–99/mo)", "Tools, software"], ["Hybrid", "Base + %", "Shopify ($29–299/mo + 2.9%)", "Commerce infrastructure"], ["Freemium", "Free + paid tiers", "Canva ($0–30/mo), Mailchimp", "Mass adoption, viral growth"]]'
+/>
+
+</SbSection>
+
+<SbSection id="when-to-use">
+
+<SbHeading>When to Use This Structure</SbHeading>
+
+<SbFlags>
+  <SbFlagCol header="Use When">
+    <SbFlag type="use">You've identified an infrastructure gap in your creative industry</SbFlag>
+    <SbFlag type="use">You have technical skills or access to a technical co-founder</SbFlag>
+    <SbFlag type="use">Capital available ($50K–500K+) or ability to raise funding</SbFlag>
+    <SbFlag type="use">Deep understanding of target creative's pain points (lived experience)</SbFlag>
+    <SbFlag type="use">Category has 10,000+ potential users and existing solutions are inadequate</SbFlag>
+  </SbFlagCol>
+  <SbFlagCol header="Avoid When">
+    <SbFlag type="avoid">No technical skills and no technical co-founder (will struggle)</SbFlag>
+    <SbFlag type="avoid">Category already has a dominant platform with strong network effects</SbFlag>
+    <SbFlag type="avoid">Expecting quick profits (platforms take 2–4 years to profitability)</SbFlag>
+    <SbFlag type="avoid">Insufficient capital and no funding prospects (under $25K available)</SbFlag>
+    <SbFlag type="avoid">Prefer creative production over business building</SbFlag>
+  </SbFlagCol>
+</SbFlags>
+
+<SbSubheading>Alternatives</SbSubheading>
+
+<SbAlts>
+  <SbAlt condition="If you prefer creative control" name="Holding Company Model" href="/library/structures/holding-company-model" />
+  <SbAlt condition="If simpler product approach" name="Diversified Revenue Streams" href="/library/structures/diversified-revenue-streams" />
+  <SbAlt condition="If licensing preferred over building" name="Non-Exclusive Licensing" href="/library/structures/non-exclusive-licensing" />
+  <SbAlt condition="If advisory role preferred" name="Advisory / Consultant Model" href="/library/structures/advisory-consultant-model" />
+</SbAlts>
+
+</SbSection>
+
+<SbSection id="protect">
+
+<SbHeading>Key Protections</SbHeading>
+
+Four structural protections that determine whether your platform survives Year 1–3 and creates lasting value.
+
+<SbCards>
+  <SbCard label="Pre-Build Market Validation">
+    <SbCardText>Before writing a single line of code: (a) interview 50+ target users about their pain points, (b) test willingness to pay with landing page signups or pre-sales, (c) validate through manual "concierge" delivery — solve the problem by hand before automating it. Only build when 100+ people have demonstrated willingness to pay.</SbCardText>
+    <SbCardText>**Why it matters:** 90% of platform failures are market failures, not technical failures. Building something nobody wants is the most expensive mistake in technology. $5K in validation saves $500K in wasted development.</SbCardText>
+  </SbCard>
+  <SbCard label="Creator IP Protection (Platform Terms)">
+    <SbCardText>"Creator retains all ownership and rights to content uploaded to Platform. Creator grants Platform non-exclusive license to: (a) display content on Platform, (b) distribute to buyers/subscribers, (c) use in marketing with creator consent. Platform claims no ownership of creator content. Creator can export all data at any time."</SbCardText>
+    <SbCardText>**Why it matters:** Platforms that claim ownership of creator content eventually lose their best creators. Fair terms attract talent; exploitative terms create an exodus. Your terms of service are a competitive advantage — treat creators well and they'll evangelize your platform.</SbCardText>
+  </SbCard>
+  <SbCard label="Unit Economics Discipline">
+    <SbCardText>Track religiously: CAC (Customer Acquisition Cost), LTV (Lifetime Value), LTV/CAC ratio (target 3:1+), payback period (target under 12 months), monthly retention (target 80%+). Don't scale marketing until LTV/CAC exceeds 3:1. Don't raise funding until unit economics are proven.</SbCardText>
+    <SbCardText>**Why it matters:** Scaling a platform with broken unit economics is like pouring gasoline on a fire — in your own house. Every dollar of marketing spend on a platform with 1:1 LTV/CAC is a dollar lost. Fix the economics first, then scale.</SbCardText>
+  </SbCard>
+  <SbCard label="Founder Voting Control">
+    <SbCardText>If raising venture capital: dual-class stock structure. Founder holds Class A shares (10 votes per share), investors hold Class B (1 vote per share). Board: founder-majority (3 of 5 seats). Founder veto on company sale, fundraising over $5M, C-suite changes. Protect your ability to make long-term decisions.</SbCardText>
+    <SbCardText>**Why it matters:** Without voting control, investors who own 51%+ can force a premature sale, replace you as CEO, or pivot the platform away from your vision. Control determines whether you're a founder or an employee of your own company.</SbCardText>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="manipulations">
+
+<SbHeading>Common Manipulations</SbHeading>
+
+Four dynamics that destroy platform businesses. Two are internal (your own mistakes); two are external (investor or competitive pressure).
+
+<SbCards>
+  <SbCard label="The Premature Scaling Trap" warn="true">
+    <SbCardText>**How it works:** Raise a large funding round, hire a big team, spend heavily on marketing — all before achieving product-market fit. Burn through $500K–2M quickly. Platform has 5,000 signups but only 200 active users. Investors demand growth, so you keep spending. Cash runs out.</SbCardText>
+    <SbCardText>**Reality:** The classic startup failure pattern. Premature scaling accounts for 70% of startup deaths. Building a team of 15 when you have 200 active users is building a company for imaginary customers. Bootstrap to product-market fit, then scale what works.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I'm not raising significant capital until I have: 100+ paying users with 80%+ monthly retention, LTV exceeding 3x CAC, and a clear path to $50K MRR. I'd rather grow slower with proven economics than fast with broken ones.</SbScript>
+  </SbCard>
+  <SbCard label="The Feature Creep Death Spiral" warn="true">
+    <SbCardText>**How it works:** Users request features. You build all of them. Platform becomes bloated, slow, and confusing. Core value proposition gets buried under 50 features that 5% of users actually want. New users bounce because onboarding is overwhelming.</SbCardText>
+    <SbCardText>**Reality:** Saying yes to every feature request is saying no to product focus. The best platforms do one thing exceptionally well. Complexity is the enemy of adoption — every feature added makes onboarding harder for new users.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>Every feature request gets evaluated against three questions: Does this serve the core use case? Will it increase retention by 5%+? Can we maintain it long-term? I say no to 90% of requests. Our product wins by doing one thing better than anyone else.</SbScript>
+  </SbCard>
+  <SbCard label="The Platform Bait-and-Switch" warn="true">
+    <SbCardText>**How it works:** Platform attracts creators with fair terms (10% fee, creator-friendly policies). Once creators are locked in — audience built, revenue dependent — platform increases fees to 25%, adds restrictive terms, or competes directly with creators using their data.</SbCardText>
+    <SbCardText>**Reality:** Short-term revenue extraction destroys long-term platform value. Creators talk. Once a platform develops a reputation for extraction, the best creators leave first — and they're the ones who drive the most value.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>Our pricing is grandfathered for all existing users. Any fee changes apply only to new signups. We publish our creator economics publicly — what percentage of gross revenue goes to creators vs. platform. Transparency is our competitive advantage.</SbScript>
+  </SbCard>
+  <SbCard label="The Investor Control Grab" warn="true">
+    <SbCardText>**How it works:** Investor takes $2M for 30% equity. Demands 3 of 5 board seats, approval rights over major decisions, and founder reverse vesting. Within 18 months, board "decides" the founder should be replaced with a "professional CEO." Founder keeps equity but loses control.</SbCardText>
+    <SbCardText>**Reality:** Investors optimize for financial returns on their timeline. If you don't maintain voting control, your platform becomes their asset — not yours. Dual-class stock structures exist specifically to prevent this.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I maintain voting control through dual-class shares. Board composition: 3 founder-appointed, 2 investor-appointed. No reverse vesting on existing equity. If these terms don't work for your fund, we're not the right fit — and that's okay.</SbScript>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="negotiate">
+
+<SbHeading>Negotiation</SbHeading>
+
+Platform negotiation happens on two fronts: with investors (capital for equity) and with creators (terms of participation). Three approaches based on platform maturity.
+
+<SbNeg tabsJson='["High Leverage", "Moderate", "Low Leverage"]'>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Run competitive fundraising process** with multiple investors. Set 2-week deadline for term sheets. "We're raising $5M Series A at $30M pre-money. Revenue: $1.2M ARR growing 15% month-over-month. Term sheets due by [date]."</SbNegRow>
+    <SbNegRow label="Add">**Lock governance before discussing price.** Dual-class voting, founder-majority board, veto on company sale. If investor balks at governance terms, they plan to take control. Better to know now than after the wire transfer.</SbNegRow>
+    <SbNegRow label="Signal">**$500K+ ARR, 80%+ retention,** network effects visible, multiple investors competing. Platform growing organically. You don't need the money — you want the right partner to accelerate.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Target patient capital** (family offices, revenue-based financing) over traditional VCs. Accept lower valuation for better governance terms. "I'm raising $1M from investors who share our 5-year timeline, not a 2-year flip."</SbNegRow>
+    <SbNegRow label="Add">**Negotiate creator-favorable terms** as a competitive moat. Lower platform fees than competitors, transparent economics, creator data portability. Attract the best creators by being the fairest platform.</SbNegRow>
+    <SbNegRow label="Signal">**Growing but pre-profitability.** 500–1,000 users, $10–50K MRR, retention strong but unit economics still improving. Need capital for engineering and growth, not survival.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Bootstrap as long as possible.** Use personal savings or revenue from creative practice to fund development. Every dollar of outside capital costs equity and control. "I'll raise when I have proof, not promises."</SbNegRow>
+    <SbNegRow label="Add">**Build equity advisory board** (0.5–1% each to 3–5 industry advisors) before fundraising. Advisors provide validation, network, and backchannel references that strengthen future fundraising position.</SbNegRow>
+    <SbNegRow label="Signal">**Pre-revenue or early-revenue.** MVP built or in development. 50–200 users testing. Not yet ready for institutional capital — would get bad terms. Better to prove the model first.</SbNegRow>
+  </SbNegPanel>
+</SbNeg>
+
+<SbSubheading>Decision Matrix</SbSubheading>
+
+<SbMatrix title="When to Raise Capital vs. Bootstrap">
+  <SbMatrixRow score="8–10" desc="Product-market fit proven, strong retention, multiple investors competing" action="Raise at premium valuation. Maintain dual-class voting. Use capital to hire engineering team and scale marketing." />
+  <SbMatrixRow score="5–7" desc="Growing user base, retention improving, need capital for next phase" action="Raise small round ($500K–1M) from patient capital. Accept fair valuation with strong governance protections." />
+  <SbMatrixRow score="1–4" desc="Pre-PMF, under 100 active users, unit economics unproven" action="Bootstrap. Validate with paying users before raising. Capital from weakness gets terrible terms." />
+</SbMatrix>
+
+</SbSection>
+
+<SbSection id="value">
+
+<SbHeading>Example Value Calculation: Alex's Design Marketplace</SbHeading>
+
+Alex is a designer with 10 years of experience, frustrated that existing stock design platforms pay creators 15–20% royalties while charging buyers premium prices. He builds "DesignFlow" — a design asset marketplace paying creators **75%** (vs. competitors' 30–50%).
+
+<SbChart title="4-Year Platform Growth">
+  <SbChartRow label="Enterprise value (Year 4)" value="$15M" pct="100" />
+  <SbChartRow label="Cumulative platform revenue" value="$472.5K" pct="3" />
+  <SbChartRow label="Total investment" value="$370K" pct="2" />
+</SbChart>
+
+**Year 1:** $100K investment (development + design + legal). 50 creators recruited from personal network, 2,000 designs. First sale Month 7. Gross transaction value: $40K. Platform revenue (25%): **$10K**. Net: -$90K.
+
+**Year 2:** $100K investment (marketing, features, support). 300 creators, 15,000 designs. Gross transactions: $350K. Platform revenue: **$87.5K**. Nearly break-even.
+
+**Year 3:** $170K investment (hired first employee, scaled marketing). 1,200 creators, 60,000 designs. Gross transactions: $1.5M. Platform revenue: **$375K**. First profitable year: $205K net.
+
+**Year 4:** 4,000 creators, 200,000 designs. Gross transactions: $5M. Platform revenue: **$1.25M**. Enterprise value at 8–12x ARR: **$10–15M**. Alex owns 100% (bootstrapped). Strategic acquirer offers $18M.
+
+**What changed:** Alex stopped trading his time for money and started building infrastructure. $370K invested over 4 years → $15M enterprise value. The 75% creator payout was the competitive advantage — best designers chose his platform over competitors paying 30%, creating a quality moat that attracted premium buyers.
+
+</SbSection>
+
+<SbSection id="cases">
+
+<SbHeading>Example Use Cases</SbHeading>
+
+How three creatives transitioned from practitioner to platform builder — and what happened.
+
+<SbCase label="Case 01 · Photography · Established" name="Maria Santos — Stock Photo Platform" tag="Photography / Visual" outcome="$5M valuation in 3 years">
+  <SbCaseText>Maria was a stock photographer frustrated with Getty/Shutterstock paying 15–20% royalties. She recognized that 80% of her image revenue went to platform infrastructure she could build herself. She invested $60K (savings) to build an alternative platform paying photographers 70% royalties.</SbCaseText>
+  <SbCaseText>**The shift:** Year 1: Recruited 30 photographers from her network. Curated quality — application-based admission. Revenue: $15K (tiny). Year 2: 200 photographers, $150K revenue, broke even. Word-of-mouth from photographers earning 3.5x their previous platform. Year 3: 800 photographers, $750K revenue, profitable. Raised $1M seed round. **Platform valued at $5M post-money.** Maria owns 75% = $3.75M in equity.</SbCaseText>
+  <SbCaseText>**Key insight:** The competitive moat wasn't technology — it was the creator economics. Paying 70% vs. competitors' 20% attracted the best photographers, creating the highest-quality library, which attracted premium buyers willing to pay more. Quality → premium pricing → better creator payouts → more quality creators. Virtuous cycle.</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 02 · Design · Mid-Career" name="Tom Li — No-Code Template Marketplace" tag="Design / Tech" outcome="$2.5M acquisition in 2 years">
+  <SbCaseText>Tom was a designer creating Webflow templates. He earned $50K/year selling on existing marketplaces that took 30–40% commission. He noticed the no-code template market (Webflow, Framer, Notion) was fragmented — no single marketplace served all platforms. He invested $40K with a technical co-founder to build one.</SbCaseText>
+  <SbCaseText>**The shift:** Year 1: 80 template creators, $120K gross transactions, $30K platform revenue (25% take rate). Year 2: 150 creators, $400K gross transactions, $100K platform revenue. Month 18: Larger design platform acquired them for **$2.5M** — recognizing the curated creator network was the real asset. Tom's 50% (co-founder split) = **$1.25M.** Return: 62.5x on $40K investment in 2 years.</SbCaseText>
+  <SbCaseText>**Key insight:** The acquirer didn't buy the technology (they could rebuild it). They bought the creator network — 150 high-quality template creators who had chosen this platform. Creator relationships are the scarce asset in marketplace businesses. Tom's personal reputation in the design community gave him a distribution advantage no well-funded competitor could replicate.</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 03 · Music · Emerging (Cautionary)" name="Kai Washington — Music Licensing Platform" tag="Music / Audio" outcome="Shut down after 18 months, $200K lost">
+  <SbCaseText>Kai was a music producer who spent $200K building a music licensing platform before validating demand. He hired a 4-person dev team, built 50+ features, designed beautiful UI — but launched to an empty marketplace. 30 musicians signed up; 5 uploaded tracks. Buyers had no reason to visit a platform with 200 tracks when competitors had 500,000+.</SbCaseText>
+  <SbCaseText>**The failure:** Classic chicken-and-egg problem + premature investment. Kai built the platform for imaginary scale instead of validating with 50 musicians manually first. By Month 12, monthly burn was $15K with $2K revenue. He shut down at Month 18 after exhausting savings.</SbCaseText>
+  <SbCaseText>**Key insight:** "I should have spent $5K running the marketplace manually — Google Sheets, email, PayPal — before spending $200K on software. I would have learned in 3 months that musicians don't switch platforms for better economics alone. They switch for distribution and discovery. I built the wrong product." The lesson: validate the business before building the technology.</SbCaseText>
+</SbCase>
+
+</SbSection>
+
+<SbSection id="related">
+
+<SbHeading>Related Structures</SbHeading>
+
+<SbRelated>
+  <SbRelatedCard num="9" title="Holding Company Model" desc="Platform becomes one subsidiary within your portfolio of businesses." href="/library/structures/holding-company-model" />
+  <SbRelatedCard num="11" title="Franchise / Licensing Model" desc="License platform rights to regional operators — a franchise approach to platforms." href="/library/structures/franchise-licensing-model" />
+  <SbRelatedCard num="10" title="Diversified Revenue Streams" desc="Platform as one of several revenue streams — less concentrated risk." href="/library/structures/diversified-revenue-streams" />
+  <SbRelatedCard num="4" title="Advisory / Consultant Model" desc="If platform building is too risky, advise others on solving the problem instead." href="/library/structures/advisory-consultant-model" />
+</SbRelated>
+
+</SbSection>

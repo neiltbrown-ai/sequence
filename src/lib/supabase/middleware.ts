@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { FULL_ACCESS_ROUTES, LIBRARY_ROUTES, hasAccess } from "@/lib/plans";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -37,10 +38,6 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: Do NOT run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to
-  // debug issues with users being randomly logged out.
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -54,13 +51,15 @@ export async function updateSession(request: NextRequest) {
     "/guides",
     "/saved",
     "/settings",
+    "/advisor",
+    "/inventory",
   ];
 
   const isPortalRoute = portalRoutes.some(
     (route) => pathname === route || pathname.startsWith(route + "/")
   );
 
-  // Admin routes — redirect to login if no session (role check happens server-side)
+  // Admin routes — require login + admin role
   const isAdminRoute = pathname.startsWith("/admin");
 
   if (!user && (isPortalRoute || isAdminRoute)) {
@@ -70,12 +69,80 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If user is logged in and visits auth pages, redirect to dashboard
-  const authRoutes = ["/login", "/signup", "/student-signup"];
-  if (user && authRoutes.includes(pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+  // Admin role gate — check profile role for /admin routes
+  if (user && isAdminRoute) {
+    const adminClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        cookies: {
+          getAll() { return []; },
+          setAll() {},
+        },
+      }
+    );
+
+    const { data: profile } = await adminClient
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // ── Subscription gating (two-tier) ─────────────────
+  // Determine which tier is required for this route
+  const allGatedRoutes = [...LIBRARY_ROUTES, ...FULL_ACCESS_ROUTES];
+
+  const isGatedRoute = allGatedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  );
+
+  if (user && isGatedRoute) {
+    // Use service role client to bypass RLS for server-side subscription check
+    const adminClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        cookies: {
+          getAll() { return []; },
+          setAll() {},
+        },
+      }
+    );
+
+    const { data: subscription } = await adminClient
+      .from("subscriptions")
+      .select("status, plan")
+      .eq("user_id", user.id)
+      .in("status", ["active", "trialing"])
+      .maybeSingle();
+
+    if (!subscription) {
+      // No active subscription at all — redirect to pricing
+      const url = request.nextUrl.clone();
+      url.pathname = "/pricing";
+      url.searchParams.set("reason", "subscription_required");
+      return NextResponse.redirect(url);
+    }
+
+    // Check if route requires full_access tier
+    const needsFullAccess = FULL_ACCESS_ROUTES.some(
+      (route) => pathname === route || pathname.startsWith(route + "/")
+    );
+
+    if (needsFullAccess && !hasAccess(subscription.plan, "full_access")) {
+      // Library-tier user trying to access full_access features
+      const url = request.nextUrl.clone();
+      url.pathname = "/pricing";
+      url.searchParams.set("reason", "upgrade_required");
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

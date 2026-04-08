@@ -5,13 +5,281 @@ type: structure
 subtype: business-model
 number: 15
 risk: "AGGRESSIVE"
-stage: "EMERGING"
-excerpt: "Token-based ownership and governance. Community-owned creative projects with blockchain-enabled rights and royalties."
-tags: [business-model, emerging, aggressive]
+stage: "STAGE 3"
+excerpt: "Decentralize ownership and decision-making through token-based governance — community members vote on project direction and share revenue via smart contracts."
+tags: [business-model, dao, web3, governance, aggressive, stage-3]
 access: member
 sortOrder: 15
 published: true
-updatedAt: "2026-02-25"
+updatedAt: "2026-02-26"
+category: "Emerging / Experimental Models"
+tagline: "Structure creative projects as decentralized organizations — token holders collectively own the work, vote on decisions through blockchain governance, and receive automated revenue distributions via smart contracts."
+stats:
+  - { label: "Risk Profile", value: "Aggressive (Experimental)" }
+  - { label: "Asset Class", value: "Experimental Governance / Alternative Ownership" }
+  - { label: "Time to Value", value: "18–36 months" }
+  - { label: "Best For", value: "Creators with crypto-native communities" }
+sections:
+  - { id: "overview", label: "Overview" }
+  - { id: "tiers", label: "Career Tiers" }
+  - { id: "when-to-use", label: "When to Use" }
+  - { id: "protect", label: "Protections" }
+  - { id: "manipulations", label: "Manipulations" }
+  - { id: "negotiate", label: "Negotiate" }
+  - { id: "value", label: "Value Example" }
+  - { id: "cases", label: "Case Studies" }
+  - { id: "related", label: "Related" }
 ---
 
-*Full structure detail coming soon.*
+<SbSection id="overview">
+
+<SbHeading>Overview</SbHeading>
+
+DAO/Web3 Governance enables creators to structure projects as decentralized organizations where ownership, decision-making, and revenue sharing are distributed across community token holders rather than concentrated in traditional corporate hierarchy. Instead of a single owner making all decisions and capturing all profits, a DAO allows hundreds or thousands of participants to own governance tokens, vote on project direction, and receive **automated revenue distributions proportional to their ownership stake** — all executed by smart contracts on blockchain without intermediaries.
+
+The mechanism: you issue governance tokens (via NFT drop or token sale), tokens grant voting rights on proposals (approved through majority or supermajority), smart contracts automatically distribute revenue to token holders when the project generates income, and a DAO treasury funds operations through community-approved budgets. Blockchain provides transparency (all transactions public), immutability (rules can't be secretly changed), and global accessibility (anyone can participate regardless of location).
+
+The advantages are philosophical and practical: democratized ownership, global collaboration without geographic barriers, automated accounting and payment, complete financial transparency, and powerful community alignment (token holders are incentivized for project success). The disadvantages are significant: **regulatory uncertainty** (SEC may classify tokens as securities), technical complexity ($50K–200K setup costs), high transaction fees (gas on Ethereum), coordination challenges with hundreds of voters, and limited real-world adoption — most DAOs remain experimental. **This is the most speculative structure in the library. It works when the community genuinely wants governance. It fails when it's just fundraising wrapped in decentralization language.**
+
+</SbSection>
+
+<SbSection id="tiers">
+
+<SbHeading>Career Tiers</SbHeading>
+
+<SbTabs tabsJson='["Early Career", "Mid-Career", "Established"]'>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Setup Cost" value="$50–100K" />
+      <SbTabItem label="Community Needed" value="1,000+" />
+      <SbTabItem label="Year 1 Revenue" value="Uncertain" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="15" />
+      <SbTabBarRow label="Upside" pct="90" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Experimental. Join an existing DAO before launching one. Understand governance mechanics, smart contract limitations, and community dynamics before committing capital.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Setup Cost" value="$100–200K" />
+      <SbTabItem label="Community Needed" value="2,000+" />
+      <SbTabItem label="Year 1 Revenue" value="$100–500K" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="45" />
+      <SbTabBarRow label="Upside" pct="80" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Launch DAO with clear value proposition and engaged community. Revenue must justify token economics. Legal compliance is essential — consult securities attorney before token sale.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Setup Cost" value="$150–500K" />
+      <SbTabItem label="Community Needed" value="5,000+" />
+      <SbTabItem label="Year 1 Revenue" value="$500K–5M+" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="70" />
+      <SbTabBarRow label="Upside" pct="85" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** DAO as operating entity with real revenue, institutional interest, and proven governance. Token appreciation creates wealth. Multiple exit paths: acquisition, traditional funding, or sustained distributions.</SbTabNote>
+  </SbTabPanel>
+</SbTabs>
+
+<SbSubheading>DAO Types by Structure</SbSubheading>
+
+<SbTable
+  headersJson='["DAO Type", "Token Model", "Revenue Source", "Best For"]'
+  rowsJson='[["Artist / Creator DAO", "NFTs (1 NFT = 1 vote)", "Usage fees, licensing", "AI voice/style tools, artist collectives"], ["Project / IP DAO", "Fungible tokens", "IP sales, licensing, streaming", "Film, music, game co-creation"], ["Collective / Studio DAO", "Reputation-earned tokens", "Client projects, commissions", "Creative agencies, service collectives"], ["Collector / Curation DAO", "NFTs or tokens", "Asset appreciation, licensing", "Cultural asset acquisition, curation"]]'
+/>
+
+</SbSection>
+
+<SbSection id="when-to-use">
+
+<SbHeading>When to Use This Structure</SbHeading>
+
+<SbFlags>
+  <SbFlagCol header="Use When">
+    <SbFlag type="use">1,000+ engaged community members who are crypto-literate</SbFlag>
+    <SbFlag type="use">Community genuinely wants governance (not just collectibles)</SbFlag>
+    <SbFlag type="use">Revenue is digital and automatable (NFT sales, streaming, licensing)</SbFlag>
+    <SbFlag type="use">Collective decision-making improves outcomes for your project</SbFlag>
+    <SbFlag type="use">You're philosophically aligned with decentralization (comfortable sharing control)</SbFlag>
+  </SbFlagCol>
+  <SbFlagCol header="Avoid When">
+    <SbFlag type="avoid">Community is not crypto-literate (will struggle with wallets, gas fees)</SbFlag>
+    <SbFlag type="avoid">You want full creative control and fast execution</SbFlag>
+    <SbFlag type="avoid">Revenue is under $100K annually (distributions won't be meaningful)</SbFlag>
+    <SbFlag type="avoid">You're using DAO language to fundraise while retaining all control</SbFlag>
+    <SbFlag type="avoid">Can't afford $50K–200K setup costs or 2–5 year experimental timeline</SbFlag>
+  </SbFlagCol>
+</SbFlags>
+
+<SbSubheading>Alternatives</SbSubheading>
+
+<SbAlts>
+  <SbAlt condition="If simpler membership model preferred" name="Creator-as-Platform Model" href="/library/structures/creator-as-platform-model" />
+  <SbAlt condition="If you want collective without blockchain" name="Platform Cooperative Model" href="/library/structures/platform-cooperative-model" />
+  <SbAlt condition="If you want peer collaboration" name="Creative Collective / Studio" href="/library/structures/creative-collective-studio" />
+  <SbAlt condition="If revenue is under $100K" name="Diversified Revenue Streams" href="/library/structures/diversified-revenue-streams" />
+</SbAlts>
+
+</SbSection>
+
+<SbSection id="protect">
+
+<SbHeading>Key Protections</SbHeading>
+
+Four provisions that separate a sustainable DAO from a well-intentioned governance experiment that collapses in Year 2.
+
+<SbCards>
+  <SbCard label="Legal Entity Wrapper">
+    <SbCardText>"DAO operates through an LLC wrapper (Wyoming, Marshall Islands, or similar DAO-friendly jurisdiction) that provides liability protection for token holders and legal standing for contracts. LLC operating agreement mirrors DAO governance rules. All external agreements (licensing, partnerships) executed through the LLC."</SbCardText>
+    <SbCardText>**Why it matters:** Without a legal entity, token holders may have unlimited personal liability. A DAO with no legal wrapper can't sign contracts, open bank accounts, or protect members from lawsuits. The LLC provides the legal infrastructure blockchain can't.</SbCardText>
+  </SbCard>
+  <SbCard label="Securities Compliance">
+    <SbCardText>"Consult securities attorney before any token sale. Assess Howey Test implications: if token holders expect profit primarily from the efforts of others, tokens may be securities requiring SEC registration or exemption (Reg D, Reg A+, Reg S). Budget $25K–100K for compliance. Never assume tokens are 'just governance.'"</SbCardText>
+    <SbCardText>**Why it matters:** The SEC has enforced against multiple token issuers. If your tokens are classified as unregistered securities, you face fines, forced refunds, and personal liability. Compliance is expensive — but enforcement is catastrophic.</SbCardText>
+  </SbCard>
+  <SbCard label="Tiered Governance Scope">
+    <SbCardText>"Token holders vote on: (a) treasury spending over $10K, (b) major partnerships and licensing, (c) revenue distribution percentages, (d) new token issuance. Token holders do NOT vote on: daily operations, individual creative decisions, hiring, or spending under $10K. Creator retains creative direction authority."</SbCardText>
+    <SbCardText>**Why it matters:** DAOs that require community votes on every decision die of paralysis. Your collectors want great art — not to debate which shade of blue you use. Scope governance to strategic decisions and protect creative autonomy.</SbCardText>
+  </SbCard>
+  <SbCard label="Smart Contract Audit">
+    <SbCardText>"All smart contracts audited by independent security firm before deployment. Budget $10K–50K for audit. No funds deposited into unaudited contracts. Multi-sig wallet (3 of 5 signers minimum) for treasury management. Timelock on governance actions (48-hour delay before execution)."</SbCardText>
+    <SbCardText>**Why it matters:** Smart contract bugs have cost DAOs hundreds of millions. A single vulnerability can drain the entire treasury. Audits are expensive but they're insurance against catastrophic loss. Multi-sig prevents any single person from absconding with funds.</SbCardText>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="manipulations">
+
+<SbHeading>Common Manipulations</SbHeading>
+
+Four dynamics that destroy DAOs. Two are internal governance failures; two are external exploitation patterns.
+
+<SbCards>
+  <SbCard label="The Decentralization Theater" warn="true">
+    <SbCardText>**How it works:** Founder launches "DAO" but retains 60%+ of tokens, appoints all multi-sig signers, and controls proposal submission. Community votes are meaningless — the founder's token weight overrides everything. It's a fundraise dressed up as decentralization.</SbCardText>
+    <SbCardText>**Reality:** If the founder controls majority tokens, it's not a DAO — it's a corporation with extra steps. Community members buy tokens expecting governance power, but their votes never matter. When they realize this, trust collapses and tokens go to zero.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>Before I purchase tokens, I need to see the full token distribution: founder allocation, community allocation, treasury, and vesting schedules. If any single entity controls more than 30% of voting power, this isn't a DAO — it's a company. I need genuine governance, not participation theater.</SbScript>
+  </SbCard>
+  <SbCard label="Governance Apathy Death Spiral" warn="true">
+    <SbCardText>**How it works:** Initial enthusiasm drives 80% voting participation. By Month 6, participation drops to 15%. By Year 1, only 5–10 holders vote consistently. Quorum requirements aren't met. Proposals stall. Operations freeze. The DAO becomes ungovernable — not because of conflict, but because of indifference.</SbCardText>
+    <SbCardText>**Reality:** Most token holders are passive investors, not active governors. Asking collectors to vote on every decision is like asking shareholders to run the company. Design governance for realistic participation levels — delegate operational decisions, reserve community votes for strategic choices only.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I'm proposing we lower quorum requirements to 15% (from 30%) for operational proposals and implement delegation — holders can delegate their vote to trusted representatives. Strategic proposals (treasury over $50K, IP licensing) keep the 30% quorum. This matches actual participation patterns.</SbScript>
+  </SbCard>
+  <SbCard label="Token Whale Takeover" warn="true">
+    <SbCardText>**How it works:** A single buyer acquires 25–40% of tokens on secondary market (often at depressed prices during a bear market). They now control governance outcomes on every vote. They push proposals that benefit themselves — licensing deals to their companies, treasury disbursements to their wallets.</SbCardText>
+    <SbCardText>**Reality:** Token-weighted voting (1 token = 1 vote) is plutocracy, not democracy. Without concentration limits, DAOs are vulnerable to hostile takeovers. Quadratic voting (vote power = square root of tokens) or NFT-based voting (1 NFT = 1 vote) reduces whale dominance.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I'm proposing a governance amendment: no single wallet may control more than 10% of voting power regardless of token holdings. Excess voting power is capped. Additionally, any proposal that directly benefits a voter with 5%+ holdings requires that voter to recuse from the vote.</SbScript>
+  </SbCard>
+  <SbCard label="The Gas Fee Extraction" warn="true">
+    <SbCardText>**How it works:** Revenue distributions require token holders to pay $20–100 in gas fees per claim. If your quarterly distribution is $50 and the gas fee is $30, you net $20 — a 60% extraction rate. Small holders are priced out of claiming their own earnings. Over time, unclaimed distributions accumulate in the treasury — benefiting large holders who can absorb gas costs.</SbCardText>
+    <SbCardText>**Reality:** Gas fees on Ethereum are a regressive tax — they cost the same whether you're claiming $50 or $50,000. Deploy on Layer 2 (Polygon, Arbitrum, Base) where gas fees are $0.01–$0.10, or batch distributions to reduce per-holder costs.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>We need to migrate distributions to Layer 2 (Polygon or Arbitrum) where gas fees are under $0.10 per transaction. On Ethereum mainnet, our smallest holders lose 30–60% of distributions to gas. That's not decentralized ownership — that's platform extraction by a different name.</SbScript>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="negotiate">
+
+<SbHeading>Negotiation</SbHeading>
+
+DAO negotiation happens on three fronts: with your community (token economics), with external partners (licensing, distribution), and with regulators (compliance). Three approaches based on DAO maturity.
+
+<SbNeg tabsJson='["High Leverage", "Moderate", "Low Leverage"]'>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Set token economics that reflect your irreplaceable contribution.** Founding team retains 25–35% of tokens (vesting over 4 years). "I built the community, the IP, and the infrastructure. My allocation reflects that — and it vests over 4 years, proving long-term commitment."</SbNegRow>
+    <SbNegRow label="Add">**Require creative direction authority** outside governance scope. Token holders vote on business decisions (treasury, partnerships, licensing). You make creative decisions. Non-negotiable. "Decentralized ownership doesn't mean decentralized creativity."</SbNegRow>
+    <SbNegRow label="Signal">**5,000+ engaged crypto-native community,** proven revenue ($500K+), strong IP, multiple parties interested in partnership or licensing. The DAO is viable with or without any single token holder.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Balance founder allocation with community expectations.** Target 20–30% founder tokens with transparent vesting. Community gets 50–60%. Treasury: 10–15%. "This distribution creates alignment — I succeed when the DAO succeeds."</SbNegRow>
+    <SbNegRow label="Add">**Build in governance guardrails** from day one — quorum requirements, voting delegation, whale caps, tiered decision authority. These prevent the governance failures that kill most DAOs within 2 years.</SbNegRow>
+    <SbNegRow label="Signal">**1,000–5,000 community members,** growing revenue, crypto-literate audience. DAO is the right structure but execution risk remains. Need community buy-in on governance design.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Start with a simpler structure** — token-gated community or NFT membership — before full DAO governance. "Let's prove the community works before we decentralize decision-making. Phase 1: membership. Phase 2: governance. Phase 3: full DAO."</SbNegRow>
+    <SbNegRow label="Add">**Reduce setup costs** by using existing DAO frameworks (Snapshot for voting, Gnosis Safe for treasury, Juicebox for fundraising) instead of custom smart contracts. $10–30K instead of $100K+.</SbNegRow>
+    <SbNegRow label="Signal">**Under 1,000 community members,** early-stage revenue, or first experiment with Web3. Better to test assumptions cheaply than invest $200K in infrastructure for a community that may not want governance.</SbNegRow>
+  </SbNegPanel>
+</SbNeg>
+
+<SbSubheading>Decision Matrix</SbSubheading>
+
+<SbMatrix title="When to Launch a DAO vs. Use Traditional Structures">
+  <SbMatrixRow score="8–10" desc="5K+ crypto-native community, $500K+ revenue, clear governance value" action="Launch full DAO with LLC wrapper, audited contracts, and securities compliance. Budget $150K+ for setup." />
+  <SbMatrixRow score="5–7" desc="1–5K community, growing revenue, crypto-literate audience" action="Start with token-gated membership or NFT community. Phase into governance over 12–18 months as participation proves sustainable." />
+  <SbMatrixRow score="1–4" desc="Under 1K community, audience not crypto-native, uncertain revenue" action="Use traditional structures (Patreon, cooperative, collective). DAO overhead will exceed value. Revisit when community is ready." />
+</SbMatrix>
+
+</SbSection>
+
+<SbSection id="value">
+
+<SbHeading>Example Value Calculation: Javier's Music Label DAO</SbHeading>
+
+Javier is an electronic music producer with 5,000 active Discord members and $80K annual income from streaming and shows. He's frustrated by traditional label economics (70/30 split favoring the label). He launches a DAO-governed label where artists keep 50% and token holders share 35%.
+
+<SbChart title="5-Year Comparison — DAO Label vs. Traditional Label Deal">
+  <SbChartRow label="DAO label (30% founder tokens)" value="$2.14M" pct="100" />
+  <SbChartRow label="Traditional label deal" value="$240K" pct="11" />
+  <SbChartRow label="Solo independent" value="$400K" pct="19" />
+</SbChart>
+
+**Traditional label:** Javier signs to a label. 30% royalty rate. Over 5 years at growing revenue: ~$240K total to Javier. Label keeps $560K. No ownership, no governance.
+
+**Solo independent:** Javier keeps 100% but lacks distribution, marketing, and roster depth. 5-year income: ~$400K. Capped by his individual reach.
+
+**DAO label (what Javier built):** Sells 1,000 genesis NFTs at $500 each ($500K raised). Uses funds to sign 10 artists, build infrastructure. Year 1: $575K revenue. Year 3: $1.4M. Year 5: $6.8M. His 30% founder allocation plus distributions and equity appreciation = **$2.14M** over 5 years. Token holders who bought at $500: estimated $5,094 in distributions plus $35,000 in equity value per NFT — a **79x return**.
+
+**What changed:** The DAO aligned community incentives. Token holders promoted releases because they shared in the upside. Artists joined because 50% royalty + creative control beat every traditional offer. Transparent on-chain accounting eliminated the trust deficit that plagues traditional labels. The 82% community vote to raise a Series A in Year 3 demonstrated governance that actually worked.
+
+</SbSection>
+
+<SbSection id="cases">
+
+<SbHeading>Example Use Cases</SbHeading>
+
+How three creators approached DAO governance — two successes and one instructive failure.
+
+<SbCase label="Case 01 · Music · Mid-Career" name="Javier Morales — Electronic Music Label DAO" tag="Music / Label" outcome="$2.14M over 5 years (79x for token holders)">
+  <SbCaseText>Javier had 5,000 active Discord members and $80K annual income. He launched "SoundDAO" — a community-owned label. Genesis sale: 1,000 NFTs at $500 ($500K raised). Revenue split: 50% to artists, 35% to token holders, 15% to treasury. Each NFT = 1 vote.</SbCaseText>
+  <SbCaseText>**The shift:** Year 1: 5 artists signed, $575K revenue, $201 per-NFT distribution (40% return). Year 3: 15 artists, $1.4M revenue, $490 per-NFT distribution. Year 5 (post-Series A): 35 artists, $6.8M revenue. Cumulative distributions: $5,094 per NFT. Enterprise value: $50M+ — each NFT worth ~$35,000 in equity. **Total per-NFT value: $40,094** on $500 investment.</SbCaseText>
+  <SbCaseText>**Key insight:** The 50/30 artist-to-label split was the competitive advantage. Top independent artists chose SoundDAO over traditional labels because the economics were transparently better. Community promotion replaced marketing spend. Token holders earned 79x because they owned a piece of that growth — but it required 5 years of patience and active governance participation.</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 02 · Collector · Established" name="Wei Zhang — Cultural Acquisition DAO" tag="Collector / Curation" outcome="$12.5M treasury on $3.5M invested">
+  <SbCaseText>Wei, a contemporary art advisor, formed "CultureDAO" with 50 founding members. Each contributed $50K–$200K in ETH. Total raised: $3.5M. Mission: acquire culturally significant digital and physical artworks, make them publicly accessible, and appreciate in value.</SbCaseText>
+  <SbCaseText>**The shift:** Year 1: acquired 12 significant digital artworks for $2.8M. Year 2: licensing revenue from museum exhibitions ($180K). Year 3: collection appraised at $8.5M. Year 4: **treasury value $12.5M** (3.6x on invested capital). Key governance success: community voted to reject a $6M acquisition offer for the collection — believing long-term appreciation would exceed 2x within 3 years.</SbCaseText>
+  <SbCaseText>**Key insight:** Curation DAOs work because the governance question is clear: "Should we buy this?" Members with domain expertise make better collective acquisition decisions than any single buyer. The DAO structure also enabled fractional ownership of works no individual member could afford alone. But: 50 engaged members with $50K+ skin in the game is very different from 1,000 casual NFT buyers at $500 each. Scale requires financial commitment.</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 03 · Visual Art · Emerging (Cautionary)" name="Lina Park — Digital Artist DAO" tag="Visual Art / NFT" outcome="Dissolved Year 3 (-25% for holders)">
+  <SbCaseText>Lina, 28, had 15K Instagram followers and $65K annual income from prints and NFTs. Inspired by DAO success stories, she issued 500 "Collector NFTs" at $1,000 each targeting $500K. Only 120 sold ($120K raised). Most buyers were existing collectors, not new capital.</SbCaseText>
+  <SbCaseText>**The failure:** Overvalued at 7.7x revenue (comparable artists: 2–4x). Governance was a disaster — 85% of holders never voted (they wanted art, not governance). Lina spent 20% of her time on DAO admin instead of creating. Year 1: holders received $208 (21% return). Year 2: $163 (16% return). Lina earned 28% less than pre-DAO while working harder. Year 3: voted to dissolve. **Final return: -25%.** Lina returned to Patreon + galleries and earned $95K in Year 4 — 46% more than her DAO years.</SbCaseText>
+  <SbCaseText>**Key insight:** "My collectors didn't want to govern — they wanted great art. I should have focused on my craft and used proven monetization models instead of experimenting with unproven DAO structure." The lesson: DAOs require communities that genuinely want governance, not audiences that want collectibles. If your holders never vote, you've built the wrong structure.</SbCaseText>
+</SbCase>
+
+</SbSection>
+
+<SbSection id="related">
+
+<SbHeading>Related Structures</SbHeading>
+
+<SbRelated>
+  <SbRelatedCard num="7" title="Platform Cooperative Model" desc="Democratic ownership without blockchain — proven governance, lower technical risk." href="/library/structures/platform-cooperative-model" />
+  <SbRelatedCard num="12" title="Creator-as-Platform Model" desc="Build infrastructure others use — platform economics without decentralized governance." href="/library/structures/creator-as-platform-model" />
+  <SbRelatedCard num="8" title="Creative Collective / Studio" desc="Peer collaboration without tokens — the traditional version of what DAOs attempt." href="/library/structures/creative-collective-studio" />
+  <SbRelatedCard num="14" title="Catalog / IP Securitization" desc="DAO treasury can hold securitized assets — combining institutional finance with community governance." href="/library/structures/catalog-ip-securitization" />
+</SbRelated>
+
+</SbSection>

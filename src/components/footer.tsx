@@ -7,18 +7,29 @@ export default function Footer() {
         <div className="ft-logo">
           <Link href="/">SEQUENCE</Link>
         </div>
+        <div className="ft-nav">
+          <span className="ft-label">[NAVIGATE]</span>
+          <div className="ft-links">
+            <Link href="/about">About</Link>
+            <Link href="/platform">Platform</Link>
+            <Link href="/articles">Articles</Link>
+            <Link href="/pricing">Pricing</Link>
+            <Link href="/coaching">Advisory</Link>
+            <Link href="/contact">Contact</Link>
+            <Link href="/faq">FAQ</Link>
+          </div>
+        </div>
         <div className="ft-social">
           <span className="ft-label">[SOCIAL]</span>
           <div className="ft-links">
             <a href="#">Instagram</a>
-            <a href="#">X</a>
             <a href="#">Linkedin</a>
           </div>
         </div>
         <div className="ft-contact">
           <span className="ft-label">[CONTACT]</span>
           <div className="ft-links">
-            <a href="mailto:insequence@gmail.com">insequence@gmail.com</a>
+            <Link href="/contact">Contact</Link>
           </div>
           <div className="ft-coord">35.0456&deg; N, 85.3097&deg; W</div>
         </div>

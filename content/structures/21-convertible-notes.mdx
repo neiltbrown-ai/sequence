@@ -4,14 +4,289 @@ slug: convertible-notes
 type: structure
 subtype: compensation
 number: 21
-risk: "MODERATE–AGGRESSIVE"
-stage: "EQUITY"
-excerpt: "Loan that converts to equity at future fundraising. Bridge financing with discount and/or valuation cap for early risk."
-tags: [compensation, equity, moderate-aggressive]
+risk: "AGGRESSIVE"
+stage: "STAGE 2"
+excerpt: "Early-stage funding instruments — debt or forward equity contracts — that convert to ownership at a future priced round, deferring valuation while rewarding early risk through discount rates and valuation caps."
+tags: [compensation, equity, convertible, safe, aggressive, stage-2]
 access: member
 sortOrder: 21
 published: true
-updatedAt: "2026-02-25"
+updatedAt: "2026-02-26"
+category: "Equity-Based Structures"
+tagline: "Contribute capital or services to pre-valuation companies now, convert to equity later when a priced round establishes value — earning 2–6x more equity than later investors through discount rates and valuation caps."
+stats:
+  - { label: "Risk Profile", value: "Aggressive (Pre-Equity Instrument)" }
+  - { label: "Asset Class", value: "Convertible Debt / Forward Equity Contract" }
+  - { label: "Time to Value", value: "12–36 months to conversion" }
+  - { label: "Best For", value: "Founders needing bridge capital or creatives advising pre-seed companies" }
+sections:
+  - { id: "overview", label: "Overview" }
+  - { id: "tiers", label: "Career Tiers" }
+  - { id: "when-to-use", label: "When to Use" }
+  - { id: "protect", label: "Protections" }
+  - { id: "manipulations", label: "Manipulations" }
+  - { id: "negotiate", label: "Negotiate" }
+  - { id: "value", label: "Value Example" }
+  - { id: "cases", label: "Case Studies" }
+  - { id: "related", label: "Related" }
 ---
 
-*Full structure detail coming soon.*
+<SbSection id="overview">
+
+<SbHeading>Overview</SbHeading>
+
+Convertible Notes and SAFEs solve a specific problem: early-stage companies need capital (or creative services) before their valuation can be meaningfully determined. Rather than negotiating equity percentages when the company is pre-revenue and valuation is purely speculative, these instruments let you contribute now and **convert to equity later** when a priced funding round establishes market value.
+
+A **Convertible Note** is technically debt: the company borrows money with the promise to convert that debt into equity at a future round, typically with a **discount (15–25%)** or **valuation cap** that rewards early risk. If no round happens within 12–24 months (the maturity date), the note either converts at a pre-agreed valuation or becomes repayable debt. A **SAFE** (Simple Agreement for Future Equity, created by Y Combinator) is simpler: not debt, but a forward contract for equity. No interest, no maturity date — just a promise that your investment converts when a priced round occurs.
+
+For creatives, these instruments arise in two scenarios: (1) you're **co-founding** a company and need bridge financing before Series A, or (2) you're providing substantial creative services ($25K+) to a pre-seed company and accepting a convertible instrument because no defensible valuation exists yet. The advantage is speed and simplicity — close in weeks, not months. The disadvantage is uncertainty: you don't know your final equity percentage until conversion, and if the company never raises a priced round, your instrument may be worthless.
+
+</SbSection>
+
+<SbSection id="tiers">
+
+<SbHeading>Career Tiers</SbHeading>
+
+<SbTabs tabsJson='["Founder (Bridge Capital)", "Early Advisor / Creative", "Portfolio Builder"]'>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Instrument" value="Convertible Note" />
+      <SbTabItem label="Typical Amount" value="$50–250K total raise" />
+      <SbTabItem label="Timeline to Conversion" value="12–18 months" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="65" />
+      <SbTabBarRow label="Upside" pct="85" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Raise bridge capital between formation and Series A. Set cap at defensible level ($2–5M for pre-seed). Close quickly (6 weeks target). Use capital efficiently to hit Series A metrics.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Instrument" value="SAFE (simpler)" />
+      <SbTabItem label="Typical Amount" value="$25–150K (FMV of services)" />
+      <SbTabItem label="Timeline to Conversion" value="18–36 months" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="40" />
+      <SbTabBarRow label="Upside" pct="75" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Accept SAFE for substantial creative work at pre-valuation companies. Always take 25–40% in cash alongside SAFE. Demand low cap ($3–8M) and pro-rata rights. One deal at a time until you understand the mechanics.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Instrument" value="SAFE (multiple)" />
+      <SbTabItem label="Typical Amount" value="$50–120K per deal × 5–10 companies" />
+      <SbTabItem label="Timeline to Conversion" value="16–30 months average" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="60" />
+      <SbTabBarRow label="Upside" pct="80" />
+    </SbTabBar>
+    <SbTabNote>**Focus:** Diversified portfolio — 5–10 SAFEs across multiple companies. 40% cash + 60% SAFE per deal. Accept that 20–40% will fail. Successful conversions create meaningful wealth that outperforms cash-only strategy.</SbTabNote>
+  </SbTabPanel>
+</SbTabs>
+
+<SbSubheading>Convertible Note vs. SAFE Comparison</SbSubheading>
+
+<SbTable
+  headersJson='["Feature", "Convertible Note", "SAFE"]'
+  rowsJson='[["Legal Structure", "Debt (loan)", "Forward equity contract"], ["Interest", "2–8% annual (accrues, converts)", "None"], ["Maturity Date", "12–24 months (pressure to raise)", "None (no deadline)"], ["Repayment Risk", "Technically repayable at maturity", "Never repayable"], ["Complexity", "Moderate (more terms)", "Simple (5-page standard)"], ["Best For", "Founders raising bridge capital", "Advisors / creatives trading services"]]'
+/>
+
+</SbSection>
+
+<SbSection id="when-to-use">
+
+<SbHeading>When to Use This Structure</SbHeading>
+
+<SbFlags>
+  <SbFlagCol header="Use When">
+    <SbFlag type="use">Company is genuinely pre-valuation (pre-seed, pre-revenue)</SbFlag>
+    <SbFlag type="use">Clear path to priced round within 18–24 months</SbFlag>
+    <SbFlag type="use">Your contribution exceeds $25K equivalent (worth the complexity)</SbFlag>
+    <SbFlag type="use">Discount (15–25%) or cap ($2–10M) provides meaningful protection</SbFlag>
+    <SbFlag type="use">You have financial runway to wait 2–5 years for liquidity</SbFlag>
+  </SbFlagCol>
+  <SbFlagCol header="Avoid When">
+    <SbFlag type="avoid">Company has operated 2+ years with revenue (should have a valuation by now)</SbFlag>
+    <SbFlag type="avoid">No clear path to priced round (lifestyle business, no VC interest)</SbFlag>
+    <SbFlag type="avoid">No cap or discount offered (no downside protection = take direct equity)</SbFlag>
+    <SbFlag type="avoid">Multiple prior convertible rounds already exist (cap table is already messy)</SbFlag>
+    <SbFlag type="avoid">Contribution is small (&lt;$25K — not worth convertible complexity)</SbFlag>
+  </SbFlagCol>
+</SbFlags>
+
+<SbSubheading>Alternatives</SbSubheading>
+
+<SbAlts>
+  <SbAlt condition="If company can set valuation" name="Equity-for-Services" href="/library/structures/equity-for-services" />
+  <SbAlt condition="If you want cash flow, not uncertain equity" name="Revenue Share Partnership" href="/library/structures/revenue-share-partnership" />
+  <SbAlt condition="If convertible risk is too high" name="Retainer + Bonus Model" href="/library/structures/retainer-bonus-model" />
+  <SbAlt condition="If engagement is too small for convertible" name="Premium Service Model" href="/library/structures/premium-service-model" />
+</SbAlts>
+
+</SbSection>
+
+<SbSection id="protect">
+
+<SbHeading>Key Protections</SbHeading>
+
+Five provisions that determine whether your convertible instrument converts at favorable terms or evaporates into nothing.
+
+<SbCards>
+  <SbCard label="Valuation Cap (Most Critical)">
+    <SbCardText>"SAFE shall convert into equity at the lower of: (a) Valuation Cap of $[X], or (b) the valuation of the Qualified Financing, less applicable Discount." Without a cap, if the company raises Series A at $50M, your $50K converts to 0.1%. With a $5M cap, same $50K converts to 1.0% — **10x more equity.**</SbCardText>
+    <SbCardText>**Why it matters:** The cap is your primary protection. It sets a ceiling on your conversion price regardless of how high the company's valuation climbs. Lower cap = more equity for you. Target: 30–50% below expected Series A valuation. Pre-seed: $2–5M. Seed: $5–10M. Never accept a cap above $10M for pre-revenue companies.</SbCardText>
+  </SbCard>
+  <SbCard label="Discount Rate">
+    <SbCardText>"Upon conversion, SAFE converts at a discount of 20% to the price per share paid by investors in the Qualified Financing." If Series A prices at $10/share, you convert at $8/share — 25% more shares for the same money. Standard: 15–25% (20% most common).</SbCardText>
+    <SbCardText>**Why it matters:** The discount rewards you for taking early risk when the company had no validation. On a Convertible Note, discount typically stacks with interest (5% annual × 18 months = 7.5% additional). On SAFEs, you usually get cap OR discount (whichever gives you better terms), not both.</SbCardText>
+  </SbCard>
+  <SbCard label="Pro-Rata Rights">
+    <SbCardText>"Investor shall have right to purchase pro-rata portion of future equity rounds to maintain ownership percentage." Example: you convert to 2% at Series A. Series B offers 20% of the company. Your pro-rata: 2% of that 20% = 0.4% you can purchase — maintaining your 2% ownership if you invest.</SbCardText>
+    <SbCardText>**Why it matters:** Without pro-rata, every future round dilutes your converted equity. Three rounds can reduce 2% to 0.5% — a 75% loss. Pro-rata gives you the option (not obligation) to invest additional capital to maintain your stake. Essential for portfolio builders who want to double down on winners.</SbCardText>
+  </SbCard>
+  <SbCard label="MFN (Most Favored Nation) Clause">
+    <SbCardText>"If Company issues additional SAFEs with more favorable terms — lower cap, higher discount, better pro-rata — this SAFE automatically adopts those improved terms." Prevents the company from giving later SAFE investors better deals than you got.</SbCardText>
+    <SbCardText>**Why it matters:** Companies often issue multiple SAFE rounds as they gain traction. Later SAFEs may have lower caps (more favorable) because the company can now demonstrate progress. Without MFN, early risk-takers get worse terms than later, lower-risk contributors.</SbCardText>
+  </SbCard>
+  <SbCard label="Conversion Trigger Definition">
+    <SbCardText>"SAFE converts upon: (a) Qualified Financing (equity round of $500K+), (b) Liquidity Event (acquisition, IPO, dissolution), or (c) at holder's option if no Qualified Financing within 24 months." The $500K threshold ensures small rounds don't trigger premature conversion at unfavorable terms.</SbCardText>
+    <SbCardText>**Why it matters:** If "Qualified Financing" is set too high ($5M+), small seed rounds won't trigger conversion — you wait longer, accumulate more risk, and face more dilution. Set threshold at $500K–$1M maximum. The optional conversion clause protects you if the company never raises a priced round.</SbCardText>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="manipulations">
+
+<SbHeading>Common Manipulations</SbHeading>
+
+Four tactics that reduce the value of convertible instruments for early contributors.
+
+<SbCards>
+  <SbCard label="No Cap, Discount Only" warn="true">
+    <SbCardText>**How it works:** Company offers SAFE with 20% discount but no valuation cap. Series A happens at $50M (much higher than expected). Your $50K converts at $40M (20% discount) = 0.125% equity. If you'd had a $5M cap: 1.0% equity — **8x more.**</SbCardText>
+    <SbCardText>**Reality:** Discount-only SAFEs provide minimal protection when companies grow rapidly. The discount is meaningless if the valuation is 10x higher than expected. Always demand a valuation cap — it's the single most important term in any convertible instrument.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I need a valuation cap — discount alone doesn't protect me if your valuation skyrockets. Let's set a cap at $5M based on current traction. If the company does well, the cap rewards my early risk. If it doesn't, I'm protected at a reasonable conversion price either way.</SbScript>
+  </SbCard>
+  <SbCard label="Inflated Cap That Provides No Protection" warn="true">
+    <SbCardText>**How it works:** Company offers $20M valuation cap for a pre-revenue startup. Sounds protective. Reality: Series A happens at $15M — below the cap. Your cap never activates, you get no advantage over Series A investors. The "protection" was an illusion.</SbCardText>
+    <SbCardText>**Reality:** The cap should be 30–50% below expected Series A valuation to provide real protection. If Series A is expected at $12–15M, your cap should be $6–8M. Research comparable companies at similar stages to anchor your cap negotiation.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>Based on comparable companies at this stage, I'd expect a $12–15M Series A. A $20M cap doesn't meaningfully reward my early risk — it only activates if you exceed expectations. I'm proposing $6M, which gives me real upside protection while still being generous relative to your current stage.</SbScript>
+  </SbCard>
+  <SbCard label="Qualified Financing Threshold Too High" warn="true">
+    <SbCardText>**How it works:** SAFE conversion triggers only on a $5M+ raise. Company raises $1M seed — your SAFE doesn't convert. Then raises $2M bridge — still doesn't convert. More dilution happens with each round while your SAFE sits unconverted. By the time a $5M+ round occurs, your effective equity is much smaller.</SbCardText>
+    <SbCardText>**Reality:** High conversion thresholds delay your equity conversion while dilution accumulates from smaller rounds. Set the Qualified Financing trigger at $500K–$1M maximum. Every round that happens before your conversion dilutes you further.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>The Qualified Financing threshold needs to be $500K, not $5M. If the company raises seed rounds below $5M, my SAFE sits unconverted while each round dilutes my eventual equity. A $500K trigger ensures I convert at the earliest meaningful round.</SbScript>
+  </SbCard>
+  <SbCard label="No Pro-Rata Rights" warn="true">
+    <SbCardText>**How it works:** Your SAFE converts to 2% at Series A. Series B dilutes you to 1.3%. Series C to 0.8%. By exit, you own 0.5% — one-quarter of your original position. Without pro-rata rights, you can't invest to maintain your stake. You took the earliest risk and ended up with the smallest percentage.</SbCardText>
+    <SbCardText>**Reality:** Pro-rata costs the company nothing — it only gives you the option to invest, not guaranteed allocation. Companies that refuse pro-rata for early contributors are signaling that they don't value your early risk-taking.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I need pro-rata rights to maintain my ownership through future rounds. I took the earliest risk — contributing when the company had no revenue. Without pro-rata, three rounds of dilution will reduce my 2% to 0.5%. Pro-rata costs you nothing and gives me the option, not obligation, to invest alongside later rounds.</SbScript>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="negotiate">
+
+<SbHeading>Negotiation</SbHeading>
+
+Convertible instrument negotiation centers on one question: how much does the cap reward your early risk? Three approaches based on your position.
+
+<SbNeg tabsJson='["High Leverage", "Moderate", "Low Leverage"]'>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Demand low cap + discount + pro-rata.** "I'm contributing $100K in services at pre-seed. I need a $4M cap, 20% discount (whichever is better at conversion), pro-rata rights, and MFN clause. My early contribution deserves meaningful upside protection."</SbNegRow>
+    <SbNegRow label="Add">**Push for partial cash (25–40%) alongside SAFE.** "I'll accept $40K cash + $60K SAFE. The cash covers my costs; the SAFE aligns us long-term." Also require information rights (quarterly financials) and optional conversion clause if no priced round within 24 months.</SbNegRow>
+    <SbNegRow label="Signal">**Your creative work is central to fundraising.** Brand identity, pitch narrative, or product design that directly enables the Series A. Company needs you more urgently than you need them.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Accept standard SAFE terms with key protections.** "$5–8M cap with 20% discount. Pro-rata rights non-negotiable. MFN if additional SAFEs are issued. Conversion trigger at $500K–$1M."</SbNegRow>
+    <SbNegRow label="Add">**Negotiate for 40% cash component** and information rights. If cap negotiation stalls, trade a slightly higher cap for stronger pro-rata rights or additional MFN protection.</SbNegRow>
+    <SbNegRow label="Signal">**Valuable advisory or creative contribution.** Company wants your involvement but other creatives could fill the role. Fair terms at market standard are appropriate.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Accept SAFE as a portfolio bet.** Standard terms are fine for a learning experience. Focus on one non-negotiable: the valuation cap must be under $10M for pre-revenue. Everything else is secondary for your first convertible deal.</SbNegRow>
+    <SbNegRow label="Add">**Take 50%+ in cash** to reduce risk on your first convertible instrument. The SAFE component is an education in convertible mechanics — future deals will be more sophisticated.</SbNegRow>
+    <SbNegRow label="Signal">**First convertible deal or small engagement.** Building understanding of convertible mechanics. Better to accept fair terms and learn than over-negotiate a deal you don't fully understand.</SbNegRow>
+  </SbNegPanel>
+</SbNeg>
+
+<SbSubheading>Decision Matrix</SbSubheading>
+
+<SbMatrix title="Convertible Note vs. SAFE vs. Direct Equity">
+  <SbMatrixRow score="8–10" desc="Pre-revenue company, clear Series A path, your work is central" action="SAFE with low cap ($3–5M), 20% discount, pro-rata, MFN. Take 25–40% cash alongside. Best risk/reward for pre-valuation companies." />
+  <SbMatrixRow score="5–7" desc="Early revenue, some traction, valuation debatable" action="Negotiate directly for equity (#17) if possible. If company insists on convertible, demand cap below $10M and 40%+ cash component." />
+  <SbMatrixRow score="1–4" desc="Company has 18+ months revenue, established metrics" action="Direct equity (#17) with known percentage. Company should have a defensible valuation by now. Convertible instruments add unnecessary uncertainty." />
+</SbMatrix>
+
+</SbSection>
+
+<SbSection id="value">
+
+<SbHeading>Example Value Calculation: Jordan's SAFE for Brand Strategy</SbHeading>
+
+Jordan is a brand strategist (5 years experience) whose normal fee is $60K for 4-month engagements. A pre-seed consumer tech startup (2 founders, $200K angel funding, planning Kickstarter) can't afford his cash fee. Jordan negotiates a SAFE.
+
+<SbChart title="30-Month Outcome — SAFE vs. Cash Fee">
+  <SbChartRow label="SAFE at $4M cap (converted)" value="$192.5K" pct="100" />
+  <SbChartRow label="Cash fee (if they could pay)" value="$60K" pct="31" />
+</SbChart>
+
+**The deal:** $15K cash upfront + $45K SAFE at $4M cap, 20% discount, pro-rata, MFN.
+
+**Month 8:** Kickstarter raises $400K (validation — Jordan's brand work was central to the campaign).
+
+**Month 18:** Company raises $2M seed at $8M post-money. Jordan's SAFE doesn't convert yet (below Qualified Financing threshold of $1M priced round).
+
+**Month 30:** Series A: $8M raised at $25M post-money. Jordan's SAFE converts. Conversion valuation: lower of $4M cap or $20M with 20% discount. **$4M cap wins** — 5x more equity than the discount would provide. Jordan's equity: $45K / $4M = **1.125%**. Post-Series A dilution: 1.125% × (1 - 32%) = **0.77%**. Value: 0.77% × $25M = **$192.5K** paper value.
+
+**Comparison:** A Series A investor putting in $45K would get: $45K / $25M = 0.18%. Jordan's 0.77% is **4.3x more equity** for the same dollar amount — the cap rewarded his early risk.
+
+**What changed:** Jordan negotiated the cap from $5M (company's offer) down to $4M — that $1M difference gave him 25% more equity. He also insisted on $15K cash to cover living expenses during the 4-month engagement. The SAFE's 3.2x return (so far, still illiquid) outperformed the $60K cash fee — but required 30 months of patience.
+
+</SbSection>
+
+<SbSection id="cases">
+
+<SbHeading>Example Use Cases</SbHeading>
+
+How three creatives used convertible instruments — two successes and one instructive failure.
+
+<SbCase label="Case 01 · Branding · Emerging" name="Jordan Lee — Brand Strategist with Pre-Seed SAFE" tag="Consumer / Hardware" outcome="$192.5K paper value (3.2x on $60K)">
+  <SbCaseText>Jordan's normal fee: $60K. Pre-seed hardware startup offered a SAFE instead. He countered: $15K cash + $45K SAFE at $4M cap (not the offered $5M), 20% discount, pro-rata, MFN. Company's Kickstarter success validated his brand work.</SbCaseText>
+  <SbCaseText>**The shift:** Series A at $25M post-money (Month 30). SAFE converted at $4M cap — 4.3x more equity than a Series A investor would get for the same amount. Post-dilution: 0.77% = **$192.5K** paper value. Pro-rata rights let him invest $10K at Series A to maintain his position. **Total invested: $45K services + $10K cash = $55K** for $220K+ in equity value.</SbCaseText>
+  <SbCaseText>**Key insight:** "Negotiating the cap from $5M to $4M was worth 25% more equity. Every $1M off the cap matters enormously. And the $15K cash upfront made the deal sustainable — I couldn't have worked 4 months for $0."</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 02 · Design · Established" name="Kenji Yamamoto — Portfolio SAFE Builder" tag="Multi-Sector / Tech" outcome="$1.13M total comp (51% more than cash-only)">
+  <SbCaseText>Kenji, a product designer charging $150–200K per engagement, built a portfolio of 5 SAFEs over 24 months. Strategy: 40% cash + 60% SAFE per deal. Caps ranged from $3M to $10M. Total cash: $300K. Total SAFEs: $450K (FMV of services).</SbCaseText>
+  <SbCaseText>**The shift:** After 24 months — 1 company failed ($0), 3 converted successfully ($782.5K combined equity value), 1 still pending (~$50K estimated). **Total portfolio value: $832.5K** in equity + $300K cash received = **$1.13M** total compensation. Cash-only alternative: $750K. SAFE portfolio outperformed by **$380K (51%).**</SbCaseText>
+  <SbCaseText>**Key insight:** "Diversification was essential. The one failure cost me $90K in services — but three successes returned $782.5K. You need 5–10 SAFEs to make the portfolio approach work. And 40% cash is non-negotiable — I can't eat equity."</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 03 · Film · Established (Cautionary)" name="David Park — Producer with Overpriced SAFE" tag="Entertainment / Content" outcome="$126K paper value on $100K foregone fee (36-month wait)">
+  <SbCaseText>David, an indie film producer, accepted a $100K SAFE (his full foregone producing fee) at $15M cap with 20% discount. No cash component. No pro-rata. Expected Series A in 12 months. The film he produced underperformed. Company pivoted strategy.</SbCaseText>
+  <SbCaseText>**The result:** 36 months to conversion (3x expected timeline). Converted at $6.4M (discount was better than $15M cap — meaning the cap never protected him). Final equity: 1.33% in a struggling company valued at $9.5M. Paper value: **$126K** — barely more than his $100K foregone fee, with 36 months of opportunity cost and no liquidity in sight.</SbCaseText>
+  <SbCaseText>**Key insight:** "Three mistakes killed this deal: (1) $15M cap was absurdly high for a pre-revenue company — $5M would have given me 3x more equity. (2) I took $0 cash — worked 6 months for free. (3) No pro-rata meant I couldn't even invest to maintain my position. The SAFE structure was fine. My terms were terrible."</SbCaseText>
+</SbCase>
+
+</SbSection>
+
+<SbSection id="related">
+
+<SbHeading>Related Structures</SbHeading>
+
+<SbRelated>
+  <SbRelatedCard num="17" title="Equity-for-Services" desc="Direct equity when valuation exists — simpler, more certain than convertible." href="/library/structures/equity-for-services" />
+  <SbRelatedCard num="19" title="Vesting Equity" desc="After conversion, your equity vests — understand vesting mechanics first." href="/library/structures/vesting-equity" />
+  <SbRelatedCard num="18" title="Founder / Co-Founder Equity" desc="Founders often use convertible notes for bridge financing pre-Series A." href="/library/structures/founder-co-founder-equity" />
+  <SbRelatedCard num="3" title="Project Equity Model" desc="Direct equity alternative when company can set a defensible valuation." href="/library/structures/project-equity-model" />
+</SbRelated>
+
+</SbSection>

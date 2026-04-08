@@ -1,8 +1,11 @@
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getCaseStudyBySlug, getAllCaseStudies } from "@/lib/content";
-import PageHeader from "@/components/portal/page-header";
-import { mdxComponents } from "@/components/mdx";
+import { caseStudyMdxComponents } from "@/components/mdx/case-study";
+import CaseStudyHeader from "@/components/case-study-header";
+import CaseStudyCoachingCta from "@/components/case-study-coaching-cta";
+import SaveButton from "@/components/portal/save-button";
+import { CaseStudyProvider } from "@/components/mdx/case-study/case-study-context";
 
 export function generateStaticParams() {
   return getAllCaseStudies().map((s) => ({ slug: s.slug }));
@@ -18,32 +21,36 @@ export default async function CaseStudyDetailPage({
 
   if (!result) notFound();
 
-  const { frontmatter: meta, content } = result;
+  const { frontmatter: fm, content } = result;
 
   return (
     <>
-      <PageHeader
-        title={meta.title}
-        description={meta.excerpt}
+      <CaseStudyHeader
+        number={fm.number}
+        discipline={fm.discipline}
+        readTime={fm.readTime ? String(fm.readTime) : undefined}
+        title={fm.title}
+        subtitle={fm.subtitle}
+        heroImage={fm.heroImage || fm.coverImage}
+        heroAlt={fm.heroAlt}
+        heroPosition={fm.heroPosition}
+        stats={fm.stats}
         backHref="/library/case-studies"
         backLabel="All Case Studies"
+        saveButton={<SaveButton contentType="case_study" slug={slug} />}
       />
 
-      <div className="rv vis" style={{ paddingBottom: "16px" }}>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          <span className="struct-tag">{meta.discipline}</span>
-          <span className="struct-tag">Case Study #{meta.number}</span>
-          {meta.tags?.map((tag: string) => (
-            <span key={tag} className="struct-tag">
-              {tag}
-            </span>
-          ))}
+      <CaseStudyProvider
+        secondaryImage={fm.secondaryImage}
+        secondaryAlt={fm.secondaryAlt}
+        secondaryPosition={fm.secondaryPosition}
+      >
+        <div className="cs-body">
+          <MDXRemote source={content} components={caseStudyMdxComponents} />
         </div>
-      </div>
+      </CaseStudyProvider>
 
-      <article className="mdx-content rv vis rv-d1">
-        <MDXRemote source={content} components={mdxComponents} />
-      </article>
+      <CaseStudyCoachingCta />
 
       <div className="page-footer" />
     </>

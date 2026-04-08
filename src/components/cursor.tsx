@@ -27,18 +27,28 @@ export default function CustomCursor() {
 
     const onMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+
+      // Data-attribute system (preferred for new components)
+      const expandAttr = target.closest('[data-cursor="expand"]');
+      const arrowAttr = target.closest('[data-cursor="arrow"]');
+
+      // Legacy class-based detection (MDX content)
       const link = target.closest("a");
       const button = target.closest("button");
-      if (button) {
-        cursor.classList.remove("cursor--arrow");
-      } else if (
-        link &&
-        (link.querySelector("img") || link.querySelector(".rc-wrap"))
-      ) {
+      const cardHead = target.closest(".cb-card-head") || target.closest(".str-card-head") || target.closest(".sb-card-head") || target.closest(".sb-case-head");
+      const sourcesToggle = target.closest(".cb-sources-toggle");
+      const tab = target.closest(".str-tier-tab") || target.closest(".sb-tier-tab") || target.closest(".sb-neg-tab");
+
+      cursor.classList.remove("cursor--arrow", "cursor--arrow-down");
+
+      if (expandAttr || cardHead || sourcesToggle || tab) {
+        cursor.classList.add("cursor--arrow-down");
+      } else if (arrowAttr || link || button) {
         cursor.classList.add("cursor--arrow");
-      } else {
-        cursor.classList.remove("cursor--arrow");
       }
+
+      // Re-run color to boost opacity when icon is active
+      updateCursorColor();
     };
 
     // Detect dark sections for cursor color
@@ -52,12 +62,14 @@ export default function CustomCursor() {
         const r = el.getBoundingClientRect();
         if (my >= r.top && my <= r.bottom) dark = true;
       });
-      cursor.style.borderColor = dark
-        ? "rgba(255,255,255,0.6)"
-        : "rgba(0,0,0,0.45)";
-      cursor.style.color = dark
-        ? "rgba(255,255,255,0.6)"
-        : "rgba(0,0,0,0.45)";
+      const hasIcon = cursor.classList.contains("cursor--arrow") || cursor.classList.contains("cursor--arrow-down");
+      if (dark) {
+        cursor.style.borderColor = hasIcon ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.6)";
+        cursor.style.color = hasIcon ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.6)";
+      } else {
+        cursor.style.borderColor = hasIcon ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.45)";
+        cursor.style.color = hasIcon ? "rgba(0,0,0,0.8)" : "rgba(0,0,0,0.45)";
+      }
     };
 
     const tick = () => {
@@ -85,12 +97,27 @@ export default function CustomCursor() {
   return (
     <div id="cursor" ref={cursorRef}>
       <svg
+        className="cursor-arrow-up"
         viewBox="0 0 12 12"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
           d="M2 10L10 2M10 2H4M10 2V8"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <svg
+        className="cursor-arrow-down"
+        viewBox="0 0 12 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2 2L10 10M10 10H4M10 10V4"
           stroke="currentColor"
           strokeWidth="1"
           strokeLinecap="round"

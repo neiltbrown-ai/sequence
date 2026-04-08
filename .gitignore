@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+tools/*/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -36,6 +37,12 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# claude code local config
+.claude/
+
+# local dev shortcut
+Start Sequence Dev.command
 
 # typescript
 *.tsbuildinfo

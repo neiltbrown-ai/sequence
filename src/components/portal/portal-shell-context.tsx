@@ -1,17 +1,28 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import type { AccessTier } from "@/lib/plans";
 
 interface PortalShellContextValue {
   sidebarOpen: boolean;
   openSidebar: () => void;
   closeSidebar: () => void;
   toggleSidebar: () => void;
+  hasActiveSubscription: boolean;
+  accessTier: AccessTier;
 }
 
 const PortalShellContext = createContext<PortalShellContextValue | null>(null);
 
-export function PortalShellProvider({ children }: { children: ReactNode }) {
+export function PortalShellProvider({
+  children,
+  hasActiveSubscription = true,
+  accessTier = "library",
+}: {
+  children: ReactNode;
+  hasActiveSubscription?: boolean;
+  accessTier?: AccessTier;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const openSidebar = useCallback(() => setSidebarOpen(true), []);
@@ -20,7 +31,7 @@ export function PortalShellProvider({ children }: { children: ReactNode }) {
 
   return (
     <PortalShellContext.Provider
-      value={{ sidebarOpen, openSidebar, closeSidebar, toggleSidebar }}
+      value={{ sidebarOpen, openSidebar, closeSidebar, toggleSidebar, hasActiveSubscription, accessTier }}
     >
       {children}
     </PortalShellContext.Provider>

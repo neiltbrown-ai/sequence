@@ -5,13 +5,287 @@ type: structure
 subtype: compensation
 number: 19
 risk: "MODERATE"
-stage: "EQUITY"
-excerpt: "Equity that unlocks over 2–4 years. Standard schedule with cliff. Protection for both parties in long-term relationships."
-tags: [compensation, equity, moderate]
+stage: "STAGE 2"
+excerpt: "Equity that 'unlocks' gradually over 2–4 years, aligning long-term commitment with ownership rewards while protecting both parties from premature departures."
+tags: [compensation, equity, vesting, moderate, stage-2]
 access: member
 sortOrder: 19
 published: true
-updatedAt: "2026-02-25"
+updatedAt: "2026-02-26"
+category: "Equity-Based Structures"
+tagline: "Earn ownership incrementally over time — the standard mechanism that protects companies from early departures and protects you from unfair dilution through acceleration clauses."
+stats:
+  - { label: "Risk Profile", value: "Moderate" }
+  - { label: "Asset Class", value: "Time-Based Equity Grants" }
+  - { label: "Time to Value", value: "12 months (cliff) → 48 months (full vest)" }
+  - { label: "Best For", value: "Any equity relationship requiring mutual commitment" }
+sections:
+  - { id: "overview", label: "Overview" }
+  - { id: "tiers", label: "Career Tiers" }
+  - { id: "when-to-use", label: "When to Use" }
+  - { id: "protect", label: "Protections" }
+  - { id: "manipulations", label: "Manipulations" }
+  - { id: "negotiate", label: "Negotiate" }
+  - { id: "value", label: "Value Example" }
+  - { id: "cases", label: "Case Studies" }
+  - { id: "related", label: "Related" }
 ---
 
-*Full structure detail coming soon.*
+<SbSection id="overview">
+
+<SbHeading>Overview</SbHeading>
+
+Vesting Equity is the mechanism through which ownership stakes are earned incrementally over time rather than granted immediately. Instead of receiving 100% of equity on day one, recipients earn portions monthly or quarterly over **2–4 years**, typically with a **"cliff"** period where no equity vests until a minimum commitment threshold (usually 12 months) is met. The standard: 4-year vesting with 1-year cliff — 25% vests at Month 12, then 1/48th vests each month after.
+
+This isn't a deal structure itself — it's the **foundational mechanism** underneath nearly every equity deal in this library. Whenever you negotiate equity-for-services (#17), founder equity (#18), performance equity (#20), or advisory roles (#4), vesting is how those stakes are earned and protected. Understanding vesting mechanics is as essential as understanding the deals themselves.
+
+Vesting protects both parties. For companies: it prevents "free riders" who take equity and leave after 6 months. For equity recipients: acceleration clauses protect against losing earned value during acquisitions, and clear vesting schedules prevent ambiguity about what you've earned. The standard 4-year schedule has become ubiquitous because it balances commitment with reward — investors require it, legal counsel recommends it, and the math works for most equity relationships.
+
+</SbSection>
+
+<SbSection id="tiers">
+
+<SbHeading>Career Tiers</SbHeading>
+
+<SbTabs tabsJson='["Founders / Co-Founders", "Employees / Key Hires", "Advisors / Creatives"]'>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Vesting Period" value="4 years" />
+      <SbTabItem label="Cliff" value="12 months" />
+      <SbTabItem label="Equity Range" value="10–50%" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="75" />
+      <SbTabBarRow label="Upside" pct="90" />
+    </SbTabBar>
+    <SbTabNote>**Standard:** 4-year vest, 1-year cliff, monthly vesting. Use reverse vesting (receive shares upfront, company repurchases unvested if you leave). File 83(b) within 30 days. Negotiate pre-incorporation credit if you worked before forming the company.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Vesting Period" value="4 years" />
+      <SbTabItem label="Cliff" value="12 months" />
+      <SbTabItem label="Equity Range" value="0.1–5%" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="40" />
+      <SbTabBarRow label="Upside" pct="75" />
+    </SbTabBar>
+    <SbTabNote>**Standard:** 4-year vest, 1-year cliff, monthly vesting. Stock options (ISOs or NSOs) with strike price at 409A. Negotiate double-trigger acceleration and 6–12 month exercise window (not 90-day standard).</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Vesting Period" value="2–3 years" />
+      <SbTabItem label="Cliff" value="3–6 months" />
+      <SbTabItem label="Equity Range" value="0.15–2%" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Leverage" pct="55" />
+      <SbTabBarRow label="Upside" pct="70" />
+    </SbTabBar>
+    <SbTabNote>**Shorter vesting:** 2–3 years (not 4 — you're not an employee). 3–6 month cliff. For creatives trading services for equity: 25–50% immediate vest upon project completion, remainder over 18–30 months.</SbTabNote>
+  </SbTabPanel>
+</SbTabs>
+
+<SbSubheading>Vesting Schedules by Role</SbSubheading>
+
+<SbTable
+  headersJson='["Role", "Period", "Cliff", "Frequency", "Acceleration"]'
+  rowsJson='[["Founder", "4 years", "12 months", "Monthly", "Single-trigger (50–100%)"], ["Early Employee", "4 years", "12 months", "Monthly", "Double-trigger"], ["Advisor", "2 years", "3 months", "Quarterly", "Single-trigger"], ["Creative (Equity-for-Services)", "2–3 years", "6 months or project completion", "Monthly", "Double-trigger"], ["Late-Stage Employee", "4–5 years", "12 months", "Monthly", "Double-trigger"]]'
+/>
+
+</SbSection>
+
+<SbSection id="when-to-use">
+
+<SbHeading>When to Use This Structure</SbHeading>
+
+<SbFlags>
+  <SbFlagCol header="Use When">
+    <SbFlag type="use">Any equity relationship lasting 2+ years (founders, employees, advisors)</SbFlag>
+    <SbFlag type="use">Planning to raise external capital (investors require vesting)</SbFlag>
+    <SbFlag type="use">Multiple founders or equity holders involved</SbFlag>
+    <SbFlag type="use">Equity represents significant value ($25K+ at current valuation)</SbFlag>
+    <SbFlag type="use">Both parties want protection against premature departure</SbFlag>
+  </SbFlagCol>
+  <SbFlagCol header="Avoid When">
+    <SbFlag type="avoid">Short-term engagement under 12 months (cliff doesn't make sense)</SbFlag>
+    <SbFlag type="avoid">Company refuses acceleration clauses (leaves you unprotected)</SbFlag>
+    <SbFlag type="avoid">Vesting schedule exceeds 5 years without justification</SbFlag>
+    <SbFlag type="avoid">No written agreement exists (verbal vesting promises are worthless)</SbFlag>
+    <SbFlag type="avoid">Immediate cash is more appropriate than equity (#1, #2)</SbFlag>
+  </SbFlagCol>
+</SbFlags>
+
+<SbSubheading>Alternatives</SbSubheading>
+
+<SbAlts>
+  <SbAlt condition="If milestones matter more than time" name="Performance Equity" href="/library/structures/performance-equity" />
+  <SbAlt condition="If you want cash flow, not equity" name="Hybrid Fee + Backend" href="/library/structures/hybrid-fee-backend" />
+  <SbAlt condition="If equity complexity isn't worth it" name="Premium Service Model" href="/library/structures/premium-service-model" />
+  <SbAlt condition="If you want larger stakes" name="Founder / Co-Founder Equity" href="/library/structures/founder-co-founder-equity" />
+</SbAlts>
+
+</SbSection>
+
+<SbSection id="protect">
+
+<SbHeading>Key Protections</SbHeading>
+
+Five provisions that separate vesting equity that protects you from vesting equity that traps you.
+
+<SbCards>
+  <SbCard label="Double-Trigger Acceleration">
+    <SbCardText>**Trigger 1:** Change of control (company is acquired). **Trigger 2:** You're terminated without cause OR resign for good reason within 12–18 months post-acquisition. If both triggers fire, 100% of unvested equity accelerates immediately. "Good reason" includes: material pay cut (20%+), role demotion, forced relocation (50+ miles), or hostile work environment.</SbCardText>
+    <SbCardText>**Why it matters:** Without acceleration, an acquirer can buy the company, fire you, and you forfeit all unvested equity — equity you helped create value for. Double-trigger protects you without scaring acquirers (you're incentivized to stay if the role is good). Worth more than an extra 0.5% equity in most scenarios.</SbCardText>
+  </SbCard>
+  <SbCard label="Extended Exercise Window">
+    <SbCardText>**Standard (bad):** 90 days post-termination to exercise vested options. **Better:** 6–12 months. **Best:** 10 years (full option term). Example: you leave after 3 years (75% vested = 50,000 shares at $2 strike = $100K to exercise). With 90-day window, you need $100K in cash immediately or lose everything.</SbCardText>
+    <SbCardText>**Why it matters:** Short exercise windows are designed to force forfeiture. Most creatives can't produce $100K in 90 days for illiquid stock. Extended windows let you exercise when you have liquidity — during an acquisition, IPO, or secondary sale. This single provision can save hundreds of thousands of dollars.</SbCardText>
+  </SbCard>
+  <SbCard label="Good Leaver / Bad Leaver Definitions">
+    <SbCardText>**Good leaver** (retains all vested equity): voluntary resignation, retirement, disability, termination without cause, mutual agreement. **Bad leaver** (may forfeit some vested equity): termination for cause (fraud, gross negligence), breach of agreement, competing with company. Ensure definitions are narrow and explicit — not "any departure the board deems harmful."</SbCardText>
+    <SbCardText>**Why it matters:** Overly broad "bad leaver" definitions let companies claw back vested equity for almost any departure. If leaving to join a non-competing company qualifies as "bad leaver," your vested equity is at risk. Narrow definitions protect what you've earned.</SbCardText>
+  </SbCard>
+  <SbCard label="Anti-Reset Protection">
+    <SbCardText>"In the event of fundraising or corporate restructuring, Founder's vesting credit for time served prior to restructuring shall be preserved. If new vesting schedule is required, Founder begins at [X]% vested reflecting months of prior service." Prevents investors from resetting your vesting clock to zero at Series A.</SbCardText>
+    <SbCardText>**Why it matters:** Common Series A tactic: investors demand all founders restart on 4-year vesting from zero. If you've worked 2 years, that's 6 years total before full vest. Negotiate credit: 2 years served = start at 50% vested on any new schedule.</SbCardText>
+  </SbCard>
+  <SbCard label="83(b) Election (Tax Protection)">
+    <SbCardText>File IRS 83(b) election within 30 days of receiving restricted stock. This elects to be taxed at grant-date value (typically near $0 for pre-revenue companies) rather than at vesting-date value. Converts future appreciation from ordinary income (37%+) to long-term capital gains (20%). **Miss the 30-day window and there is no remedy.**</SbCardText>
+    <SbCardText>**Why it matters:** Without 83(b), you owe ordinary income tax as each tranche vests — potentially hundreds of thousands in taxes on stock you can't sell. At a $50M valuation, your 2% vesting quarterly means ~$250K in taxable income per year with no cash to pay it. 83(b) at founding costs pennies and saves fortunes.</SbCardText>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="manipulations">
+
+<SbHeading>Common Manipulations</SbHeading>
+
+Four tactics that use vesting mechanics to extract value from equity recipients.
+
+<SbCards>
+  <SbCard label="The 'No Acceleration' Trap" warn="true">
+    <SbCardText>**How it works:** Company refuses acceleration clauses. You're 18 months vested (37.5%) when company is acquired for $50M. Acquirer terminates all contractors and non-essential staff. You forfeit 62.5% of your equity — equity you helped create value for.</SbCardText>
+    <SbCardText>**Reality:** Companies that refuse acceleration either don't understand best practices or plan to exploit the gap. Acceleration costs the company nothing if no acquisition occurs — it only matters when value is being captured.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>Acceleration clauses are industry standard for founders and key contributors. I need at minimum double-trigger: if the company is acquired and I'm terminated within 18 months, my unvested equity accelerates. This costs you nothing unless acquisition happens — and it's basic protection for the value I'm creating.</SbScript>
+  </SbCard>
+  <SbCard label="The Series A Vesting Reset" warn="true">
+    <SbCardText>**How it works:** You've worked 2 years building the company. Series A investors demand all founders reset to 4-year vesting starting from zero. Effectively: 6 total years to fully vest. You've built the company that attracted investors — and now need 4 more years to own what you've been promised.</SbCardText>
+    <SbCardText>**Reality:** Investors want retention insurance, which is reasonable. But resetting to zero ignores your contribution. Negotiate credit: 2 years served = start at 50% vested on any new schedule. The remaining 50% vests over 2–3 years — still provides investor retention assurance.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I'll accept extended vesting for investor confidence, but with credit for time served. I've been building this for 2 years — I should start at 50% vested on any new schedule. Remaining 50% vests over 3 years. That gives you 3 years of retention while respecting my contribution.</SbScript>
+  </SbCard>
+  <SbCard label="The 90-Day Exercise Window Squeeze" warn="true">
+    <SbCardText>**How it works:** You leave after 3 years (75% vested = 50,000 shares at $2 strike = $100K to exercise). You have 90 days to produce $100K cash for illiquid stock in a private company with no guaranteed exit. Most people can't — so they forfeit equity they earned over 3 years of work.</SbCardText>
+    <SbCardText>**Reality:** Short exercise windows are the single most common way companies recover equity from departed employees without paying for it. The 90-day standard was designed for an era when stock was cheap. At today's valuations, it's a forfeiture mechanism.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I need an extended exercise window — 10-year post-termination ideally, 2-year minimum. The 90-day standard forces me to forfeit equity I earned over years of work because I can't produce $100K in cash for illiquid stock in 3 months. This isn't theoretical — it's the most common way people lose equity they've earned.</SbScript>
+  </SbCard>
+  <SbCard label="The 'Bad Leaver' Overreach" warn="true">
+    <SbCardText>**How it works:** Contract defines "bad leaver" so broadly that any resignation triggers forfeiture of vested equity. Leaving to join a non-competing company? Bad leaver. Turning down a relocation request? Bad leaver. Disagreeing with the board? Bad leaver. Your 3 years of vested equity: gone.</SbCardText>
+    <SbCardText>**Reality:** "Bad leaver" should mean fraud, gross negligence, or direct competition — not voluntary departure. Broad definitions weaponize vesting against you. Have your attorney review — if "bad leaver" includes anything beyond legitimate cause, push back immediately.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>Bad leaver must be limited to: termination for cause (fraud, gross misconduct), breach of confidentiality, or directly competing with the company within 12 months. Voluntary resignation for any non-competing opportunity is "good leaver" — I keep all vested equity. If the definition is broader than that, I need it narrowed before signing.</SbScript>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="negotiate">
+
+<SbHeading>Negotiation</SbHeading>
+
+Vesting negotiation priorities differ by role. Three approaches based on your leverage and position.
+
+<SbNeg tabsJson='["High Leverage", "Moderate", "Low Leverage"]'>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Negotiate single-trigger acceleration (50–100%) and 10-year exercise window.** "I'm a critical contributor — if we're acquired and my role is eliminated, I should keep the equity I helped create. Single-trigger is appropriate for founders and key contributors."</SbNegRow>
+    <SbNegRow label="Add">**Require vesting credit for pre-incorporation work** and anti-reset provisions protecting against future investor demands. Push for information rights, pro-rata, and tag-along.</SbNegRow>
+    <SbNegRow label="Signal">**Founding or irreplaceable contributor.** Your departure would materially damage the company. Multiple competing offers. Can walk away. Company needs you more than you need them.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Focus on double-trigger acceleration and extended exercise window.** "Double-trigger is industry standard — it costs you nothing unless I'm terminated post-acquisition. And a 6-month exercise window prevents forfeiture due to liquidity constraints."</SbNegRow>
+    <SbNegRow label="Add">**Negotiate immediate partial vest for creatives** (25–50% upon project completion). Push for 2–3 year total vest (not 4) if you're not a full-time employee. Request information rights (quarterly financials).</SbNegRow>
+    <SbNegRow label="Signal">**Valued contributor, but replaceable.** Standard equity-for-services or employee negotiation. Company wants you but other candidates exist. Focus on protecting what you get, not maximizing the percentage.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Accept standard terms but protect the essentials.** Standard 4-year vest with 1-year cliff is fine. Focus energy on: double-trigger acceleration (reasonable even at low leverage) and 6-month exercise window (modest improvement over 90-day).</SbNegRow>
+    <SbNegRow label="Add">**Request information rights** (shows sophistication, costs company nothing). After 12–18 months of strong performance, negotiate refresh grants with better terms — leverage earned through contribution.</SbNegRow>
+    <SbNegRow label="Signal">**Junior or competitive role.** First equity deal. Learning the mechanics. Better to accept fair terms and build track record than fight for provisions you don't fully understand yet.</SbNegRow>
+  </SbNegPanel>
+</SbNeg>
+
+<SbSubheading>Decision Matrix</SbSubheading>
+
+<SbMatrix title="Negotiation Priorities by Role">
+  <SbMatrixRow score="8–10" desc="Founder / irreplaceable contributor" action="Single-trigger acceleration (100%), 10-year exercise, pre-incorporation credit, anti-reset, pro-rata rights." />
+  <SbMatrixRow score="5–7" desc="Key employee / creative partner" action="Double-trigger acceleration, 6–12 month exercise, information rights, partial immediate vest for project work." />
+  <SbMatrixRow score="1–4" desc="Junior role / first equity deal" action="Standard 4-year vest is fine. Focus on double-trigger acceleration and 6-month exercise window. Learn the mechanics." />
+</SbMatrix>
+
+</SbSection>
+
+<SbSection id="value">
+
+<SbHeading>Example Value Calculation: Marcus's Equity-for-Services Journey</SbHeading>
+
+Marcus is a brand designer earning $200K/year freelancing. A seed-stage fashion marketplace ($10M valuation) offers him a 6-month brand engagement. His normal fee: $120K. He negotiates an equity-for-services deal with vesting protections.
+
+<SbChart title="28-Month Total Compensation">
+  <SbChartRow label="With vesting + acceleration" value="$1.5M" pct="100" />
+  <SbChartRow label="Without acceleration (forfeited unvested)" value="$982K" pct="65" />
+  <SbChartRow label="Full cash fee (no equity)" value="$120K" pct="8" />
+</SbChart>
+
+**The deal:** $60K cash (50%) + 1.2% equity. Vesting: 40% immediate upon project completion (Month 6), remaining 60% monthly over 30 months. Double-trigger acceleration.
+
+**Month 6 (project complete):** 0.48% vests immediately. Value: $48K at $10M. Marcus has recovered $108K of his $120K normal fee (90%). Low risk from here.
+
+**Month 18 (Series A):** Company raises at $50M. Marcus is 64% vested (0.768%). Value: **$384K** — 3.2x his normal fee already, with 36% still unvesting.
+
+**Month 20 (acquisition offer):** Major retailer acquires for $120M. Marcus is 64% vested ($921K) with 36% unvested ($518K). **Without acceleration:** he'd need to stay in a diminished role to vest remaining $518K. **With double-trigger:** when the acquirer eliminates his advisory role (material change = good reason), acceleration fires. 100% vests. **Total: $1.5M** — 12.5x his normal fee.
+
+**What changed:** Double-trigger acceleration was worth $518K — the difference between $982K and $1.5M. The 2 weeks Marcus spent negotiating acceleration provisions had an effective value of $259K per week. The most valuable negotiation of his career.
+
+</SbSection>
+
+<SbSection id="cases">
+
+<SbHeading>Example Use Cases</SbHeading>
+
+How three creatives navigated vesting equity — and what the protections (or lack of them) meant.
+
+<SbCase label="Case 01 · SaaS · Mid-Career" name="Sarah Kim — Co-Founder Vesting Dispute" tag="SaaS / Construction" outcome="Vesting saved $25M company from collapse">
+  <SbCaseText>Sarah co-founded a SaaS startup with two college friends. Equal 33.3% split. No vesting — "We're all committed." At Month 7, one co-founder (James) moved to another city, reduced to 20 hours/week, but retained full 33.3% ownership. Lead investor refused to fund with 33.3% "dead equity."</SbCaseText>
+  <SbCaseText>**The shift:** After painful negotiation, they restructured: James kept 25% (vested for Year 1 contribution), returned 8.3% to option pool, and transitioned to advisor (0.5% additional, 2-year vest). All founders put remaining equity on 4-year vesting. Series A followed 18 months later. Company sold for $75M. Sarah: $25M. James: $18.75M. **Without the vesting restructure, the company would have been unfundable.**</SbCaseText>
+  <SbCaseText>**Key insight:** "Implement vesting from day one — not after the first dispute. The conversation with James nearly destroyed our friendship AND the company. If we'd started with 4-year vesting, his reduced contribution would have naturally been reflected in lower vested equity. No confrontation needed."</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 02 · Design · Emerging" name="Aiden Nakamura — Early Employee Vesting Journey" tag="Design / SaaS" outcome="$453K from 4-year vest + acceleration">
+  <SbCaseText>Aiden joined a design tool startup as Employee #25 at Series A ($125M valuation). Grant: 0.25% with 4-year vest, 1-year cliff, double-trigger acceleration. Struck price: $0.50/share. He negotiated one addition: 6-month exercise window (not 90-day standard).</SbCaseText>
+  <SbCaseText>**The shift:** Stayed through full 4-year vest. Company grew to $10B valuation, then acquired for $20B. His 0.25% (diluted to ~0.15% after multiple rounds): ~$300K at acquisition. Post-acquisition, acquirer changed his role materially. Double-trigger activated: $166K in unvested RSUs accelerated. **Total: ~$453K** in equity on top of ~$800K cumulative salary. Without double-trigger, he'd have forfeited $166K or stayed 2 miserable years.</SbCaseText>
+  <SbCaseText>**Key insight:** Double-trigger acceleration was the crucial provision. When the acquirer reorganized and his role was diminished, he could leave with full equity instead of being trapped by golden handcuffs. The 6-month exercise window also mattered — gave him time to arrange $12.5K for option exercise instead of scrambling in 90 days.</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 03 · Music · Established (Cautionary)" name="Tomoko Fields — Advisor Without Acceleration" tag="Music / Tech" outcome="Forfeited $340K at acquisition">
+  <SbCaseText>Tomoko, a music industry veteran, advised a music tech startup. Terms: 0.5% equity, 2-year vest, 3-month cliff. She negotiated nothing beyond standard terms — specifically, no acceleration clause. "The company isn't getting acquired anytime soon."</SbCaseText>
+  <SbCaseText>**The result:** 14 months in (58% vested), a major platform acquired the company for $200M. Tomoko's 0.5% = $1M total. But only 58% was vested = $580K. Remaining 42% ($420K) was unvested. Acquirer had no obligation to her. They offered $80K retention bonus to "make up for it." **Net: $660K instead of $1M.** She forfeited $340K because she didn't have a single-trigger acceleration clause that would have cost the company nothing to include.</SbCaseText>
+  <SbCaseText>**Key insight:** "I dismissed acceleration because I didn't think acquisition was likely. That's exactly when you need it — unexpected events where your protections matter most. $340K lost for a clause that costs $0 to include. I negotiate acceleration into every advisory agreement now — no exceptions."</SbCaseText>
+</SbCase>
+
+</SbSection>
+
+<SbSection id="related">
+
+<SbHeading>Related Structures</SbHeading>
+
+<SbRelated>
+  <SbRelatedCard num="17" title="Equity-for-Services" desc="The deal structure that uses vesting as its core mechanism." href="/library/structures/equity-for-services" />
+  <SbRelatedCard num="18" title="Founder / Co-Founder Equity" desc="Founder stakes always vest — understand vesting before founding." href="/library/structures/founder-co-founder-equity" />
+  <SbRelatedCard num="20" title="Performance Equity" desc="Milestone-based alternative to time-based vesting." href="/library/structures/performance-equity" />
+  <SbRelatedCard num="26" title="Hybrid Fee + Backend" desc="Combine cash fees with vesting equity for balanced risk/reward." href="/library/structures/hybrid-fee-backend" />
+</SbRelated>
+
+</SbSection>

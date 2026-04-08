@@ -7,56 +7,103 @@ import {
   DashboardIcon,
   StructuresIcon,
   CaseStudiesIcon,
-  GuidesIcon,
-  ThesisIcon,
   ArticlesIcon,
   SavedIcon,
   SettingsIcon,
-  AssessmentIcon,
   AiAdvisorIcon,
+  RoadmapIcon,
+  InventoryIcon,
+  EvaluateIcon,
   CommunityIcon,
   CloseIcon,
 } from "./icons";
+import type { AccessTier } from "@/lib/plans";
 
 interface NavItem {
   href: string;
   label: string;
   icon: React.ReactNode;
   disabled?: boolean;
+  /** Minimum tier required. Omit for no restriction. */
+  requiredTier?: AccessTier;
 }
 
-const LIBRARY_ITEMS: NavItem[] = [
+const TOP_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
+  { href: "/advisor", label: "Advisor", icon: <AiAdvisorIcon />, requiredTier: "full_access" },
+  { href: "/roadmap", label: "Roadmap", icon: <RoadmapIcon />, requiredTier: "full_access" },
+  { href: "/evaluate", label: "Evaluate", icon: <EvaluateIcon />, requiredTier: "full_access" },
+  { href: "/inventory", label: "Inventory", icon: <InventoryIcon />, requiredTier: "full_access" },
 ];
 
-const LIBRARY_SUB_ITEMS: NavItem[] = [
-  { href: "/library/structures", label: "Structures", icon: <StructuresIcon /> },
-  { href: "/library/case-studies", label: "Case Studies", icon: <CaseStudiesIcon /> },
-  { href: "/guides", label: "Guides", icon: <GuidesIcon /> },
-  { href: "/library/articles", label: "Articles", icon: <ArticlesIcon /> },
-];
-
-const PERSONAL_ITEMS: NavItem[] = [
-  { href: "/saved", label: "Saved", icon: <SavedIcon /> },
-];
-
-const COMING_SOON: NavItem[] = [
-  { href: "#", label: "Assessment", icon: <AssessmentIcon />, disabled: true },
-  { href: "#", label: "AI Advisor", icon: <AiAdvisorIcon />, disabled: true },
+const MIDDLE_ITEMS: NavItem[] = [
+  { href: "/saved", label: "Saved", icon: <SavedIcon />, requiredTier: "library" },
   { href: "#", label: "Community", icon: <CommunityIcon />, disabled: true },
+];
+
+const LIBRARY_ITEMS: NavItem[] = [
+  { href: "/library/articles", label: "Articles", icon: <ArticlesIcon />, requiredTier: "library" },
+  { href: "/library/case-studies", label: "Case Studies", icon: <CaseStudiesIcon />, requiredTier: "library" },
+  { href: "/library/structures", label: "Structures", icon: <StructuresIcon />, requiredTier: "library" },
 ];
 
 const BOTTOM_ITEMS: NavItem[] = [
   { href: "/settings", label: "Settings", icon: <SettingsIcon /> },
 ];
 
+const TIER_RANK: Record<AccessTier, number> = {
+  library: 1,
+  full_access: 2,
+  coaching: 3,
+};
+
 export default function PortalSidebar() {
   const pathname = usePathname();
-  const { sidebarOpen, closeSidebar } = usePortalShell();
+  const { sidebarOpen, closeSidebar, hasActiveSubscription, accessTier } = usePortalShell();
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(href);
+  };
+
+  const renderNavItem = (item: NavItem) => {
+    const isLocked =
+      item.disabled ||
+      (!hasActiveSubscription && item.requiredTier) ||
+      (item.requiredTier && TIER_RANK[accessTier] < TIER_RANK[item.requiredTier]);
+
+    if (isLocked) {
+      return (
+        <div
+          key={item.label}
+          className="sb-nav-item"
+          style={{ opacity: 0.4, cursor: "default" }}
+          title={item.disabled ? "Coming soon" : "Upgrade to access"}
+        >
+          {item.icon}
+          {item.label}
+        </div>
+      );
+    }
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
+        onClick={(e) => {
+          closeSidebar();
+          // Force full page reload for advisor when already on /advisor
+          // (client state doesn't reset on same-URL navigation)
+          if (item.href === "/advisor" && pathname.startsWith("/advisor")) {
+            e.preventDefault();
+            window.location.href = "/advisor";
+          }
+        }}
+      >
+        {item.icon}
+        {item.label}
+      </Link>
+    );
   };
 
   return (
@@ -74,82 +121,29 @@ export default function PortalSidebar() {
           In Sequence <span>·</span> Library
         </div>
 
-        {/* Library section */}
+        {/* Top: Dashboard + AI tools */}
         <div className="sb-section">
-          {LIBRARY_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
-              onClick={closeSidebar}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
-          <div className="sb-sub">
-            {LIBRARY_SUB_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
-                onClick={closeSidebar}
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            ))}
-          </div>
+          {TOP_ITEMS.map(renderNavItem)}
         </div>
 
         <div className="sb-divider" />
 
-        {/* Personal */}
+        {/* Middle: Saved + Community */}
         <div className="sb-section">
-          {PERSONAL_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
-              onClick={closeSidebar}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
+          {MIDDLE_ITEMS.map(renderNavItem)}
         </div>
 
         <div className="sb-divider" />
 
-        {/* Coming Soon */}
+        {/* Library */}
         <div className="sb-section">
-          <div className="sb-section-label">Coming Soon</div>
-          {COMING_SOON.map((item) => (
-            <div
-              key={item.label}
-              className="sb-nav-item"
-              style={{ opacity: 0.4, cursor: "default" }}
-            >
-              {item.icon}
-              {item.label}
-            </div>
-          ))}
+          {LIBRARY_ITEMS.map(renderNavItem)}
         </div>
 
         {/* Bottom */}
         <div className="sb-bottom">
           <div className="sb-divider" />
-          {BOTTOM_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
-              onClick={closeSidebar}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
+          {BOTTOM_ITEMS.map(renderNavItem)}
         </div>
       </aside>
     </>

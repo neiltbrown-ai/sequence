@@ -11,6 +11,18 @@ export type Profile = {
   role: "member" | "admin";
   status: "active" | "inactive" | "suspended";
   onboarding_completed: boolean;
+  // Extended fields (from 00002 migration)
+  bio: string | null;
+  disciplines: string[];
+  career_stage: string | null;
+  income_range: string | null;
+  interests: string[];
+  // Assessment-ready (populated by Phase 2)
+  creative_mode: string | null;
+  detected_stage: 1 | 2 | 3 | 4 | null;
+  archetype_primary: string | null;
+  assessment_completed_at: string | null;
+  // Timestamps
   created_at: string;
   updated_at: string;
 };
@@ -20,7 +32,8 @@ export type Subscription = {
   user_id: string;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
-  plan: "annual" | "student";
+  stripe_price_id: string | null;
+  plan: "annual" | "student" | "library" | "full_access" | "coaching";
   status: "active" | "past_due" | "canceled" | "trialing" | "incomplete";
   current_period_start: string | null;
   current_period_end: string | null;
@@ -28,6 +41,14 @@ export type Subscription = {
   created_at: string;
   updated_at: string;
 };
+
+// Re-export assessment types for convenience
+export type {
+  Assessment,
+  StrategicPlan,
+  AssessmentAction,
+  StrategicRoadmap,
+} from './assessment';
 
 export type LibraryContent = {
   id: string;

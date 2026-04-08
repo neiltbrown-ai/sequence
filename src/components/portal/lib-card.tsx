@@ -9,6 +9,8 @@ interface LibCardProps {
   tags: string[];
   isNew?: boolean;
   className?: string;
+  dark?: boolean;
+  matchReason?: string;
 }
 
 export default function LibCard({
@@ -20,9 +22,11 @@ export default function LibCard({
   tags,
   isNew,
   className = "",
+  dark,
+  matchReason,
 }: LibCardProps) {
   return (
-    <Link href={href} className={`lib-card${className ? ` ${className}` : ""}`}>
+    <Link href={href} className={`lib-card${dark ? " lib-card--dark" : ""}${className ? ` ${className}` : ""}`}>
       {isNew && <span className="lib-card-new" />}
       <div className="lib-card-type">
         {number && <span className="card-num">[{number}]</span>}
@@ -37,6 +41,9 @@ export default function LibCard({
           </span>
         ))}
       </div>
+      {matchReason && (
+        <div className="lib-card-match">Matches: {matchReason}</div>
+      )}
     </Link>
   );
 }

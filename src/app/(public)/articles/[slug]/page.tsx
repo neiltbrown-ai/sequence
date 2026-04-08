@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllArticles, getArticleBySlug } from "@/lib/content";
 import { mdxComponents } from "@/components/mdx";
+import { ArticleProvider } from "@/components/mdx/article-context";
 import ButtonArrow from "@/components/ui/button-arrow";
 import NewsletterForm from "@/components/newsletter-form";
 
@@ -104,19 +105,41 @@ export default async function ArticlePage({
           </div>
         </div>
 
+        {/* Subtitle */}
+        {fm.subtitle && (
+          <div className="art-header-sub rv rv-d3">
+            <div className="art-header-sub-grid">
+              <p>{fm.subtitle}</p>
+            </div>
+          </div>
+        )}
+
         {/* Hero image */}
         {fm.heroImage && (
-          <div className="art-hero-img anim-reveal-down">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={fm.heroImage} alt={fm.title} />
+          <div className="art-hero anim-reveal-down">
+            <div className="art-hero-grid">
+              <div className="art-hero-wrap">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="art-hero-img"
+                  src={fm.heroImage}
+                  alt={fm.title}
+                />
+              </div>
+              {fm.heroCredit && (
+                <div className="art-hero-credit">{fm.heroCredit}</div>
+              )}
+            </div>
           </div>
         )}
       </header>
 
       {/* ARTICLE BODY — rendered from MDX */}
-      <article className="art-body">
-        <MDXRemote source={content} components={mdxComponents} />
-      </article>
+      <ArticleProvider images={fm.images}>
+        <article className="art-body">
+          <MDXRemote source={content} components={mdxComponents} />
+        </article>
+      </ArticleProvider>
 
       {/* ARTICLE FOOTER — tags + share */}
       <section className="art-footer">
@@ -157,20 +180,23 @@ export default async function ArticlePage({
       {fm.author && (
         <section className="author">
           <div className="author-grid rv">
-            <div className="author-content">
-              {fm.authorImage && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  className="author-avatar"
-                  src={fm.authorImage}
-                  alt={fm.author}
-                />
-              )}
-              <div className="author-info">
-                <span className="author-name">{fm.author}</span>
-                {fm.authorBio && (
-                  <p className="author-bio">{fm.authorBio}</p>
+            <div className="author-inner">
+              <span className="author-lbl">Written by</span>
+              <div className="author-content">
+                {fm.authorImage && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    className="author-avatar"
+                    src={fm.authorImage}
+                    alt={fm.author}
+                  />
                 )}
+                <div className="author-info">
+                  <span className="author-name">{fm.author}</span>
+                  {fm.authorBio && (
+                    <p className="author-bio">{fm.authorBio}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -240,8 +266,8 @@ export default async function ArticlePage({
               progression from execution-based to ownership-based compensation.
             </p>
             <div className="art-cta-actions">
-              <Link href="/resources" className="btn btn--white">
-                Explore the Library
+              <Link href="/platform" className="btn btn--white">
+                Explore the Platform
                 <ButtonArrow />
               </Link>
             </div>
@@ -280,7 +306,7 @@ export default async function ArticlePage({
         <div className="newsletter-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://framerusercontent.com/images/UmfC1Xw7ephKTN4uul1c2ojX4JY.jpg"
+            src="https://images.pexels.com/photos/33578118/pexels-photo-33578118.jpeg"
             alt=""
           />
         </div>
@@ -292,7 +318,7 @@ export default async function ArticlePage({
                 fontSize: "clamp(44px,7vw,84px)",
               }}
             >
-              Get In Sequence
+              Insights in Your Inbox
             </h2>
           </div>
           <div className="newsletter-text-col rv rv-d1">

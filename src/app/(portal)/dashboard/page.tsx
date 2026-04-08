@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   getAllStructures,
   getAllCaseStudies,
@@ -7,59 +6,163 @@ import {
   type CaseStudyMeta,
   type ArticleMeta,
 } from "@/lib/content";
-import SectionHeader from "@/components/portal/section-header";
+import Link from "next/link";
 import LibCard from "@/components/portal/lib-card";
+import SectionHeader from "@/components/portal/section-header";
+import DashboardWelcome from "@/components/portal/dashboard-welcome";
+import DashboardInventoryCTA from "@/components/portal/dashboard-inventory-cta";
+import DashboardEvalCTA from "@/components/portal/dashboard-eval-cta";
+import DashboardProfileCta from "@/components/portal/dashboard-profile-cta";
+import DashboardNewContent from "@/components/portal/dashboard-new-content";
+import DashboardSavedPreview from "@/components/portal/dashboard-saved-preview";
+import DashboardLibraryStats from "@/components/portal/dashboard-library-stats";
+import DashboardUpgradeNudge from "@/components/portal/dashboard-upgrade-nudge";
+import { createClient } from "@/lib/supabase/server";
+import { planTier } from "@/lib/plans";
+import { getRecommendations, getEditorialPicks, getNewContent } from "@/lib/recommendations";
+import type { SignalColor } from "@/types/evaluator";
 
-function formatDateShort(iso: string) {
-  const d = new Date(iso + "T12:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", year: "numeric" }).toUpperCase();
+const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
+
+function DealIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+      <path d="M14 2v6h6" />
+      <path d="M9 15h6" />
+      <path d="M9 11h6" />
+    </svg>
+  );
 }
 
-export default function DashboardPage() {
+function MapIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2v4" />
+      <path d="M12 18v4" />
+      <path d="M2 12h4" />
+      <path d="M18 12h4" />
+    </svg>
+  );
+}
+
+function ExploreIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="3 11 22 2 13 21 11 13 3 11" />
+    </svg>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Full Access Dashboard (existing layout)
+   ───────────────────────────────────────────── */
+
+async function FullAccessDashboard() {
   const structures = getAllStructures();
   const caseStudies = getAllCaseStudies();
-  const articles = getAllArticles();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Pick 3 recommended structures for the top section
+  let inventoryCount = 0;
+  let inventorySummary: { estimated_total_value_range: string; leverage_score: string } | null = null;
+  let evalCount = 0;
+  let evalSummary: { count: number; medianScore: number | null; signals: { green: number; yellow: number; red: number }; latestName: string | null; latestSignal: SignalColor | null } | null = null;
+
+  if (user) {
+    const [invCountResult, evalResult] = await Promise.all([
+      supabase
+        .from("asset_inventory_items")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id),
+      supabase
+        .from("deal_evaluations")
+        .select("id, deal_name, overall_score, overall_signal")
+        .eq("user_id", user.id)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false }),
+    ]);
+
+    inventoryCount = invCountResult.count || 0;
+
+    if (inventoryCount > 0) {
+      const { data: analysis } = await supabase
+        .from("asset_inventory_analyses")
+        .select("analysis_content, status")
+        .eq("user_id", user.id)
+        .eq("status", "completed")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (analysis?.analysis_content?.summary) {
+        inventorySummary = {
+          estimated_total_value_range: analysis.analysis_content.summary.estimated_total_value_range,
+          leverage_score: analysis.analysis_content.summary.leverage_score,
+        };
+      }
+    }
+
+    const evals = evalResult.data ?? [];
+    evalCount = evals.length;
+    if (evalCount > 0) {
+      const scores = evals.map((e) => e.overall_score).filter((s): s is number => s !== null).sort((a, b) => a - b);
+      const median = scores.length > 0
+        ? scores.length % 2 === 1
+          ? scores[Math.floor(scores.length / 2)]
+          : (scores[scores.length / 2 - 1] + scores[scores.length / 2]) / 2
+        : null;
+      const signals = { green: 0, yellow: 0, red: 0 };
+      for (const e of evals) {
+        if (e.overall_signal === "green") signals.green++;
+        else if (e.overall_signal === "red") signals.red++;
+        else signals.yellow++;
+      }
+      evalSummary = {
+        count: evalCount,
+        medianScore: median,
+        signals,
+        latestName: evals[0]?.deal_name ?? null,
+        latestSignal: (evals[0]?.overall_signal as SignalColor) ?? null,
+      };
+    }
+  }
+
   const recommended: (StructureMeta | CaseStudyMeta)[] = [
     ...structures.filter((s) => [12, 18].includes(s.number)),
     ...caseStudies.slice(0, 1),
   ].slice(0, 3);
 
-  // Compact structure rows — show first 8
-  const structureRows = structures.slice(0, 8);
-
-  // Case study cards — show first 4
-  const caseCards = caseStudies.slice(0, 4);
-
-  // Article rows — show first 5
-  const articleRows = articles.slice(0, 5);
-
   return (
     <>
-      {/* WELCOME */}
-      <div className="welcome rv vis">
-        <div className="welcome-left">
-          <div className="welcome-name">Welcome back</div>
-          <div className="welcome-context">Your personalized library</div>
-        </div>
-        <div className="welcome-right">
-          <Link href="/library/structures" className="welcome-continue">
-            Browse Structures
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={10} height={10}>
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
+      <DashboardWelcome />
+
+      <div className="dash-section rv rv-d1">
+        <div className="adv-path-cards">
+          <Link href="/evaluate" className="adv-path-card">
+            <span className="adv-path-card-icon"><DealIcon /></span>
+            <h3 className="adv-path-card-title">Evaluate a deal</h3>
+            <p className="adv-path-card-desc">Get clarity on a specific offer or opportunity.</p>
+          </Link>
+          <Link href="/advisor?path=map" className="adv-path-card">
+            <span className="adv-path-card-icon"><MapIcon /></span>
+            <h3 className="adv-path-card-title">Map my position</h3>
+            <p className="adv-path-card-desc">Understand where you stand and what to do next.</p>
+          </Link>
+          <Link href="/advisor" className="adv-path-card">
+            <span className="adv-path-card-icon"><ExploreIcon /></span>
+            <h3 className="adv-path-card-title">Just exploring</h3>
+            <p className="adv-path-card-desc">Browse the framework, ask questions, see what&apos;s possible.</p>
           </Link>
         </div>
       </div>
 
-      {/* RECOMMENDED */}
+      <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
+      <DashboardInventoryCTA assetCount={inventoryCount} summary={inventorySummary} />
+
       <div className="dash-section rv rv-d1">
         <SectionHeader title="Recommended for You" />
-        <div className="collection-desc">
-          Based on your profile — these are the structures and cases most relevant to where you are right now.
-        </div>
         <div className="card-row">
           {recommended.map((item, i) => {
             if (item.type === "structure") {
@@ -74,6 +177,7 @@ export default function DashboardPage() {
                   description={s.excerpt}
                   tags={[s.stage, s.risk]}
                   className={`rv rv-d${i + 1}`}
+                  dark
                 />
               );
             }
@@ -83,147 +187,223 @@ export default function DashboardPage() {
                 key={cs.slug}
                 href={`/library/case-studies/${cs.slug}`}
                 type="Case Study"
-                title={cs.title}
+                title={stripBr(cs.title)}
                 description={cs.excerpt}
                 tags={[cs.discipline]}
                 isNew
                 className={`rv rv-d${i + 1}`}
+                dark
               />
             );
           })}
         </div>
       </div>
 
-      {/* DEAL STRUCTURES */}
-      <div className="dash-section rv rv-d2">
+      <div className="dash-footer" />
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Library Dashboard (content-focused)
+   ───────────────────────────────────────────── */
+
+async function LibraryDashboard() {
+  const structures = getAllStructures();
+  const caseStudies = getAllCaseStudies();
+  const articles = getAllArticles();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Fetch profile + bookmarks in parallel
+  let profile: { disciplines: string[]; interests: string[]; career_stage: string | null } = {
+    disciplines: [],
+    interests: [],
+    career_stage: null,
+  };
+  let bookmarks: { content_slug: string; content_type: string; created_at: string }[] = [];
+
+  if (user) {
+    const [profileResult, bookmarksResult] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("disciplines, interests, career_stage")
+        .eq("id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("bookmarks")
+        .select("content_slug, content_type, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false }),
+    ]);
+
+    if (profileResult.data) {
+      profile = {
+        disciplines: profileResult.data.disciplines ?? [],
+        interests: profileResult.data.interests ?? [],
+        career_stage: profileResult.data.career_stage ?? null,
+      };
+    }
+    bookmarks = bookmarksResult.data ?? [];
+  }
+
+  // Profile completion tracking
+  const profileFields = [
+    { key: "disciplines", filled: profile.disciplines.length > 0 },
+    { key: "interests", filled: profile.interests.length > 0 },
+    { key: "career_stage", filled: !!profile.career_stage },
+  ];
+  const completedCount = profileFields.filter((f) => f.filled).length;
+  const hasProfile = completedCount >= 3;
+
+  // Bookmarked slugs for exclusion
+  const bookmarkedSlugs = new Set(bookmarks.map((b) => b.content_slug));
+
+  // Recommendations
+  const recommendations = hasProfile
+    ? getRecommendations(
+        {
+          disciplines: profile.disciplines,
+          interests: profile.interests,
+          careerStage: profile.career_stage,
+          bookmarkedSlugs,
+        },
+        structures,
+        caseStudies,
+        articles,
+        6,
+      )
+    : getEditorialPicks(structures, caseStudies, articles, 6);
+
+  // New content
+  const newContent = getNewContent(structures, caseStudies, articles, 3);
+
+  // Saved items preview — resolve bookmark slugs to content metadata
+  const savedItems: (StructureMeta | CaseStudyMeta | ArticleMeta)[] = [];
+  for (const bm of bookmarks.slice(0, 3)) {
+    if (bm.content_type === "structure") {
+      const found = structures.find((s) => s.slug === bm.content_slug);
+      if (found) savedItems.push(found);
+    } else if (bm.content_type === "case-study") {
+      const found = caseStudies.find((cs) => cs.slug === bm.content_slug);
+      if (found) savedItems.push(found);
+    } else if (bm.content_type === "article") {
+      const found = articles.find((a) => a.slug === bm.content_slug);
+      if (found) savedItems.push(found);
+    }
+  }
+
+  return (
+    <>
+      <DashboardWelcome />
+
+      {/* Profile completion CTA */}
+      <DashboardProfileCta completedCount={completedCount} totalCount={3} />
+
+      {/* New this week */}
+      <DashboardNewContent items={newContent} />
+
+      {/* Recommended for you */}
+      <div className="dash-section rv rv-d1">
         <SectionHeader
-          title="Deal Structures"
-          count={`${structures.length} structures`}
+          title={hasProfile ? "Recommended for You" : "Start Here"}
           linkHref="/library/structures"
+          linkLabel="Browse all"
         />
-        <div className="struct-list">
-          {structureRows.map((s, i) => (
-            <Link
-              key={s.slug}
-              href={`/library/structures/${s.slug}`}
-              className={`struct-row rv rv-d${Math.min(i + 1, 6)}`}
-            >
-              <span className="struct-num">{String(s.number).padStart(2, "0")}</span>
-              <div className="struct-info">
-                <div className="struct-name">{s.title}</div>
-                <div className="struct-sub">{s.excerpt}</div>
-              </div>
-              <div className="struct-tags">
-                <span className="struct-tag">{s.stage}</span>
-                <span className="struct-tag">{s.risk}</span>
-              </div>
-            </Link>
-          ))}
+        <div className="card-row card-row--2x3">
+          {recommendations.map((rec, i) => {
+            const item = rec.item;
+            const reason = rec.matchReasons[0];
+            if (item.type === "structure") {
+              const s = item as StructureMeta;
+              return (
+                <LibCard
+                  key={s.slug}
+                  href={`/library/structures/${s.slug}`}
+                  type="Structure"
+                  number={String(s.number)}
+                  title={s.title}
+                  description={s.excerpt}
+                  tags={[s.stage, s.risk]}
+                  matchReason={reason}
+                  className={`rv rv-d${(i % 3) + 1}`}
+                />
+              );
+            }
+            if (item.type === "case-study") {
+              const cs = item as CaseStudyMeta;
+              return (
+                <LibCard
+                  key={cs.slug}
+                  href={`/library/case-studies/${cs.slug}`}
+                  type="Case Study"
+                  title={stripBr(cs.title)}
+                  description={cs.excerpt}
+                  tags={[cs.discipline]}
+                  matchReason={reason}
+                  className={`rv rv-d${(i % 3) + 1}`}
+                />
+              );
+            }
+            const a = item as ArticleMeta;
+            return (
+              <LibCard
+                key={a.slug}
+                href={`/library/articles/${a.slug}`}
+                type="Article"
+                title={stripBr(a.title)}
+                description={a.excerpt}
+                tags={[a.category]}
+                matchReason={reason}
+                className={`rv rv-d${(i % 3) + 1}`}
+              />
+            );
+          })}
         </div>
       </div>
 
-      {/* CASE STUDIES */}
-      <div className="dash-section rv rv-d2">
-        <SectionHeader
-          title="Case Studies"
-          count={`${caseStudies.length} studies`}
-          linkHref="/library/case-studies"
-        />
-        <div className="case-grid">
-          {caseCards.map((cs, i) => (
-            <Link
-              key={cs.slug}
-              href={`/library/case-studies/${cs.slug}`}
-              className={`case-card rv rv-d${Math.min(i + 1, 6)}`}
-            >
-              <div className="case-card-meta">
-                <span>Case Study</span>
-                <span className="case-card-dot" />
-                <span>{cs.discipline}</span>
-              </div>
-              <div className="case-card-name">{cs.title}</div>
-              <div className="case-card-desc">{cs.excerpt}</div>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* Saved items */}
+      <DashboardSavedPreview items={savedItems} totalCount={bookmarks.length} />
 
-      {/* ARTICLES */}
-      <div className="dash-section rv rv-d2">
-        <SectionHeader
-          title="Articles"
-          count={`${articles.length} articles`}
-          linkHref="/library/articles"
-        />
-        <div className="article-list">
-          {articleRows.map((a, i) => (
-            <Link
-              key={a.slug}
-              href={`/articles/${a.slug}`}
-              className={`article-row rv rv-d${Math.min(i + 1, 6)}`}
-            >
-              <div>
-                <div className="article-row-meta">
-                  <span>{a.tag}</span>
-                  <span className="article-row-dot" />
-                  <span>{a.category}</span>
-                </div>
-                <div className="article-row-title">{a.title}</div>
-                <div className="article-row-excerpt">{a.excerpt}</div>
-              </div>
-              <div className="article-row-date">{formatDateShort(a.date)}</div>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* Library stats */}
+      <DashboardLibraryStats
+        structureCount={structures.length}
+        caseStudyCount={caseStudies.length}
+        articleCount={articles.length}
+      />
 
-      {/* GUIDES */}
-      <div className="dash-section rv rv-d2">
-        <SectionHeader title="Guides" linkHref="/guides" linkLabel="View all" />
-        <div className="guide-grid">
-          {[
-            { title: "Understanding Deal Structures", desc: "A primer on how creative professionals structure compensation beyond hourly rates.", type: "Beginner" },
-            { title: "Negotiation Frameworks", desc: "Practical frameworks for negotiating equity, revenue share, and advisory terms.", type: "Strategy" },
-            { title: "Building Your Advisory Practice", desc: "How to transition from execution to strategic advisory work.", type: "Advanced" },
-          ].map((g, i) => (
-            <Link
-              key={g.title}
-              href="/guides"
-              className={`guide-card rv rv-d${i + 1}`}
-            >
-              <div className="guide-card-type">{g.type}</div>
-              <div className="guide-card-title">{g.title}</div>
-              <div className="guide-card-desc">{g.desc}</div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* COLLECTIONS */}
-      <div className="dash-section rv rv-d2">
-        <SectionHeader title="Curated Collections" />
-        <div className="coll-grid">
-          {[
-            { label: "Collection", title: "The Equity Playbook", desc: "Everything you need to negotiate and structure equity deals in creative work.", items: "8 Structures · 3 Cases" },
-            { label: "Collection", title: "Revenue Share Mastery", desc: "From basic revenue share to complex participation structures.", items: "6 Structures · 4 Cases" },
-            { label: "Collection", title: "The Advisory Path", desc: "Transition from maker to advisor. Build recurring revenue from expertise.", items: "5 Structures · 2 Cases" },
-            { label: "Collection", title: "Creative IP & Licensing", desc: "Own what you create. License it strategically. Build lasting value.", items: "7 Structures · 3 Cases" },
-          ].map((c, i) => (
-            <div key={c.title} className={`coll-card rv rv-d${i + 1}`}>
-              <div className="coll-card-label">{c.label}</div>
-              <div className="coll-card-title">{c.title}</div>
-              <div className="coll-card-desc">{c.desc}</div>
-              <div className="coll-card-items">
-                <span>{c.items.split("·")[0].trim()}</span>
-                <span className="coll-dot" />
-                <span>{c.items.split("·")[1].trim()}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Upgrade nudge */}
+      <DashboardUpgradeNudge />
 
       <div className="dash-footer" />
     </>
   );
+}
+
+/* ─────────────────────────────────────────────
+   Page — delegates to the right dashboard
+   ───────────────────────────────────────────── */
+
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let tier = "library";
+  if (user) {
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("plan")
+      .eq("user_id", user.id)
+      .in("status", ["active", "trialing"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    tier = planTier(sub?.plan);
+  }
+
+  if (tier === "library") {
+    return <LibraryDashboard />;
+  }
+
+  return <FullAccessDashboard />;
 }

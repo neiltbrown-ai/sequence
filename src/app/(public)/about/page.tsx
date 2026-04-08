@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import ButtonArrow from "@/components/ui/button-arrow";
 import NewsletterForm from "@/components/newsletter-form";
+import AsciiScatterCanvas from "@/components/ascii-scatter-canvas";
 
 export const metadata: Metadata = {
   title: "About — In Sequence",
@@ -32,92 +33,9 @@ export default function AboutPage() {
             <p className="ph-meta-desc">
               <strong>In Sequence is a research-backed framework</strong> for
               creative professionals navigating the restructuring of the creative
-              economy. 35 deal structures, 37 case studies, a four-stage
+              economy. 35 deal structures, 70+ case studies, a four-stage
               progression from execution to ownership — and growing.
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== THE THESIS ===== */}
-      <section className="thesis">
-        <div className="thesis-head">
-          <h2 className="anim-text-up">The Thesis</h2>
-        </div>
-        <div className="thesis-intro">
-          <div className="thesis-intro-grid">
-            <p className="thesis-intro-text rv">
-              <strong>Three forces are converging</strong> to reshape the
-              creative economy. Those who understand the pattern — and structure
-              accordingly — capture asymmetric advantage. Those who don&apos;t
-              feel the squeeze from both directions.
-            </p>
-          </div>
-        </div>
-        <div className="thesis-grid">
-          <div className="tf rv">
-            <span className="tf-num">[01]</span>
-            <span className="tf-title">Creativity Financializes</span>
-            <p className="tf-desc">
-              Creative output transforms from an expense line into an investable
-              asset class. Music catalogs generate securities. Creators build
-              billion-dollar holding companies. Private equity deploys $1.2
-              trillion toward creative assets.
-            </p>
-          </div>
-          <div className="tf rv rv-d1">
-            <span className="tf-num">[02]</span>
-            <span className="tf-title">Vision Becomes Scarce</span>
-            <p className="tf-desc">
-              AI commoditizes execution, revealing what was always valuable:
-              judgment, taste, and the ability to see where culture moves before
-              data confirms it. The 40–70x gap between median and top-tier
-              creatives reflects vision, not skill.
-            </p>
-          </div>
-          <div className="tf rv rv-d2">
-            <span className="tf-num">[03]</span>
-            <span className="tf-title">Capital Restructures</span>
-            <p className="tf-desc">
-              Value capture shifts from time-based to outcome-based
-              compensation. Equity, profit participation, royalties, and
-              licensing agreements tie compensation to value created — not time
-              spent.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== BOOK CALLOUT ===== */}
-      <section className="book">
-        <div className="book-grid">
-          <div className="book-img rv">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://framerusercontent.com/images/zuq4iDlcKXpR8Kx3yWfaexbxrBs.jpg?width=2400&height=3600"
-              alt="In Sequence — The Book"
-            />
-          </div>
-          <div className="book-content">
-            <span className="book-lbl rv">IN SEQUENCE / THE BOOK</span>
-            <h2 className="book-title anim-text-up">In Sequence</h2>
-            <p className="book-desc rv rv-d1">
-              <strong>The creative economy is restructuring.</strong> This book
-              maps the forces reshaping creative value, provides 35 deal
-              structures for capturing it, and lays out a four-stage progression
-              from execution to ownership. Built on 20,000 miles of primary
-              research and years of practitioner experience.
-            </p>
-            <div className="book-buttons rv rv-d2">
-              <Link href="/contact" className="btn btn--white">
-                DOWNLOAD BOOK
-                <ButtonArrow />
-              </Link>
-              <Link href="/contact" className="btn btn--white">
-                AUDIOBOOK
-                <ButtonArrow />
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -148,7 +66,7 @@ export default function AboutPage() {
             <span className="num-lbl">DEAL STRUCTURES</span>
           </div>
           <div className="num rv rv-d1">
-            <span className="num-val">37+</span>
+            <span className="num-val">70+</span>
             <span className="num-lbl">CASE STUDIES</span>
           </div>
           <div className="num rv rv-d2">
@@ -182,142 +100,83 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== ARTICLES ===== */}
-      <section className="about-articles">
-        <div className="about-articles-head">
-          <h2 className="anim-text-up">Articles</h2>
-        </div>
-        <div className="about-articles-intro">
-          <div className="about-articles-intro-grid">
-            <p className="about-articles-intro-text rv">
-              <strong>A growing series</strong> of essays on the forces
-              reshaping creative value — featuring the leaders, structures, and
-              stories of the creative economy.
+      {/* ===== BOOK CALLOUT ===== */}
+      <section className="book">
+        <div className="book-grid">
+          <div className="book-img rv">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://framerusercontent.com/images/zuq4iDlcKXpR8Kx3yWfaexbxrBs.jpg?width=2400&height=3600"
+              alt="In Sequence — The Book"
+            />
+          </div>
+          <div className="book-content">
+            <span className="book-lbl rv">IN SEQUENCE / THE BOOK</span>
+            <h2 className="book-title anim-text-up">In Sequence</h2>
+            <p className="book-desc rv rv-d1">
+              <strong>The creative economy is restructuring.</strong> This book
+              maps the forces reshaping creative value, provides 35 deal
+              structures for capturing it, and lays out a four-stage progression
+              from execution to ownership. Built on 20,000 miles of primary
+              research and years of practitioner experience.
             </p>
-          </div>
-        </div>
-        <div className="about-articles-list">
-          <div className="a-row rv">
-            <span className="a-num">[01]</span>
-            <div className="a-title">
-              <a href="https://medium.com/@neiltbrown/embrace-disruption-key-factors-shaping-the-future-of-creativity-b46ef2f76e43">
-                Embrace Disruption: Key Factors Shaping the Future of Creativity
-              </a>
-            </div>
-            <span className="a-pub">HOW MAGAZINE</span>
-            <span className="a-link">
-              <a
-                href="https://medium.com/@neiltbrown/embrace-disruption-key-factors-shaping-the-future-of-creativity-b46ef2f76e43"
-                className="btn"
-              >
-                READ
+            <div className="book-buttons rv rv-d2">
+              <Link href="/contact" className="btn btn--white">
+                DOWNLOAD BOOK
                 <ButtonArrow />
-              </a>
-            </span>
-          </div>
-          <div className="a-row rv rv-d1">
-            <span className="a-num">[02]</span>
-            <div className="a-title">
-              <a href="https://medium.com/@neiltbrown/jeff-jackson-the-artist-desires-to-be-understood-e8c49293c56">
-                Jeff Jackson: The Artist Desires to Be Understood
-              </a>
+              </Link>
             </div>
-            <span className="a-pub">HOW MAGAZINE</span>
-            <span className="a-link">
-              <a
-                href="https://medium.com/@neiltbrown/jeff-jackson-the-artist-desires-to-be-understood-e8c49293c56"
-                className="btn"
-              >
-                READ
-                <ButtonArrow />
-              </a>
-            </span>
           </div>
-          <div className="a-row rv rv-d2">
-            <span className="a-num">[03]</span>
-            <div className="a-title">
-              <a href="https://medium.com/@neiltbrown/building-community-through-a-common-passion-of-the-craftsman-86946349eb5d">
-                2nd Shift Design Co: Building Community Through Craft
-              </a>
-            </div>
-            <span className="a-pub">HOW MAGAZINE</span>
-            <span className="a-link">
-              <a
-                href="https://medium.com/@neiltbrown/building-community-through-a-common-passion-of-the-craftsman-86946349eb5d"
-                className="btn"
-              >
-                READ
-                <ButtonArrow />
-              </a>
-            </span>
-          </div>
-          <div className="a-row rv rv-d3">
-            <span className="a-num">[04]</span>
-            <div className="a-title">
-              <a href="https://medium.com/@neiltbrown/the-future-of-creativity-work-is-forever-changed-cb9c74ed5549">
-                The Future of Creativity: Work Is Forever Changed
-              </a>
-            </div>
-            <span className="a-pub">HOW MAGAZINE</span>
-            <span className="a-link">
-              <a
-                href="https://medium.com/@neiltbrown/the-future-of-creativity-work-is-forever-changed-cb9c74ed5549"
-                className="btn"
-              >
-                READ
-                <ButtonArrow />
-              </a>
-            </span>
-          </div>
-          <div className="a-row rv rv-d4">
-            <span className="a-num">[05]</span>
-            <div className="a-title">
-              <a href="https://medium.com/@neiltbrown/the-future-of-creativity-understanding-value-4a3bf990fe97">
-                The Future of Creativity: Understanding Value
-              </a>
-            </div>
-            <span className="a-pub">HOW MAGAZINE</span>
-            <span className="a-link">
-              <a
-                href="https://medium.com/@neiltbrown/the-future-of-creativity-understanding-value-4a3bf990fe97"
-                className="btn"
-              >
-                READ
-                <ButtonArrow />
-              </a>
-            </span>
-          </div>
-          <div className="a-row rv rv-d4">
-            <span className="a-num">[06]</span>
-            <div className="a-title">
-              <a href="https://medium.com/@neiltbrown/the-future-of-creativity-the-only-constant-in-life-is-change-ed27e8cb3d47">
-                The Future of Creativity: The Only Constant in Life Is Change
-              </a>
-            </div>
-            <span className="a-pub">HOW MAGAZINE</span>
-            <span className="a-link">
-              <a
-                href="https://medium.com/@neiltbrown/the-future-of-creativity-the-only-constant-in-life-is-change-ed27e8cb3d47"
-                className="btn"
-              >
-                READ
-                <ButtonArrow />
-              </a>
-            </span>
-          </div>
-        </div>
-        <div className="about-articles-foot">
-          <Link href="/articles" className="btn rv">
-            VIEW ALL ARTICLES
-            <ButtonArrow />
-          </Link>
         </div>
       </section>
 
-      {/* ===== SPEAKING ===== */}
+      {/* ===== ADVISORY EXPERIENCE ===== */}
+      <section className="advisory-exp">
+        <div className="advisory-exp-head">
+          <h2 className="anim-text-up">Advisory<br />Experience</h2>
+        </div>
+        <div className="advisory-exp-statement">
+          <div className="advisory-exp-statement-grid">
+            <p className="advisory-exp-statement-text rv">
+              As an <strong>advisor, operator, strategist, and investor</strong>{" "}
+              — working across ventures, investment funds, family offices, and
+              agencies to structure deals, build ownership, and capture value in
+              the creative economy.
+            </p>
+          </div>
+        </div>
+        <div className="advisory-exp-grid">
+          <div className="num rv">
+            <span className="num-val">50+</span>
+            <span className="num-lbl">VENTURES</span>
+          </div>
+          <div className="num rv rv-d1">
+            <span className="num-val">8</span>
+            <span className="num-lbl">AGENCIES</span>
+          </div>
+          <div className="num rv rv-d2">
+            <span className="num-val">$100M+</span>
+            <span className="num-lbl">PROJECT PROPOSALS</span>
+          </div>
+          <div className="num rv rv-d3">
+            <span className="num-val">5</span>
+            <span className="num-lbl">INVESTMENT FUNDS</span>
+          </div>
+          <div className="num rv rv-d4">
+            <span className="num-val">3</span>
+            <span className="num-lbl">FAMILY OFFICES</span>
+          </div>
+          <div className="num rv rv-d5">
+            <span className="num-val">$250M+</span>
+            <span className="num-lbl">REVENUE / CAPITAL</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== SPEAKING ENGAGEMENTS ===== */}
       <section className="speaking">
         <div className="speaking-head">
-          <h2 className="anim-text-up">Speaking</h2>
+          <h2 className="anim-text-up">Speaking<br />Engagements</h2>
         </div>
         <div className="speaking-intro">
           <div className="speaking-intro-grid">
@@ -409,14 +268,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ===== THE RESEARCHER ===== */}
-      <section className="researcher">
-        <div className="researcher-head">
-          <h2 className="anim-text-up">The Researcher</h2>
+      {/* ===== THE OPERATOR ===== */}
+      <section className="operator">
+        <div className="operator-canvas rv rv-d2">
+          <AsciiScatterCanvas className="operator-canvas-el" />
         </div>
-        <div className="researcher-body">
-          <span className="researcher-lbl rv">[NEIL BROWN]</span>
-          <div className="researcher-txt rv rv-d1">
+        <div className="operator-head">
+          <h2 className="anim-text-up">The Operator</h2>
+        </div>
+        <div className="operator-body">
+          <span className="operator-lbl rv">[NEIL BROWN]</span>
+          <div className="operator-txt rv rv-d1">
             <p>
               <strong>Practitioner first, researcher second.</strong> More than
               fifteen years building and leading creative agencies, coaching
@@ -428,7 +290,7 @@ export default function AboutPage() {
             <p>
               <strong>The research started on the road.</strong> In 2016, a
               greenfield research project on the future of the creative economy:
-              20,000 miles across the American Southwest, 65+ interviews with
+              20,000 miles across the U.S., 65+ interviews with
               entrepreneurs, creatives, investors, artists, agencies, and
               professors. The methodology was inductive — conclusions emerged
               from evidence, not the other way around. That research became the
@@ -439,7 +301,9 @@ export default function AboutPage() {
               Today the work continues — expanding the library of deal
               structures and case studies, advising creative professionals on
               ownership transitions, and building the tools that help creatives
-              capture the value they create.
+              capture the value they create. All while partnering with private
+              capital partners to invest in and impact the future of
+              creativity.
             </p>
           </div>
         </div>
@@ -450,7 +314,7 @@ export default function AboutPage() {
         <div className="newsletter-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://framerusercontent.com/images/UmfC1Xw7ephKTN4uul1c2ojX4JY.jpg"
+            src="https://images.pexels.com/photos/33578118/pexels-photo-33578118.jpeg"
             alt=""
           />
         </div>
@@ -462,14 +326,13 @@ export default function AboutPage() {
                 fontSize: "clamp(44px, 7vw, 84px)",
               }}
             >
-              Get In Sequence
+              Insights in Your Inbox
             </h2>
           </div>
           <div className="newsletter-text-col rv rv-d1">
             <p className="newsletter-p">
-              One structure per week. Case studies, frameworks, and the deals
-              that change creative economics.{" "}
-              <strong>The library keeps growing.</strong>
+              Updates on the restructuring. Emerging trends, new structures,
+              and opportunities for creative professionals building ownership.
             </p>
             <NewsletterForm />
           </div>

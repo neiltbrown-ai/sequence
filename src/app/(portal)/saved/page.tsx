@@ -1,139 +1,118 @@
-"use client";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import {
+  getAllStructures,
+  getAllCaseStudies,
+  getAllArticles,
+} from "@/lib/content";
+import SavedItems, { type SavedItem } from "@/components/portal/saved-items";
+import type { StrategicRoadmap } from "@/types/assessment";
 
-import { useState } from "react";
-import Link from "next/link";
-import FilterBar from "@/components/portal/filter-bar";
-import PageHeader from "@/components/portal/page-header";
+export default async function SavedPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-/* ── Static saved items (will be replaced with Supabase query) ── */
-const SAVED_ITEMS = [
-  {
-    type: "Structure",
-    category: "structures",
-    num: "[12]",
-    title: "Revenue Share Agreements",
-    desc: "Convert fixed fees into ongoing participation in the revenue your work generates. The bridge between fee-for-service and ownership.",
-    tags: ["Stage 2–3", "Medium Risk"],
-    href: "/library/structures/revenue-share-agreements",
-  },
-  {
-    type: "Case Study",
-    category: "case-studies",
-    title: "Virgil Abloh",
-    desc: "From DJ to cultural infrastructure — building a portfolio of equity positions, brand ownership, and advisory roles.",
-    tags: ["Design", "Stage 3–4"],
-    href: "/library/case-studies/virgil-abloh",
-  },
-  {
-    type: "Guide",
-    category: "guides",
-    title: "Negotiation Playbook",
-    desc: "Scripts, frameworks, and red-flag identification for real-world deal conversations.",
-    tags: ["Negotiation"],
-    href: "/guides",
-  },
-  {
-    type: "Article",
-    category: "articles",
-    title: "Why the Middle Is Getting Squeezed",
-    desc: "The $75K–$500K creative professional is caught in a structural compression that has nothing to do with talent.",
-    tags: ["Thesis", "8 min"],
-    href: "/library/articles/why-the-middle-is-getting-squeezed",
-  },
-  {
-    type: "Structure",
-    category: "structures",
-    num: "[26]",
-    title: "Hybrid Fee + Backend",
-    desc: "Reduced upfront fee in exchange for backend equity or profit participation. High risk, high ceiling.",
-    tags: ["Stage 2–3", "High Risk"],
-    href: "/library/structures/hybrid-fee-plus-backend",
-  },
-  {
-    type: "Case Study",
-    category: "case-studies",
-    title: "Taylor Swift",
-    desc: "The re-recording strategy as the most public case study in ownership economics and master rights recapture.",
-    tags: ["Entertainment", "Stage 4"],
-    href: "/library/case-studies/taylor-swift",
-  },
-  {
-    type: "Article",
-    category: "articles",
-    title: "Equity vs. Fee: When to Trade Income for Ownership",
-    desc: "The decision to accept equity isn't about risk tolerance — it's about understanding where you are in the value chain.",
-    tags: ["Structures"],
-    href: "/library/articles/equity-vs-fee",
-  },
-  {
-    type: "Structure",
-    category: "structures",
-    num: "[18]",
-    title: "Strategic Advisory Retainer",
-    desc: "Shift from executing deliverables to shaping direction. Charge for judgment, not hours.",
-    tags: ["Stage 3", "Low Risk"],
-    href: "/library/structures/strategic-advisory-retainer",
-  },
-];
+  /* ── Fetch bookmarks ── */
+  const { data: bookmarks } = await supabase
+    .from("bookmarks")
+    .select("content_type, slug, created_at")
+    .order("created_at", { ascending: false });
 
-const TABS = [
-  { label: `All (${SAVED_ITEMS.length})`, value: "all" },
-  { label: `Structures (${SAVED_ITEMS.filter((s) => s.category === "structures").length})`, value: "structures" },
-  { label: `Case Studies (${SAVED_ITEMS.filter((s) => s.category === "case-studies").length})`, value: "case-studies" },
-  { label: `Articles (${SAVED_ITEMS.filter((s) => s.category === "articles").length})`, value: "articles" },
-  { label: `Guides (${SAVED_ITEMS.filter((s) => s.category === "guides").length})`, value: "guides" },
-];
+  /* ── Load MDX metadata ── */
+  const structures = getAllStructures();
+  const caseStudies = getAllCaseStudies();
+  const articles = getAllArticles();
 
-export default function SavedPage() {
-  const [activeTab, setActiveTab] = useState("all");
+  /* ── Join bookmarks with MDX metadata ── */
+  const savedItems = (bookmarks || [])
+    .map((b): SavedItem | null => {
+      if (b.content_type === "structure") {
+        const meta = structures.find((s) => s.slug === b.slug);
+        if (!meta) return null;
+        return {
+          contentType: "structure" as const,
+          slug: b.slug,
+          title: meta.title,
+          description: meta.excerpt,
+          tags: [meta.stage, meta.risk].filter(Boolean),
+          href: `/library/structures/${meta.slug}`,
+          number: meta.number,
+          savedAt: b.created_at,
+        };
+      }
+      if (b.content_type === "case_study") {
+        const meta = caseStudies.find((c) => c.slug === b.slug);
+        if (!meta) return null;
+        return {
+          contentType: "case_study" as const,
+          slug: b.slug,
+          title: meta.title,
+          description: meta.excerpt,
+          tags: [meta.discipline, ...(meta.tags || [])].filter(Boolean),
+          href: `/library/case-studies/${meta.slug}`,
+          savedAt: b.created_at,
+        };
+      }
+      if (b.content_type === "article") {
+        const meta = articles.find((a) => a.slug === b.slug);
+        if (!meta) return null;
+        return {
+          contentType: "article" as const,
+          slug: b.slug,
+          title: meta.title,
+          description: meta.excerpt,
+          tags: meta.tags || [],
+          href: `/library/articles/${meta.slug}`,
+          savedAt: b.created_at,
+        };
+      }
+      return null;
+    })
+    .filter((item): item is SavedItem => item !== null);
 
-  const filtered =
-    activeTab === "all"
-      ? SAVED_ITEMS
-      : SAVED_ITEMS.filter((s) => s.category === activeTab);
+  /* ── If empty, fetch roadmap recommendations ── */
+  type Recommendation = {
+    slug: string;
+    title: string;
+    why: string;
+    href: string;
+    contentType: "structure" | "case_study" | "article";
+  };
+  let recommendations: Recommendation[] = [];
 
-  return (
-    <>
-      <PageHeader
-        title="Saved"
-        description="Your bookmarked structures, case studies, articles, and guides for easy reference."
-        count={`${SAVED_ITEMS.length} SAVED ITEMS`}
-        backHref="/dashboard"
-        backLabel="Dashboard"
-      />
+  if (savedItems.length === 0) {
+    const { data: plan } = await supabase
+      .from("strategic_plans")
+      .select("plan_content")
+      .eq("status", "published")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-      <FilterBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+    if (plan?.plan_content) {
+      const roadmap = plan.plan_content as StrategicRoadmap;
+      const recStructures = (roadmap.library?.recommended_structures || []).map(
+        (s) => ({
+          slug: structures.find((st) => st.number === s.id)?.slug || "",
+          title: s.title,
+          why: s.why,
+          href: `/library/structures/${structures.find((st) => st.number === s.id)?.slug || ""}`,
+          contentType: "structure" as const,
+        })
+      );
+      const recCases = (roadmap.library?.recommended_cases || []).map((c) => ({
+        slug: c.slug,
+        title: c.title,
+        why: c.why,
+        href: `/library/case-studies/${c.slug}`,
+        contentType: "case_study" as const,
+      }));
+      recommendations = [...recStructures, ...recCases].filter((r) => r.slug);
+    }
+  }
 
-      <div className="card-row rv vis rv-d2">
-        {filtered.map((item, i) => (
-          <Link
-            key={`${item.type}-${item.title}`}
-            href={item.href}
-            className={`lib-card rv vis rv-d${Math.min(i + 1, 6)}`}
-          >
-            <span className="sav-bookmark">
-              <svg viewBox="0 0 24 24">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
-            </span>
-            <div className="lib-card-type">
-              {item.num && <span className="card-num">{item.num}</span>}{" "}
-              {item.type}
-            </div>
-            <div className="lib-card-title">{item.title}</div>
-            <div className="lib-card-desc">{item.desc}</div>
-            <div className="lib-card-meta">
-              {item.tags.map((tag) => (
-                <span key={tag} className="lib-card-tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      <div className="page-footer" />
-    </>
-  );
+  return <SavedItems items={savedItems} recommendations={recommendations} />;
 }

@@ -49,7 +49,7 @@ export default function ArticlesPage() {
         <div className="newsletter-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://framerusercontent.com/images/UmfC1Xw7ephKTN4uul1c2ojX4JY.jpg"
+            src="https://images.pexels.com/photos/33578118/pexels-photo-33578118.jpeg"
             alt=""
           />
         </div>
@@ -61,7 +61,7 @@ export default function ArticlesPage() {
                 fontSize: "clamp(44px,7vw,84px)",
               }}
             >
-              Get In Sequence
+              Insights in Your Inbox
             </h2>
           </div>
           <div className="newsletter-text-col rv rv-d1">

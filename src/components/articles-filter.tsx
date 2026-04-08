@@ -7,8 +7,6 @@ const FILTERS = [
   { label: "All", value: "all" },
   { label: "Thesis", value: "thesis" },
   { label: "Deal Structures", value: "deal-structures" },
-  { label: "Case Studies", value: "case-studies" },
-  { label: "Practitioners", value: "practitioners" },
 ];
 
 export interface ArticleCard {
@@ -33,12 +31,22 @@ export default function ArticlesFilter({
 }: {
   articles: ArticleCard[];
 }) {
+  const PAGE_SIZE = 12;
   const [activeFilter, setActiveFilter] = useState("all");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const filteredArticles =
     activeFilter === "all"
       ? articles
       : articles.filter((a) => a.category === activeFilter);
+
+  const visibleArticles = filteredArticles.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredArticles.length;
+
+  function handleFilterChange(value: string) {
+    setActiveFilter(value);
+    setVisibleCount(PAGE_SIZE);
+  }
 
   return (
     <>
@@ -50,7 +58,7 @@ export default function ArticlesFilter({
               key={f.value}
               className={`filter-tab${activeFilter === f.value ? " active" : ""}`}
               data-filter={f.value}
-              onClick={() => setActiveFilter(f.value)}
+              onClick={() => handleFilterChange(f.value)}
             >
               {f.label}
             </button>
@@ -61,7 +69,7 @@ export default function ArticlesFilter({
       {/* ARTICLE CARDS */}
       <section className="art-section">
         <div className="art-grid">
-          {filteredArticles.map((article, i) => (
+          {visibleArticles.map((article, i) => (
             <Link
               href={`/articles/${article.slug}`}
               className={`art-card rv vis${i % 2 === 1 ? " rv-d2" : ""}`}
@@ -90,31 +98,33 @@ export default function ArticlesFilter({
       </section>
 
       {/* LOAD MORE */}
-      <div className="art-more rv">
-        <button className="btn">
-          Load More Articles
-          <span className="btn-arrow">
-            <svg viewBox="0 0 12 12" fill="none">
-              <path
-                d="M6 2L6 10M6 10L2 6M6 10L10 6"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <svg viewBox="0 0 12 12" fill="none">
-              <path
-                d="M6 2L6 10M6 10L2 6M6 10L10 6"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
-        </button>
-      </div>
+      {hasMore && (
+        <div className="art-more rv">
+          <button className="btn" onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+            Load More Articles
+            <span className="btn-arrow">
+              <svg viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 2L6 10M6 10L2 6M6 10L10 6"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <svg viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 2L6 10M6 10L2 6M6 10L10 6"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </button>
+        </div>
+      )}
     </>
   );
 }

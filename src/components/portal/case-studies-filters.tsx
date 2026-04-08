@@ -3,69 +3,57 @@
 import { useState } from "react";
 import Link from "next/link";
 import FilterBar from "./filter-bar";
-import StagePills from "./stage-pills";
 import type { CaseStudyMeta } from "@/lib/content";
 
-const STAGES = ["Stage 1", "Stage 2", "Stage 3", "Stage 4", "Emerging"];
+const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
 
 interface CaseStudiesFiltersProps {
   studies: CaseStudyMeta[];
-  disciplines: string[];
+  industries: string[];
 }
 
 export default function CaseStudiesFilters({
   studies,
-  disciplines,
+  industries,
 }: CaseStudiesFiltersProps) {
   const [activeTab, setActiveTab] = useState("all");
-  const [activeStage, setActiveStage] = useState("all");
 
   const tabs = [
     { label: `All (${studies.length})`, value: "all" },
-    ...disciplines.map((d) => ({
-      label: `${d} (${studies.filter((s) => s.discipline === d).length})`,
+    ...industries.map((d) => ({
+      label: `${d} (${studies.filter((s) => s.industry === d).length})`,
       value: d,
     })),
   ];
 
-  let filtered =
+  const filtered =
     activeTab === "all"
       ? studies
-      : studies.filter((s) => s.discipline === activeTab);
+      : studies.filter((s) => s.industry === activeTab);
 
-  if (activeStage !== "all") {
-    filtered = filtered.filter((s) =>
-      s.tags?.some((t) => t.toLowerCase().includes(activeStage.toLowerCase()))
-    );
-  }
-
-  const featured = filtered[0];
-  const rest = filtered.slice(1);
+  // 3 featured: first is large hero, next 2 are medium cards
+  const featuredMain = filtered[0];
+  const featuredSub = filtered.slice(1, 3);
+  const rest = filtered.slice(3);
 
   return (
     <>
       <FilterBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-      <StagePills
-        stages={STAGES}
-        activeStage={activeStage}
-        onStageChange={setActiveStage}
-      />
 
-      {/* Featured Case Study */}
-      {featured && (
+      {/* Featured: 1 large hero */}
+      {featuredMain && (
         <Link
-          href={`/library/case-studies/${featured.slug}`}
-          className="cs-featured rv vis rv-d3"
+          href={`/library/case-studies/${featuredMain.slug}`}
+          className="cs-featured rv vis rv-d2"
         >
-          <div className="cs-featured-badge">Featured</div>
-          {featured.coverImage && (
+          {featuredMain.coverImage && (
             <img
               className="cs-featured-img"
-              src={featured.coverImage}
-              alt={featured.title}
+              src={featuredMain.coverImage}
+              alt={stripBr(featuredMain.title)}
             />
           )}
-          {!featured.coverImage && (
+          {!featuredMain.coverImage && (
             <div
               className="cs-featured-img"
               style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #555 100%)" }}
@@ -74,13 +62,12 @@ export default function CaseStudiesFilters({
           <div className="cs-featured-overlay" />
           <div className="cs-featured-content">
             <div className="cs-featured-label">
-              {featured.discipline} <span className="ap-dot" /> Case Study
+              {featuredMain.discipline}
             </div>
-            <div className="cs-featured-name">{featured.title}</div>
-            <div className="cs-featured-desc">{featured.excerpt}</div>
+            <div className="cs-featured-name">{stripBr(featuredMain.title)}</div>
+            <div className="cs-featured-desc">{featuredMain.excerpt}</div>
             <div className="cs-featured-tags">
-              <span className="cs-featured-tag">{featured.discipline}</span>
-              {featured.tags?.slice(0, 2).map((tag) => (
+              {featuredMain.tags?.slice(0, 3).map((tag) => (
                 <span key={tag} className="cs-featured-tag">
                   {tag}
                 </span>
@@ -90,19 +77,52 @@ export default function CaseStudiesFilters({
         </Link>
       )}
 
+      {/* Featured: 2 medium cards below */}
+      {featuredSub.length > 0 && (
+        <div className="cs-featured-sub-grid">
+          {featuredSub.map((s, i) => (
+            <Link
+              key={s.slug}
+              href={`/library/case-studies/${s.slug}`}
+              className={`cs-featured-sub rv vis rv-d${i + 3}`}
+            >
+              {s.coverImage && (
+                <img
+                  className="cs-featured-sub-img"
+                  src={s.coverImage}
+                  alt={stripBr(s.title)}
+                />
+              )}
+              {!s.coverImage && (
+                <div
+                  className="cs-featured-sub-img"
+                  style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #555 100%)" }}
+                />
+              )}
+              <div className="cs-featured-sub-overlay" />
+              <div className="cs-featured-sub-content">
+                <div className="cs-featured-sub-label">{s.discipline}</div>
+                <div className="cs-featured-sub-name">{stripBr(s.title)}</div>
+                <div className="cs-featured-sub-desc">{s.excerpt}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+
       {/* Case Study Grid */}
-      <div className="case-grid">
+      <div className="ptl-case-grid">
         {rest.map((s, i) => (
           <Link
             key={s.slug}
             href={`/library/case-studies/${s.slug}`}
-            className={`case-card rv vis rv-d${Math.min(i + 1, 6)}`}
+            className={`ptl-case-card rv vis rv-d${Math.min(i + 1, 6)}`}
           >
-            <div className="case-card-meta">
-              {s.discipline} <span className="case-card-dot" /> Case Study
+            <div className="ptl-case-card-name">{stripBr(s.title)}</div>
+            <div className="ptl-case-card-desc">{s.excerpt}</div>
+            <div className="ptl-case-card-meta">
+              {s.discipline}
             </div>
-            <div className="case-card-name">{s.title}</div>
-            <div className="case-card-desc">{s.excerpt}</div>
           </Link>
         ))}
       </div>

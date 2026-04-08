@@ -1,0 +1,1 @@
+Jordan Rivera > test-maker@insequence.co > Deal Evaluator > There are two deals listed but no evaluation. Can you add relevant synthetic data and run the analysis so that data is there for test users to review?

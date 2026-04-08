@@ -29,6 +29,11 @@ export interface StructureMeta {
   sortOrder: number;
   published: boolean;
   updatedAt: string;
+  /* Phase 6 extensions for structure detail page */
+  category?: string;
+  tagline?: string;
+  stats?: Array<{ label: string; value: string }>;
+  sections?: Array<{ id: string; label: string }>;
 }
 
 export interface CaseStudyMeta {
@@ -37,13 +42,35 @@ export interface CaseStudyMeta {
   type: "case-study";
   number: number;
   discipline: string;
+  industry: string;
   excerpt: string;
   structures: number[];
   tags: string[];
   access: "public" | "member";
   coverImage?: string;
+  heroImage?: string;
+  heroCredit?: string;
+  heroAlt?: string;
+  heroPosition?: string;
+  secondaryImage?: string;
+  secondaryAlt?: string;
+  secondaryCredit?: string;
+  secondaryPosition?: string;
+  subtitle?: string;
+  readTime?: number;
+  stats?: Array<{ value: string; label: string }>;
+  sections?: Array<{ id: string; label: string }>;
+  featured?: boolean;
   published: boolean;
   updatedAt: string;
+}
+
+export interface ArticleImage {
+  src: string;
+  alt: string;
+  type: "breakout" | "fullwidth";
+  caption?: string;
+  credit?: string;
 }
 
 export interface ArticleMeta {
@@ -54,11 +81,14 @@ export interface ArticleMeta {
   tag: string;
   date: string;
   excerpt: string;
+  subtitle?: string;
   readTime: number;
   author: string;
   authorImage?: string;
   authorBio?: string;
   heroImage?: string;
+  heroCredit?: string;
+  images?: ArticleImage[];
   tags: string[];
   access: "public" | "member";
   relatedArticles?: string[];
@@ -107,7 +137,12 @@ export function getAllStructures(filter?: {
 
 export function getStructureBySlug(slug: string) {
   const items = readDir("structures");
-  const item = items.find((i) => i.frontmatter.slug === slug);
+  let item = items.find((i) => i.frontmatter.slug === slug);
+  // Fallback: strip leading number prefix (e.g. "02-retainer-bonus-model" → "retainer-bonus-model")
+  if (!item) {
+    const stripped = slug.replace(/^\d+-/, "");
+    item = items.find((i) => i.frontmatter.slug === stripped);
+  }
   if (!item) return null;
   return {
     frontmatter: item.frontmatter as StructureMeta,
@@ -143,6 +178,17 @@ export function getAllCaseStudies(): CaseStudyMeta[] {
     .filter((i) => i.frontmatter.published !== false)
     .map((i) => i.frontmatter as CaseStudyMeta)
     .sort((a, b) => a.number - b.number);
+}
+
+export function getFeaturedCaseStudies(limit = 4): CaseStudyMeta[] {
+  const all = getAllCaseStudies().filter((cs) => cs.coverImage);
+  // Shuffle the full pool so different case studies appear on each render
+  const shuffled = [...all];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, limit);
 }
 
 export function getCaseStudyBySlug(slug: string) {

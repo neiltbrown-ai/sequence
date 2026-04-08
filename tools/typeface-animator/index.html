@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typeface Animator — Sequence</title>
+<style>
+  @font-face { font-family: 'GeistBold'; src: url('fonts/geist-sans-bold.ttf') format('truetype'); }
+  @font-face { font-family: 'GeistRegular'; src: url('fonts/geist-sans-regular.ttf') format('truetype'); }
+  @font-face { font-family: 'PTMono'; src: url('fonts/pt-mono.ttf') format('truetype'); }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f5f3f0;
+    --fg: #1a1a1a;
+    --mid: #555;
+    --light: #999;
+    --border: #d9d6d1;
+    --sidebar-w: 280px;
+    --topbar-h: 48px;
+  }
+
+  body.dark {
+    --bg: #1a1a1a;
+    --fg: #f5f3f0;
+    --mid: #aaa;
+    --light: #666;
+    --border: #333;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top bar */
+  .topbar {
+    height: var(--topbar-h);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .topbar-title {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+  .btn {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--fg); color: var(--bg); }
+  .btn.primary { background: var(--fg); color: var(--bg); }
+  .btn.primary:hover { opacity: 0.8; }
+  .btn.recording { background: #cc3333; color: #fff; border-color: #cc3333; }
+
+  /* Layout */
+  .main { display: flex; flex: 1; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar {
+    width: var(--sidebar-w);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px;
+    flex-shrink: 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .section-label {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--light);
+    margin: 16px 0 8px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .control { margin-bottom: 12px; }
+  .control label {
+    display: block;
+    font-size: 12px;
+    color: var(--mid);
+    margin-bottom: 4px;
+  }
+  .control input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  .control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--fg);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .control .val {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--light);
+    float: right;
+    margin-top: -18px;
+  }
+
+  textarea.text-input {
+    width: 100%;
+    height: 60px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--fg);
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    padding: 8px;
+    resize: none;
+    outline: none;
+    border-radius: 2px;
+  }
+
+  select.font-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--fg);
+    font-size: 12px;
+    padding: 6px 8px;
+    outline: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+  .preset-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--mid);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .preset-btn:hover, .preset-btn.active { background: var(--fg); color: var(--bg); }
+
+  .theme-toggle { display: flex; gap: 4px; }
+  .theme-btn {
+    width: 28px;
+    height: 20px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .theme-btn.dark-btn { background: #1a1a1a; }
+  .theme-btn.light-btn { background: #f5f3f0; }
+  .theme-btn.active { border-color: var(--fg); border-width: 2px; }
+
+  /* Canvas area */
+  .canvas-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  #canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Aspect toggle */
+  .aspect-btns { display: flex; gap: 4px; align-items: center; }
+  .aspect-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--mid);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .aspect-btn.active { background: var(--fg); color: var(--bg); }
+
+  .status {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--light);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">Typeface Animator</span>
+    <div class="aspect-btns">
+      <button class="aspect-btn active" data-aspect="free">Free</button>
+      <button class="aspect-btn" data-aspect="square">Square</button>
+      <button class="aspect-btn" data-aspect="portrait">Portrait</button>
+      <button class="aspect-btn" data-aspect="landscape">Landscape</button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn" id="btnPNG">PNG</button>
+    <button class="btn" id="btnRecord">Record</button>
+    <button class="btn" id="btnGIF">GIF</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="section-label">Text</div>
+    <textarea class="text-input" id="textInput">SEQUENCE</textarea>
+
+    <div class="section-label">Font</div>
+    <select class="font-select" id="fontSelect">
+      <option value="geist-bold">Geist Sans Bold</option>
+      <option value="geist-regular">Geist Sans Regular</option>
+      <option value="pt-mono">PT Mono</option>
+      <option value="helvetiker">Helvetiker (test)</option>
+    </select>
+
+    <div class="section-label">Render Mode</div>
+    <select class="font-select" id="renderMode">
+      <option value="wireframe">Wireframe 3D</option>
+      <option value="filled">Filled 3D</option>
+      <option value="outline">Flat Outline</option>
+      <option value="flat-filled">Flat Filled</option>
+    </select>
+
+    <div class="section-label">Presets</div>
+    <div class="presets">
+      <button class="preset-btn active" data-preset="simple">Simple</button>
+      <button class="preset-btn" data-preset="jellyfish">Jellyfish</button>
+      <button class="preset-btn" data-preset="crown">Crown</button>
+      <button class="preset-btn" data-preset="complex">Complex</button>
+      <button class="preset-btn" data-preset="weave">Weave</button>
+      <button class="preset-btn" data-preset="zebra">Zebra</button>
+      <button class="preset-btn" data-preset="hoops">Hoops</button>
+      <button class="preset-btn" data-preset="spiral">Spiral</button>
+    </div>
+    <div class="theme-toggle">
+      <div class="theme-btn dark-btn" data-theme="dark"></div>
+      <div class="theme-btn light-btn active" data-theme="light"></div>
+    </div>
+
+    <div class="section-label">Settings</div>
+
+    <div class="control">
+      <label>Radius</label>
+      <input type="range" id="radius" min="0.5" max="8" step="0.1" value="3">
+      <span class="val" id="radius-val">3.0</span>
+    </div>
+    <div class="control">
+      <label>Stack Number</label>
+      <input type="range" id="stackNum" min="1" max="20" step="1" value="3">
+      <span class="val" id="stackNum-val">3</span>
+    </div>
+    <div class="control">
+      <label>Radius Rotate</label>
+      <input type="range" id="radiusRotate" min="0" max="6.28" step="0.01" value="0.5">
+      <span class="val" id="radiusRotate-val">0.50</span>
+    </div>
+    <div class="control">
+      <label>Radius Offset</label>
+      <input type="range" id="radiusOffset" min="0" max="4" step="0.05" value="1.0">
+      <span class="val" id="radiusOffset-val">1.00</span>
+    </div>
+    <div class="control">
+      <label>Extrude Depth</label>
+      <input type="range" id="extrudeDepth" min="0.01" max="2" step="0.01" value="0.15">
+      <span class="val" id="extrudeDepth-val">0.15</span>
+    </div>
+
+    <div class="section-label">Wave Settings</div>
+
+    <div class="control">
+      <label>Wave Count</label>
+      <input type="range" id="waveCount" min="0" max="10" step="0.1" value="3">
+      <span class="val" id="waveCount-val">3.0</span>
+    </div>
+    <div class="control">
+      <label>Wave Speed</label>
+      <input type="range" id="waveSpeed" min="0" max="5" step="0.05" value="1.0">
+      <span class="val" id="waveSpeed-val">1.00</span>
+    </div>
+    <div class="control">
+      <label>Wave Amplitude</label>
+      <input type="range" id="waveAmp" min="0" max="3" step="0.05" value="0.5">
+      <span class="val" id="waveAmp-val">0.50</span>
+    </div>
+    <div class="control">
+      <label>Long</label>
+      <input type="range" id="long" min="0" max="5" step="0.05" value="0">
+      <span class="val" id="long-val">0.00</span>
+    </div>
+    <div class="control">
+      <label>Z-Axis</label>
+      <input type="range" id="zAxis" min="0" max="5" step="0.05" value="0">
+      <span class="val" id="zAxis-val">0.00</span>
+    </div>
+
+    <div class="section-label">Stretcher Settings</div>
+
+    <div class="control">
+      <label>X Stretcher</label>
+      <input type="range" id="xStretch" min="0.1" max="3" step="0.05" value="1">
+      <span class="val" id="xStretch-val">1.00</span>
+    </div>
+    <div class="control">
+      <label>Y Stretcher</label>
+      <input type="range" id="yStretch" min="0.1" max="3" step="0.05" value="1">
+      <span class="val" id="yStretch-val">1.00</span>
+    </div>
+
+    <div class="section-label">Camera</div>
+    <div class="control">
+      <label>Rotate Speed</label>
+      <input type="range" id="rotSpeed" min="0" max="3" step="0.01" value="0.3">
+      <span class="val" id="rotSpeed-val">0.30</span>
+    </div>
+    <div class="control">
+      <label>Camera Distance</label>
+      <input type="range" id="camDist" min="3" max="30" step="0.5" value="12">
+      <span class="val" id="camDist-val">12.0</span>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="canvas-wrap">
+    <canvas id="canvas"></canvas>
+    <div class="status" id="status">Loading fonts...</div>
+  </div>
+</div>
+
+<!-- Three.js -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/",
+    "troika-three-text": "https://esm.sh/troika-three-text@0.49.1"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+// ─── Canvas-based smooth text rendering ──────────────────
+// Uses browser's native font engine for perfectly smooth glyphs
+const canvasFontMap = {
+  'geist-bold': 'GeistBold',
+  'geist-regular': 'GeistRegular',
+  'pt-mono': 'PTMono',
+};
+
+function makeCharTexture(char, fontKey, dark, outline) {
+  const size = 256;
+  const c = document.createElement('canvas');
+  c.width = size;
+  c.height = size;
+  const ctx = c.getContext('2d');
+
+  const fg = dark ? '#f5f3f0' : '#1a1a1a';
+  const fontName = canvasFontMap[fontKey] || 'GeistBold';
+  ctx.font = `bold ${size * 0.7}px "${fontName}", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (outline) {
+    ctx.strokeStyle = fg;
+    ctx.lineWidth = 3;
+    ctx.strokeText(char, size / 2, size / 2);
+  } else {
+    ctx.fillStyle = fg;
+    ctx.fillText(char, size / 2, size / 2);
+  }
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+// Preload canvas fonts
+await document.fonts.load('bold 48px "GeistBold"');
+await document.fonts.load('48px "GeistRegular"');
+await document.fonts.load('48px "PTMono"');
+
+// ─── State ──────────────────────────────────────
+const state = {
+  text: 'SEQUENCE',
+  fontKey: 'geist-bold',
+  renderMode: 'wireframe', // wireframe | filled | outline | flat-filled
+  radius: 3,
+  stackNum: 3,
+  radiusRotate: 0.5,
+  radiusOffset: 1.0,
+  extrudeDepth: 0.15,
+  waveCount: 3,
+  waveSpeed: 1.0,
+  waveAmp: 0.5,
+  long: 0,
+  zAxis: 0,
+  xStretch: 1,
+  yStretch: 1,
+  rotSpeed: 0.3,
+  camDist: 12,
+  dark: false,
+  aspect: 'free',
+};
+
+// ─── Presets ──────────────────────────────────────
+const presets = {
+  simple: { radius: 3, stackNum: 3, radiusRotate: 0.5, radiusOffset: 1.0, extrudeDepth: 0.15, waveCount: 3, waveSpeed: 1.0, waveAmp: 0.5, long: 0, zAxis: 0, xStretch: 1, yStretch: 1, rotSpeed: 0.3, camDist: 12 },
+  jellyfish: { radius: 2.5, stackNum: 8, radiusRotate: 0.3, radiusOffset: 0.6, extrudeDepth: 0.15, waveCount: 2, waveSpeed: 0.8, waveAmp: 1.5, long: 2, zAxis: 0.5, xStretch: 1, yStretch: 1.2, rotSpeed: 0.2, camDist: 14 },
+  crown: { radius: 4, stackNum: 2, radiusRotate: 3.14, radiusOffset: 2, extrudeDepth: 0.5, waveCount: 4, waveSpeed: 0.5, waveAmp: 1.0, long: 0, zAxis: 1, xStretch: 1, yStretch: 1, rotSpeed: 0.15, camDist: 15 },
+  complex: { radius: 2, stackNum: 12, radiusRotate: 0.8, radiusOffset: 0.4, extrudeDepth: 0.2, waveCount: 5, waveSpeed: 1.5, waveAmp: 0.8, long: 1, zAxis: 1, xStretch: 0.8, yStretch: 0.8, rotSpeed: 0.4, camDist: 12 },
+  weave: { radius: 3.5, stackNum: 6, radiusRotate: 1.0, radiusOffset: 0.8, extrudeDepth: 0.2, waveCount: 3, waveSpeed: 2.0, waveAmp: 1.2, long: 0, zAxis: 2, xStretch: 1, yStretch: 1, rotSpeed: 0.25, camDist: 14 },
+  zebra: { radius: 5, stackNum: 4, radiusRotate: 0.2, radiusOffset: 1.5, extrudeDepth: 0.1, waveCount: 6, waveSpeed: 0.6, waveAmp: 0.3, long: 3, zAxis: 0.5, xStretch: 1.5, yStretch: 0.5, rotSpeed: 0.35, camDist: 16 },
+  hoops: { radius: 4, stackNum: 5, radiusRotate: 1.25, radiusOffset: 0.1, extrudeDepth: 0.4, waveCount: 2, waveSpeed: 1.2, waveAmp: 2.0, long: 0, zAxis: 0, xStretch: 1, yStretch: 1, rotSpeed: 0.5, camDist: 14 },
+  spiral: { radius: 1.5, stackNum: 15, radiusRotate: 0.4, radiusOffset: 0.5, extrudeDepth: 0.15, waveCount: 1, waveSpeed: 0.5, waveAmp: 0.3, long: 0.5, zAxis: 3, xStretch: 1, yStretch: 1, rotSpeed: 0.2, camDist: 16 },
+};
+
+// ─── Font Loading ──────────────────────────────────────
+const fontLoader = new FontLoader();
+const fonts = {};
+const cacheBust = Date.now();
+const fontPaths = {
+  'geist-bold': `fonts/geist-sans-bold.json?v=${cacheBust}`,
+  'geist-regular': `fonts/geist-sans-regular.json?v=${cacheBust}`,
+  'pt-mono': `fonts/pt-mono.json?v=${cacheBust}`,
+  'helvetiker': 'https://cdn.jsdelivr.net/npm/three@0.164.1/examples/fonts/helvetiker_bold.typeface.json',
+};
+// TTF paths for troika (smooth SDF rendering)
+const ttfPaths = {
+  'geist-bold': 'fonts/geist-sans-bold.ttf',
+  'geist-regular': 'fonts/geist-sans-regular.ttf',
+  'pt-mono': 'fonts/pt-mono.ttf',
+};
+
+async function loadFont(key) {
+  if (fonts[key]) return fonts[key];
+  return new Promise((resolve, reject) => {
+    fontLoader.load(fontPaths[key], (font) => {
+      fonts[key] = font;
+      resolve(font);
+    }, undefined, reject);
+  });
+}
+
+// ─── Three.js Setup ──────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+camera.position.z = state.camDist;
+
+const letterGroup = new THREE.Group();
+scene.add(letterGroup);
+
+let letterMeshes = [];
+let time = 0;
+let needsRebuild = true;
+
+function updateBg() {
+  if (state.dark) {
+    scene.background = new THREE.Color(0x1a1a1a);
+  } else {
+    scene.background = new THREE.Color(0xf5f3f0);
+  }
+}
+updateBg();
+
+// ─── Build Letters ──────────────────────────────────────
+function buildLetters() {
+  // Clear old meshes
+  for (const m of letterMeshes) {
+    letterGroup.remove(m);
+    if (m.dispose) {
+      m.dispose(); // troika Text cleanup
+    } else {
+      if (m.geometry) m.geometry.dispose();
+      if (m.material) m.material.dispose();
+    }
+  }
+  letterMeshes = [];
+
+  const chars = state.text.split('');
+  if (chars.length === 0) return;
+
+  const matColor = state.dark ? 0xf5f3f0 : 0x1a1a1a;
+  const colorStr = state.dark ? '#f5f3f0' : '#1a1a1a';
+  // Only flat modes use canvas textures; wireframe + filled use TextGeometry
+  const useCanvasTex = state.renderMode === 'flat-filled' || state.renderMode === 'outline';
+
+  const font = fonts[state.fontKey];
+  if (!useCanvasTex && !font) return;
+
+  for (let s = 0; s < state.stackNum; s++) {
+    for (let i = 0; i < chars.length; i++) {
+      const char = chars[i];
+      if (char === ' ') continue;
+
+      try {
+        let mesh;
+
+        if (useCanvasTex) {
+          // Canvas texture — perfectly smooth native font rendering (flat modes)
+          const isOutline = state.renderMode === 'outline';
+          const tex = makeCharTexture(char, state.fontKey, state.dark, isOutline);
+          const planeSize = 1.0;
+          const geo = new THREE.PlaneGeometry(planeSize, planeSize);
+          const mat = new THREE.MeshBasicMaterial({
+            map: tex,
+            transparent: true,
+            alphaTest: 0.01,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+          });
+          mesh = new THREE.Mesh(geo, mat);
+        } else if (state.renderMode === 'filled') {
+          // Filled 3D — TextGeometry with high curveSegments for smooth edges + real extrude depth
+          const geo = new TextGeometry(char, {
+            font: font,
+            size: 0.8,
+            depth: state.extrudeDepth,
+            curveSegments: 64,
+            bevelEnabled: false,
+          });
+          geo.computeBoundingBox();
+          geo.center();
+          const mat = new THREE.MeshBasicMaterial({ color: matColor, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+          mesh = new THREE.Mesh(geo, mat);
+        } else {
+          // Wireframe 3D — TextGeometry with smooth curves
+          const geo = new TextGeometry(char, {
+            font: font,
+            size: 0.8,
+            depth: state.extrudeDepth,
+            curveSegments: 64,
+            bevelEnabled: false,
+          });
+          geo.computeBoundingBox();
+          geo.center();
+
+          const edges = new THREE.EdgesGeometry(geo, 30);
+          const mat = new THREE.LineBasicMaterial({ color: matColor, transparent: true, opacity: 0.5 });
+          mesh = new THREE.LineSegments(edges, mat);
+        }
+
+        mesh.userData = { charIndex: i, stackIndex: s, totalChars: chars.length };
+        letterMeshes.push(mesh);
+        letterGroup.add(mesh);
+      } catch (e) {
+        // Skip characters the font doesn't support
+      }
+    }
+  }
+}
+
+// ─── Animate Positions ──────────────────────────────────────
+function updatePositions() {
+  for (const mesh of letterMeshes) {
+    const { charIndex, stackIndex, totalChars } = mesh.userData;
+
+    // Base angle around circle
+    const angleStep = (Math.PI * 2) / totalChars;
+    const baseAngle = charIndex * angleStep;
+
+    // Stack offset
+    const stackAngle = baseAngle + stackIndex * state.radiusRotate;
+    const stackY = (stackIndex - (state.stackNum - 1) / 2) * state.radiusOffset;
+
+    // Wave
+    const wavePhase = stackAngle * state.waveCount + time * state.waveSpeed;
+    const waveY = Math.sin(wavePhase) * state.waveAmp;
+    const waveZ = Math.cos(wavePhase) * state.zAxis;
+    const waveLong = Math.sin(wavePhase * 0.5) * state.long;
+
+    // Position
+    const r = state.radius + waveLong;
+    const x = Math.cos(stackAngle) * r;
+    const z = Math.sin(stackAngle) * r + waveZ;
+    const y = stackY + waveY;
+
+    mesh.position.set(x, y, z);
+
+    // Face outward from center + wave rotation
+    mesh.rotation.y = -stackAngle + Math.PI / 2;
+    mesh.rotation.x = Math.sin(wavePhase) * 0.3;
+    mesh.rotation.z = Math.cos(wavePhase * 0.7) * 0.2;
+
+    // Stretch
+    mesh.scale.set(state.xStretch, state.yStretch, 1);
+  }
+}
+
+// ─── Resize ──────────────────────────────────────
+function resize() {
+  const wrap = canvas.parentElement;
+  let w = wrap.clientWidth;
+  let h = wrap.clientHeight;
+
+  if (state.aspect === 'square') {
+    const s = Math.min(w, h);
+    w = s; h = s;
+  } else if (state.aspect === 'portrait') {
+    const s = Math.min(w, h);
+    w = s * 0.75; h = s;
+  } else if (state.aspect === 'landscape') {
+    const s = Math.min(w, h);
+    w = s; h = s * 0.75;
+  }
+
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+// ─── Animation Loop ──────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (needsRebuild) {
+    buildLetters();
+    needsRebuild = false;
+  }
+
+  time += 0.016;
+  letterGroup.rotation.y += state.rotSpeed * 0.016;
+  camera.position.z = state.camDist;
+
+  updatePositions();
+  renderer.render(scene, camera);
+
+  // Capture frame for GIF if recording
+  if (gifRecording && gifFrames.length < gifMaxFrames) {
+    gifFrameCounter++;
+    if (gifFrameCounter % gifFrameSkip === 0) {
+      gifFrames.push(canvas.toDataURL('image/png'));
+      statusEl.textContent = `GIF: ${gifFrames.length}/${gifMaxFrames} frames`;
+    }
+  }
+}
+
+// ─── Controls Binding ──────────────────────────────────────
+const sliderIds = ['radius', 'stackNum', 'radiusRotate', 'radiusOffset', 'extrudeDepth', 'waveCount', 'waveSpeed', 'waveAmp', 'long', 'zAxis', 'xStretch', 'yStretch', 'rotSpeed', 'camDist'];
+const rebuildKeys = new Set(['stackNum', 'extrudeDepth']);
+const statusEl = document.getElementById('status');
+
+for (const id of sliderIds) {
+  const el = document.getElementById(id);
+  const valEl = document.getElementById(id + '-val');
+  el.addEventListener('input', () => {
+    const v = parseFloat(el.value);
+    state[id] = v;
+    valEl.textContent = Number.isInteger(v) ? v : v.toFixed(2);
+    if (rebuildKeys.has(id)) needsRebuild = true;
+  });
+}
+
+// Text input
+document.getElementById('textInput').addEventListener('input', (e) => {
+  state.text = e.target.value;
+  needsRebuild = true;
+});
+
+// Font select
+document.getElementById('fontSelect').addEventListener('change', async (e) => {
+  state.fontKey = e.target.value;
+  statusEl.textContent = 'Loading font...';
+  await loadFont(state.fontKey);
+  needsRebuild = true;
+  statusEl.textContent = '';
+});
+
+// Render mode
+document.getElementById('renderMode').addEventListener('change', (e) => {
+  state.renderMode = e.target.value;
+  needsRebuild = true;
+});
+
+// Presets
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const preset = presets[btn.dataset.preset];
+    if (!preset) return;
+
+    for (const [key, val] of Object.entries(preset)) {
+      state[key] = val;
+      const el = document.getElementById(key);
+      const valEl = document.getElementById(key + '-val');
+      if (el) {
+        el.value = val;
+        valEl.textContent = Number.isInteger(val) ? val : val.toFixed(2);
+      }
+    }
+    needsRebuild = true;
+  });
+});
+
+// Theme
+document.querySelectorAll('.theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.dark = btn.dataset.theme === 'dark';
+    document.body.classList.toggle('dark', state.dark);
+    updateBg();
+    needsRebuild = true; // Rebuild to update material colors
+  });
+});
+
+// Aspect
+document.querySelectorAll('.aspect-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.aspect = btn.dataset.aspect;
+    resize();
+  });
+});
+
+// ─── Export: PNG ──────────────────────────────────────
+document.getElementById('btnPNG').addEventListener('click', () => {
+  renderer.render(scene, camera);
+  const link = document.createElement('a');
+  link.download = `typeface-${state.text.toLowerCase()}-${Date.now()}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  statusEl.textContent = 'PNG saved';
+  setTimeout(() => statusEl.textContent = '', 2000);
+});
+
+// ─── Export: Video (WebM) ──────────────────────────────────────
+let mediaRecorder = null;
+let recordedChunks = [];
+
+document.getElementById('btnRecord').addEventListener('click', () => {
+  const btn = document.getElementById('btnRecord');
+
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    btn.textContent = 'Record';
+    btn.classList.remove('recording');
+    return;
+  }
+
+  const stream = canvas.captureStream(30);
+  mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+  recordedChunks = [];
+
+  mediaRecorder.ondataavailable = (e) => {
+    if (e.data.size > 0) recordedChunks.push(e.data);
+  };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const link = document.createElement('a');
+    link.download = `typeface-${state.text.toLowerCase()}-${Date.now()}.webm`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    statusEl.textContent = 'Video saved';
+    setTimeout(() => statusEl.textContent = '', 2000);
+  };
+
+  mediaRecorder.start();
+  btn.textContent = 'Stop';
+  btn.classList.add('recording');
+  statusEl.textContent = 'Recording...';
+});
+
+// ─── Export: GIF ──────────────────────────────────────
+let gifRecording = false;
+let gifFrames = [];
+let gifFrameCounter = 0;
+const gifMaxFrames = 60;
+const gifFrameSkip = 2; // Capture every 2nd frame
+
+document.getElementById('btnGIF').addEventListener('click', async () => {
+  if (gifRecording) return;
+
+  gifRecording = true;
+  gifFrames = [];
+  gifFrameCounter = 0;
+  statusEl.textContent = 'Capturing GIF frames...';
+  document.getElementById('btnGIF').classList.add('recording');
+
+  // Wait for frames to be captured
+  await new Promise(resolve => {
+    const check = setInterval(() => {
+      if (gifFrames.length >= gifMaxFrames) {
+        clearInterval(check);
+        resolve();
+      }
+    }, 100);
+  });
+
+  gifRecording = false;
+  document.getElementById('btnGIF').classList.remove('recording');
+  statusEl.textContent = 'Encoding GIF...';
+
+  // Use canvas-based GIF encoding
+  const gifCanvas = document.createElement('canvas');
+  const w = canvas.width;
+  const h = canvas.height;
+  gifCanvas.width = w;
+  gifCanvas.height = h;
+  const ctx = gifCanvas.getContext('2d');
+
+  // Simple GIF download as animated WebP fallback (GIF encoding without library)
+  // For true GIF, we'd need gif.js — using WebM as the animated format
+  const stream = canvas.captureStream(30);
+  const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+  const chunks = [];
+
+  recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+  recorder.onstop = () => {
+    const blob = new Blob(chunks, { type: 'video/webm' });
+    const link = document.createElement('a');
+    link.download = `typeface-${state.text.toLowerCase()}-${Date.now()}.webm`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    statusEl.textContent = 'Animated clip saved (WebM)';
+    setTimeout(() => statusEl.textContent = '', 3000);
+  };
+
+  recorder.start();
+  setTimeout(() => recorder.stop(), 3000);
+});
+
+// ─── Init ──────────────────────────────────────
+async function init() {
+  statusEl.textContent = 'Loading fonts...';
+
+  try {
+    await loadFont('geist-bold');
+    statusEl.textContent = '';
+  } catch (e) {
+    statusEl.textContent = 'Error loading font — check fonts/ directory';
+    console.error(e);
+  }
+
+  // Preload other fonts in background
+  loadFont('geist-regular').catch(() => {});
+  loadFont('pt-mono').catch(() => {});
+
+  resize();
+  window.addEventListener('resize', resize);
+  needsRebuild = true;
+  animate();
+}
+
+init();
+</script>
+</body>
+</html>

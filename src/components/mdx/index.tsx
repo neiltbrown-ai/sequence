@@ -5,6 +5,11 @@ import { Chart, ChartRow } from "./chart";
 import { BreakoutImage, FullWidthImage } from "./breakout-image";
 import { Subhead, SmallSubhead } from "./headings";
 import { DropCap } from "./drop-cap";
+import { Accordion, AccordionCard, AccordionCardText } from "./accordion";
+import { Tabs, TabPanel, TabGrid, TabItem } from "./tabs";
+import { ArticleTable } from "./table";
+import { Section } from "./section";
+import { ArticleImage } from "./article-image";
 
 /**
  * MDX component map — passed to <MDXRemote /> so that custom tags
@@ -25,6 +30,16 @@ export const mdxComponents: MDXComponents = {
   Subhead,
   SmallSubhead,
   DropCap,
+  Accordion,
+  AccordionCard,
+  AccordionCardText,
+  Tabs,
+  TabPanel,
+  TabGrid,
+  TabItem,
+  ArticleTable,
+  Section,
+  ArticleImage,
 
   // Override default markdown elements to apply article CSS classes
   p: (props) => (

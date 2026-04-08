@@ -6,9 +6,11 @@ import StructuresTable from "@/components/structures-table";
 import TestimonialsCarousel from "@/components/testimonials-carousel";
 import {
   getStructuresTableData,
-  getAllCaseStudies,
+  getFeaturedCaseStudies,
   getTestimonials,
 } from "@/lib/content";
+
+const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
 
 export const metadata: Metadata = {
   title: "Resources \u2014 In Sequence",
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
 export default function ResourcesPage() {
   // Read content at build time from MDX files
   const { models, deals } = getStructuresTableData();
-  const caseStudies = getAllCaseStudies();
+  const caseStudies = getFeaturedCaseStudies(4);
   const testimonials = getTestimonials();
 
   return (
@@ -32,8 +34,8 @@ export default function ResourcesPage() {
             <p className="lib-hero-desc rv">
               <strong>Research, structures, and case studies</strong> for
               creative professionals navigating the restructuring of the
-              creative economy. The library grows every week. Membership is $89
-              per year.
+              creative economy. The library grows every week. Membership is{" "}
+              $12 per year.
             </p>
           </div>
         </div>
@@ -43,7 +45,7 @@ export default function ResourcesPage() {
             <span className="lib-metric-lbl">DEAL STRUCTURES</span>
           </div>
           <div className="lib-metric rv rv-d1">
-            <span className="lib-metric-val">37+</span>
+            <span className="lib-metric-val">70+</span>
             <span className="lib-metric-lbl">CASE STUDIES</span>
           </div>
           <div className="lib-metric rv rv-d2">
@@ -84,7 +86,7 @@ export default function ResourcesPage() {
             </h2>
             <p className="platform-desc rv rv-d1">
               <strong>
-                35 deal structures. 37 case studies. Decision checklists.
+                35 deal structures. 70+ case studies. Decision checklists.
                 Negotiation scripts.
               </strong>{" "}
               A research-backed library built for creative professionals who are
@@ -92,12 +94,12 @@ export default function ResourcesPage() {
               studies, and tools added every week.
             </p>
             <div className="platform-price rv rv-d2">
-              <span className="platform-price-val">$89</span>
+              <span className="platform-price-val">$12</span>
               <span className="platform-price-term">/ YEAR</span>
             </div>
             <div className="platform-buttons rv rv-d3">
               <Link href="/signup" className="btn btn--white">
-                SIGN UP &mdash; $89/YEAR
+                SIGN UP &mdash; $12/YEAR
                 <ButtonArrow />
               </Link>
             </div>
@@ -135,7 +137,7 @@ export default function ResourcesPage() {
               to use it.
             </span>
             <p className="structures-gate-desc">
-              <strong>$89 per year</strong> for the full library &mdash; every
+              <strong>$12 per year</strong> for the full library &mdash; every
               structure with the depth you need to actually negotiate, protect
               yourself, and capture value. New structures and case studies added
               weekly.
@@ -145,11 +147,11 @@ export default function ResourcesPage() {
               style={{ display: "flex", alignItems: "center", gap: "16px" }}
             >
               <Link href="/signup" className="btn btn--white">
-                SIGN UP &mdash; $89/YEAR
+                SIGN UP &mdash; $12/YEAR
                 <ButtonArrow />
               </Link>
               <Link
-                href="/signup"
+                href="/structures/hybrid-fee-backend"
                 style={{
                   fontFamily: "var(--mono)",
                   fontSize: "10px",
@@ -229,7 +231,7 @@ export default function ResourcesPage() {
         <div className="cases-intro">
           <div className="cases-intro-grid">
             <p className="cases-intro-text rv">
-              <strong>37 case studies</strong> mapping how creative
+              <strong>70+ case studies</strong> mapping how creative
               professionals structured deals, captured value, and built
               ownership &mdash; from independent musicians to billion-dollar
               holding companies. Each study documents the specific terms, the
@@ -242,7 +244,7 @@ export default function ResourcesPage() {
           {caseStudies.map((cs, i) => (
             <Link
               key={cs.slug}
-              href="/signup"
+              href={`/case-studies/${cs.slug}`}
               className={`case-card rv${i > 0 ? ` rv-d${i}` : ""}`}
               style={{
                 backgroundImage: cs.coverImage
@@ -253,7 +255,7 @@ export default function ResourcesPage() {
               <span className="case-lbl">
                 [CASE {String(cs.number).padStart(2, "0")}]
               </span>
-              <span className="case-name">{cs.title}</span>
+              <span className="case-name">{stripBr(cs.title)}</span>
               <span className="case-discipline">{cs.discipline}</span>
               <p className="case-desc">{cs.excerpt}</p>
               <div className="case-bottom">
@@ -278,7 +280,7 @@ export default function ResourcesPage() {
               Real outcomes.
             </span>
             <p className="cases-gate-desc">
-              <strong>37 case studies &mdash; and growing.</strong> Each one
+              <strong>70+ case studies &mdash; and growing.</strong> Each one
               documents the actual deal structure, the strategic reasoning
               behind it, and the financial outcomes. Not theory. Not
               inspiration. The specific mechanics of how creative professionals
@@ -460,13 +462,13 @@ export default function ResourcesPage() {
               Sequence
             </h2>
             <p className="access-desc rv rv-d1">
-              <strong>$89 per year.</strong> Every structure, case study, and
+              <strong>$12 per year.</strong> Every structure, case study, and
               framework &mdash; plus new content added weekly. The library
               grows. You grow with it.
             </p>
             <div className="access-buttons rv rv-d2">
               <Link href="/signup" className="btn btn--white">
-                SIGN UP &mdash; $89/YEAR
+                SIGN UP &mdash; $12/YEAR
                 <ButtonArrow />
               </Link>
             </div>
@@ -481,7 +483,7 @@ export default function ResourcesPage() {
             <div className="access-feature">
               <span className="access-feature-num">[02]</span>
               <span className="access-feature-text">
-                <strong>37+ case studies</strong> across disciplines
+                <strong>70+ case studies</strong> across disciplines
               </span>
             </div>
             <div className="access-feature">
@@ -554,7 +556,7 @@ export default function ResourcesPage() {
         <div className="newsletter-bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://framerusercontent.com/images/UmfC1Xw7ephKTN4uul1c2ojX4JY.jpg"
+            src="https://images.pexels.com/photos/33578118/pexels-photo-33578118.jpeg"
             alt=""
           />
         </div>
@@ -566,14 +568,13 @@ export default function ResourcesPage() {
                 fontSize: "clamp(44px, 7vw, 84px)",
               }}
             >
-              Get In Sequence
+              Insights in Your Inbox
             </h2>
           </div>
           <div className="newsletter-text-col rv rv-d1">
             <p className="newsletter-p">
-              One structure per week. Case studies, frameworks, and the deals
-              that change creative economics.{" "}
-              <strong>The library keeps growing.</strong>
+              Updates on the restructuring. Emerging trends, new structures,
+              and opportunities for creative professionals building ownership.
             </p>
             <NewsletterForm />
           </div>

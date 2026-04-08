@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IN SEQUENCE · Image Sourcer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --dark: #111111; --charcoal: #1A1A1A; --deep: #2A2A2A;
+    --slate: #3D3A38; --mid: #4A4745; --light: #F2EFE9;
+    --muted: #888; --accent: #C8F04B; --gold: #E8D5A3; --red: #E87B5A;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  }
+  body { background: var(--dark); color: var(--light); font-family: var(--sans); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+
+  /* HEADER */
+  header { position: sticky; top: 0; z-index: 100; background: var(--dark); border-bottom: 1px solid var(--slate); padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .brand { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.18em; }
+  .hdivider { width: 1px; height: 14px; background: var(--slate); }
+  .sub { font-family: var(--mono); font-size: 10px; color: #555; letter-spacing: 0.1em; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .sel-count { font-family: var(--mono); font-size: 10px; color: var(--gold); display: none; }
+
+  /* BUTTONS */
+  .btn { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; font-weight: 700; padding: 8px 16px; cursor: pointer; border-radius: 2px; border: none; transition: all 0.12s; }
+  .btn-primary { background: var(--accent); color: var(--dark); }
+  .btn-primary:hover { background: #d4f55a; }
+  .btn-primary:disabled { background: var(--deep); cursor: not-allowed; color: #555; }
+  .btn-ghost { background: none; border: 1px solid var(--slate); color: #666; }
+  .btn-ghost:hover { border-color: var(--mid); color: var(--muted); }
+  .btn-ghost.active { background: var(--slate); color: var(--light); border-color: var(--slate); }
+  .btn-outline-accent { background: none; border: 1px solid var(--accent); color: var(--accent); }
+  .btn-outline-accent:hover { background: rgba(200,240,75,0.08); }
+  .btn-link { background: none; border: none; color: #444; font-family: var(--mono); font-size: 10px; cursor: pointer; letter-spacing: 0.08em; padding: 0; }
+  .btn-link:hover { color: #777; }
+  .btn-sm { padding: 4px 10px; font-size: 10px; }
+  .btn-icon { background: none; border: none; color: #555; cursor: pointer; font-size: 20px; padding: 0 4px; line-height: 1; }
+  .btn-icon:hover { color: #888; }
+
+  /* SETUP */
+  #setup-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 28px; }
+  .setup-inner { max-width: 560px; width: 100%; }
+  .setup-eyebrow { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.18em; margin-bottom: 24px; }
+  .setup-title { font-size: 28px; font-weight: 700; line-height: 1.1; margin-bottom: 28px; color: var(--light); }
+  .key-row { margin-bottom: 16px; }
+  .key-label { font-family: var(--mono); font-size: 10px; color: #666; letter-spacing: 0.1em; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .key-label a { color: var(--gold); text-decoration: none; font-size: 9px; }
+  .key-label a:hover { text-decoration: underline; }
+  .key-input { width: 100%; padding: 11px 13px; background: var(--charcoal); border: 1px solid var(--slate); border-radius: 2px; color: var(--light); font-family: var(--mono); font-size: 12px; outline: none; }
+  .key-input:focus { border-color: var(--mid); }
+  .key-input::placeholder { color: #3a3a3a; }
+  .key-status { font-family: var(--mono); font-size: 10px; margin-top: 5px; height: 16px; }
+  .key-status.ok { color: #6a9; }
+  .key-status.err { color: var(--red); }
+  .key-status.pending { color: #666; }
+  .setup-divider { border: none; border-top: 1px solid var(--slate); margin: 20px 0; }
+  .setup-note { font-family: var(--mono); font-size: 10px; color: #3a3a3a; line-height: 1.7; margin-top: 14px; }
+
+  /* ADD FORM */
+  #add-form { background: var(--charcoal); border-bottom: 1px solid var(--slate); padding: 18px 32px; display: none; }
+  #add-form.visible { display: block; }
+  .form-row { display: grid; grid-template-columns: 130px 1fr 1.4fr; gap: 10px; margin-bottom: 12px; }
+  .form-input { padding: 10px 12px; background: var(--deep); border: 1px solid var(--slate); border-radius: 2px; color: var(--light); font-family: var(--sans); font-size: 14px; outline: none; }
+  .form-input:focus { border-color: var(--mid); }
+  .form-input::placeholder { color: #444; }
+  select.form-input { font-family: var(--mono); font-size: 12px; cursor: pointer; }
+  .form-actions { display: flex; gap: 8px; align-items: center; }
+  .form-hint { font-family: var(--mono); font-size: 10px; color: #444; margin-left: 4px; }
+
+  /* PROMPT EDITOR */
+  #prompt-panel { background: var(--deep); border-bottom: 1px solid var(--slate); padding: 0 32px; display: none; }
+  #prompt-panel.visible { display: block; }
+  .prompt-inner { max-width: 900px; padding: 20px 0; }
+  .prompt-label { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+  .prompt-label span { color: #555; font-size: 9px; }
+  #prompt-textarea {
+    width: 100%; height: 180px; padding: 12px 14px;
+    background: var(--charcoal); border: 1px solid var(--slate);
+    border-radius: 2px; color: #aaa; font-family: var(--mono);
+    font-size: 11px; line-height: 1.6; outline: none; resize: vertical;
+  }
+  #prompt-textarea:focus { border-color: var(--mid); color: var(--light); }
+  .prompt-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+  /* MAIN */
+  #main { padding: 32px; max-width: 1140px; margin: 0 auto; }
+
+  /* EMPTY STATE */
+  #empty-state { text-align: center; padding: 100px 32px; border: 1px dashed var(--slate); border-radius: 4px; }
+  .empty-label { font-family: var(--mono); font-size: 11px; color: #444; letter-spacing: 0.15em; margin-bottom: 16px; }
+  .empty-desc { color: #777; font-size: 15px; line-height: 1.7; margin-bottom: 28px; }
+
+  /* CONTENT BLOCK */
+  .content-block { background: var(--charcoal); border-radius: 4px; border: 1px solid var(--slate); overflow: hidden; margin-bottom: 20px; }
+  .block-header { padding: 16px 20px; border-bottom: 1px solid var(--slate); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .block-meta { flex: 1; }
+  .block-type { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.12em; margin-bottom: 4px; }
+  .block-title { font-size: 15px; font-weight: 600; line-height: 1.3; color: var(--light); }
+  .block-excerpt { color: #777; font-size: 13px; line-height: 1.5; margin-top: 5px; }
+  .block-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+  .picked-badge { font-family: var(--mono); font-size: 10px; color: var(--accent); padding: 3px 8px; border: 1px solid rgba(200,240,75,0.25); border-radius: 2px; background: rgba(200,240,75,0.06); }
+  .block-loading { padding: 48px; text-align: center; }
+  .loading-label { font-family: var(--mono); font-size: 11px; color: #555; letter-spacing: 0.14em; margin-bottom: 6px; }
+  .loading-sub { font-family: var(--mono); font-size: 10px; color: #3a3a3a; }
+  .block-error { padding: 20px; font-family: var(--mono); font-size: 11px; color: var(--red); line-height: 1.7; }
+  .block-results { padding: 20px; }
+  .query-section { margin-bottom: 28px; }
+  .query-section:last-child { margin-bottom: 0; }
+  .query-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .q-badge { font-family: var(--mono); font-size: 9px; color: var(--accent); background: rgba(200,240,75,0.12); padding: 2px 7px; border-radius: 2px; letter-spacing: 0.1em; }
+  .q-source { font-family: var(--mono); font-size: 9px; color: #555; padding: 2px 6px; border: 1px solid #333; border-radius: 2px; }
+  .q-text { font-family: var(--mono); font-size: 10px; color: #666; }
+  .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .no-results-q { font-family: var(--mono); font-size: 10px; color: #444; padding: 12px; background: var(--deep); border-radius: 2px; }
+
+  /* IMAGE CARD */
+  .img-card { position: relative; cursor: pointer; border-radius: 2px; overflow: hidden; aspect-ratio: 3/2; border: 2px solid transparent; transition: border-color 0.12s, transform 0.12s, box-shadow 0.12s; background: var(--deep); }
+  .img-card:hover { transform: scale(1.02); }
+  .img-card.selected { border-color: var(--accent); box-shadow: 0 0 14px rgba(200,240,75,0.2); }
+  .img-card img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 0.3s; }
+  .img-card img.loaded { opacity: 1; }
+  .img-overlay { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 55%); transition: background 0.2s; }
+  .img-card:hover .img-overlay, .img-card.selected .img-overlay { background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.05) 50%, transparent 100%); }
+  .img-check { position: absolute; top: 8px; right: 8px; background: var(--accent); color: var(--dark); font-family: var(--mono); font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 2px; letter-spacing: 0.08em; display: none; }
+  .img-card.selected .img-check { display: block; }
+  .img-credit { position: absolute; bottom: 8px; left: 8px; right: 8px; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+  .img-card:hover .img-credit { opacity: 1; }
+  .img-credit-name { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.85); }
+  .img-credit-src { font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+  .img-dot { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 9px; color: #333; }
+
+  /* SELECTION PANEL */
+  #selection-panel { margin-top: 40px; display: none; background: var(--charcoal); border: 1px solid var(--slate); border-radius: 4px; padding: 24px; }
+  .sel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .sel-title { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; }
+  .sel-group { margin-bottom: 24px; }
+  .sel-group:last-child { margin-bottom: 0; }
+  .sel-group-label { font-family: var(--mono); font-size: 10px; color: #666; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .sel-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .sel-thumb { position: relative; aspect-ratio: 3/2; border-radius: 2px; overflow: hidden; background: var(--deep); }
+  .sel-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sel-thumb-credit { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.65); padding: 3px 5px; font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,0.45); }
+
+  @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .pulsing { animation: pulse 1.4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- ═══ SETUP SCREEN ═══ -->
+<div id="setup-screen">
+  <div class="setup-inner">
+    <div class="setup-eyebrow">IN SEQUENCE · IMAGE SOURCER</div>
+    <h1 class="setup-title">API keys.</h1>
+
+    <!-- Claude — required -->
+    <div class="key-row">
+      <div class="key-label">
+        <span>ANTHROPIC · CLAUDE <span style="color:var(--accent)">REQUIRED</span></span>
+        <a href="https://console.anthropic.com" target="_blank">↗ console.anthropic.com</a>
+      </div>
+      <input type="password" class="key-input" id="claude-key" placeholder="sk-ant-…" autocomplete="off">
+      <div class="key-status" id="claude-status"></div>
+    </div>
+
+    <hr class="setup-divider">
+
+    <!-- Image sources — one required -->
+    <div style="font-family:var(--mono);font-size:10px;color:#555;letter-spacing:0.1em;margin-bottom:14px;">IMAGE SOURCES · AT LEAST ONE</div>
+
+    <div class="key-row">
+      <div class="key-label">
+        <span>UNSPLASH</span>
+        <a href="https://unsplash.com/developers" target="_blank">↗ unsplash.com/developers → New Application</a>
+      </div>
+      <input type="password" class="key-input" id="unsplash-key" placeholder="Access Key…" autocomplete="off">
+      <div class="key-status" id="unsplash-status"></div>
+    </div>
+
+    <div class="key-row">
+      <div class="key-label">
+        <span>PEXELS</span>
+        <a href="https://www.pexels.com/api/" target="_blank">↗ pexels.com/api → instant on signup</a>
+      </div>
+      <input type="password" class="key-input" id="pexels-key" placeholder="API Key…" autocomplete="off">
+      <div class="key-status" id="pexels-status"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center;margin-top:24px;">
+      <button class="btn btn-primary" id="verify-btn" onclick="verifyKeys()">VERIFY & START →</button>
+      <span id="verify-msg" style="font-family:var(--mono);font-size:10px;color:var(--red);display:none;"></span>
+    </div>
+    <p class="setup-note">Keys stored in localStorage — stay in your browser, never leave it.<br>Unsplash: 50 req/hr free. Pexels: 200 req/hr free. Claude: fractions of a cent per search.</p>
+  </div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div id="app" style="display:none;">
+
+  <header>
+    <div class="header-left">
+      <span class="brand">IN SEQUENCE</span>
+      <div class="hdivider"></div>
+      <span class="sub">IMAGE SOURCER</span>
+    </div>
+    <div class="header-right">
+      <span class="sel-count" id="sel-count"></span>
+      <button class="btn-link" id="prompt-toggle-btn" onclick="togglePromptPanel()">edit prompt</button>
+      <button class="btn-link" onclick="resetKeys()" style="margin-left:4px;">keys</button>
+      <button class="btn btn-primary" id="add-btn" onclick="toggleAddForm()">+ ADD CONTENT</button>
+    </div>
+  </header>
+
+  <!-- PROMPT EDITOR -->
+  <div id="prompt-panel">
+    <div class="prompt-inner">
+      <div class="prompt-label">
+        CLAUDE QUERY PROMPT
+        <span>This is sent to Claude to generate Unsplash/Pexels search queries. Edit to tune the aesthetic.</span>
+      </div>
+      <textarea id="prompt-textarea"></textarea>
+      <div class="prompt-actions">
+        <button class="btn btn-primary btn-sm" onclick="savePrompt()">SAVE PROMPT</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetPrompt()">RESET TO DEFAULT</button>
+        <button class="btn btn-ghost btn-sm" onclick="togglePromptPanel()">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD FORM -->
+  <div id="add-form">
+    <div class="form-row">
+      <select class="form-input" id="f-type">
+        <option value="article">Article</option>
+        <option value="case study">Case Study</option>
+        <option value="structure">Structure</option>
+        <option value="newsletter">Newsletter</option>
+        <option value="social">Social</option>
+      </select>
+      <input class="form-input" id="f-title" placeholder="Title or headline…" type="text" autocomplete="off">
+      <input class="form-input" id="f-excerpt" placeholder="Description or excerpt — more context = better queries…" type="text" autocomplete="off">
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="submitContent()">FIND IMAGES →</button>
+      <button class="btn btn-ghost" onclick="toggleAddForm()">CANCEL</button>
+      <span class="form-hint">Claude generates queries · searches Unsplash + Pexels</span>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="empty-state">
+      <div class="empty-label">NO CONTENT YET</div>
+      <p class="empty-desc">Add a piece of content. Claude reads the title and description,<br>generates targeted search queries, then pulls from Unsplash + Pexels.</p>
+      <button class="btn btn-outline-accent" onclick="toggleAddForm()">+ ADD FIRST CONTENT</button>
+    </div>
+    <div id="blocks-container"></div>
+    <div id="selection-panel">
+      <div class="sel-header">
+        <span class="sel-title" id="sel-title">SELECTIONS</span>
+        <button class="btn btn-outline-accent btn-sm" onclick="exportSelections()">EXPORT ↓</button>
+      </div>
+      <div id="sel-groups"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DEFAULT PROMPT ───────────────────────────────────────────────────────────
+
+const DEFAULT_PROMPT = `You are a photo editor for In Sequence — an editorial brand about how the creative economy is restructuring. The thesis: production commoditizes, discernment becomes scarce, capital follows scarcity.
+
+VISUAL BRIEF:
+- High contrast, cinematic, asymmetric composition
+- Documentary-editorial style — feels observed, not staged
+- NOT stock photography, NOT lifestyle imagery, NOT posed smiling
+- Strong subject matter: people at work in profile, workspaces and tools, architecture, hands making things, dramatic light and shadow, urban texture, industrial spaces, empty rooms with presence
+
+QUERY RULES:
+- Generate exactly 4 search queries for Unsplash/Pexels
+- Keep each query SHORT — 1 to 3 words performs best
+- Vary the 4 queries: different subject matter, mood, abstraction level
+- Think cinematically: what would a still from a great documentary look like?
+
+RETURN FORMAT:
+Raw JSON array of 4 strings only. No markdown fences, no explanation, nothing else.
+Example: ["dark workshop", "empty theater", "architect detail", "industrial shadow"]`;
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+
+const state = {
+  claudeKey: '',
+  unsplashKey: '',
+  pexelsKey: '',
+  items: [],
+  selections: [],
+  queryPrompt: DEFAULT_PROMPT,
+};
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+window.onload = () => {
+  const ck = localStorage.getItem('seq_claude');
+  const uk = localStorage.getItem('seq_unsplash');
+  const pk = localStorage.getItem('seq_pexels');
+  const qp = localStorage.getItem('seq_prompt');
+
+  if (ck) document.getElementById('claude-key').value = ck;
+  if (uk) document.getElementById('unsplash-key').value = uk;
+  if (pk) document.getElementById('pexels-key').value = pk;
+
+  state.queryPrompt = qp || DEFAULT_PROMPT;
+  document.getElementById('prompt-textarea').value = state.queryPrompt;
+
+  // Auto-launch if all keys present
+  if (ck && (uk || pk)) {
+    state.claudeKey = ck;
+    state.unsplashKey = uk || '';
+    state.pexelsKey = pk || '';
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  }
+
+  ['f-title', 'f-excerpt'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitContent();
+    });
+  });
+};
+
+// ─── SETUP ────────────────────────────────────────────────────────────────────
+
+async function verifyKeys() {
+  const ck = document.getElementById('claude-key').value.trim();
+  const uk = document.getElementById('unsplash-key').value.trim();
+  const pk = document.getElementById('pexels-key').value.trim();
+  const btn = document.getElementById('verify-btn');
+  const msg = document.getElementById('verify-msg');
+
+  msg.style.display = 'none';
+
+  if (!ck) { showVerifyMsg('Claude API key is required.'); return; }
+  if (!uk && !pk) { showVerifyMsg('Add at least one image source key.'); return; }
+
+  btn.textContent = 'VERIFYING…';
+  btn.disabled = true;
+
+  const results = await Promise.all([
+    ck  ? verifyClaude(ck)   : Promise.resolve(true),
+    uk  ? verifyUnsplash(uk) : Promise.resolve(true),
+    pk  ? verifyPexels(pk)   : Promise.resolve(true),
+  ]);
+
+  btn.textContent = 'VERIFY & START →';
+  btn.disabled = false;
+
+  const [cOk, uOk, pOk] = results;
+  if (!cOk) { showVerifyMsg('Claude key failed — check and retry.'); return; }
+  if (uk && !uOk && pk && !pOk) { showVerifyMsg('Both image source keys failed — check and retry.'); return; }
+  if (!uk && !pOk) { showVerifyMsg('Pexels key failed — check and retry.'); return; }
+  if (!pk && !uOk) { showVerifyMsg('Unsplash key failed — check and retry.'); return; }
+
+  state.claudeKey = ck;
+  state.unsplashKey = uk;
+  state.pexelsKey = pk;
+
+  localStorage.setItem('seq_claude', ck);
+  if (uk) localStorage.setItem('seq_unsplash', uk);
+  if (pk) localStorage.setItem('seq_pexels', pk);
+
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+async function verifyClaude(key) {
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role: 'user', content: 'hi' }] }),
+    });
+    const ok = r.status === 200;
+    setKeyStatus('claude-status', ok ? '✓ Connected' : `✗ Error ${r.status}`, ok ? 'ok' : 'err');
+    return ok;
+  } catch (e) {
+    setKeyStatus('claude-status', `✗ ${e.message}`, 'err');
+    return false;
+  }
+}
+
+async function verifyUnsplash(key) {
+  try {
+    const r = await fetch(`https://api.unsplash.com/photos/random?client_id=${key}`);
+    const ok = r.status === 200;
+    setKeyStatus('unsplash-status', ok ? '✓ Connected' : `✗ Error ${r.status}`, ok ? 'ok' : 'err');
+    return ok;
+  } catch (e) {
+    setKeyStatus('unsplash-status', `✗ ${e.message}`, 'err');
+    return false;
+  }
+}
+
+async function verifyPexels(key) {
+  try {
+    const r = await fetch('https://api.pexels.com/v1/search?query=light&per_page=1', { headers: { Authorization: key } });
+    const ok = r.status === 200;
+    setKeyStatus('pexels-status', ok ? '✓ Connected' : `✗ Error ${r.status}`, ok ? 'ok' : 'err');
+    return ok;
+  } catch (e) {
+    setKeyStatus('pexels-status', `✗ ${e.message}`, 'err');
+    return false;
+  }
+}
+
+function setKeyStatus(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = `key-status ${type}`;
+}
+
+function showVerifyMsg(text) {
+  const el = document.getElementById('verify-msg');
+  el.textContent = text;
+  el.style.display = 'inline';
+}
+
+function resetKeys() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'flex';
+  // Clear statuses
+  ['claude-status','unsplash-status','pexels-status'].forEach(id => {
+    document.getElementById(id).textContent = '';
+    document.getElementById(id).className = 'key-status';
+  });
+  document.getElementById('verify-msg').style.display = 'none';
+}
+
+// ─── PROMPT EDITOR ────────────────────────────────────────────────────────────
+
+let promptOpen = false;
+
+function togglePromptPanel() {
+  promptOpen = !promptOpen;
+  document.getElementById('prompt-panel').classList.toggle('visible', promptOpen);
+  document.getElementById('prompt-toggle-btn').style.color = promptOpen ? 'var(--accent)' : '#444';
+  if (promptOpen) document.getElementById('prompt-textarea').value = state.queryPrompt;
+}
+
+function savePrompt() {
+  const val = document.getElementById('prompt-textarea').value.trim();
+  if (!val) return;
+  state.queryPrompt = val;
+  localStorage.setItem('seq_prompt', val);
+  togglePromptPanel();
+}
+
+function resetPrompt() {
+  state.queryPrompt = DEFAULT_PROMPT;
+  localStorage.removeItem('seq_prompt');
+  document.getElementById('prompt-textarea').value = DEFAULT_PROMPT;
+}
+
+// ─── ADD FORM ─────────────────────────────────────────────────────────────────
+
+let addFormOpen = false;
+
+function toggleAddForm() {
+  addFormOpen = !addFormOpen;
+  document.getElementById('add-form').classList.toggle('visible', addFormOpen);
+  const btn = document.getElementById('add-btn');
+  btn.textContent = addFormOpen ? '✕ CANCEL' : '+ ADD CONTENT';
+  btn.className = addFormOpen ? 'btn btn-ghost active' : 'btn btn-primary';
+  if (addFormOpen) setTimeout(() => document.getElementById('f-title').focus(), 50);
+}
+
+async function submitContent() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) return;
+
+  const type = document.getElementById('f-type').value;
+  const excerpt = document.getElementById('f-excerpt').value.trim();
+  const id = 'item_' + Date.now();
+  const item = { id, type, title, excerpt, photos: null, error: null, loading: true, queries: [] };
+
+  state.items.unshift(item);
+  toggleAddForm();
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-excerpt').value = '';
+  renderBlocks();
+
+  // Step 1: Claude generates queries
+  setItemStatus(id, 'GENERATING QUERIES…');
+  let queries;
+  try {
+    queries = await generateQueries(type, title, excerpt);
+    item.queries = queries;
+    setItemStatus(id, `SEARCHING "${queries[0]}", "${queries[1]}"…`);
+  } catch (e) {
+    item.loading = false;
+    item.error = `Query generation failed: ${e.message}`;
+    renderBlock(id);
+    return;
+  }
+
+  // Step 2: Search image sources in parallel
+  try {
+    item.photos = await searchAll(queries);
+    item.loading = false;
+  } catch (e) {
+    item.loading = false;
+    item.error = `Image search failed: ${e.message}`;
+  }
+  renderBlock(id);
+}
+
+// ─── CLAUDE QUERY GENERATION ──────────────────────────────────────────────────
+
+async function generateQueries(type, title, excerpt) {
+  const userMsg = `Content type: ${type}
+Title: ${title}${excerpt ? '\nDescription: ' + excerpt : ''}
+
+Generate 4 search queries.`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': state.claudeKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 150,
+      system: state.queryPrompt,
+      messages: [{ role: 'user', content: userMsg }],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Claude ${res.status}: ${err.slice(0, 100)}`);
+  }
+
+  const data = await res.json();
+  const text = data.content?.find(b => b.type === 'text')?.text || '';
+  const clean = text.replace(/```[a-z]*\n?|```/g, '').trim();
+
+  // Find JSON array in response
+  const match = clean.match(/\[[\s\S]*?\]/);
+  if (!match) throw new Error(`Unexpected Claude response: ${clean.slice(0, 80)}`);
+
+  const parsed = JSON.parse(match[0]);
+  if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('Empty query array');
+  return parsed.slice(0, 4).map(q => String(q).trim());
+}
+
+// ─── IMAGE SEARCH ─────────────────────────────────────────────────────────────
+
+async function searchAll(queries) {
+  const all = [];
+  await Promise.all(queries.map(async (query) => {
+    const jobs = [];
+    if (state.unsplashKey) jobs.push(searchUnsplash(query));
+    if (state.pexelsKey)   jobs.push(searchPexels(query));
+    const results = await Promise.allSettled(jobs);
+    results.forEach(r => { if (r.status === 'fulfilled') all.push(...r.value); });
+  }));
+  return all;
+}
+
+async function searchUnsplash(query) {
+  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape&client_id=${state.unsplashKey}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Unsplash ${res.status}`);
+  const data = await res.json();
+  return (data.results || []).map(p => ({
+    url: p.urls.regular,
+    thumb: p.urls.small,
+    credit: p.user.name,
+    sourceUrl: p.links.html,
+    source: 'Unsplash',
+    query,
+  }));
+}
+
+async function searchPexels(query) {
+  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`;
+  const res = await fetch(url, { headers: { Authorization: state.pexelsKey } });
+  if (!res.ok) throw new Error(`Pexels ${res.status}`);
+  const data = await res.json();
+  return (data.photos || []).map(p => ({
+    url: p.src.large,
+    thumb: p.src.medium,
+    credit: p.photographer,
+    sourceUrl: p.url,
+    source: 'Pexels',
+    query,
+  }));
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+
+function setItemStatus(id, status) {
+  const el = document.querySelector(`[data-id="${id}"] .loading-label`);
+  if (el) { el.textContent = status; }
+}
+
+function renderBlocks() {
+  const container = document.getElementById('blocks-container');
+  document.getElementById('empty-state').style.display = state.items.length === 0 ? 'block' : 'none';
+  state.items.forEach(item => {
+    if (!document.querySelector(`[data-id="${item.id}"]`)) {
+      const el = document.createElement('div');
+      el.setAttribute('data-id', item.id);
+      el.className = 'content-block';
+      el.innerHTML = blockHTML(item);
+      container.prepend(el);
+    }
+  });
+  renderSelectionPanel();
+}
+
+function renderBlock(id) {
+  const item = state.items.find(i => i.id === id);
+  const el = document.querySelector(`[data-id="${id}"]`);
+  if (item && el) {
+    el.innerHTML = blockHTML(item);
+  }
+  renderSelectionPanel();
+}
+
+function blockHTML(item) {
+  const picked = state.selections.filter(s => s.contentId === item.id);
+
+  const byQuery = {};
+  (item.photos || []).forEach(p => {
+    if (!byQuery[p.query]) byQuery[p.query] = [];
+    byQuery[p.query].push(p);
+  });
+
+  const querySections = Object.entries(byQuery).map(([query, photos], qi) => {
+    const uCount = photos.filter(p => p.source === 'Unsplash').length;
+    const pCount = photos.filter(p => p.source === 'Pexels').length;
+    const sourceTags = [
+      uCount ? `<span class="q-source">Unsplash ×${uCount}</span>` : '',
+      pCount ? `<span class="q-source">Pexels ×${pCount}</span>` : '',
+    ].join('');
+
+    const cards = photos.map(p => {
+      const sel = state.selections.some(s => s.url === p.url);
+      const d = {
+        contentId: item.id,
+        contentTitle: item.title,
+        url: p.url,
+        thumb: p.thumb,
+        credit: p.credit,
+        source: p.source,
+        query: p.query,
+      };
+      const encoded = escAttr(JSON.stringify(d));
+      return `
+        <div class="img-card${sel ? ' selected' : ''}" onclick="handleToggle(this, '${encoded}')">
+          <div class="img-dot pulsing">·</div>
+          <img src="${escHtml(p.thumb)}" alt="${escHtml(p.credit)}"
+               onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none'"
+               onerror="this.closest('.img-card').style.display='none'">
+          <div class="img-overlay"></div>
+          <div class="img-check">✓</div>
+          <div class="img-credit">
+            <div class="img-credit-name">${escHtml(p.credit)}</div>
+            <div class="img-credit-src">${escHtml(p.source)}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="query-section">
+        <div class="query-label">
+          <span class="q-badge">Q${qi + 1}</span>
+          ${sourceTags}
+          <span class="q-text">"${escHtml(query)}"</span>
+        </div>
+        <div class="image-grid">${cards || '<div class="no-results-q">No results for this query</div>'}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="block-header">
+      <div class="block-meta">
+        <div class="block-type">${escHtml(item.type.toUpperCase())}</div>
+        <div class="block-title">${escHtml(item.title)}</div>
+        ${item.excerpt ? `<div class="block-excerpt">${escHtml(item.excerpt.slice(0, 160))}${item.excerpt.length > 160 ? '…' : ''}</div>` : ''}
+      </div>
+      <div class="block-actions">
+        ${picked.length > 0 ? `<div class="picked-badge">${picked.length} PICKED</div>` : ''}
+        ${!item.loading ? `<button class="btn btn-ghost btn-sm" onclick="regenItem('${item.id}')">↺ NEW</button>` : ''}
+        <button class="btn-icon" onclick="removeItem('${item.id}')">×</button>
+      </div>
+    </div>
+    ${item.loading ? `
+      <div class="block-loading">
+        <div class="loading-label pulsing">GENERATING QUERIES…</div>
+        <div class="loading-sub">Claude is reading your content</div>
+      </div>` : ''}
+    ${item.error ? `
+      <div class="block-error">
+        ⚠ ${escHtml(item.error)}
+        <div style="margin-top:10px">
+          <button class="btn btn-ghost btn-sm" onclick="regenItem('${item.id}')">↺ TRY AGAIN</button>
+        </div>
+      </div>` : ''}
+    ${!item.loading && !item.error && item.photos !== null ? `
+      <div class="block-results">
+        ${Object.keys(byQuery).length === 0
+          ? '<div style="font-family:var(--mono);font-size:11px;color:#555;padding:8px 0">No images found — try ↺ NEW</div>'
+          : querySections}
+      </div>` : ''}`;
+}
+
+function renderSelectionPanel() {
+  const panel = document.getElementById('selection-panel');
+  const countEl = document.getElementById('sel-count');
+  const titleEl = document.getElementById('sel-title');
+  const groupsEl = document.getElementById('sel-groups');
+  const n = state.selections.length;
+
+  if (n === 0) {
+    panel.style.display = 'none';
+    countEl.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'block';
+  countEl.style.display = 'inline';
+  countEl.textContent = `${n} selected`;
+  titleEl.textContent = `SELECTIONS · ${n} IMAGE${n !== 1 ? 'S' : ''}`;
+
+  const byContent = {};
+  state.selections.forEach(s => {
+    if (!byContent[s.contentId]) byContent[s.contentId] = { title: s.contentTitle, items: [] };
+    byContent[s.contentId].items.push(s);
+  });
+
+  groupsEl.innerHTML = Object.values(byContent).map(({ title, items }) => `
+    <div class="sel-group">
+      <div class="sel-group-label">${escHtml(title.slice(0, 60))}${title.length > 60 ? '…' : ''}</div>
+      <div class="sel-grid">
+        ${items.map(s => `
+          <div class="sel-thumb">
+            <img src="${escHtml(s.thumb)}" alt="${escHtml(s.credit)}">
+            <div class="sel-thumb-credit">${escHtml(s.credit)} · ${escHtml(s.source)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+
+function handleToggle(cardEl, encodedData) {
+  const data = JSON.parse(decodeAttr(encodedData));
+  const idx = state.selections.findIndex(s => s.url === data.url);
+  if (idx >= 0) {
+    state.selections.splice(idx, 1);
+    cardEl.classList.remove('selected');
+  } else {
+    state.selections.push(data);
+    cardEl.classList.add('selected');
+  }
+  // Update picked badge without full re-render
+  const block = document.querySelector(`[data-id="${data.contentId}"]`);
+  if (block) {
+    const picked = state.selections.filter(s => s.contentId === data.contentId).length;
+    let badge = block.querySelector('.picked-badge');
+    const actions = block.querySelector('.block-actions');
+    if (picked > 0) {
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'picked-badge';
+        actions.prepend(badge);
+      }
+      badge.textContent = `${picked} PICKED`;
+    } else {
+      badge?.remove();
+    }
+  }
+  renderSelectionPanel();
+}
+
+function removeItem(id) {
+  state.items = state.items.filter(i => i.id !== id);
+  state.selections = state.selections.filter(s => s.contentId !== id);
+  document.querySelector(`[data-id="${id}"]`)?.remove();
+  document.getElementById('empty-state').style.display = state.items.length === 0 ? 'block' : 'none';
+  renderSelectionPanel();
+}
+
+async function regenItem(id) {
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  item.loading = true;
+  item.photos = null;
+  item.error = null;
+  item.queries = [];
+  state.selections = state.selections.filter(s => s.contentId !== id);
+  renderBlock(id);
+
+  let queries;
+  try {
+    queries = await generateQueries(item.type, item.title, item.excerpt);
+    item.queries = queries;
+    setItemStatus(id, `SEARCHING "${queries[0]}"…`);
+  } catch (e) {
+    item.loading = false;
+    item.error = `Query generation failed: ${e.message}`;
+    renderBlock(id);
+    return;
+  }
+
+  try {
+    item.photos = await searchAll(queries);
+    item.loading = false;
+  } catch (e) {
+    item.loading = false;
+    item.error = e.message;
+  }
+  renderBlock(id);
+}
+
+function exportSelections() {
+  const byContent = {};
+  state.selections.forEach(s => {
+    if (!byContent[s.contentId]) byContent[s.contentId] = { title: s.contentTitle, items: [] };
+    byContent[s.contentId].items.push(s);
+  });
+
+  const lines = Object.values(byContent).map(({ title, items }) =>
+    `## ${title}\n\n${items.map(s =>
+      `### ${s.credit} (${s.source})\n- Full res: ${s.url}\n- Query: "${s.query}"`
+    ).join('\n\n')}`
+  ).join('\n\n---\n\n');
+
+  const blob = new Blob([`# In Sequence — Image Selections\n\n${lines}`], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'seq-selections.md';
+  a.click();
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+
+function escHtml(s) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return btoa(unescape(encodeURIComponent(s)));
+}
+function decodeAttr(s) {
+  return decodeURIComponent(escape(atob(s)));
+}
+</script>
+</body>
+</html>

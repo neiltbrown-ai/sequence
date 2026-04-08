@@ -119,42 +119,6 @@ export default function ContactForm() {
         </div>
       </form>
 
-      {/* Info sidebar */}
-      <div className="ct-info rv rv-d2">
-        <div className="ct-info-block">
-          <span className="ct-info-label">[EMAIL]</span>
-          <a href="mailto:insequence@gmail.com" className="ct-info-link">
-            insequence@gmail.com
-          </a>
-        </div>
-        <div className="ct-info-block">
-          <span className="ct-info-label">[LOCATION]</span>
-          <span className="ct-info-text">Chattanooga, TN</span>
-          <span className="ct-info-coord">
-            35.0456&deg; N, 85.3097&deg; W
-          </span>
-        </div>
-        <div className="ct-info-block">
-          <span className="ct-info-label">[SOCIAL]</span>
-          <div className="ct-info-socials">
-            <a href="#" className="ct-info-link">
-              Instagram
-            </a>
-            <a href="#" className="ct-info-link">
-              X
-            </a>
-            <a href="#" className="ct-info-link">
-              LinkedIn
-            </a>
-          </div>
-        </div>
-        <div className="ct-info-block">
-          <span className="ct-info-label">[RESPONSE TIME]</span>
-          <span className="ct-info-text">
-            We typically respond within 48 hours.
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

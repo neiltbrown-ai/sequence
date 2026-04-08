@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import SocialButtons from "@/components/auth/social-buttons";
@@ -12,8 +12,23 @@ import ProgressDots from "@/components/auth/progress-dots";
 const STEP_LABELS = ["Create Account", "Verify Student", "Confirmation"];
 
 export default function StudentSignupPage() {
+  return (
+    <Suspense>
+      <StudentSignupForm />
+    </Suspense>
+  );
+}
+
+function StudentSignupForm() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const searchParams = useSearchParams();
+
+  // Handle return from Stripe checkout
+  const stepParam = searchParams.get("step");
+  const sessionId = searchParams.get("session_id");
+  const initialStep = stepParam === "confirmation" && sessionId ? 2 : 0;
+
+  const [step, setStep] = useState(initialStep);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -23,6 +38,24 @@ export default function StudentSignupPage() {
   const [accessCode, setAccessCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [signupUserId, setSignupUserId] = useState<string | null>(null);
+
+  // Code validation state
+  const [codeValidated, setCodeValidated] = useState(false);
+  const [universityName, setUniversityName] = useState("");
+
+  // On confirmation step, verify the Stripe session to provision subscription
+  useEffect(() => {
+    if (step === 2 && sessionId) {
+      fetch("/api/stripe/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      }).catch(() => {
+        // Silent — webhook may have already handled it
+      });
+    }
+  }, [step, sessionId]);
 
   const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +63,7 @@ export default function StudentSignupPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -50,6 +83,8 @@ export default function StudentSignupPage() {
       return;
     }
 
+    if (data.user) setSignupUserId(data.user.id);
+
     setLoading(false);
     setStep(1);
   };
@@ -59,10 +94,89 @@ export default function StudentSignupPage() {
     setError("");
     setLoading(true);
 
-    // TODO: Verify .edu email or access code against database
-    // For now, proceed to confirmation
-    setLoading(false);
-    setStep(2);
+    if (verifyTab === "edu") {
+      // Validate .edu email
+      if (!eduEmail.endsWith(".edu")) {
+        setError("Please enter a valid .edu email address");
+        setLoading(false);
+        return;
+      }
+
+      // For .edu verification, go to Stripe checkout at Library price (no coupon)
+      try {
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            plan: "library",
+            billing: "annual",
+            signupUserId: signupUserId || undefined,
+            signupEmail: email || undefined,
+            returnPath: "/student-signup",
+          }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || "Checkout failed");
+        if (data.url) window.location.href = data.url;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Access code tab — validate the university code
+    if (!accessCode.trim()) {
+      setError("Please enter your university access code");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/codes/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: accessCode.trim(), type: "university" }),
+      });
+      const data = await res.json();
+
+      if (!data.valid) {
+        setError(data.error || "Invalid code");
+        setLoading(false);
+        return;
+      }
+
+      // Code is valid — show confirmation before proceeding to checkout
+      setCodeValidated(true);
+      setUniversityName(data.university_name);
+
+      // Redirect to Stripe checkout with the coupon applied
+      const checkoutRes = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan: "library",
+          billing: "annual",
+          signupUserId: signupUserId || undefined,
+          signupEmail: email || undefined,
+          couponId: data.stripe_coupon_id,
+          codeId: data.code_id,
+          codeType: "university",
+          returnPath: "/student-signup",
+        }),
+      });
+      const checkoutData = await checkoutRes.json();
+
+      if (!checkoutRes.ok) throw new Error(checkoutData.error || "Checkout failed");
+      if (checkoutData.url) window.location.href = checkoutData.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setCodeValidated(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -150,13 +264,13 @@ export default function StudentSignupPage() {
             <div className="auth-tab-bar">
               <button
                 className={`auth-tab${verifyTab === "edu" ? " active" : ""}`}
-                onClick={() => setVerifyTab("edu")}
+                onClick={() => { setVerifyTab("edu"); setError(""); setCodeValidated(false); }}
               >
                 .edu Email
               </button>
               <button
                 className={`auth-tab${verifyTab === "code" ? " active" : ""}`}
-                onClick={() => setVerifyTab("code")}
+                onClick={() => { setVerifyTab("code"); setError(""); setCodeValidated(false); }}
               >
                 Access Code
               </button>
@@ -164,26 +278,48 @@ export default function StudentSignupPage() {
 
             <form onSubmit={handleVerify}>
               {verifyTab === "edu" ? (
-                <AuthInput
-                  label="University Email"
-                  name="eduEmail"
-                  type="email"
-                  placeholder="you@university.edu"
-                  value={eduEmail}
-                  onChange={(e) => setEduEmail(e.target.value)}
-                  error={error}
-                  required
-                />
+                <>
+                  <AuthInput
+                    label="University Email"
+                    name="eduEmail"
+                    type="email"
+                    placeholder="you@university.edu"
+                    value={eduEmail}
+                    onChange={(e) => setEduEmail(e.target.value)}
+                    error={error}
+                    required
+                  />
+                  <p style={{ fontFamily: "var(--sans)", fontSize: "12px", color: "var(--mid)", marginBottom: "16px" }}>
+                    Library access at $12/year with a valid .edu email.
+                  </p>
+                </>
               ) : (
-                <AuthInput
-                  label="Access Code"
-                  name="accessCode"
-                  placeholder="Enter your university code"
-                  value={accessCode}
-                  onChange={(e) => setAccessCode(e.target.value)}
-                  error={error}
-                  required
-                />
+                <>
+                  <AuthInput
+                    label="Access Code"
+                    name="accessCode"
+                    placeholder="Enter your university code"
+                    value={accessCode}
+                    onChange={(e) => setAccessCode(e.target.value)}
+                    error={error}
+                    required
+                  />
+                  {codeValidated && (
+                    <p style={{
+                      fontFamily: "var(--sans)", fontSize: "13px", color: "#2d6a2e",
+                      marginBottom: "12px", padding: "8px 12px",
+                      background: "rgba(0,128,0,0.04)", border: "1px solid rgba(0,128,0,0.15)",
+                      borderRadius: "4px",
+                    }}>
+                      ✓ Verified — {universityName}. Library access at $2/year.
+                    </p>
+                  )}
+                  {!codeValidated && (
+                    <p style={{ fontFamily: "var(--sans)", fontSize: "12px", color: "var(--mid)", marginBottom: "16px" }}>
+                      Enter the code from your university for discounted library access at $2/year.
+                    </p>
+                  )}
+                </>
               )}
 
               <div className="auth-actions">
@@ -195,7 +331,9 @@ export default function StudentSignupPage() {
                   Back
                 </button>
                 <button type="submit" className="auth-btn" disabled={loading}>
-                  {loading ? "Verifying…" : "Verify"}
+                  {loading
+                    ? codeValidated ? "Redirecting to checkout…" : "Verifying…"
+                    : verifyTab === "edu" ? "Continue to Checkout" : "Verify & Continue"}
                 </button>
               </div>
             </form>
@@ -209,17 +347,20 @@ export default function StudentSignupPage() {
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
-            <h1 className="auth-title">Student verified</h1>
-            <p className="auth-subtitle" style={{ marginBottom: "24px" }}>
-              Your student discount has been applied. Let&apos;s set up your profile.
+            <h1 className="auth-title">Welcome to In Sequence</h1>
+            <p className="auth-subtitle" style={{ marginBottom: "12px" }}>
+              Your student account is ready. Check your email for a verification link to activate your account.
+            </p>
+            <p className="auth-subtitle" style={{ marginBottom: "24px", fontSize: "13px" }}>
+              Once verified, sign in to start exploring.
             </p>
             <button
               type="button"
               className="auth-btn"
               style={{ maxWidth: "280px", margin: "0 auto" }}
-              onClick={() => router.push("/onboarding")}
+              onClick={() => router.push("/login")}
             >
-              Continue to Setup
+              Continue to Login
             </button>
           </div>
         )}

@@ -94,6 +94,25 @@ export function AssessmentIcon() {
   );
 }
 
+export function RoadmapIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M3 3v18h18" />
+      <path d="M7 16l4-8 4 5 4-10" />
+    </svg>
+  );
+}
+
+export function InventoryIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </svg>
+  );
+}
+
 export function AiAdvisorIcon() {
   return (
     <svg {...iconProps}>
@@ -118,6 +137,15 @@ export function SearchIcon() {
     <svg className="tb-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
       <circle cx="11" cy="11" r="8" />
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+export function EvaluateIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M9 11l3 3L22 4" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
     </svg>
   );
 }
@@ -183,6 +211,15 @@ export function DiscountIcon() {
     <svg {...iconProps}>
       <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
       <line x1="7" y1="7" x2="7.01" y2="7" />
+    </svg>
+  );
+}
+
+export function NewsletterIcon() {
+  return (
+    <svg {...iconProps}>
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <polyline points="22 7 12 13 2 7" />
     </svg>
   );
 }

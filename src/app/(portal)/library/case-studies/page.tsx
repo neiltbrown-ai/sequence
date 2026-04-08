@@ -5,8 +5,8 @@ import CaseStudiesFilters from "@/components/portal/case-studies-filters";
 export default function PortalCaseStudiesPage() {
   const studies = getAllCaseStudies();
 
-  // Extract unique disciplines for filter tabs
-  const disciplines = Array.from(new Set(studies.map((s) => s.discipline)));
+  // Extract unique industries for filter tabs
+  const industries = Array.from(new Set(studies.map((s) => s.industry)));
 
   return (
     <>
@@ -17,7 +17,7 @@ export default function PortalCaseStudiesPage() {
         backHref="/dashboard"
         backLabel="Dashboard"
       />
-      <CaseStudiesFilters studies={studies} disciplines={disciplines} />
+      <CaseStudiesFilters studies={studies} industries={industries} />
       <div className="page-footer" />
     </>
   );

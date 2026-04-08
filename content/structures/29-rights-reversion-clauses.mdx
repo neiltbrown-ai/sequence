@@ -5,13 +5,308 @@ type: structure
 subtype: compensation
 number: 29
 risk: "CONSERVATIVE"
-stage: "RIGHTS"
-excerpt: "Automatic return of rights if conditions not met. Critical protection against shelving or underutilization of your work."
-tags: [compensation, rights, conservative]
+stage: "STAGE 2"
+excerpt: "Contractual provisions that automatically return your IP when licensees fail to exploit it — preventing warehousing, shelving, and underutilization of your creative work."
+tags: [ownership, protection, reversion, conservative, stage-2]
 access: member
 sortOrder: 29
 published: true
-updatedAt: "2026-02-25"
+updatedAt: "2026-02-26"
+category: "Licensing / IP Monetization"
+tagline: "Include contractual provisions that automatically return creative rights to you if the licensee fails to exploit work commercially, doesn't achieve minimums, or the term expires — ensuring your IP isn't locked away generating zero value while you're unable to monetize it elsewhere."
+stats:
+  - { label: "Risk Profile", value: "Conservative (Risk Mitigation Tool)" }
+  - { label: "Asset Class", value: "IP Protection Mechanism / Contractual Safeguard" }
+  - { label: "Time to Value", value: "Triggered on Failure (Prevents Loss)" }
+  - { label: "Best For", value: "Every agreement where you grant rights but retain ownership" }
+sections:
+  - { id: "overview", label: "Overview" }
+  - { id: "tiers", label: "Reversion Types" }
+  - { id: "when-to-use", label: "When to Use" }
+  - { id: "protect", label: "Protections" }
+  - { id: "manipulations", label: "Manipulations" }
+  - { id: "negotiate", label: "Negotiate" }
+  - { id: "value", label: "Value Example" }
+  - { id: "cases", label: "Case Studies" }
+  - { id: "related", label: "Related" }
 ---
 
-*Full structure detail coming soon.*
+<SbSection id="overview">
+
+<SbHeading>Overview</SbHeading>
+
+Rights Reversion Clauses are contractual provisions that **automatically return your intellectual property** when specific conditions are met (or not met). They prevent the creator nightmare: licensing work to a buyer who pays upfront but never uses it — your IP sitting on a shelf generating zero revenue, zero exposure, zero value, while you're contractually prohibited from licensing elsewhere.
+
+The core principle: rights should return to the creator if the licensee fails to fulfill their end of the bargain. If a buyer licenses your work intending to use it commercially but doesn't launch within a reasonable timeframe — rights revert. If a licensee commits to minimum sales but falls short — rights revert. If the exclusive term expires — rights revert automatically. You regain control and can re-license to someone who will actually exploit the work.
+
+This isn't a standalone deal structure — it's a **protective mechanism that should appear in every agreement** where you grant rights while retaining ownership: licensing deals (#27, #28), publishing contracts, distribution agreements, option contracts, and any arrangement involving your IP. Reversion clauses cost nothing upfront but can preserve millions in long-term IP value. They are the single most important protective provision in creative contracts.
+
+</SbSection>
+
+<SbSection id="tiers">
+
+<SbHeading>Five Types of Reversion Triggers</SbHeading>
+
+<SbTabs tabsJson='["Time-Based", "Performance-Based", "Failure-to-Exploit", "Out-of-Print", "Breach-Based"]'>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Trigger" value="Specific date / term expiration" />
+      <SbTabItem label="Typical Duration" value="1–5 years" />
+      <SbTabItem label="Monitoring" value="None (calendar-based)" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Clarity" pct="95" />
+      <SbTabBarRow label="Enforceability" pct="90" />
+    </SbTabBar>
+    <SbTabNote>**Most common.** Crystal clear trigger — specific date, no ambiguity, no monitoring required. "This license terminates on [date] and all rights revert automatically." Industry standard: buyers expect it. Always automatic, never requiring creator action.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Trigger" value="Minimum sales/revenue not met" />
+      <SbTabItem label="Typical Benchmark" value="$50K–500K annual" />
+      <SbTabItem label="Monitoring" value="Annual financial review" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Clarity" pct="80" />
+      <SbTabBarRow label="Enforceability" pct="75" />
+    </SbTabBar>
+    <SbTabNote>**Aligns incentives.** Licensee must actively sell to retain rights. Objective trigger: revenue numbers are verifiable. Typically allows 2 consecutive years below minimum before triggering. Requires reporting provisions to monitor.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Trigger" value="Not commercially launched in time" />
+      <SbTabItem label="Typical Deadline" value="12–24 months" />
+      <SbTabItem label="Monitoring" value="Launch verification" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Clarity" pct="85" />
+      <SbTabBarRow label="Enforceability" pct="80" />
+    </SbTabBar>
+    <SbTabNote>**Use-it-or-lose-it.** Prevents indefinite warehousing. "Commercial launch" must be objectively defined: product release, marketing spend above $X, distribution to end customers. Token use must be insufficient — pair with performance minimums.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Trigger" value="Work unavailable for purchase" />
+      <SbTabItem label="Typical Threshold" value="6–12 months unavailable" />
+      <SbTabItem label="Monitoring" value="Availability check" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Clarity" pct="70" />
+      <SbTabBarRow label="Enforceability" pct="65" />
+    </SbTabBar>
+    <SbTabNote>**Critical for publishing.** Digital complicates "out of print" (ebook always technically available). Modern definition: print unavailable AND ebook generating less than $500 annually AND publisher declines to reissue. Gives publisher chance to reprint before reversion.</SbTabNote>
+  </SbTabPanel>
+  <SbTabPanel>
+    <SbTabGrid>
+      <SbTabItem label="Trigger" value="Contract violation by licensee" />
+      <SbTabItem label="Cure Period" value="10–30 days" />
+      <SbTabItem label="Monitoring" value="Ongoing compliance" />
+    </SbTabGrid>
+    <SbTabBar>
+      <SbTabBarRow label="Clarity" pct="85" />
+      <SbTabBarRow label="Enforceability" pct="85" />
+    </SbTabBar>
+    <SbTabNote>**Material breach protection.** Failure to pay royalties, unauthorized use beyond scope, failure to provide accounting, bankruptcy/insolvency. Payment defaults: 10-day cure. Other breaches: 30-day cure. Insolvency: immediate reversion (before bankruptcy trustee claims assets).</SbTabNote>
+  </SbTabPanel>
+</SbTabs>
+
+<SbSubheading>Reversion Timelines by Industry</SbSubheading>
+
+<SbTable
+  headersJson='["Industry", "Exploitation Deadline", "Performance Minimum", "Term Limit"]'
+  rowsJson='[["Film/TV Options", "18–36 months to production", "N/A (binary: produced or not)", "3–5 years max"], ["Book Publishing", "12–18 months to publish", "$500–2K annual ebook minimum", "5–10 years, then revert"], ["Music (Masters)", "24 months to release", "Minimum mechanical/performance", "15–35 years (statutory)"], ["Product Design", "12–24 months to launch", "$50–500K annual sales", "2–5 years"], ["Photography/Design", "6–12 months to use", "N/A (often time-based only)", "1–3 years"]]'
+/>
+
+</SbSection>
+
+<SbSection id="when-to-use">
+
+<SbHeading>When to Use This Structure</SbHeading>
+
+<SbFlags>
+  <SbFlagCol header="Always Include When">
+    <SbFlag type="use">Licensing agreements — exclusive (#28) or non-exclusive (#27)</SbFlag>
+    <SbFlag type="use">Publishing contracts (books, articles, content)</SbFlag>
+    <SbFlag type="use">Distribution deals (music, film, products)</SbFlag>
+    <SbFlag type="use">Option agreements (film rights, sequel rights)</SbFlag>
+    <SbFlag type="use">Any deal where you grant rights but retain ownership</SbFlag>
+  </SbFlagCol>
+  <SbFlagCol header="Only Exception">
+    <SbFlag type="avoid">Complete ownership transfer (work-for-hire, copyright assignment) — though even then, consider reversion tied to specific uses</SbFlag>
+    <SbFlag type="avoid">No other exceptions — reversion clauses should be in EVERY licensing agreement</SbFlag>
+    <SbFlag type="avoid">Never let a licensee convince you reversion is "unusual" — it's industry standard</SbFlag>
+    <SbFlag type="avoid">Never accept "we'll work it out if things don't go well" — reversion must be contractual</SbFlag>
+    <SbFlag type="avoid">Never rely solely on statutory reversion (35-year Copyright Act) — negotiate upfront</SbFlag>
+  </SbFlagCol>
+</SbFlags>
+
+<SbSubheading>Structures That Need Reversion</SbSubheading>
+
+<SbAlts>
+  <SbAlt condition="Exclusive deals (highest risk of shelving)" name="Exclusive Licensing" href="/library/structures/exclusive-licensing" />
+  <SbAlt condition="Non-exclusive with long terms" name="Non-Exclusive Licensing" href="/library/structures/non-exclusive-licensing" />
+  <SbAlt condition="Retain subsidiary rights with reversion" name="Subsidiary Rights Retention" href="/library/structures/subsidiary-rights-retention" />
+  <SbAlt condition="Territory-specific reversion triggers" name="Territory / Media Rights Splitting" href="/library/structures/territory-media-rights-splitting" />
+</SbAlts>
+
+</SbSection>
+
+<SbSection id="protect">
+
+<SbHeading>Key Protections</SbHeading>
+
+Five provisions that make reversion clauses actually enforceable — not just words on paper.
+
+<SbCards>
+  <SbCard label="Objective, Measurable Triggers (Never Subjective)">
+    <SbCardText>**Bad:** "Rights revert if Licensee fails to reasonably exploit Work." — "Reasonably" is subjective, leads to years of litigation. **Good:** "Rights revert if Licensee fails to: (a) launch Product by December 31, 2027, OR (b) achieve $100,000 in gross sales by December 31, 2028, OR (c) maintain Product in active distribution continuously."</SbCardText>
+    <SbCardText>**Why it matters:** Subjective triggers like "reasonable exploitation" are effectively unenforceable — both parties have different definitions. Objective triggers (specific dates, dollar amounts, unit counts) leave no room for dispute. The trigger either occurred or it didn't.</SbCardText>
+  </SbCard>
+  <SbCard label="Automatic Reversion (No Creator Action Required)">
+    <SbCardText>"Rights automatically revert to Creator upon: (a) expiration of term, (b) failure to exploit within timeframe, (c) performance benchmarks not met, OR (d) material breach not cured. No action required by Creator; reversion is self-executing." The alternative (notice-required) creates risk of missing deadlines.</SbCardText>
+    <SbCardText>**Why it matters:** If reversion requires you to send a notice, you might miss the window — and licensees exploit that delay. Automatic reversion shifts the burden: if the licensee wants to continue, THEY must act (renegotiate, cure breach, meet minimums). Not you.</SbCardText>
+  </SbCard>
+  <SbCard label="Post-Reversion Obligations (Cease + Certify)">
+    <SbCardText>"Upon reversion, Licensee must within 30 days: (a) cease all use of Work, (b) remove Work from all marketing materials and distribution, (c) destroy all copies except single archival copy, (d) provide sworn written certification of compliance, (e) return any original materials."</SbCardText>
+    <SbCardText>**Why it matters:** Without explicit post-reversion obligations, licensees continue using your work after reversion claiming they didn't know it reverted, or arguing wind-down takes time. Written certification creates legal accountability.</SbCardText>
+  </SbCard>
+  <SbCard label="Derivative Works Treatment">
+    <SbCardText>"All derivative works created during term are licensed, not owned by Licensee. Upon reversion: (a) Licensee ceases use of all derivatives, (b) Creator gains first option to license derivatives at fair market value, (c) Licensee retains no residual rights to derivatives post-reversion."</SbCardText>
+    <SbCardText>**Why it matters:** Without this, licensees create derivative works during the term (packaging, adaptations, branded versions) and continue using the derivatives after reversion — circumventing your rights entirely. Derivatives must revert with the original.</SbCardText>
+  </SbCard>
+  <SbCard label="Anti-Perpetual-Renewal Clause">
+    <SbCardText>"This agreement does not renew automatically. Renewal requires mutual written consent and new compensation negotiation at then-current rates. No right of first refusal unless explicitly granted with 30-day exercise window."</SbCardText>
+    <SbCardText>**Why it matters:** Auto-renewal is the most common mechanism for defeating reversion. "Term renews for successive 5-year periods unless terminated with 12 months notice" — you forget to send notice, contract renews perpetually. No automatic renewal, ever.</SbCardText>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="manipulations">
+
+<SbHeading>Common Manipulations</SbHeading>
+
+Four tactics that prevent reversion from working — each defeated with specific contract language.
+
+<SbCards>
+  <SbCard label="The Ambiguous Trigger Dodge" warn="true">
+    <SbCardText>**How it works:** Contract includes vague language: "if not reasonably exploited" or "if sales are unsatisfactory." Licensee launches minimal effort — 100 units sold, one small campaign — and argues they DID exploit "reasonably." Years of litigation follow over what "reasonable" means.</SbCardText>
+    <SbCardText>**Reality:** Subjective triggers are designed to be unenforceable. "Reasonable exploitation" has no objective meaning. Replace with specific measurables: minimum $100K annual sales, product in continuous distribution, minimum marketing spend.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>I need objective reversion triggers, not subjective standards. Define "exploitation" as: minimum $100K annual sales AND continuous distribution AND minimum $25K annual marketing spend. If those aren't met for 2 consecutive years, rights revert automatically. "Reasonable" isn't measurable — numbers are.</SbScript>
+  </SbCard>
+  <SbCard label="The Perpetual Renewal Trap" warn="true">
+    <SbCardText>**How it works:** "Term automatically renews for successive 5-year periods unless either party provides 12 months written notice before renewal date." You miss the notice window in Year 4. Contract renews through Year 10. Miss again? Year 15. Effectively perpetual.</SbCardText>
+    <SbCardText>**Reality:** Auto-renewal clauses defeat the entire purpose of term-limited licenses. If the licensee wants to continue, they should negotiate a new deal at then-current rates — not rely on your forgetfulness.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>No automatic renewal. The license expires on the stated date. If you want to continue, we negotiate renewal 90 days before expiration at then-current rates. Automatic renewal effectively makes this perpetual — which requires ownership-transfer pricing, not licensing rates.</SbScript>
+  </SbCard>
+  <SbCard label="The Derivative Works Hostage" warn="true">
+    <SbCardText>**How it works:** Licensee creates extensive derivative works during the term — product designs, marketing campaigns, branded versions. Upon reversion, licensee claims ownership of derivatives and continues exploiting them, arguing the original work is now "subordinate" to their derivatives.</SbCardText>
+    <SbCardText>**Reality:** Without explicit derivative provisions, your IP becomes entangled with the licensee's derivatives, making clean reversion impossible. Derivatives must be explicitly addressed as licensed (not owned) for the term only.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>The contract must explicitly state: "Licensee creates no ownership interest in derivative works. All derivatives are licensed for the term only. Upon reversion, Licensee ceases use of all derivatives or licenses them from Creator at fair market value." Derivatives don't survive reversion.</SbScript>
+  </SbCard>
+  <SbCard label="The Shelf-Then-Token-Use Scam" warn="true">
+    <SbCardText>**How it works:** Contract requires "commercial exploitation" to avoid reversion. Licensee does the absolute minimum: sells 100 units, runs one tiny campaign, prints 50 copies. Technically satisfies "exploitation" while essentially shelving the work. Your IP generates trivial revenue but can't revert.</SbCardText>
+    <SbCardText>**Reality:** Exploitation requirements without performance minimums are meaningless. Token use (100 units, $2K in sales) should not prevent reversion. Pair launch requirements with minimum sales benchmarks.</SbCardText>
+    <SbCardSub>Sample Response</SbCardSub>
+    <SbScript>Launch requirement must be paired with performance minimums: Licensee must launch within 12 months AND achieve $100K annual sales AND maintain continuous distribution. Token use — selling 100 units to technically satisfy the clause — is not commercial exploitation. The minimums must be meaningful.</SbScript>
+  </SbCard>
+</SbCards>
+
+</SbSection>
+
+<SbSection id="negotiate">
+
+<SbHeading>Negotiation</SbHeading>
+
+Reversion clauses are **non-negotiable in principle** — every licensing deal needs them. The negotiation is over terms, not existence.
+
+<SbNeg tabsJson='["High Leverage", "Moderate", "Low Leverage"]'>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Aggressive reversion with short timelines.** "12 months to commercial launch. $150K minimum annual sales. Automatic reversion — no notice required. Rights revert with all derivatives. I won't lock up my IP with anyone who isn't actively exploiting it."</SbNegRow>
+    <SbNegRow label="Add">**Creative control provisions** — revert if quality standards violated. Regular exploitation reporting (quarterly). Short initial term (2–3 years). No extensions without mutual consent and additional payment.</SbNegRow>
+    <SbNegRow label="Signal">**In-demand IP, multiple interested licensees.** You can afford to walk away if reversion terms are weak. The licensee needs your work more than you need this specific deal.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Standard reversion with reasonable timelines.** "18 months to launch. $75K minimum annual sales. Automatic reversion on term expiration. Performance reversion if minimums not met for 2 consecutive years."</SbNegRow>
+    <SbNegRow label="Add">**If licensee resists performance minimums, offer alternatives:** "If you're confident in the project, minimums shouldn't be a concern. If you're not, that's exactly why I need the protection." Trade slightly longer exploitation timeline for lower minimums.</SbNegRow>
+    <SbNegRow label="Signal">**Good work with commercial potential.** Both parties believe in the project. You want partnership but need protection against worst-case shelving.</SbNegRow>
+  </SbNegPanel>
+  <SbNegPanel>
+    <SbNegRow label="Position">**Basic reversion protections — but never zero.** "24 months to launch. No performance minimum required, but failure-to-exploit reversion is non-negotiable. Automatic reversion on term expiration. Breach-based reversion with 30-day cure."</SbNegRow>
+    <SbNegRow label="Add">**Accept longer timelines but never eliminate reversion entirely.** Even at low leverage, automatic time-based reversion and failure-to-exploit are essential. These cost the licensee nothing if they plan to use the work.</SbNegRow>
+    <SbNegRow label="Signal">**First licensing deal or limited leverage.** Reversion clauses should not be controversial — licensees who plan to exploit your work have no reason to resist them.</SbNegRow>
+  </SbNegPanel>
+</SbNeg>
+
+<SbSubheading>Decision Matrix</SbSubheading>
+
+<SbMatrix title="Reversion Protection Priorities by Deal Type">
+  <SbMatrixRow score="8–10" desc="Exclusive license, high-value IP, long term (3+ years)" action="Maximum protection: 12-month exploitation deadline, meaningful performance minimums, automatic reversion, derivative works treatment, no auto-renewal. Non-negotiable." />
+  <SbMatrixRow score="5–7" desc="Non-exclusive or short-term exclusive, moderate value" action="Standard protection: 18-month exploitation, time-based automatic reversion, breach-based reversion. Performance minimums if royalty-based." />
+  <SbMatrixRow score="1–4" desc="Low-value license, short term, non-exclusive" action="Basic protection: automatic time-based reversion, breach-based reversion. Even small deals need reversion — your IP value may grow beyond the current deal's scope." />
+</SbMatrix>
+
+</SbSection>
+
+<SbSection id="value">
+
+<SbHeading>Example Value Calculation: Two Authors — Same Book, Different Contracts</SbHeading>
+
+Two mid-list authors each publish novels with major houses. Same sales trajectory. One has strong reversion. One doesn't. The 10-year outcomes diverge dramatically.
+
+<SbChart title="10-Year Earnings — Strong Reversion vs. No Reversion">
+  <SbChartRow label="Author A (with reversion, self-republished)" value="$142K" pct="100" />
+  <SbChartRow label="Author B (no reversion, publisher retains)" value="$18.7K" pct="13" />
+</SbChart>
+
+**Both authors:** 15,000 copies Year 1, declining to 200 copies/year by Year 5. Publisher earns out $15K advance by Year 2.
+
+**Author A (strong reversion):** Contract includes: "If annual royalties fall below $1,000 for 2 consecutive years, rights revert automatically." Year 5: royalties = $800. Year 6: royalties = $600. Reversion triggers. Author self-publishes: 8,000 additional copies over 4 years at $5 profit/copy = $40K. Plus $15K advance + $17K publisher royalties (Years 1–4) + eBook/audio rights ($70K from new deals). **10-year total: ~$142K.**
+
+**Author B (no reversion):** Publisher holds rights perpetually. Book technically "in print" as ebook generating $200/year. Author can't self-publish, can't license audio or foreign. $15K advance + $3.7K royalties over 10 years. **10-year total: $18.7K.** Publisher blocks all alternative monetization while generating negligible revenue.
+
+**The difference:** One contract clause — reversion on underperformance — separated $142K from $18.7K. **7.6x more income** from the same book, same sales, same market.
+
+</SbSection>
+
+<SbSection id="cases">
+
+<SbHeading>Example Use Cases</SbHeading>
+
+How reversion clauses (and their absence) shaped three creative careers.
+
+<SbCase label="Case 01 · Publishing · Emerging" name="Marcus Adler — Mid-List Reversion Success" tag="Publishing / Fiction" outcome="$142K (7.6x vs. no-reversion scenario)">
+  <SbCaseText>Marcus published a literary novel with a major house in 2018. $15K advance, 10% cover royalty. Sales: 15,000 Year 1, declining steadily. By Year 4, earning $800/year in royalties. His contract included: "If annual royalties below $1,000 for 2 consecutive years, all rights revert to Author within 60 days."</SbCaseText>
+  <SbCaseText>**The shift:** Reversion triggered in Year 6. Marcus self-published a new edition on KDP at 70% royalty (vs. 10% with publisher). Sold 8,000 copies over 4 years at $5 net profit. Licensed audio rights separately ($35K). Licensed foreign translation ($35K). **10-year total: ~$142K** from a book his publisher considered dead. Without reversion, he'd have earned $18.7K total while the publisher held his rights indefinitely.</SbCaseText>
+  <SbCaseText>**Key insight:** "My agent insisted on the reversion clause. The publisher barely pushed back — they didn't think a mid-list novel would matter. But when I self-published, I owned the email list of 3,000 readers I'd built in the meantime. Those readers bought the new edition, left reviews, and drove discovery. The reversion clause turned a 'failed' book into a $142K asset."</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 02 · Film · Mid-Career" name="Priya Sharma — Screenplay Option Reversion" tag="Film / Drama" outcome="$340K (reversion enabled second, better deal)">
+  <SbCaseText>Priya sold a 24-month film option on her screenplay for $25K. Contract: "If principal photography not commenced within 24 months, all rights revert. Producer may extend 12 months for additional $15K." Producer developed for 18 months, but financing fell through. Extension paid ($15K), but no production by Month 36. Rights reverted automatically.</SbCaseText>
+  <SbCaseText>**The shift:** Six months after reversion, a streaming platform offered $300K for the screenplay — 12x the original option price. Market had shifted toward diverse stories during the 3-year option period, making Priya's screenplay far more valuable. **Total: $25K + $15K extension + $300K new deal = $340K.** Without reversion, the original producer would have held rights indefinitely as "in development" — blocking the $300K deal entirely.</SbCaseText>
+  <SbCaseText>**Key insight:** "The reversion clause wasn't about the first producer failing. It was about preserving my option to benefit from market changes. Three years later, my screenplay was worth 12x more. If the first producer had perpetual rights, I'd have earned $25K on a $300K asset. Time-limited options with automatic reversion are essential — markets change, and your work's value changes with them."</SbCaseText>
+</SbCase>
+
+<SbCase label="Case 03 · Music · Established (Cautionary)" name="Elena Vasquez — The Missing Reversion" tag="Music / Pop" outcome="$0 reclaimed ($4.2M in masters sold without her)">
+  <SbCaseText>Elena signed a 5-album deal at age 22 with a mid-tier label. No reversion clause. No term limit on master ownership. She became successful: 5 albums generating $800K+/year in combined streaming royalties. At contract end, she left for a major label — but the original label retained her masters permanently.</SbCaseText>
+  <SbCaseText>**The result:** Original label sold her masters for $4.2M (5x annual royalties). Elena received $0 from the sale — she owned nothing. Her only recourse: Copyright Act Section 203 termination, available 35 years after transfer (2057 for her first album). She'd be 57. Meanwhile, she receives 18% net royalties on her own recordings while the label collects 82% in perpetuity.</SbCaseText>
+  <SbCaseText>**Key insight:** "I was 22 and didn't know what reversion clauses were. My lawyer was the label's recommendation — conflict of interest I didn't understand. If my contract had included 'masters revert 10 years after release,' I'd own $4.2M in assets right now. Instead I'm earning 18 cents on every dollar my music generates. One missing clause. That's what I tell every young artist: get your own lawyer, and demand reversion."</SbCaseText>
+</SbCase>
+
+</SbSection>
+
+<SbSection id="related">
+
+<SbHeading>Related Structures</SbHeading>
+
+<SbRelated>
+  <SbRelatedCard num="28" title="Exclusive Licensing" desc="Where reversion is most critical — exclusive deals lock you out without it." href="/library/structures/exclusive-licensing" />
+  <SbRelatedCard num="27" title="Non-Exclusive Licensing" desc="Even non-exclusive deals need time-based and breach-based reversion." href="/library/structures/non-exclusive-licensing" />
+  <SbRelatedCard num="30" title="Subsidiary Rights Retention" desc="Combine reversion with retained subsidiary rights for maximum protection." href="/library/structures/subsidiary-rights-retention" />
+  <SbRelatedCard num="31" title="Territory / Media Rights Splitting" desc="Reversion can be territory or media-specific." href="/library/structures/territory-media-rights-splitting" />
+</SbRelated>
+
+</SbSection>
