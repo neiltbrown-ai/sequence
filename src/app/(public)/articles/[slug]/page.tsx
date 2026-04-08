@@ -19,7 +19,25 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = getArticleBySlug(slug);
   if (!article) return { title: "Article — In Sequence" };
-  return { title: `${article.frontmatter.title} — In Sequence` };
+  const title = `${article.frontmatter.title} — In Sequence`;
+  const description = article.frontmatter.excerpt || "";
+  const image = article.frontmatter.heroImage || "/images/hero-portrait.png";
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: [{ url: image, width: 1200, height: 630, alt: article.frontmatter.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
 }
 
 function formatDateLong(iso: string) {

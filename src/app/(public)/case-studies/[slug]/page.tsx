@@ -20,7 +20,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const cs = getCaseStudyBySlug(slug);
   if (!cs) return { title: "Case Study — In Sequence" };
-  return { title: `${cs.frontmatter.title.replace(/<br\s*\/?>/gi, " ")} — In Sequence` };
+  const cleanTitle = cs.frontmatter.title.replace(/<br\s*\/?>/gi, " ");
+  const title = `${cleanTitle} — In Sequence`;
+  const description = cs.frontmatter.excerpt || "";
+  const image = cs.frontmatter.heroImage || cs.frontmatter.coverImage || "/images/hero-portrait.png";
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: [{ url: image, width: 1200, height: 630, alt: cleanTitle }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
 }
 
 export default async function PublicCaseStudyPage({

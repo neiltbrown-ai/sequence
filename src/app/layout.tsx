@@ -14,6 +14,8 @@ const ptMono = PT_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://insequence.so";
+
 export const metadata: Metadata = {
   title: {
     default: "In Sequence — Creative Deal Structures for Creative Professionals",
@@ -21,6 +23,29 @@ export const metadata: Metadata = {
   },
   description:
     "Learn creative deal structures used by top producers, managers, and executives. Membership includes frameworks, case studies, and strategic guides.",
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    type: "website",
+    siteName: "In Sequence",
+    title: "In Sequence — Creative Deal Structures for Creative Professionals",
+    description:
+      "Learn creative deal structures used by top producers, managers, and executives.",
+    images: [
+      {
+        url: "/images/hero-portrait.png",
+        width: 1200,
+        height: 630,
+        alt: "In Sequence",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "In Sequence — Creative Deal Structures for Creative Professionals",
+    description:
+      "Learn creative deal structures used by top producers, managers, and executives.",
+    images: ["/images/hero-portrait.png"],
+  },
 };
 
 export default function RootLayout({
