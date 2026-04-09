@@ -71,7 +71,26 @@ async function FullAccessDashboard() {
   let evalCount = 0;
   let evalSummary: { count: number; medianScore: number | null; signals: { green: number; yellow: number; red: number }; latestName: string | null; latestSignal: SignalColor | null } | null = null;
 
+  // Profile completion tracking
+  let profileCompletedCount = 0;
+  const profileTotalCount = 3;
+
   if (user) {
+    const profileResult = await supabase
+      .from("profiles")
+      .select("disciplines, interests, career_stage")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileResult.data) {
+      const fields = [
+        { filled: (profileResult.data.disciplines ?? []).length > 0 },
+        { filled: (profileResult.data.interests ?? []).length > 0 },
+        { filled: !!profileResult.data.career_stage },
+      ];
+      profileCompletedCount = fields.filter((f) => f.filled).length;
+    }
+
     const [invCountResult, evalResult] = await Promise.all([
       supabase
         .from("asset_inventory_items")
@@ -137,6 +156,9 @@ async function FullAccessDashboard() {
   return (
     <>
       <DashboardWelcome />
+
+      {/* Profile completion CTA */}
+      <DashboardProfileCta completedCount={profileCompletedCount} totalCount={profileTotalCount} />
 
       <div className="dash-section rv rv-d1">
         <div className="adv-path-cards">

@@ -432,7 +432,7 @@ function SignupForm() {
             )}
 
             {!(codeApplied && codeResult?.is_full_discount) && (
-              <div style={{ padding: "20px 0", textAlign: "center" }}>
+              <div style={{ padding: "20px 0" }}>
                 <p style={{ fontFamily: "var(--sans)", fontSize: "14px", color: "var(--mid)" }}>
                   You&apos;ll be redirected to Stripe&apos;s secure checkout to complete payment.
                 </p>
@@ -464,7 +464,7 @@ function SignupForm() {
                       onChange={(e) => setDiscountCode(e.target.value)}
                       placeholder="Enter code"
                       className="set-input"
-                      style={{ fontFamily: "var(--mono)", fontSize: "13px", letterSpacing: ".05em", textTransform: "uppercase" }}
+                      style={{ fontFamily: "var(--mono)", fontSize: "13px", letterSpacing: ".05em", textTransform: "uppercase", border: "1px solid var(--border)", borderRadius: "4px", padding: "10px 14px" }}
                       onKeyDown={(e) => { if (e.key === "Enter") handleApplyCode(); }}
                     />
                   </div>
