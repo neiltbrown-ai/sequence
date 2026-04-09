@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { Resend } from "resend";
+
+const RESEND_AUDIENCE_ID = "f91a8f7d-666b-4d30-8a5b-406bff5e9824";
 
 export async function POST(req: NextRequest) {
   try {
@@ -48,6 +51,21 @@ export async function POST(req: NextRequest) {
         name: name || null,
         source: "website",
       });
+    }
+
+    // Sync to Resend Audience (non-blocking — don't fail signup if this errors)
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const [firstName, ...rest] = (name || "").split(" ");
+      await resend.contacts.create({
+        audienceId: RESEND_AUDIENCE_ID,
+        email: email.toLowerCase(),
+        firstName: firstName || undefined,
+        lastName: rest.join(" ") || undefined,
+        unsubscribed: false,
+      });
+    } catch {
+      // Silent — Resend sync is best-effort
     }
 
     return NextResponse.json({ success: true });
