@@ -183,7 +183,7 @@ function UniversityForm({
   const [universityName, setUniversityName] = useState(
     initial?.university_name ?? ""
   );
-  const [discountPercent, setDiscountPercent] = useState(
+  const [discountPercent] = useState(
     initial?.discount_percent?.toString() ?? "100"
   );
   const [maxUses, setMaxUses] = useState(
@@ -235,15 +235,13 @@ function UniversityForm({
       </div>
       <div className="adm-split" style={{ gap: "1rem", marginBottom: "1rem" }}>
         <div className="adm-field">
-          <label className="adm-label">Discount %</label>
+          <label className="adm-label">Student Price</label>
           <input
             className="adm-input"
-            type="number"
-            min="0"
-            max="100"
-            value={discountPercent}
-            onChange={(e) => setDiscountPercent(e.target.value)}
-            required
+            type="text"
+            value="$2 / year (Library Access)"
+            readOnly
+            style={{ color: "var(--mid)", cursor: "default" }}
           />
         </div>
         <div className="adm-field">
@@ -551,7 +549,7 @@ export default function AdminCodesPage() {
                   <tr>
                     <th>Code</th>
                     <th>University</th>
-                    <th>Discount %</th>
+                    <th>Price</th>
                     <th>Uses / Limit</th>
                     <th>Expires</th>
                     <th>Status</th>
@@ -570,7 +568,7 @@ export default function AdminCodesPage() {
                       <tr key={u.id}>
                         <td className="adm-name">{u.code}</td>
                         <td>{u.university_name}</td>
-                        <td>{u.discount_percent}%</td>
+                        <td>$2/yr</td>
                         <td>
                           {u.current_uses} /{" "}
                           {u.max_uses ?? "Unlimited"}
