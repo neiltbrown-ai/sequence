@@ -11,11 +11,35 @@ export default function ContactForm() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    setSending(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, inquiryType, subject, message }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to send");
+      }
+
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
   }
 
   if (submitted) {
@@ -111,10 +135,15 @@ export default function ContactForm() {
             onChange={(e) => setMessage(e.target.value)}
           />
         </div>
+        {error && (
+          <p style={{ fontFamily: "var(--sans)", fontSize: "13px", color: "#c0392b", marginBottom: "8px" }}>
+            {error}
+          </p>
+        )}
         <div className="ct-submit">
-          <button type="submit" className="btn">
-            SEND MESSAGE
-            <ButtonArrow />
+          <button type="submit" className="btn" disabled={sending}>
+            {sending ? "SENDING…" : "SEND MESSAGE"}
+            {!sending && <ButtonArrow />}
           </button>
         </div>
       </form>

@@ -3419,3 +3419,34 @@ h3.sec-label {
   .pub-str-gate-inner { grid-column: 1; padding: 36px 24px; }
 }
 
+/* ============================================
+   LEGAL PAGE
+   ============================================ */
+.lg-hero { padding-top: 120px; position: relative; z-index: 1; }
+.lg-hero-title { padding: 0 var(--margin) 24px; }
+.lg-hero-title h1 { font-family: var(--sans); font-weight: 300; font-size: clamp(80px, 12vw, 160px); letter-spacing: -.06em; line-height: .82; }
+.lg-content { padding: 48px var(--margin) 96px; }
+.lg-container { max-width: 720px; margin: 0 auto; }
+.lg-section { margin-bottom: 64px; }
+.lg-section:last-child { margin-bottom: 0; }
+.lg-heading {
+  font-family: var(--sans); font-weight: 400; font-size: 28px;
+  letter-spacing: -.02em; margin: 0 0 8px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.lg-updated {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--light); margin: 0 0 32px;
+}
+.lg-subheading {
+  font-family: var(--sans); font-weight: 500; font-size: 16px;
+  margin: 28px 0 8px; color: var(--black);
+}
+.lg-text {
+  font-family: var(--sans); font-size: 15px; line-height: 1.7;
+  color: var(--mid); margin: 0 0 16px;
+}
+.lg-text a { color: var(--black); text-decoration: underline; text-underline-offset: 2px; }
+.lg-text a:hover { color: var(--mid); }
+.lg-text strong { color: var(--black); font-weight: 500; }
+
