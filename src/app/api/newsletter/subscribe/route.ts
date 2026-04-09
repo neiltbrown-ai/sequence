@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
+import { sendEmail, logEmail } from "@/lib/email/send";
+import { newsletterWelcomeEmailHtml } from "@/lib/email/templates/newsletter-welcome";
+import { generateToken } from "@/app/api/newsletter/unsubscribe/route";
 
 const RESEND_AUDIENCE_ID = "f91a8f7d-666b-4d30-8a5b-406bff5e9824";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://insequence.so";
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,6 +70,29 @@ export async function POST(req: NextRequest) {
       });
     } catch {
       // Silent — Resend sync is best-effort
+    }
+
+    // Send newsletter welcome email (only for new subscribers, not resubscribes)
+    if (!existing) {
+      try {
+        const token = await generateToken(email.toLowerCase());
+        const unsubscribeUrl = `${APP_URL}/api/newsletter/unsubscribe?email=${encodeURIComponent(email.toLowerCase())}&token=${token}`;
+        const firstName = name?.split(" ")[0];
+        const subject = "Welcome to In Sequence";
+        const result = await sendEmail({
+          to: email.toLowerCase(),
+          subject,
+          html: newsletterWelcomeEmailHtml(firstName, unsubscribeUrl),
+        });
+        await logEmail(supabase, {
+          emailType: "newsletter_welcome",
+          recipientEmail: email.toLowerCase(),
+          subject,
+          status: result.success ? "sent" : "failed",
+        });
+      } catch {
+        // Silent — welcome email is best-effort
+      }
     }
 
     return NextResponse.json({ success: true });
