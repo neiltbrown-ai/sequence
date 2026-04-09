@@ -2,7 +2,7 @@ export function newsletterWelcomeEmailHtml(
   firstName?: string,
   unsubscribeUrl?: string
 ): string {
-  const greeting = firstName ? `Welcome, ${firstName}` : "Welcome to In Sequence";
+  const greeting = firstName ? `Welcome, ${firstName}.` : "Welcome.";
 
   return `<!DOCTYPE html>
 <html>
@@ -30,35 +30,57 @@ export function newsletterWelcomeEmailHtml(
           <tr>
             <td style="padding:40px 36px;">
 
-              <h1 style="margin:0 0 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:22px;font-weight:500;letter-spacing:-0.02em;line-height:1.3;color:#1a1a1a;">
+              <h1 style="margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:22px;font-weight:500;letter-spacing:-0.02em;line-height:1.3;color:#1a1a1a;">
                 ${greeting}
               </h1>
 
-              <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#555555;">
-                You're now on the list. Each edition covers the deal structures, negotiation frameworks, and business models that creative professionals use to capture the value they create.
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#555555;">
+                The compression in the creative industry you feel is structural. It's not personal. AI is commoditizing execution. What stays scarce &mdash; genuinely, economically scarce &mdash; is discernment: knowing what's worth making, how to position it, what it means. Capital follows scarcity. Most creatives aren't positioned to capture it. That's the gap In Sequence is built to close.
               </p>
 
-              <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#555555;">
-                In the meantime, here are a few places to start:
+              <p style="margin:0 0 28px;font-size:15px;line-height:1.7;color:#555555;">
+                Issues go out when there's something worth saying &mdash; no fixed cadence. Expect deal structures, case studies, and patterns in how creative value is shifting.
+              </p>
+
+              <!-- Divider -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr><td style="padding:0;"><hr style="border:none;border-top:1px solid #e8e5e0;margin:0 0 24px;" /></td></tr>
+              </table>
+
+              <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#555555;">
+                The platform is where this gets applied. Map your position, score any deal, get personalized strategic guidance, and track your creative assets &mdash; all built around the same framework you'll find in the newsletter.
               </p>
 
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
-                  <td style="padding:0 0 12px;">
-                    <span style="font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.1em;color:#999999;">01</span>
-                    <a href="https://insequence.so/structures" target="_blank" style="font-size:15px;color:#1a1a1a;padding-left:12px;text-decoration:underline;text-underline-offset:2px;">Browse 35+ deal structures</a>
+                  <td style="padding:0 0 10px;font-size:15px;line-height:1.6;color:#555555;">
+                    &bull;&ensp;Personalized strategic guidance
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding:0 0 12px;">
-                    <span style="font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.1em;color:#999999;">02</span>
-                    <a href="https://insequence.so/case-studies" target="_blank" style="font-size:15px;color:#1a1a1a;padding-left:12px;text-decoration:underline;text-underline-offset:2px;">Read a case study</a>
+                  <td style="padding:0 0 10px;font-size:15px;line-height:1.6;color:#555555;">
+                    &bull;&ensp;Score and analyze any deal
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding:0 0 0;">
-                    <span style="font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.1em;color:#999999;">03</span>
-                    <a href="https://insequence.so/articles" target="_blank" style="font-size:15px;color:#1a1a1a;padding-left:12px;text-decoration:underline;text-underline-offset:2px;">Explore the latest articles</a>
+                  <td style="padding:0 0 10px;font-size:15px;line-height:1.6;color:#555555;">
+                    &bull;&ensp;Map your position in the progression
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 0;font-size:15px;line-height:1.6;color:#555555;">
+                    &bull;&ensp;Track and value your creative assets
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td>
+                    <a href="https://insequence.so/platform" target="_blank" style="display:inline-block;padding:14px 32px;background-color:#1a1a1a;color:#ffffff;font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border-radius:2px;">
+                      Explore the Platform
+                    </a>
                   </td>
                 </tr>
               </table>
@@ -68,11 +90,14 @@ export function newsletterWelcomeEmailHtml(
                 <tr><td style="padding:0;"><hr style="border:none;border-top:1px solid #e8e5e0;margin:0 0 20px;" /></td></tr>
               </table>
 
-              <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#555555;">
-                Questions about a deal, a structure, or how to apply any of this to your situation? Just reply to this email.
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#555555;">
+                Questions about your specific situation &mdash; just reply. This goes to a real inbox.
               </p>
-              <p style="margin:0;font-size:15px;line-height:1.6;color:#1a1a1a;font-weight:500;">
-                — Neil
+              <p style="margin:0 0 4px;font-size:15px;line-height:1.6;color:#1a1a1a;font-weight:500;">
+                Neil Brown
+              </p>
+              <p style="margin:0;font-size:13px;line-height:1.6;color:#999999;">
+                In Sequence
               </p>
 
             </td>
