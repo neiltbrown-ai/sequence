@@ -36,6 +36,7 @@ export default function Footer() {
       </div>
       <div className="footer-bot">
         <span>&copy;2026. ALL RIGHTS RESERVED</span>
+        <Link href="/legal" style={{ textDecoration: "none", color: "inherit" }}>PRIVACY POLICY</Link>
         <span>IN SEQUENCE</span>
       </div>
     </footer>
