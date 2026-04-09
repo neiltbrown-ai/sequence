@@ -18,11 +18,18 @@ export async function POST(request: Request) {
     }
 
     const inboxEmail = "insequence.so@gmail.com";
-    const typeLabel = inquiryType || "General";
+    const typeLabels: Record<string, string> = {
+      general: "General Inquiry",
+      press: "Press & Media",
+      advisory: "Advisory Interest",
+      partnership: "Partnership",
+      support: "Support",
+    };
+    const typeLabel = typeLabels[inquiryType] || inquiryType || "General Inquiry";
 
     const result = await sendEmail({
       to: inboxEmail,
-      subject: `[Contact] ${typeLabel}: ${subject || "No subject"}`,
+      subject: `Sequence - ${typeLabel}: ${subject || "No subject"}`,
       html: `
         <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;max-width:600px;">
           <p style="font-size:11px;font-family:'Courier New',monospace;letter-spacing:0.1em;text-transform:uppercase;color:#999;">IN SEQUENCE — CONTACT FORM</p>
