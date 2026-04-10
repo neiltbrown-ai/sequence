@@ -3440,7 +3440,7 @@ h3.sec-label {
   .cs-header-sub-grid { grid-template-columns: 1fr; }
   .cs-header-sub p { grid-column: 1; }
   .cs-hero-grid { grid-template-columns: 1fr; }
-  .cs-hero-wrap { grid-column: 1; }
+  .cs-hero-wrap { grid-column: 1; aspect-ratio: 4 / 3; }
   .cs-stat-val { font-size: 16px; white-space: normal; }
   .cb-grid { grid-template-columns: 1fr; padding: 0 var(--margin); }
   .cb-p, .cb-h2, .cb-h3 { grid-column: 1; }

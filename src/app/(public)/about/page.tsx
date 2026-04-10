@@ -21,7 +21,7 @@ export default function AboutPage() {
             <div className="ph-wide-img anim-reveal-down">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://framerusercontent.com/images/zuq4iDlcKXpR8Kx3yWfaexbxrBs.jpg?width=2400&height=3600"
+                src="/images/sequence-about-hero.jpg"
                 alt="In Sequence"
               />
             </div>
