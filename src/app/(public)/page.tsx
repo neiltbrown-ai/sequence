@@ -258,8 +258,8 @@ export default function HomePage() {
               structures, ownership transitions, and value capture. One-on-one
               sessions grounded in the framework — not generic business advice.
             </p>
-            <Link href="/contact" className="btn">
-              CONTACT
+            <Link href="/coaching" className="btn">
+              ADVISORY
               <ButtonArrow />
             </Link>
           </div>
@@ -272,8 +272,8 @@ export default function HomePage() {
               analysis, and accountability for creative professionals ready to
               shift from execution to ownership.
             </p>
-            <Link href="/contact" className="btn">
-              CONTACT
+            <Link href="/coaching" className="btn">
+              ADVISORY
               <ButtonArrow />
             </Link>
           </div>
@@ -302,8 +302,9 @@ export default function HomePage() {
           </div>
           <div className="newsletter-text-col rv rv-d1">
             <p className="newsletter-p">
-              Updates on the restructuring. Emerging trends, new structures,
-              and opportunities for creative professionals building ownership.
+              Issues go out when there&apos;s something worth saying — no fixed cadence.
+              Expect deal structures, case studies, and patterns in how creative
+              value is shifting.
             </p>
             <NewsletterForm />
           </div>

@@ -479,22 +479,38 @@ function SignupForm() {
                 </button>
               )}
               {showCodeInput && !codeApplied && (
-                <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
-                  <div style={{ flex: 1 }}>
-                    <input
-                      type="text"
-                      value={discountCode}
-                      onChange={(e) => setDiscountCode(e.target.value)}
-                      placeholder="Enter code"
-                      className="set-input"
-                      style={{ fontFamily: "var(--mono)", fontSize: "13px", letterSpacing: ".05em", textTransform: "uppercase", border: "1px solid var(--border)", borderRadius: "4px", padding: "10px 14px" }}
-                      onKeyDown={(e) => { if (e.key === "Enter") handleApplyCode(); }}
-                    />
-                  </div>
+                <div style={{ display: "flex", gap: "8px", alignItems: "stretch" }}>
+                  <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                    placeholder="ENTER CODE"
+                    style={{
+                      flex: 1,
+                      fontFamily: "var(--mono)",
+                      fontSize: "13px",
+                      letterSpacing: ".05em",
+                      textTransform: "uppercase",
+                      border: "1px solid var(--border)",
+                      borderRadius: "4px",
+                      padding: "12px 14px",
+                      height: "44px",
+                      background: "var(--white)",
+                      color: "var(--black)",
+                      boxSizing: "border-box",
+                    }}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleApplyCode(); }}
+                  />
                   <button
                     type="button"
                     className="auth-btn"
-                    style={{ padding: "10px 20px", whiteSpace: "nowrap" }}
+                    style={{
+                      padding: "0 24px",
+                      height: "44px",
+                      whiteSpace: "nowrap",
+                      margin: 0,
+                      boxSizing: "border-box",
+                    }}
                     onClick={handleApplyCode}
                   >
                     Apply

@@ -258,7 +258,7 @@ export default function PlatformPage() {
             <span className="lib-metric-lbl">MILES OF RESEARCH</span>
           </div>
           <div className="lib-metric">
-            <span className="lib-metric-val">&infin;</span>
+            <span className="lib-metric-val lib-metric-val--infin">&infin;</span>
             <span className="lib-metric-lbl">AND GROWING</span>
           </div>
         </div>

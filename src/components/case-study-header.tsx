@@ -53,18 +53,20 @@ export default function CaseStudyHeader({
           </Link>
         </div>
 
-        {/* Meta row */}
+        {/* Meta rows — case number, tags, read time each on their own line */}
         <div className="cs-header-meta rv rv-d1">
           <div className="cs-header-meta-grid">
             <div className="cs-header-meta-inner">
-              <span className="cs-header-tag">[Case {caseNum}]</span>
-              <span className="cs-header-dot" />
-              <span className="cs-header-cat">{discipline}</span>
+              <div className="cs-header-meta-line cs-header-case-line">
+                <span className="cs-header-tag">[Case {caseNum}]</span>
+              </div>
+              <div className="cs-header-meta-line cs-header-tags-line">
+                <span className="cs-header-cat">{discipline}</span>
+              </div>
               {readTime && (
-                <>
-                  <span className="cs-header-dot" />
+                <div className="cs-header-meta-line cs-header-read-line">
                   <span className="cs-header-cat">{readTime} Min Read</span>
-                </>
+                </div>
               )}
             </div>
             {saveButton}

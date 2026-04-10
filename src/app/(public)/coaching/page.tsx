@@ -50,6 +50,12 @@ export default function CoachingPage() {
               <li>Direct access via email and scheduled calls</li>
               <li>Full library membership included</li>
             </ul>
+            <div className="coach-tier-cta">
+              <Link href="/contact" className="btn">
+                CONTACT
+                <ButtonArrow />
+              </Link>
+            </div>
           </div>
 
           {/* 5:1 Group Advisory */}
@@ -71,6 +77,12 @@ export default function CoachingPage() {
               <li>Shared case study library and templates</li>
               <li>Full library membership included</li>
             </ul>
+            <div className="coach-tier-cta">
+              <Link href="/contact" className="btn">
+                CONTACT
+                <ButtonArrow />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -139,6 +151,73 @@ export default function CoachingPage() {
             <strong>Angel investors and family offices</strong> evaluating
             direct investments in creative ventures, IP-backed deals, and
             creator-led businesses at the intersection of culture and capital.
+          </div>
+        </div>
+      </section>
+
+      {/* ===== STRUCTURE THE SEQUENCE CTA ===== */}
+      <section className="coach-structure-cta">
+        <div className="coach-structure-grid">
+          <div className="coach-structure-left rv">
+            <h2 className="coach-structure-title">
+              Structure the sequence to own your future
+            </h2>
+            <p className="coach-structure-desc">
+              Dedicated advisory is built for creative professionals ready to
+              stop trading execution for invoices and start structuring the
+              deals, assets, and ownership that compound over time. Work
+              directly with a strategic advisor to design your sequence.
+            </p>
+            <div className="coach-structure-buttons">
+              <Link href="/contact" className="btn">
+                CONTACT
+                <ButtonArrow />
+              </Link>
+            </div>
+          </div>
+          <div className="coach-structure-right rv rv-d1">
+            <div className="coach-structure-benefit">
+              <span className="coach-structure-benefit-num">[01]</span>
+              <div>
+                <h3 className="coach-structure-benefit-title">Strategic clarity on your next move</h3>
+                <p className="coach-structure-benefit-desc">
+                  Stop second-guessing. Get a framework for deciding which
+                  deals to take, which to walk from, and which to restructure.
+                </p>
+              </div>
+            </div>
+            <div className="coach-structure-benefit">
+              <span className="coach-structure-benefit-num">[02]</span>
+              <div>
+                <h3 className="coach-structure-benefit-title">Deal structures built for ownership</h3>
+                <p className="coach-structure-benefit-desc">
+                  Move beyond hourly and project-based work. Design equity,
+                  royalty, and revenue share structures that capture long-term
+                  value.
+                </p>
+              </div>
+            </div>
+            <div className="coach-structure-benefit">
+              <span className="coach-structure-benefit-num">[03]</span>
+              <div>
+                <h3 className="coach-structure-benefit-title">Negotiation prep for high-stakes conversations</h3>
+                <p className="coach-structure-benefit-desc">
+                  Walk into every deal conversation with leverage, language,
+                  and a clear sense of what you&apos;re willing to accept.
+                </p>
+              </div>
+            </div>
+            <div className="coach-structure-benefit">
+              <span className="coach-structure-benefit-num">[04]</span>
+              <div>
+                <h3 className="coach-structure-benefit-title">A sequence designed around your goals</h3>
+                <p className="coach-structure-benefit-desc">
+                  Every engagement is personalized. Your situation, your
+                  timeline, your definition of ownership — all mapped into a
+                  deliberate sequence.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -219,9 +298,9 @@ export default function CoachingPage() {
       <section className="coach-cta">
         <div className="coach-cta-inner">
           <h2 className="coach-cta-title anim-text-up">
-            Join the
+            Own Your
             <br />
-            Waitlist
+            Future
           </h2>
           <p className="coach-cta-desc rv rv-d1">
             Advisory engagements are limited to ensure depth. Submit your
