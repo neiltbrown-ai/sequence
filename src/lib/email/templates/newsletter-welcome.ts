@@ -1,8 +1,34 @@
 export function newsletterWelcomeEmailHtml(
   firstName?: string,
-  unsubscribeUrl?: string
+  unsubscribeUrl?: string,
+  bookDownloadUrl?: string
 ): string {
   const greeting = firstName ? `Welcome, ${firstName}.` : "Welcome.";
+
+  const bookBlock = bookDownloadUrl
+    ? `
+              <!-- Book download block -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr><td style="padding:0;"><hr style="border:none;border-top:1px solid #e8e5e0;margin:0 0 24px;" /></td></tr>
+              </table>
+
+              <h2 style="margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:18px;font-weight:500;letter-spacing:-0.01em;line-height:1.3;color:#1a1a1a;">
+                Your copy of In Sequence
+              </h2>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#555555;">
+                Here's the book you requested. Download anytime &mdash; the link doesn't expire.
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td>
+                    <a href="${bookDownloadUrl}" target="_blank" style="display:inline-block;padding:14px 32px;background-color:#1a1a1a;color:#ffffff;font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border-radius:2px;">
+                      Download PDF
+                    </a>
+                  </td>
+                </tr>
+              </table>
+    `
+    : "";
 
   return `<!DOCTYPE html>
 <html>
@@ -41,7 +67,7 @@ export function newsletterWelcomeEmailHtml(
               <p style="margin:0 0 28px;font-size:15px;line-height:1.7;color:#555555;">
                 Issues go out when there's something worth saying &mdash; no fixed cadence. Expect deal structures, case studies, and patterns in how creative value is shifting.
               </p>
-
+              ${bookBlock}
               <!-- Divider -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr><td style="padding:0;"><hr style="border:none;border-top:1px solid #e8e5e0;margin:0 0 24px;" /></td></tr>

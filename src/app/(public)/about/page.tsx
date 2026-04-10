@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import ButtonArrow from "@/components/ui/button-arrow";
 import NewsletterForm from "@/components/newsletter-form";
+import BookDownloadForm from "@/components/book-download-form";
 import AsciiScatterCanvas from "@/components/ascii-scatter-canvas";
 
 export const metadata: Metadata = {
@@ -120,10 +121,10 @@ export default function AboutPage() {
               from execution to ownership. Built on 20,000 miles of primary
               research and years of practitioner experience.
             </p>
-            <div className="book-buttons rv rv-d2">
-              <Link href="/contact" className="btn btn--white">
-                DOWNLOAD BOOK
-                <ButtonArrow />
+            <div className="book-form-wrap rv rv-d2">
+              <BookDownloadForm variant="dark" />
+              <Link href="/book" className="book-more-link">
+                Learn more about the book <ButtonArrow />
               </Link>
             </div>
           </div>
