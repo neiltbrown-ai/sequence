@@ -113,14 +113,14 @@ export default function BookDownloadForm({ variant = "dark" }: BookDownloadFormP
               required
               disabled={status === "loading"}
             />
+            <button
+              type="submit"
+              className="bk-submit"
+              disabled={status === "loading"}
+            >
+              {status === "loading" ? "SENDING..." : "DOWNLOAD BOOK"}
+            </button>
           </div>
-          <button
-            type="submit"
-            className="bk-submit"
-            disabled={status === "loading"}
-          >
-            {status === "loading" ? "SENDING..." : "DOWNLOAD BOOK"}
-          </button>
           {status === "error" && (
             <p className="bk-message bk-error">{message}</p>
           )}

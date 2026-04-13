@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 import { sendEmail, logEmail } from "@/lib/email/send";
-import { newsletterWelcomeEmailHtml } from "@/lib/email/templates/newsletter-welcome";
+import { bookDeliveryEmailHtml } from "@/lib/email/templates/book-delivery";
 import { generateToken } from "@/app/api/newsletter/unsubscribe/route";
 
 const RESEND_AUDIENCE_ID = "f91a8f7d-666b-4d30-8a5b-406bff5e9824";
@@ -85,18 +85,18 @@ export async function POST(req: NextRequest) {
         const token = await generateToken(email.toLowerCase());
         const unsubscribeUrl = `${APP_URL}/api/newsletter/unsubscribe?email=${encodeURIComponent(email.toLowerCase())}&token=${token}`;
         const firstName = name?.split(" ")[0];
-        const subject = "Welcome to In Sequence";
+        const subject = "Your copy of In Sequence";
         const result = await sendEmail({
           to: email.toLowerCase(),
           subject,
-          html: newsletterWelcomeEmailHtml(
+          html: bookDeliveryEmailHtml(
             firstName,
-            unsubscribeUrl,
-            bookDownloadUrl || undefined
+            bookDownloadUrl || undefined,
+            unsubscribeUrl
           ),
         });
         await logEmail(supabase, {
-          emailType: "book_download_welcome",
+          emailType: "book_download",
           recipientEmail: email.toLowerCase(),
           subject,
           status: result.success ? "sent" : "failed",

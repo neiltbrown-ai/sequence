@@ -1,5 +1,8 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import BookDownloadForm from "@/components/book-download-form";
+import ButtonArrow from "@/components/ui/button-arrow";
+import AsciiScatterCanvas from "@/components/ascii-scatter-canvas";
 
 export const metadata: Metadata = {
   title: "The Book — In Sequence",
@@ -26,7 +29,7 @@ const THEMES = [
   {
     num: "04",
     title: "35 Deal Structures",
-    desc: "Concrete templates for capturing value: equity, royalties, profit participation, advisory arrangements, and more.",
+    desc: "Outline of the various structures for capturing value: equity, royalties, profit participation, advisory arrangements, and more.",
   },
   {
     num: "05",
@@ -57,17 +60,23 @@ export default function BookPage() {
         </div>
       </section>
 
-      {/* ===== INTRO ===== */}
-      <section className="book-intro">
-        <div className="book-intro-grid">
-          <div className="book-intro-cover rv">
+      {/* ===== BOOK IMAGE (wide, About-page style) ===== */}
+      <section className="ph-wide" style={{ marginBottom: 0 }}>
+        <div className="ph-wide-grid">
+          <div className="ph-wide-img anim-reveal-down">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/sequence-about-hero.jpg"
+              src="/images/in-sequence-book.jpg"
               alt="In Sequence — The Book"
             />
           </div>
-          <div className="book-intro-text rv rv-d1">
+        </div>
+      </section>
+
+      {/* ===== INTRO TEXT ===== */}
+      <section className="book-intro">
+        <div className="book-intro-grid">
+          <div className="book-intro-text rv">
             <p>
               The creative economy is restructuring. AI is compressing
               execution into commodity. Taste, judgment, and discernment are
@@ -117,8 +126,8 @@ export default function BookPage() {
           <div className="book-author-bio rv">
             <p>
               <strong>Neil Brown</strong> is an operator, strategist, and
-              investor focused on the intersection of creative work and
-              capital. Over fifteen years he has built agencies, advised
+              investor focused on the intersection of creativity and capital.
+              Over twenty years he has built agencies, advised
               ventures and investment funds, hosted creative platforms, and
               worked directly with the practitioners shaping the creative
               economy.
@@ -129,23 +138,32 @@ export default function BookPage() {
               industries and capture the value they create.
             </p>
           </div>
+          <div className="book-author-portrait rv rv-d2">
+            <AsciiScatterCanvas className="book-author-canvas" />
+          </div>
         </div>
       </section>
 
       {/* ===== DOWNLOAD CTA ===== */}
-      <section className="book-cta">
-        <div className="book-cta-inner">
-          <h2 className="book-cta-title anim-text-up">
-            Download
-            <br />
-            In Sequence
-          </h2>
-          <p className="book-cta-desc rv rv-d1">
-            Free. Just enter your name and email and we&apos;ll send the PDF
-            and add you to the newsletter.
-          </p>
-          <div className="book-cta-form rv rv-d2">
-            <BookDownloadForm variant="dark" />
+      <section className="book" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="book-grid">
+          <div className="book-img rv">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/in-sequence-book.jpg"
+              alt="In Sequence — The Book"
+            />
+          </div>
+          <div className="book-content">
+            <span className="book-lbl rv">IN SEQUENCE / THE BOOK</span>
+            <h2 className="book-title anim-text-up">Download In Sequence</h2>
+            <p className="book-desc rv rv-d1">
+              It&apos;s free. Just enter your name and email and we&apos;ll send
+              the PDF and add you to the newsletter.
+            </p>
+            <div className="book-form-wrap rv rv-d2">
+              <BookDownloadForm variant="dark" />
+            </div>
           </div>
         </div>
       </section>

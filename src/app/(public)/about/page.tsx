@@ -107,7 +107,7 @@ export default function AboutPage() {
           <div className="book-img rv">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://framerusercontent.com/images/zuq4iDlcKXpR8Kx3yWfaexbxrBs.jpg?width=2400&height=3600"
+              src="/images/in-sequence-book.jpg"
               alt="In Sequence — The Book"
             />
           </div>
