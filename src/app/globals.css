@@ -1859,7 +1859,7 @@ h3.sec-label {
   color: var(--light); text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 400;
 }
 .ab-table td { font-family: var(--sans); font-size: 14px; color: var(--mid); padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,.04); line-height: 1.5; vertical-align: top; }
-.ab-table td:first-child { font-weight: 500; color: var(--black); white-space: nowrap; }
+.ab-table td:first-child { font-weight: 500; color: var(--black); }
 .ab-table tr:hover td { background: rgba(0,0,0,.015); }
 .ab-grid.is-table { margin-top: 32px; }
 .ab-grid.is-table + .ab-grid { margin-top: 48px; }
@@ -3053,7 +3053,7 @@ h3.sec-label {
   padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,.04);
   line-height: 1.5; vertical-align: top;
 }
-.cb-table td:first-child { font-weight: 500; color: var(--black); white-space: nowrap; }
+.cb-table td:first-child { font-weight: 500; color: var(--black); }
 .cb-table tr:hover td { background: rgba(0,0,0,.015); }
 .cb-grid.is-table { margin-top: 32px; }
 .cb-grid.is-table + .cb-grid { margin-top: 48px; }

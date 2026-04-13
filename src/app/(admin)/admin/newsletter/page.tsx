@@ -248,7 +248,7 @@ export default function AdminNewsletterPage() {
     { ...EMPTY_ENTRY },
     { ...EMPTY_ENTRY },
   ]);
-  const [audience, setAudience] = useState<"all" | "members" | "free">("all");
+  const [audience, setAudience] = useState<string[]>(["all"]);
   const [showPreview, setShowPreview] = useState(false);
   const [sendStatus, setSendStatus] = useState<
     "idle" | "sending" | "sent" | "error"
@@ -743,17 +743,32 @@ export default function AdminNewsletterPage() {
 
               <div className="adm-field">
                 <label className="adm-label">Audience</label>
-                <select
-                  className="adm-select"
-                  value={audience}
-                  onChange={(e) =>
-                    setAudience(e.target.value as "all" | "members" | "free")
-                  }
-                >
-                  <option value="all">All Subscribers</option>
-                  <option value="members">Paid Members Only</option>
-                  <option value="free">Free Subscribers Only</option>
-                </select>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {[
+                    { value: "all", label: "All Subscribers" },
+                    { value: "members", label: "Paid Members" },
+                    { value: "free", label: "Free Subscribers" },
+                    { value: "book_download", label: "Book Downloads" },
+                  ].map((opt) => (
+                    <label key={opt.value} style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: "var(--sans)", fontSize: "14px", color: "var(--mid)", cursor: "pointer" }}>
+                      <input
+                        type="checkbox"
+                        checked={audience.includes(opt.value)}
+                        onChange={(e) => {
+                          if (opt.value === "all") {
+                            setAudience(e.target.checked ? ["all"] : []);
+                          } else {
+                            const next = e.target.checked
+                              ? [...audience.filter((a) => a !== "all"), opt.value]
+                              : audience.filter((a) => a !== opt.value);
+                            setAudience(next.length === 0 ? ["all"] : next);
+                          }
+                        }}
+                      />
+                      {opt.label}
+                    </label>
+                  ))}
+                </div>
               </div>
 
               <div className="adm-field">
@@ -789,7 +804,7 @@ export default function AdminNewsletterPage() {
                   onClick={() => {
                     if (
                       confirm(
-                        `Send this newsletter to ${audience === "all" ? "all subscribers" : audience === "members" ? "paid members" : "free subscribers"}?`
+                        `Send this newsletter to ${audience.includes("all") ? "all subscribers" : audience.join(", ")}?`
                       )
                     ) {
                       handleSend(false);

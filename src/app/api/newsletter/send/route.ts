@@ -62,20 +62,50 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // Get recipients based on audience
-  let query = adminClient
-    .from("newsletter_subscribers")
-    .select("email, name, user_id")
-    .eq("status", "active");
+  // Get recipients based on audience (supports array or string for backward compat)
+  const segments: string[] = Array.isArray(audience) ? audience : [audience || "all"];
+  const isAll = segments.includes("all") || segments.length === 0;
 
-  if (audience === "members") {
-    query = query.not("user_id", "is", null);
-  } else if (audience === "free") {
-    query = query.is("user_id", null);
+  let subscribers: { email: string; name: string | null; user_id: string | null }[] = [];
+  let error = null;
+
+  if (isAll) {
+    const result = await adminClient
+      .from("newsletter_subscribers")
+      .select("email, name, user_id")
+      .eq("status", "active");
+    subscribers = result.data || [];
+    error = result.error;
+  } else {
+    // Build OR filter for selected segments
+    const allResults: typeof subscribers = [];
+    const seenEmails = new Set<string>();
+
+    for (const seg of segments) {
+      let query = adminClient
+        .from("newsletter_subscribers")
+        .select("email, name, user_id")
+        .eq("status", "active");
+
+      if (seg === "members") {
+        query = query.not("user_id", "is", null);
+      } else if (seg === "free") {
+        query = query.is("user_id", null);
+      } else if (seg === "book_download") {
+        query = query.eq("source", "book_download");
+      }
+
+      const result = await query;
+      if (result.error) { error = result.error; break; }
+      for (const sub of result.data || []) {
+        if (!seenEmails.has(sub.email)) {
+          seenEmails.add(sub.email);
+          allResults.push(sub);
+        }
+      }
+    }
+    subscribers = allResults;
   }
-  // audience === "all" or undefined sends to everyone
-
-  const { data: subscribers, error } = await query;
 
   if (error || !subscribers) {
     return NextResponse.json(
