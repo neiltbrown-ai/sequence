@@ -36,9 +36,9 @@ export default function HomePage() {
           <div className="hero-meta-cell rv rv-d2">
             <span className="hero-intro-tag">[INTRO]</span>
             <p className="hero-desc">
-              The creative economy is restructuring. Production commoditizes.
-              Discernment becomes scarce. Capital follows scarcity. Design the
-              sequence for your transition and future.
+              Execution costs near zero. Creative vision and discernment are
+              rare. Capital follows scarcity. Design the sequence to own your
+              future.
             </p>
             <div className="hero-subscribe">
               <Link href="/pricing" className="btn">
@@ -236,7 +236,7 @@ export default function HomePage() {
             <div className="platform-cta-feature">
               <span className="platform-cta-feature-num">[06]</span>
               <span className="platform-cta-feature-text">
-                <strong>New content weekly</strong> &mdash; the platform keeps
+                <strong>New content regularly</strong> &mdash; the platform keeps
                 growing
               </span>
             </div>
@@ -259,7 +259,7 @@ export default function HomePage() {
               sessions grounded in the framework — not generic business advice.
             </p>
             <Link href="/coaching" className="btn">
-              ADVISORY
+              ADVISORY INFO
               <ButtonArrow />
             </Link>
           </div>
@@ -273,7 +273,7 @@ export default function HomePage() {
               shift from execution to ownership.
             </p>
             <Link href="/coaching" className="btn">
-              ADVISORY
+              COACHING INFO
               <ButtonArrow />
             </Link>
           </div>

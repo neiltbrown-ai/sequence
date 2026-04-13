@@ -169,7 +169,7 @@ export default function CoachingPage() {
               directly with a strategic advisor to design your sequence.
             </p>
             <div className="coach-structure-buttons">
-              <Link href="/contact" className="btn">
+              <Link href="/contact" className="btn btn--white">
                 CONTACT
                 <ButtonArrow />
               </Link>

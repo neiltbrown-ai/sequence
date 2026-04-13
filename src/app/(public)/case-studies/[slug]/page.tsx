@@ -67,8 +67,8 @@ export default async function PublicCaseStudyPage({
         heroPosition={fm.heroPosition}
         heroCredit={fm.heroCredit}
         stats={fm.stats}
-        backHref="/resources"
-        backLabel="Resources"
+        backHref="/platform"
+        backLabel="Platform"
       />
 
       {/* Scroll-spy sidenav (public only) */}
