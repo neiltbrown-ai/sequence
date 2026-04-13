@@ -251,7 +251,7 @@ export default function LibraryPage() {
               captured value.
             </p>
             <div className="cases-gate-cta">
-              <Link href="/case-studies" className="btn btn--white">
+              <Link href="/pricing" className="btn btn--white">
                 VIEW ALL CASE STUDIES
                 <ButtonArrow />
               </Link>

@@ -1637,6 +1637,8 @@ h3.sec-label {
 .case-card:nth-child(2) { grid-column: 5 / 9; margin-top: 40px; }
 .case-card:nth-child(3) { grid-column: 2 / 6; margin-top: -20px; }
 .case-card:nth-child(4) { grid-column: 6 / 9; }
+.case-card:nth-child(5) { grid-column: 1 / 5; }
+.case-card:nth-child(6) { grid-column: 5 / 9; margin-top: 40px; }
 .case-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.45); }
 .case-name { font-family: var(--sans); font-weight: 300; font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -.03em; line-height: .95; }
 .case-discipline { font-family: var(--sans); font-size: 15px; color: rgba(255,255,255,.5); margin-top: 4px; }
@@ -2398,7 +2400,7 @@ h3.sec-label {
   .cases-intro-grid { grid-template-columns: 1fr; }
   .cases-intro-text { grid-column: 1; }
   .cases-grid { grid-template-columns: 1fr; }
-  .case-card:nth-child(1), .case-card:nth-child(2), .case-card:nth-child(3), .case-card:nth-child(4) { grid-column: 1; margin-top: 0; }
+  .case-card:nth-child(1), .case-card:nth-child(2), .case-card:nth-child(3), .case-card:nth-child(4), .case-card:nth-child(5), .case-card:nth-child(6) { grid-column: 1; margin-top: 0; }
   .case-card { min-height: 280px; }
   .cases-gate { margin: 48px 0 0; grid-template-columns: 1fr; padding: 36px 24px; gap: 28px; }
   .cases-gate-right { grid-template-columns: 1fr; }
