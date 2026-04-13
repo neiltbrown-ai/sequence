@@ -30,10 +30,10 @@ interface NavItem {
 
 const TOP_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
-  { href: "/advisor", label: "Advisor", icon: <AiAdvisorIcon />, requiredTier: "full_access" },
-  { href: "/roadmap", label: "Roadmap", icon: <RoadmapIcon />, requiredTier: "full_access" },
+  { href: "/inventory", label: "Portfolio", icon: <InventoryIcon />, requiredTier: "full_access" },
   { href: "/evaluate", label: "Evaluate", icon: <EvaluateIcon />, requiredTier: "full_access" },
-  { href: "/inventory", label: "Inventory", icon: <InventoryIcon />, requiredTier: "full_access" },
+  { href: "/roadmap", label: "Roadmap", icon: <RoadmapIcon />, requiredTier: "full_access" },
+  { href: "/advisor", label: "Advisor", icon: <AiAdvisorIcon />, requiredTier: "full_access" },
 ];
 
 const MIDDLE_ITEMS: NavItem[] = [
@@ -57,9 +57,25 @@ const TIER_RANK: Record<AccessTier, number> = {
   coaching: 3,
 };
 
+function CollapseIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" width="14" height="14">
+      <path d="M10 3L5 8L10 13" />
+    </svg>
+  );
+}
+
+function ExpandIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" width="14" height="14">
+      <path d="M6 3L11 8L6 13" />
+    </svg>
+  );
+}
+
 export default function PortalSidebar() {
   const pathname = usePathname();
-  const { sidebarOpen, closeSidebar, hasActiveSubscription, accessTier } = usePortalShell();
+  const { sidebarOpen, closeSidebar, sidebarCollapsed, toggleCollapsed, hasActiveSubscription, accessTier } = usePortalShell();
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -81,7 +97,7 @@ export default function PortalSidebar() {
           title={item.disabled ? "Coming soon" : "Upgrade to access"}
         >
           {item.icon}
-          {item.label}
+          {!sidebarCollapsed && <span className="sb-nav-label">{item.label}</span>}
         </div>
       );
     }
@@ -90,10 +106,9 @@ export default function PortalSidebar() {
         key={item.href}
         href={item.href}
         className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
+        title={sidebarCollapsed ? item.label : undefined}
         onClick={(e) => {
           closeSidebar();
-          // Force full page reload for advisor when already on /advisor
-          // (client state doesn't reset on same-URL navigation)
           if (item.href === "/advisor" && pathname.startsWith("/advisor")) {
             e.preventDefault();
             window.location.href = "/advisor";
@@ -101,7 +116,7 @@ export default function PortalSidebar() {
         }}
       >
         {item.icon}
-        {item.label}
+        {!sidebarCollapsed && <span className="sb-nav-label">{item.label}</span>}
       </Link>
     );
   };
@@ -112,16 +127,24 @@ export default function PortalSidebar() {
         className={`sidebar-overlay${sidebarOpen ? " open" : ""}`}
         onClick={closeSidebar}
       />
-      <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
+      <aside className={`sidebar${sidebarOpen ? " open" : ""}${sidebarCollapsed ? " collapsed" : ""}`}>
         <button className="sb-close" onClick={closeSidebar}>
           <CloseIcon />
         </button>
 
-        <div className="sb-logo">
-          In Sequence <span>·</span> Library
+        <div className="sb-logo-row">
+          {!sidebarCollapsed && <div className="sb-logo">Sequence</div>}
+          <button
+            type="button"
+            className="sb-collapse-btn"
+            onClick={toggleCollapsed}
+            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {sidebarCollapsed ? <ExpandIcon /> : <CollapseIcon />}
+          </button>
         </div>
 
-        {/* Top: Dashboard + AI tools */}
+        {/* Top: Dashboard + Tools */}
         <div className="sb-section">
           {TOP_ITEMS.map(renderNavItem)}
         </div>

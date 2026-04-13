@@ -180,8 +180,8 @@ async function FullAccessDashboard() {
         </div>
       </div>
 
-      <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
       <DashboardInventoryCTA assetCount={inventoryCount} summary={inventorySummary} />
+      <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
 
       <div className="dash-section rv rv-d1">
         <SectionHeader title="Recommended for You" />

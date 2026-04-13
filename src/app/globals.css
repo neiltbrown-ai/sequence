@@ -2496,12 +2496,32 @@ h3.sec-label {
   padding: 28px 0;
   overflow-y: auto;
 }
-.sb-logo {
+.sb-logo-row {
+  display: flex; align-items: center; justify-content: space-between;
   padding: 0 28px 32px;
+}
+.sb-logo {
   font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
   color: var(--black);
 }
 .sb-logo span { color: var(--light); }
+.sb-collapse-btn {
+  background: none; border: none; cursor: pointer; color: var(--light);
+  padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  transition: color .15s, background .15s;
+}
+.sb-collapse-btn:hover { color: var(--black); background: rgba(0,0,0,.04); }
+
+/* Collapsed sidebar */
+.sidebar.collapsed { width: 60px; }
+.sidebar.collapsed .sb-logo-row { justify-content: center; padding: 0 0 24px; }
+.sidebar.collapsed .sb-nav-item { justify-content: center; padding: 9px 0; gap: 0; }
+.sidebar.collapsed .sb-nav-item .sb-nav-label { display: none; }
+.sidebar.collapsed .sb-divider { margin: 12px 12px; }
+.sidebar.collapsed .sb-bottom { padding: 12px 0 0; }
+.sidebar.collapsed .sb-section-label { display: none; }
+.sidebar.collapsed .sb-sub { display: none; }
+/* Topbar and main use --sidebar-w CSS variable which is updated dynamically */
 .sb-section { padding: 0 0 8px; }
 .sb-section-label {
   font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
