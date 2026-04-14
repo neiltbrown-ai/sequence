@@ -298,6 +298,38 @@
 .lib-card--dark:hover::before {
   opacity: 1;
 }
+
+/* Cover-image variant: case study card backed by its real cover image.
+   Overrides the conic-gradient from :nth-child rules and adds a
+   dark gradient overlay so the text stays readable. */
+.lib-card--cover,
+.lib-card--dark.lib-card--cover,
+.lib-card--dark.lib-card--cover:nth-child(1),
+.lib-card--dark.lib-card--cover:nth-child(2),
+.lib-card--dark.lib-card--cover:nth-child(3) {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #111 !important;
+}
+.lib-card--cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 30%, rgba(0,0,0,0.5) 100%);
+  opacity: 1;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  transition: background 0.25s ease;
+}
+.lib-card--cover:hover::before {
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.2) 100%);
+}
+.lib-card--cover.lib-card--dark:hover {
+  background-color: #111 !important;
+  background-image: inherit;
+}
 .lib-card--dark > * {
   position: relative;
   z-index: 1;
@@ -505,6 +537,7 @@
 .lib-card:hover { background: var(--white); border-color: rgba(0,0,0,0.12); }
 .lib-card.lib-card--dark { border-color: transparent !important; }
 .lib-card.lib-card--dark:hover { background-color: #111 !important; background-image: none; border-color: transparent !important; }
+.lib-card.lib-card--dark.lib-card--cover:hover { background-image: inherit; }
 .lib-card-type {
   font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--light); margin-bottom: 10px;

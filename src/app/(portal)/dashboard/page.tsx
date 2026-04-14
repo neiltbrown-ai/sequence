@@ -243,6 +243,7 @@ async function FullAccessDashboard() {
                 isNew
                 className={`rv rv-d${i + 1}`}
                 dark
+                coverImage={cs.coverImage || cs.heroImage}
               />
             );
           })}
@@ -392,6 +393,8 @@ async function LibraryDashboard() {
                   tags={[cs.discipline]}
                   matchReason={reason}
                   className={`rv rv-d${(i % 3) + 1}`}
+                  dark
+                  coverImage={cs.coverImage || cs.heroImage}
                 />
               );
             }
