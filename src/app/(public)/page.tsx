@@ -43,8 +43,8 @@ export default function HomePage() {
               case studies.
             </p>
             <div className="hero-subscribe">
-              <Link href="/pricing" className="btn">
-                GET IN SEQUENCE
+              <Link href="/platform" className="btn">
+                PLATFORM OVERVIEW
                 <ButtonArrow />
               </Link>
             </div>
