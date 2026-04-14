@@ -1,8 +1,5 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import BookDownloadForm from "@/components/book-download-form";
-import ButtonArrow from "@/components/ui/button-arrow";
-import AsciiScatterCanvas from "@/components/ascii-scatter-canvas";
 
 export const metadata: Metadata = {
   title: "The Book — In Sequence",
@@ -66,7 +63,7 @@ export default function BookPage() {
           <div className="ph-wide-img anim-reveal-down">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/in-sequence-book.jpg"
+              src="/images/in-sequence-book-mockup.jpg"
               alt="In Sequence — The Book"
             />
           </div>
@@ -117,40 +114,13 @@ export default function BookPage() {
         </div>
       </section>
 
-      {/* ===== ABOUT THE AUTHOR ===== */}
-      <section className="book-author">
-        <div className="book-author-head">
-          <h2 className="anim-text-up">About the Author</h2>
-        </div>
-        <div className="book-author-grid">
-          <div className="book-author-bio rv">
-            <p>
-              <strong>Neil Brown</strong> is an operator, strategist, and
-              investor focused on the intersection of creativity and capital.
-              Over twenty years he has built agencies, advised
-              ventures and investment funds, hosted creative platforms, and
-              worked directly with the practitioners shaping the creative
-              economy.
-            </p>
-            <p>
-              In Sequence is the synthesis of that work — a framework for
-              creative professionals to understand the forces reshaping their
-              industries and capture the value they create.
-            </p>
-          </div>
-          <div className="book-author-portrait rv rv-d2">
-            <AsciiScatterCanvas className="book-author-canvas" />
-          </div>
-        </div>
-      </section>
-
       {/* ===== DOWNLOAD CTA ===== */}
       <section className="book" style={{ borderBottom: "1px solid var(--border)" }}>
         <div className="book-grid">
           <div className="book-img rv">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/in-sequence-book.jpg"
+              src="/images/in-sequence-book-mockup.jpg"
               alt="In Sequence — The Book"
             />
           </div>

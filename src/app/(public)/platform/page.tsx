@@ -28,9 +28,8 @@ export default function PlatformPage() {
               <strong>
                 Transform your portfolio of projects into a portfolio of assets.
               </strong>{" "}
-              Execution costs near zero. Creative vision is rare. Capital follows
-              scarcity. Understand the economic value of your creativity &mdash;
-              value your assets, score any deal, map your progression, and get
+              Understand the economic value of your creativity &mdash; value
+              your assets, score any deal, map your progression, and get
               strategic guidance built on 35 structures and 70+ case studies.
             </p>
           </div>

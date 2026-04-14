@@ -69,6 +69,10 @@ export default function Nav({ activePage }: NavProps) {
             PLATFORM
           </Link>
           <span className="s">/</span>
+          <Link href="/the-library" className={currentPage.startsWith("/the-library") ? "active" : ""}>
+            LIBRARY
+          </Link>
+          <span className="s">/</span>
           <Link href="/articles" className={currentPage.startsWith("/articles") ? "active" : ""}>
             ARTICLES
           </Link>
@@ -158,6 +162,9 @@ export default function Nav({ activePage }: NavProps) {
         </Link>
         <Link href="/platform" className={currentPage === "/platform" ? "active" : ""} onClick={() => setIsOpen(false)}>
           Platform
+        </Link>
+        <Link href="/the-library" className={currentPage.startsWith("/the-library") ? "active" : ""} onClick={() => setIsOpen(false)}>
+          Library
         </Link>
         <Link href="/articles" className={currentPage.startsWith("/articles") ? "active" : ""} onClick={() => setIsOpen(false)}>
           Articles

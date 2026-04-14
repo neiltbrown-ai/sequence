@@ -26,7 +26,11 @@ const ROUTE_MAP: Record<SearchResult["type"], string> = {
   article: "/library/articles",
 };
 
-export default function PortalTopbar() {
+interface PortalTopbarProps {
+  newCount?: number;
+}
+
+export default function PortalTopbar({ newCount = 0 }: PortalTopbarProps) {
   const { openSidebar } = usePortalShell();
   const { theme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -225,10 +229,12 @@ export default function PortalTopbar() {
       </div>
 
       <div className="tb-right">
-        <Link href="/dashboard" className="tb-new-badge">
-          <span className="tb-new-dot" />
-          3 New this week
-        </Link>
+        {newCount > 0 && (
+          <Link href="/dashboard" className="tb-new-badge">
+            <span className="tb-new-dot" />
+            {newCount} New this week
+          </Link>
+        )}
         <div className="tb-avatar-wrap" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
           <button
             type="button"

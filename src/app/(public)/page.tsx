@@ -36,9 +36,10 @@ export default function HomePage() {
           <div className="hero-meta-cell rv rv-d2">
             <span className="hero-intro-tag">[INTRO]</span>
             <p className="hero-desc">
-              Execution costs near zero. Creative vision and discernment are
-              rare. Capital follows scarcity. Design the sequence to own your
-              future.
+              Understand the economic value of your creativity &mdash; value
+              your assets, score any deal, map your progression, and get
+              personalized strategic guidance built on 35 structures and 70+
+              case studies.
             </p>
             <div className="hero-subscribe">
               <Link href="/pricing" className="btn">

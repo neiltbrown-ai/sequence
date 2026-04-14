@@ -238,3 +238,28 @@ export function getTestimonials(): Testimonial[] {
   const raw = fs.readFileSync(filePath, "utf-8");
   return JSON.parse(raw) as Testimonial[];
 }
+
+// ── New content count (last 7 days) ──────────
+
+export function getNewContentCount(days: number = 7): number {
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  let count = 0;
+
+  const isRecent = (dateStr: string | undefined) => {
+    if (!dateStr) return false;
+    const t = Date.parse(dateStr);
+    return !isNaN(t) && t > cutoff;
+  };
+
+  for (const s of getAllStructures()) {
+    if (isRecent(s.updatedAt)) count++;
+  }
+  for (const c of getAllCaseStudies()) {
+    if (isRecent(c.updatedAt)) count++;
+  }
+  for (const a of getAllArticles()) {
+    if (isRecent(a.updatedAt) || isRecent(a.date)) count++;
+  }
+
+  return count;
+}

@@ -7,6 +7,7 @@ import CustomCursor from "@/components/cursor";
 import ThemeProvider from "@/components/theme-provider";
 import { createClient } from "@/lib/supabase/server";
 import { planTier, type AccessTier } from "@/lib/plans";
+import { getNewContentCount } from "@/lib/content";
 
 export default async function PortalLayout({
   children,
@@ -39,7 +40,7 @@ export default async function PortalLayout({
       <RevealProvider />
       <div className="app">
         <PortalSidebar />
-        <PortalTopbar />
+        <PortalTopbar newCount={getNewContentCount(7)} />
         <main className="main">
           <div className="content">{children}</div>
         </main>
