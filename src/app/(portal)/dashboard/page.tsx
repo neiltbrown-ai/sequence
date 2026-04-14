@@ -19,7 +19,7 @@ import DashboardLibraryStats from "@/components/portal/dashboard-library-stats";
 import DashboardUpgradeNudge from "@/components/portal/dashboard-upgrade-nudge";
 import { createClient } from "@/lib/supabase/server";
 import { planTier } from "@/lib/plans";
-import { getRecommendations, getEditorialPicks, getNewContent } from "@/lib/recommendations";
+import { getRecommendations, getEditorialPicks, getNewContent, getCaseStudyRecommendationsForUser } from "@/lib/recommendations";
 import type { SignalColor } from "@/types/evaluator";
 
 const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
@@ -75,6 +75,10 @@ async function FullAccessDashboard() {
   let profileCompletedCount = 0;
   const profileTotalCount = 3;
 
+  // Profile data for case study recommendations
+  let profileForRecs: { disciplines: string[]; interests: string[]; careerStage: string | null } | undefined;
+  let assetsForRecs: { asset_type: string }[] = [];
+
   if (user) {
     const profileResult = await supabase
       .from("profiles")
@@ -89,12 +93,21 @@ async function FullAccessDashboard() {
         { filled: !!profileResult.data.career_stage },
       ];
       profileCompletedCount = fields.filter((f) => f.filled).length;
+      profileForRecs = {
+        disciplines: profileResult.data.disciplines ?? [],
+        interests: profileResult.data.interests ?? [],
+        careerStage: profileResult.data.career_stage ?? null,
+      };
     }
 
-    const [invCountResult, evalResult] = await Promise.all([
+    const [invCountResult, invAssetsResult, evalResult] = await Promise.all([
       supabase
         .from("asset_inventory_items")
         .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id),
+      supabase
+        .from("asset_inventory_items")
+        .select("asset_type")
         .eq("user_id", user.id),
       supabase
         .from("deal_evaluations")
@@ -105,6 +118,7 @@ async function FullAccessDashboard() {
     ]);
 
     inventoryCount = invCountResult.count || 0;
+    assetsForRecs = (invAssetsResult.data as { asset_type: string }[]) || [];
 
     if (inventoryCount > 0) {
       const { data: analysis } = await supabase
@@ -148,10 +162,13 @@ async function FullAccessDashboard() {
     }
   }
 
-  const recommended: (StructureMeta | CaseStudyMeta)[] = [
-    ...structures.filter((s) => [12, 18].includes(s.number)),
-    ...caseStudies.slice(0, 1),
-  ].slice(0, 3);
+  // Dynamically pick top 3 case studies: portfolio assets > profile > editorial picks
+  const recommended: (StructureMeta | CaseStudyMeta)[] = getCaseStudyRecommendationsForUser({
+    assets: assetsForRecs,
+    profile: profileForRecs,
+    caseStudies,
+    limit: 3,
+  });
 
   return (
     <>
@@ -184,7 +201,7 @@ async function FullAccessDashboard() {
       <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
 
       <div className="dash-section rv rv-d1">
-        <SectionHeader title="Recommended for You" />
+        <SectionHeader title="Featured Case Studies" linkHref="/library/case-studies" linkLabel="Browse all" />
         <div className="card-row">
           {recommended.map((item, i) => {
             if (item.type === "structure") {

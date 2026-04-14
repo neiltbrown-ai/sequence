@@ -275,3 +275,135 @@ export function getNewContent(
 
   return recent.slice(0, limit);
 }
+
+// ── Portfolio-aware case study recommendations ─────────────────
+
+/**
+ * Map AssetType → interest tags + relevant structure numbers.
+ * Used to translate portfolio composition into content matching signals.
+ */
+const ASSET_TYPE_INTERESTS: Record<string, { tags: string[]; structureNums: number[]; disciplineHints?: string[] }> = {
+  ip: {
+    tags: ["ip", "catalog", "catalog-value", "licensing", "securitization"],
+    structureNums: [14, 27, 28, 29, 30],
+  },
+  judgment: {
+    tags: ["advisory", "consulting", "discernment-premium", "career-transition"],
+    structureNums: [4, 17, 18],
+  },
+  relationship: {
+    tags: ["partnership", "joint-venture", "advisory", "co-creation"],
+    structureNums: [5, 6, 18],
+  },
+  process: {
+    tags: ["process", "platform", "infrastructure"],
+    structureNums: [7, 12],
+  },
+  audience: {
+    tags: ["audience", "creator", "subscription", "newsletter"],
+    structureNums: [12, 25],
+  },
+  brand: {
+    tags: ["brand", "licensing", "franchise", "creator-platform"],
+    structureNums: [11, 12, 28],
+  },
+};
+
+interface PortfolioAsset {
+  asset_type: string;
+}
+
+/**
+ * Get top N case studies for a user, prioritizing portfolio composition over profile.
+ *
+ * Priority order:
+ *   1. Portfolio assets (if assets.length > 0) — score by asset type relevance
+ *   2. Profile data (if disciplines/interests/stage provided) — use existing scoring
+ *   3. Editorial fallback — featured case studies
+ */
+export function getCaseStudyRecommendationsForUser({
+  assets,
+  profile,
+  caseStudies,
+  bookmarkedSlugs = new Set(),
+  limit = 3,
+}: {
+  assets?: PortfolioAsset[];
+  profile?: {
+    disciplines: string[];
+    interests: string[];
+    careerStage: string | null;
+  };
+  caseStudies: CaseStudyMeta[];
+  bookmarkedSlugs?: Set<string>;
+  limit?: number;
+}): CaseStudyMeta[] {
+  // Strategy 1: Portfolio-based scoring
+  if (assets && assets.length > 0) {
+    // Aggregate interest tags from asset types
+    const assetTags = new Set<string>();
+    const assetStructures = new Set<number>();
+    for (const asset of assets) {
+      const map = ASSET_TYPE_INTERESTS[asset.asset_type];
+      if (!map) continue;
+      map.tags.forEach((t) => assetTags.add(t));
+      map.structureNums.forEach((n) => assetStructures.add(n));
+    }
+
+    const scored = caseStudies
+      .filter((cs) => !bookmarkedSlugs.has(cs.slug))
+      .map((cs) => {
+        let score = 0;
+        // Tag match
+        const tagsLower = (cs.tags || []).map((t) => t.toLowerCase());
+        for (const tag of assetTags) {
+          if (tagsLower.some((ct) => ct.includes(tag))) score += 2;
+        }
+        // Structure references
+        for (const num of cs.structures || []) {
+          if (assetStructures.has(num)) score += 1.5;
+        }
+        // Featured tiebreaker
+        if (cs.featured) score += 0.5;
+        return { cs, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    if (scored.length >= limit) {
+      return scored.slice(0, limit).map(({ cs }) => cs);
+    }
+    // Fall through to profile if not enough portfolio matches
+  }
+
+  // Strategy 2: Profile-based scoring
+  if (profile && (profile.disciplines.length > 0 || profile.interests.length > 0 || profile.careerStage)) {
+    const input: RecommendationInput = {
+      disciplines: profile.disciplines,
+      interests: profile.interests,
+      careerStage: profile.careerStage,
+      bookmarkedSlugs,
+    };
+    const scored = caseStudies
+      .filter((cs) => !bookmarkedSlugs.has(cs.slug))
+      .map((cs) => ({ cs, score: scoreCaseStudy(cs, input).score }))
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    if (scored.length >= limit) {
+      return scored.slice(0, limit).map(({ cs }) => cs);
+    }
+  }
+
+  // Strategy 3: Editorial fallback — featured first, then any
+  const featured = caseStudies.filter((cs) => cs.featured && !bookmarkedSlugs.has(cs.slug));
+  if (featured.length >= limit) return featured.slice(0, limit);
+
+  const fallback = [
+    ...featured,
+    ...caseStudies.filter(
+      (cs) => !cs.featured && !bookmarkedSlugs.has(cs.slug),
+    ),
+  ];
+  return fallback.slice(0, limit);
+}
