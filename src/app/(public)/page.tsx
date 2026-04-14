@@ -76,25 +76,34 @@ export default function HomePage() {
         <div className="intro-body-grid">
           <span className="intro-lbl rv">[ABOUT]</span>
           <div className="intro-txt rv rv-d1">
+            <h3 className="intro-subtitle">
+              The creative economy is restructuring. Do you feel the compression?
+            </h3>
             <p>
-              <strong>The creative economy is restructuring.</strong> AI
-              commoditizes execution, revealing that the real value was never in
-              production — it was in vision, taste, and judgment. Creative output
-              is becoming an investable asset class. Capital is following that
-              scarcity, shifting from hourly rates to ownership structures. Most
-              creative professionals are on the wrong side of all three forces —
-              generating massive value and capturing almost none of it.
-            </p>
-            <p>
-              <strong>In Sequence maps the restructuring</strong> and provides
-              the tools to navigate it. Case studies of creatives who changed
-              their economics. A four-stage progression from execution to
-              ownership. 35 deal structures — and counting — with the terms, the
-              negotiation guidance, and the red flags for each. The research
-              keeps growing. The library keeps expanding. Get in sequence.
+              AI commoditizes execution, revealing that the real value was never
+              in production. Value is the vision, imagination, taste, and
+              judgment. Creativity is an investable asset class and capital
+              always follows scarcity. Most creatives are on the wrong side
+              &mdash; generating massive value and capturing almost none of it.
             </p>
           </div>
-          <div className="intro-btn rv rv-d2">
+          <div className="intro-image rv rv-d2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/home-intro-platform.jpg"
+              alt="In Sequence platform preview"
+            />
+          </div>
+          <div className="intro-txt intro-txt--two rv rv-d3">
+            <p>
+              <strong>Sequence maps the restructuring</strong> and provides the
+              tools to navigate it. Analyze the potential value of your portfolio
+              of assets (not just a collection of projects). Evaluate new deals
+              and opportunities &mdash; know the terms, red flags, negotiation
+              tactics, and get personalized strategic guidance. Get in sequence.
+            </p>
+          </div>
+          <div className="intro-btn rv rv-d4">
             <Link href="/platform" className="btn">
               LEARN MORE
               <ButtonArrow />
