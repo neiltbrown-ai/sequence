@@ -11,16 +11,17 @@ interface PortfolioTabsProps {
   structureSlugMap?: Record<number, { slug: string; title: string }>;
 }
 
-const ANALYSIS_EXPECTED_MS = 25000; // ~25 seconds expected
+const ANALYSIS_EXPECTED_MS = 75000; // ~75 seconds expected
 const PROGRESS_TICK_MS = 200;
+const ANALYSIS_TIMEOUT_MS = 180000; // 3 minute hard timeout
 
 const PROGRESS_STAGES = [
   { at: 0, label: "Loading your portfolio assets" },
-  { at: 15, label: "Analyzing asset types and ownership" },
-  { at: 35, label: "Estimating value ranges" },
-  { at: 55, label: "Building leverage scenarios" },
-  { at: 75, label: "Designing your action roadmap" },
-  { at: 90, label: "Finalizing analysis" },
+  { at: 12, label: "Analyzing asset types and ownership" },
+  { at: 28, label: "Estimating value ranges" },
+  { at: 48, label: "Building leverage scenarios" },
+  { at: 68, label: "Designing your action roadmap" },
+  { at: 85, label: "Finalizing analysis" },
 ];
 
 export default function PortfolioTabs({
@@ -33,6 +34,7 @@ export default function PortfolioTabs({
   const [analysis, setAnalysis] = useState<AssetInventoryAnalysis | null>(initialAnalysis);
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState("");
+  const [timedOut, setTimedOut] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stageLabel, setStageLabel] = useState(PROGRESS_STAGES[0].label);
   const startTimeRef = useRef<number>(0);
@@ -73,6 +75,9 @@ export default function PortfolioTabs({
     setTab("valuation");
     setAnalyzing(true);
     setAnalyzeError("");
+    setTimedOut(false);
+
+    const startedAt = Date.now();
 
     try {
       const res = await fetch("/api/inventory/analyze", {
@@ -84,8 +89,13 @@ export default function PortfolioTabs({
 
       const { analysisId } = await res.json();
 
-      // Poll for completion
+      // Poll for completion with hard timeout
       const poll = async () => {
+        if (Date.now() - startedAt > ANALYSIS_TIMEOUT_MS) {
+          setTimedOut(true);
+          setAnalyzing(false);
+          return;
+        }
         const check = await fetch(`/api/inventory/analysis/${analysisId}`);
         if (!check.ok) throw new Error("Failed to check analysis status");
         const result = await check.json();
@@ -158,13 +168,32 @@ export default function PortfolioTabs({
                 />
               </div>
               <p className="inv-analyzing-note">
-                This typically takes 15&ndash;30 seconds.
+                This typically takes 60&ndash;90 seconds.
               </p>
             </div>
           )}
 
+          {/* Timeout state */}
+          {!analyzing && timedOut && (
+            <div className="inv-analyzing-card rv vis">
+              <h3 className="inv-analyzing-title">Analysis is taking longer than expected</h3>
+              <p style={{ fontFamily: "var(--sans)", fontSize: "14px", color: "var(--mid)", lineHeight: 1.6, margin: "0 0 24px" }}>
+                Your portfolio analysis is still processing in the background.
+                Try refreshing this page in a minute or two, or run a new
+                analysis.
+              </p>
+              <button
+                type="button"
+                className="btn btn--filled"
+                onClick={() => { setTimedOut(false); handleAnalyze(); }}
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+
           {/* No assets yet */}
-          {!analyzing && assetCount === 0 && (
+          {!analyzing && !timedOut && assetCount === 0 && (
             <div className="dash-section rv vis">
               <div className="dash-cta-card" style={{ textAlign: "center", padding: "60px 32px" }}>
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--light)", marginBottom: "20px" }}>
@@ -190,7 +219,7 @@ export default function PortfolioTabs({
           )}
 
           {/* Assets exist but no analysis yet */}
-          {!analyzing && assetCount > 0 && !analysis && (
+          {!analyzing && !timedOut && assetCount > 0 && !analysis && (
             <div className="dash-section rv vis">
               <div className="dash-cta-card" style={{ textAlign: "center", padding: "60px 32px" }}>
                 <h3 style={{ fontFamily: "var(--sans)", fontSize: "18px", fontWeight: 500, marginBottom: "8px" }}>
@@ -214,7 +243,7 @@ export default function PortfolioTabs({
           )}
 
           {/* Analysis exists */}
-          {!analyzing && analysis && analysis.status === "completed" && analysis.analysis_content && (
+          {!analyzing && !timedOut && analysis && analysis.status === "completed" && analysis.analysis_content && (
             <>
               {isStale && (
                 <p className="inv-stale-notice" style={{ marginBottom: "16px" }}>

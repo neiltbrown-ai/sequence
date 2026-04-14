@@ -30,7 +30,8 @@ export default function PlatformPage() {
               </strong>{" "}
               Understand the economic value of your creativity &mdash; value
               your assets, score any deal, map your progression, and get
-              strategic guidance built on 35 structures and 70+ case studies.
+              personalized strategic guidance built on 35 structures and 70+
+              case studies.
             </p>
           </div>
         </div>

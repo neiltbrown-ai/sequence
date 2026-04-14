@@ -1248,7 +1248,7 @@
 }
 
 /* ── Analysis results ──────────────────────────── */
-.inv-analysis { padding: 32px 0 0; }
+.inv-analysis { padding: 32px 0 96px; }
 .inv-analysis-header {
   padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
 }

@@ -1,8 +1,13 @@
+"use client";
+
+import { useState } from "react";
+
 /**
  * BrowserFrame — wraps an image or video in a minimal browser-window chrome SVG
  * with a light drop shadow for subtle depth.
  *
  * Pass `video` prop for an auto-playing looping video instead of a static image.
+ * Shows a circular spinner while the video loads.
  */
 export default function BrowserFrame({
   src,
@@ -13,6 +18,8 @@ export default function BrowserFrame({
   alt: string;
   video?: string;
 }) {
+  const [videoReady, setVideoReady] = useState(false);
+
   return (
     <div className="browser-frame">
       <div className="browser-frame-chrome">
@@ -36,19 +43,28 @@ export default function BrowserFrame({
         </svg>
       </div>
       {video ? (
-        <video
-          className="browser-frame-img"
-          autoPlay
-          loop
-          muted
-          playsInline
-          aria-label={alt}
-        >
-          <source src={video} type="video/mp4" />
-          {/* Fallback to image if video can't load */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {src && <img className="browser-frame-img" src={src} alt={alt} />}
-        </video>
+        <div className="browser-frame-media">
+          {!videoReady && (
+            <div className="browser-frame-loading">
+              <div className="browser-frame-spinner" aria-hidden="true" />
+            </div>
+          )}
+          <video
+            className="browser-frame-img"
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-label={alt}
+            onCanPlay={() => setVideoReady(true)}
+            onLoadedData={() => setVideoReady(true)}
+          >
+            <source src={video} type="video/mp4" />
+            {/* Fallback to image if video can't load */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {src && <img className="browser-frame-img" src={src} alt={alt} />}
+          </video>
+        </div>
       ) : (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img className="browser-frame-img" src={src} alt={alt} />

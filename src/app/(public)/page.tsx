@@ -176,69 +176,70 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===== PLATFORM CTA BANNER ===== */}
-      <section className="platform-cta">
-        <div className="platform-cta-grid">
-          <div className="platform-cta-left">
-            <span className="platform-cta-lbl rv">FULL ACCESS &mdash; $19/MO</span>
-            <h2 className="platform-cta-title anim-text-up">
+      {/* ===== PLATFORM CTA — mirrors the CTA on /platform ===== */}
+      <section className="access">
+        <div className="access-grid">
+          <div className="access-content">
+            <span className="access-lbl rv">FULL ACCESS &mdash; $19/MO</span>
+            <h2 className="access-title anim-text-up">
               Get In
               <br />
               Sequence
             </h2>
-            <p className="platform-cta-desc rv rv-d1">
+            <p className="access-desc rv rv-d1">
               <strong>
-                An AI advisor that knows 35 deal structures by heart.
+                Transform your portfolio of projects into a portfolio of assets.
               </strong>{" "}
-              Score any deal before you sign. Map your position in the
-              progression. Track your creative assets as they compound. The full
-              platform &mdash; strategic tools plus the entire library.
+              Value your creative work, score any deal before you sign, map your
+              position in the progression, and get strategic guidance built on
+              real creative economy data.
             </p>
-            <div className="platform-cta-btn rv rv-d2">
+            <div className="access-buttons rv rv-d2">
               <Link href="/signup?plan=full_access" className="btn btn--white">
                 GET FULL ACCESS &mdash; $19/MO
                 <ButtonArrow />
               </Link>
             </div>
           </div>
-          <div className="platform-cta-right rv rv-d3">
-            <div className="platform-cta-feature">
-              <span className="platform-cta-feature-num">[01]</span>
-              <span className="platform-cta-feature-text">
-                <strong>AI Strategic Advisor</strong> &mdash; personalized deal
-                guidance
+          <div className="access-right rv rv-d3">
+            <div className="access-feature">
+              <span className="access-feature-num">[01]</span>
+              <span className="access-feature-text">
+                <strong>Portfolio</strong> &mdash; value your creative assets
               </span>
             </div>
-            <div className="platform-cta-feature">
-              <span className="platform-cta-feature-num">[02]</span>
-              <span className="platform-cta-feature-text">
-                <strong>Deal Evaluator</strong> &mdash; score and analyze any
+            <div className="access-feature">
+              <span className="access-feature-num">[02]</span>
+              <span className="access-feature-text">
+                <strong>Deal Evaluator</strong> &mdash; analyze and score any
                 deal
               </span>
             </div>
-            <div className="platform-cta-feature">
-              <span className="platform-cta-feature-num">[03]</span>
-              <span className="platform-cta-feature-text">
-                <strong>Career Assessment</strong> with custom roadmap
+            <div className="access-feature">
+              <span className="access-feature-num">[03]</span>
+              <span className="access-feature-text">
+                <strong>Roadmap</strong> &mdash; map your position in the
+                progression
               </span>
             </div>
-            <div className="platform-cta-feature">
-              <span className="platform-cta-feature-num">[04]</span>
-              <span className="platform-cta-feature-text">
-                <strong>Asset Inventory</strong> tracking and valuation
+            <div className="access-feature">
+              <span className="access-feature-num">[04]</span>
+              <span className="access-feature-text">
+                <strong>AI Advisor</strong> &mdash; personalized strategic
+                guidance
               </span>
             </div>
-            <div className="platform-cta-feature">
-              <span className="platform-cta-feature-num">[05]</span>
-              <span className="platform-cta-feature-text">
+            <div className="access-feature">
+              <span className="access-feature-num">[05]</span>
+              <span className="access-feature-text">
                 <strong>35+ deal structures</strong> and 70+ case studies
               </span>
             </div>
-            <div className="platform-cta-feature">
-              <span className="platform-cta-feature-num">[06]</span>
-              <span className="platform-cta-feature-text">
-                <strong>New content regularly</strong> &mdash; the platform keeps
-                growing
+            <div className="access-feature">
+              <span className="access-feature-num">[06]</span>
+              <span className="access-feature-text">
+                <strong>New content regularly</strong> &mdash; the platform
+                keeps growing
               </span>
             </div>
           </div>

@@ -115,7 +115,7 @@ export default function LibraryPage() {
                 <ButtonArrow />
               </Link>
               <Link
-                href="/structures"
+                href="/structures/hybrid-fee-backend"
                 style={{
                   fontFamily: "var(--mono)",
                   fontSize: "10px",
@@ -124,7 +124,7 @@ export default function LibraryPage() {
                   color: "rgba(255,255,255,.5)",
                 }}
               >
-                VIEW ALL STRUCTURES &rarr;
+                VIEW EXAMPLE STRUCTURE &rarr;
               </Link>
             </div>
           </div>

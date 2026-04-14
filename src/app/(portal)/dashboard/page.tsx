@@ -78,6 +78,7 @@ async function FullAccessDashboard() {
   // Profile data for case study recommendations
   let profileForRecs: { disciplines: string[]; interests: string[]; careerStage: string | null } | undefined;
   let assetsForRecs: { asset_type: string }[] = [];
+  let hasCompletedAssessment = false;
 
   if (user) {
     const profileResult = await supabase
@@ -100,7 +101,7 @@ async function FullAccessDashboard() {
       };
     }
 
-    const [invCountResult, invAssetsResult, evalResult] = await Promise.all([
+    const [invCountResult, invAssetsResult, evalResult, completedAssessmentResult] = await Promise.all([
       supabase
         .from("asset_inventory_items")
         .select("*", { count: "exact", head: true })
@@ -115,7 +116,14 @@ async function FullAccessDashboard() {
         .eq("user_id", user.id)
         .eq("status", "completed")
         .order("completed_at", { ascending: false }),
+      supabase
+        .from("assessments")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("status", "completed"),
     ]);
+
+    hasCompletedAssessment = (completedAssessmentResult.count || 0) > 0;
 
     inventoryCount = invCountResult.count || 0;
     assetsForRecs = (invAssetsResult.data as { asset_type: string }[]) || [];
@@ -177,25 +185,28 @@ async function FullAccessDashboard() {
       {/* Profile completion CTA */}
       <DashboardProfileCta completedCount={profileCompletedCount} totalCount={profileTotalCount} />
 
-      <div className="dash-section rv rv-d1">
-        <div className="adv-path-cards">
-          <Link href="/evaluate" className="adv-path-card">
-            <span className="adv-path-card-icon"><DealIcon /></span>
-            <h3 className="adv-path-card-title">Evaluate a deal</h3>
-            <p className="adv-path-card-desc">Get clarity on a specific offer or opportunity.</p>
-          </Link>
-          <Link href="/advisor?path=map" className="adv-path-card">
-            <span className="adv-path-card-icon"><MapIcon /></span>
-            <h3 className="adv-path-card-title">Map my position</h3>
-            <p className="adv-path-card-desc">Understand where you stand and what to do next.</p>
-          </Link>
-          <Link href="/advisor" className="adv-path-card">
-            <span className="adv-path-card-icon"><ExploreIcon /></span>
-            <h3 className="adv-path-card-title">Just exploring</h3>
-            <p className="adv-path-card-desc">Browse the framework, ask questions, see what&apos;s possible.</p>
-          </Link>
+      {/* Onboarding paths — hidden once user has assets or has completed assessment */}
+      {inventoryCount === 0 && !hasCompletedAssessment && (
+        <div className="dash-section rv rv-d1">
+          <div className="adv-path-cards">
+            <Link href="/evaluate" className="adv-path-card">
+              <span className="adv-path-card-icon"><DealIcon /></span>
+              <h3 className="adv-path-card-title">Evaluate a deal</h3>
+              <p className="adv-path-card-desc">Get clarity on a specific offer or opportunity.</p>
+            </Link>
+            <Link href="/advisor?path=map" className="adv-path-card">
+              <span className="adv-path-card-icon"><MapIcon /></span>
+              <h3 className="adv-path-card-title">Map my position</h3>
+              <p className="adv-path-card-desc">Understand where you stand and what to do next.</p>
+            </Link>
+            <Link href="/advisor" className="adv-path-card">
+              <span className="adv-path-card-icon"><ExploreIcon /></span>
+              <h3 className="adv-path-card-title">Just exploring</h3>
+              <p className="adv-path-card-desc">Browse the framework, ask questions, see what&apos;s possible.</p>
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
 
       <DashboardInventoryCTA assetCount={inventoryCount} summary={inventorySummary} />
       <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />

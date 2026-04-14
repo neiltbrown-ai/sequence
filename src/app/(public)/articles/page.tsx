@@ -66,9 +66,9 @@ export default function ArticlesPage() {
           </div>
           <div className="newsletter-text-col rv rv-d1">
             <p className="newsletter-p">
-              One structure per week. Case studies, frameworks, and the deals
-              that change creative economics.{" "}
-              <strong>The library keeps growing.</strong>
+              Issues go out when there&apos;s something worth saying &mdash; no
+              fixed cadence. Expect deal structures, case studies, and patterns
+              in how creative value is shifting.
             </p>
             <NewsletterForm />
           </div>
