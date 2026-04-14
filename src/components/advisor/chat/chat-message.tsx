@@ -32,7 +32,8 @@ interface ChatMessageProps {
 }
 
 /** Extract plain text from all text parts of a message */
-function getMessageText(parts: UIMessage["parts"]): string {
+function getMessageText(parts: UIMessage["parts"] | undefined): string {
+  if (!parts || !Array.isArray(parts)) return "";
   return parts
     .filter((p): p is { type: "text"; text: string } => p.type === "text" && "text" in p)
     .map((p) => p.text)
@@ -108,7 +109,9 @@ export default function ChatMessage({
   isComplete = true,
   onToolResult,
 }: ChatMessageProps) {
-  const { role, parts } = message;
+  const { role } = message;
+  // Guard against legacy/malformed messages without a parts array
+  const parts = Array.isArray(message.parts) ? message.parts : [];
 
   // Only show copy/download on completed assistant messages with document-like content
   const messageText = role === "assistant" ? getMessageText(parts) : "";

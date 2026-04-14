@@ -58,7 +58,7 @@ export default function BookPage() {
       </section>
 
       {/* ===== BOOK IMAGE (wide, About-page style) ===== */}
-      <section className="ph-wide" style={{ marginBottom: 0 }}>
+      <section className="ph-wide" style={{ marginBottom: 0, paddingTop: "60px" }}>
         <div className="ph-wide-grid">
           <div className="ph-wide-img anim-reveal-down">
             {/* eslint-disable-next-line @next/next/no-img-element */}

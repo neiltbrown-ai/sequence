@@ -200,7 +200,7 @@ function AIChatFlow({
     // Server tools are handled within a single API call via stepCountIs(10) — no resubmit needed.
     sendAutomaticallyWhen: ({ messages: msgs }) => {
       const last = msgs[msgs.length - 1];
-      if (last?.role !== "assistant") return false;
+      if (last?.role !== "assistant" || !Array.isArray(last.parts)) return false;
       // Check if any CLIENT tool just got its output (user responded to a UI component)
       const hasClientToolOutput = last.parts.some(
         (p) =>

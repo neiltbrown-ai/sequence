@@ -151,7 +151,20 @@ export default function AdvisorState1({
 
       if (data) {
         setConversationId(data.id);
-        setChatMessages((data.messages as UIMessage[]) || undefined);
+        // Normalize legacy messages: ensure each message has a valid parts array.
+        // Older messages stored a `content` string instead of `parts: [{type:"text", text}]`.
+        const rawMessages = (data.messages as unknown[]) || [];
+        const normalized = Array.isArray(rawMessages)
+          ? rawMessages.map((m) => {
+              const msg = m as { parts?: unknown; content?: string; [key: string]: unknown };
+              if (Array.isArray(msg.parts)) return msg;
+              if (typeof msg.content === "string" && msg.content.length > 0) {
+                return { ...msg, parts: [{ type: "text", text: msg.content }] };
+              }
+              return { ...msg, parts: [] };
+            })
+          : [];
+        setChatMessages(normalized as unknown as UIMessage[]);
         setChatKey((k) => k + 1);
         setSelectedPath(null);
         setView("chat");
