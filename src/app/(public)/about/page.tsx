@@ -6,7 +6,7 @@ import BookDownloadForm from "@/components/book-download-form";
 import AsciiScatterCanvas from "@/components/ascii-scatter-canvas";
 
 export const metadata: Metadata = {
-  title: "About — In Sequence",
+  title: "About",
 };
 
 export default function AboutPage() {

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import ButtonArrow from "@/components/ui/button-arrow";
 
 export const metadata: Metadata = {
-  title: "Advisory — In Sequence",
+  title: "Advisory",
 };
 
 export default function CoachingPage() {

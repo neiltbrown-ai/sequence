@@ -17,8 +17,8 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const result = getStructureBySlug(slug);
-  if (!result) return { title: "Structure — In Sequence" };
-  return { title: `${result.frontmatter.title} — In Sequence` };
+  if (!result) return { title: "Structure" };
+  return { title: `${result.frontmatter.title}` };
 }
 
 export default async function PublicStructurePage({

@@ -4,7 +4,8 @@ import ButtonArrow from "@/components/ui/button-arrow";
 import NewsletterForm from "@/components/newsletter-form";
 
 export const metadata: Metadata = {
-  title: "In Sequence — Own What You Build",
+  title: { absolute: "Sequence — Own Your Future" },
+  description: "Transform your portfolio of projects into a portfolio of assets.",
 };
 
 export default function HomePage() {

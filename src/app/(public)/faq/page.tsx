@@ -4,7 +4,7 @@ import Link from "next/link";
 import ButtonArrow from "@/components/ui/button-arrow";
 
 export const metadata: Metadata = {
-  title: "FAQ — In Sequence",
+  title: "FAQ",
 };
 
 export default function FAQPage() {

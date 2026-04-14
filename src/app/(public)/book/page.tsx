@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import BookDownloadForm from "@/components/book-download-form";
 
 export const metadata: Metadata = {
-  title: "The Book — In Sequence",
+  title: "The Book",
   description:
     "Download In Sequence: a framework for creative professionals navigating the restructuring of the creative economy.",
 };

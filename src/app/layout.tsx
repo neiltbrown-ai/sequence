@@ -18,32 +18,32 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://insequence.so";
 
 export const metadata: Metadata = {
   title: {
-    default: "In Sequence — Creative Deal Structures for Creative Professionals",
-    template: "%s — In Sequence",
+    default: "Sequence — Own Your Future",
+    template: "%s — Sequence",
   },
   description:
-    "Learn creative deal structures used by top producers, managers, and executives. Membership includes frameworks, case studies, and strategic guides.",
+    "Transform your portfolio of projects into a portfolio of assets.",
   metadataBase: new URL(siteUrl),
   openGraph: {
     type: "website",
-    siteName: "In Sequence",
-    title: "In Sequence — Creative Deal Structures for Creative Professionals",
+    siteName: "Sequence",
+    title: "Sequence — Own Your Future",
     description:
-      "Learn creative deal structures used by top producers, managers, and executives.",
+      "Transform your portfolio of projects into a portfolio of assets.",
     images: [
       {
         url: "/images/hero-portrait.png",
         width: 1200,
         height: 630,
-        alt: "In Sequence",
+        alt: "Sequence",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "In Sequence — Creative Deal Structures for Creative Professionals",
+    title: "Sequence — Own Your Future",
     description:
-      "Learn creative deal structures used by top producers, managers, and executives.",
+      "Transform your portfolio of projects into a portfolio of assets.",
     images: ["/images/hero-portrait.png"],
   },
 };

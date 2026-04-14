@@ -5,7 +5,7 @@ import type { ArticleCard } from "@/components/articles-filter";
 import { getAllArticles } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Articles — In Sequence",
+  title: "Articles",
 };
 
 export default function ArticlesPage() {

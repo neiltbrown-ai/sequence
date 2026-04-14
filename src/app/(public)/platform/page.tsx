@@ -9,7 +9,7 @@ import { getTestimonials } from "@/lib/content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "The Platform — In Sequence",
+  title: "The Platform",
 };
 
 export default function PlatformPage() {

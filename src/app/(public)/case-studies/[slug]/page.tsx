@@ -19,9 +19,9 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const cs = getCaseStudyBySlug(slug);
-  if (!cs) return { title: "Case Study — In Sequence" };
+  if (!cs) return { title: "Case Study" };
   const cleanTitle = cs.frontmatter.title.replace(/<br\s*\/?>/gi, " ");
-  const title = `${cleanTitle} — In Sequence`;
+  const title = `${cleanTitle}`;
   const description = cs.frontmatter.excerpt || "";
   const image = cs.frontmatter.heroImage || cs.frontmatter.coverImage || "/images/hero-portrait.png";
   return {

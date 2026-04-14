@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ContactForm from "@/components/contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact — In Sequence",
+  title: "Contact",
 };
 
 export default function ContactPage() {

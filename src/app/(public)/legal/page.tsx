@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Legal — In Sequence",
+  title: "Legal",
 };
 
 export default function LegalPage() {

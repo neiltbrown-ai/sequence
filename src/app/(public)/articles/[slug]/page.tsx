@@ -18,8 +18,8 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
-  if (!article) return { title: "Article — In Sequence" };
-  const title = `${article.frontmatter.title} — In Sequence`;
+  if (!article) return { title: "Article" };
+  const title = `${article.frontmatter.title}`;
   const description = article.frontmatter.excerpt || "";
   const image = article.frontmatter.heroImage || "/images/hero-portrait.png";
   return {

@@ -4,7 +4,7 @@ import ButtonArrow from "@/components/ui/button-arrow";
 import FaqAccordion from "@/components/faq-accordion";
 
 export const metadata: Metadata = {
-  title: "Pricing — In Sequence",
+  title: "Pricing",
 };
 
 export default function PricingPage() {
