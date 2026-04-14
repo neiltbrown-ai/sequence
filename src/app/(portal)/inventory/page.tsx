@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import InventoryPage from "@/components/portal/inventory-page";
 import PortfolioTabs from "@/components/portal/portfolio-tabs";
 import type { AssetInventoryItem, AssetInventoryAnalysis } from "@/types/inventory";
 import { getAllStructures } from "@/lib/content";
@@ -34,18 +33,11 @@ export default async function InventoryRoute() {
     structureSlugMap[s.number] = { slug: s.slug, title: s.title };
   }
 
-  const assetCount = (items as AssetInventoryItem[])?.length || 0;
-
   return (
     <PortfolioTabs
-      assetCount={assetCount}
-      hasAnalysis={!!latestAnalysis}
-    >
-      <InventoryPage
-        initialItems={(items as AssetInventoryItem[]) || []}
-        initialAnalysis={(latestAnalysis as AssetInventoryAnalysis) || null}
-        structureSlugMap={structureSlugMap}
-      />
-    </PortfolioTabs>
+      initialItems={(items as AssetInventoryItem[]) || []}
+      initialAnalysis={(latestAnalysis as AssetInventoryAnalysis) || null}
+      structureSlugMap={structureSlugMap}
+    />
   );
 }

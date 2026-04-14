@@ -1,30 +1,118 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
+import InventoryPage from "@/components/portal/inventory-page";
+import AnalysisView from "@/components/portal/inventory-analysis-view";
+import type { AssetInventoryItem, AssetInventoryAnalysis } from "@/types/inventory";
 
 interface PortfolioTabsProps {
-  children: ReactNode; // The full InventoryPage component
-  assetCount: number;
-  hasAnalysis: boolean;
+  initialItems: AssetInventoryItem[];
+  initialAnalysis: AssetInventoryAnalysis | null;
+  structureSlugMap?: Record<number, { slug: string; title: string }>;
 }
 
+const ANALYSIS_EXPECTED_MS = 25000; // ~25 seconds expected
+const PROGRESS_TICK_MS = 200;
+
+const PROGRESS_STAGES = [
+  { at: 0, label: "Loading your portfolio assets" },
+  { at: 15, label: "Analyzing asset types and ownership" },
+  { at: 35, label: "Estimating value ranges" },
+  { at: 55, label: "Building leverage scenarios" },
+  { at: 75, label: "Designing your action roadmap" },
+  { at: 90, label: "Finalizing analysis" },
+];
+
 export default function PortfolioTabs({
-  children,
-  assetCount,
-  hasAnalysis,
+  initialItems,
+  initialAnalysis,
+  structureSlugMap = {},
 }: PortfolioTabsProps) {
   const [tab, setTab] = useState<"assets" | "valuation">("assets");
+  const [items, setItems] = useState<AssetInventoryItem[]>(initialItems);
+  const [analysis, setAnalysis] = useState<AssetInventoryAnalysis | null>(initialAnalysis);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [stageLabel, setStageLabel] = useState(PROGRESS_STAGES[0].label);
+  const startTimeRef = useRef<number>(0);
+
+  const assetCount = items.length;
+  const isStale =
+    !!analysis &&
+    items.some((item) => new Date(item.updated_at) > new Date(analysis.created_at));
+
+  // Animate progress while analyzing
+  useEffect(() => {
+    if (!analyzing) {
+      setProgress(0);
+      return;
+    }
+
+    startTimeRef.current = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTimeRef.current;
+      const raw = elapsed / ANALYSIS_EXPECTED_MS;
+      // Ease-out, cap at 90% so it doesn't show 100% before completion
+      const eased = 1 - Math.pow(1 - Math.min(raw, 1), 2.5);
+      const next = Math.min(eased * 90, 90);
+      setProgress(next);
+
+      // Update stage label based on progress
+      const currentStage = PROGRESS_STAGES.slice().reverse().find((s) => next >= s.at);
+      if (currentStage) setStageLabel(currentStage.label);
+    }, PROGRESS_TICK_MS);
+
+    return () => clearInterval(interval);
+  }, [analyzing]);
+
+  const handleAnalyze = async () => {
+    if (items.length === 0) return;
+
+    // Switch to Valuation tab immediately
+    setTab("valuation");
+    setAnalyzing(true);
+    setAnalyzeError("");
+
+    try {
+      const res = await fetch("/api/inventory/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error("Failed to start analysis");
+
+      const { analysisId } = await res.json();
+
+      // Poll for completion
+      const poll = async () => {
+        const check = await fetch(`/api/inventory/analysis/${analysisId}`);
+        if (!check.ok) throw new Error("Failed to check analysis status");
+        const result = await check.json();
+
+        if (result.status === "completed") {
+          setProgress(100);
+          // Brief pause at 100% before showing analysis
+          setTimeout(() => {
+            setAnalysis(result as AssetInventoryAnalysis);
+            setAnalyzing(false);
+          }, 400);
+        } else if (result.status === "failed") {
+          throw new Error("Analysis failed");
+        } else {
+          setTimeout(poll, 2000);
+        }
+      };
+
+      await poll();
+    } catch {
+      setAnalyzeError("Something went wrong. Please try again.");
+      setAnalyzing(false);
+    }
+  };
 
   return (
     <>
-      {/* Page header */}
-      <div className="dash-header rv vis">
-        <h1 className="dash-title" style={{ fontFamily: "var(--sans)", fontWeight: 300, fontSize: "clamp(28px, 4vw, 40px)", letterSpacing: "-.02em" }}>
-          Portfolio
-        </h1>
-      </div>
-
       {/* Tabs */}
       <div className="ptl-filter-bar" style={{ marginBottom: "24px" }}>
         <button
@@ -41,12 +129,42 @@ export default function PortfolioTabs({
         </button>
       </div>
 
-      {/* Tab content */}
-      {tab === "assets" && children}
+      {/* Assets tab */}
+      {tab === "assets" && (
+        <InventoryPage
+          initialItems={items}
+          onItemsChange={setItems}
+          onAnalyze={handleAnalyze}
+          analyzing={analyzing}
+          analyzeError={analyzeError}
+          hasAnalysis={!!analysis}
+          isStale={isStale}
+        />
+      )}
 
+      {/* Valuation tab */}
       {tab === "valuation" && (
         <div>
-          {assetCount === 0 ? (
+          {/* Loading state — shown while analyzing */}
+          {analyzing && (
+            <div className="inv-analyzing-card rv vis">
+              <div className="inv-analyzing-spinner" />
+              <h3 className="inv-analyzing-title">Analyzing your portfolio</h3>
+              <p className="inv-analyzing-stage">{stageLabel}</p>
+              <div className="inv-analyzing-bar">
+                <div
+                  className="inv-analyzing-bar-fill"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="inv-analyzing-note">
+                This typically takes 15&ndash;30 seconds.
+              </p>
+            </div>
+          )}
+
+          {/* No assets yet */}
+          {!analyzing && assetCount === 0 && (
             <div className="dash-section rv vis">
               <div className="dash-cta-card" style={{ textAlign: "center", padding: "60px 32px" }}>
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--light)", marginBottom: "20px" }}>
@@ -69,7 +187,10 @@ export default function PortfolioTabs({
                 </button>
               </div>
             </div>
-          ) : !hasAnalysis ? (
+          )}
+
+          {/* Assets exist but no analysis yet */}
+          {!analyzing && assetCount > 0 && !analysis && (
             <div className="dash-section rv vis">
               <div className="dash-cta-card" style={{ textAlign: "center", padding: "60px 32px" }}>
                 <h3 style={{ fontFamily: "var(--sans)", fontSize: "18px", fontWeight: 500, marginBottom: "8px" }}>
@@ -78,24 +199,41 @@ export default function PortfolioTabs({
                 <p style={{ fontFamily: "var(--sans)", fontSize: "14px", color: "var(--mid)", lineHeight: 1.6, maxWidth: "400px", margin: "0 auto 24px" }}>
                   Run an AI analysis to get valuations, leverage scenarios, and a strategic roadmap for your portfolio.
                 </p>
-                <Link href="/inventory" className="btn btn--filled">
+                <button
+                  type="button"
+                  className="btn btn--filled"
+                  onClick={handleAnalyze}
+                >
                   Analyze Portfolio
-                </Link>
+                </button>
+                {analyzeError && (
+                  <p style={{ marginTop: "12px", color: "#c0392b", fontSize: "13px" }}>{analyzeError}</p>
+                )}
               </div>
             </div>
-          ) : (
-            <div className="dash-section rv vis">
-              <p style={{ fontFamily: "var(--sans)", fontSize: "14px", color: "var(--mid)", marginBottom: "16px" }}>
-                Your latest AI analysis is displayed in the Assets tab alongside your inventory. Switch to the Assets tab to view the full analysis.
-              </p>
-              <button
-                type="button"
-                className="btn btn--filled"
-                onClick={() => setTab("assets")}
-              >
-                View Analysis
-              </button>
-            </div>
+          )}
+
+          {/* Analysis exists */}
+          {!analyzing && analysis && analysis.status === "completed" && analysis.analysis_content && (
+            <>
+              {isStale && (
+                <p className="inv-stale-notice" style={{ marginBottom: "16px" }}>
+                  Your inventory has changed since the last analysis.{" "}
+                  <button
+                    type="button"
+                    onClick={handleAnalyze}
+                    style={{ background: "none", border: "none", color: "var(--black)", textDecoration: "underline", cursor: "pointer", padding: 0, font: "inherit" }}
+                  >
+                    Re-analyze
+                  </button>{" "}
+                  to get updated insights.
+                </p>
+              )}
+              <AnalysisView
+                content={analysis.analysis_content}
+                structureSlugMap={structureSlugMap}
+              />
+            </>
           )}
         </div>
       )}
