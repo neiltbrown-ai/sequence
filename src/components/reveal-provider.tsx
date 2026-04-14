@@ -42,15 +42,20 @@ export default function RevealProvider() {
 
     document.querySelectorAll(ANIM_SEL).forEach((el) => observer.observe(el));
 
-    // 3. After hydration: trigger hero animations + start watching for async content
-    let mutation: MutationObserver | null = null;
-    const timer = setTimeout(() => {
-      const heroContainers = document.querySelectorAll(HERO_SEL);
-      heroContainers.forEach((hero) => {
+    // Helper: force-reveal hero content (avoids clip-path staying closed
+    // when IntersectionObserver hasn't fired yet).
+    const revealHeroContent = () => {
+      document.querySelectorAll(HERO_SEL).forEach((hero) => {
         hero
           .querySelectorAll(".anim-text-up, .anim-reveal-down, .rv")
           .forEach((el) => el.classList.add("vis"));
       });
+    };
+
+    // 3. After hydration: trigger hero animations + start watching for async content
+    let mutation: MutationObserver | null = null;
+    const timer = setTimeout(() => {
+      revealHeroContent();
 
       // Also fire any top-level animated elements that are in the viewport
       // on initial paint (e.g. standalone elements not inside a hero)
@@ -61,12 +66,23 @@ export default function RevealProvider() {
         }
       });
 
-      // 4. Watch for new elements added to the DOM (async server components)
-      // Started after hydration to avoid hydration mismatch errors
+      // 4. Watch for new elements added to the DOM (async server components /
+      // cross-route-group navigation where hero streams in after the 150ms timer).
       mutation = new MutationObserver((mutations) => {
+        let sawHero = false;
         for (const m of mutations) {
           for (const node of m.addedNodes) {
             if (!(node instanceof HTMLElement)) continue;
+
+            // If the added node is itself a hero container or contains one,
+            // force-reveal it immediately (skip IntersectionObserver — hero
+            // is always above the fold and must not stay clipped).
+            const isHero = node.matches?.(HERO_SEL);
+            const containsHero = node.querySelector?.(HERO_SEL);
+            if (isHero || containsHero) {
+              sawHero = true;
+            }
+
             const targets = node.matches?.(ANIM_SEL)
               ? [node, ...node.querySelectorAll(ANIM_SEL)]
               : node.querySelectorAll(ANIM_SEL);
@@ -77,14 +93,21 @@ export default function RevealProvider() {
             });
           }
         }
+        if (sawHero) revealHeroContent();
       });
       mutation.observe(document.body, { childList: true, subtree: true });
     }, 150);
+
+    // 5. Safety net: some cross-route-group navigations stream hero content
+    // after the 150ms window AND before the MutationObserver is attached.
+    // Re-run the hero reveal at 500ms to catch any late-arriving hero.
+    const lateTimer = setTimeout(revealHeroContent, 500);
 
     return () => {
       observer.disconnect();
       mutation?.disconnect();
       clearTimeout(timer);
+      clearTimeout(lateTimer);
     };
   }, [pathname]);
 
