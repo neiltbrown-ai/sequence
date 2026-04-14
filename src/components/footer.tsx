@@ -12,6 +12,7 @@ export default function Footer() {
           <div className="ft-links">
             <Link href="/about">About</Link>
             <Link href="/platform">Platform</Link>
+            <Link href="/the-library">Library</Link>
             <Link href="/articles">Articles</Link>
             <Link href="/pricing">Pricing</Link>
             <Link href="/coaching">Advisory</Link>
