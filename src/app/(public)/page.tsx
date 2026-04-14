@@ -82,7 +82,8 @@ export default function HomePage() {
             <p>
               AI commoditizes execution, revealing that the real value was never
               in production. Value is the vision, imagination, taste, and
-              judgment. Creativity is an investable asset class and capital
+              judgment. It&apos;s the scarce resource today in the age of AI.
+              Creativity is an investable asset class and capital
               always follows scarcity. Most creatives are on the wrong side
               &mdash; generating massive value and capturing almost none of it.
             </p>
