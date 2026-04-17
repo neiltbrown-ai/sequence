@@ -20,17 +20,36 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
 
   if (!user) redirect("/login");
 
-  // Load Creative Identity snapshot server-side so the tab renders correctly on first paint
+  // Load Creative Identity snapshot server-side so the tab renders correctly on first paint.
+  //
+  // Prefer the most recent COMPLETED assessment over any newer in-progress row.
+  // Why: if the member has completed CI once and later clicked "Refine" (which
+  // navigates to /assessment and lets autosave create a fresh in-progress row),
+  // a simple `order by created_at desc limit 1` query returns the in-progress
+  // row and the tab shows an empty/resume state — hiding the completed
+  // profile from view. Completed state wins; in-progress is the fallback.
   const admin = createAdminClient();
-  const { data: assessment } = await admin
-    .from("assessments")
-    .select(
-      "id, status, current_section, current_question, detected_stage, archetype_primary, creative_mode, discipline, sub_discipline, misalignment_flags, completed_at, updated_at"
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  const columns =
+    "id, status, current_section, current_question, detected_stage, archetype_primary, creative_mode, discipline, sub_discipline, misalignment_flags, completed_at, updated_at";
+
+  const [{ data: completed }, { data: anyLatest }] = await Promise.all([
+    admin
+      .from("assessments")
+      .select(columns)
+      .eq("user_id", user.id)
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    admin
+      .from("assessments")
+      .select(columns)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+  const assessment = completed ?? anyLatest;
 
   const creativeIdentity: CreativeIdentitySnapshot = assessment
     ? {
