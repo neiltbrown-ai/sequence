@@ -34,8 +34,11 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
   // row and the tab shows an empty/resume state — hiding the completed
   // profile from view. Completed state wins; in-progress is the fallback.
   const admin = createAdminClient();
+  // NOTE: the assessments table has no `updated_at` column — selecting it
+  // silently fails the entire query (Supabase returns null + an error) and
+  // made the panel show the empty state even for completed users.
   const columns =
-    "id, status, current_section, current_question, detected_stage, archetype_primary, creative_mode, discipline, sub_discipline, misalignment_flags, completed_at, updated_at";
+    "id, status, current_section, current_question, detected_stage, archetype_primary, creative_mode, discipline, sub_discipline, misalignment_flags, completed_at";
 
   const [{ data: completed }, { data: anyLatest }] = await Promise.all([
     admin
@@ -81,7 +84,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
         subDiscipline: assessment.sub_discipline ?? null,
         misalignmentFlags: assessment.misalignment_flags ?? [],
         completedAt: assessment.completed_at ?? null,
-        updatedAt: assessment.updated_at ?? null,
+        updatedAt: null,
       }
     : {
         id: null,

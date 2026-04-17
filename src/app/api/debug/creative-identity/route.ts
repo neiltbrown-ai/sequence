@@ -26,7 +26,7 @@ export async function GET() {
   const { data: rows, error } = await admin
     .from("assessments")
     .select(
-      "id, user_id, status, current_section, detected_stage, archetype_primary, completed_at, created_at, updated_at"
+      "id, user_id, status, current_section, detected_stage, archetype_primary, completed_at, created_at"
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });

@@ -24,6 +24,8 @@ export interface CreativeIdentitySnapshot {
   subDiscipline: string | null;
   misalignmentFlags: string[];
   completedAt: string | null;
+  /** Kept for backwards compatibility — the assessments table has no
+      updated_at column, so this is always null in practice. */
   updatedAt: string | null;
 }
 
