@@ -7,6 +7,11 @@ import { buildMemberContextPrompt } from '@/lib/advisor/system-prompts';
 import Anthropic from '@anthropic-ai/sdk';
 import type { DealVerdict, EvaluationScores, DealType, CreativeMode } from '@/types/evaluator';
 
+// Claude Sonnet 4 generating a verdict (headline + summary + 6 dimension
+// summaries + ~5 actions + ~5 structures + ~5 case studies) takes 20-40s.
+// Without this the function is killed before the response returns.
+export const maxDuration = 60;
+
 const SYSTEM_PROMPT = `You are the In Sequence deal evaluator — an AI that helps creative professionals evaluate specific deals they're considering.
 
 You are generating a Deal Verdict for a member who just completed the In Sequence deal evaluation. The evaluation has already scored 6 dimensions (financial readiness, career positioning, partner quality, deal structure quality, risk profile, legal & tax readiness). Your job is to:
@@ -213,13 +218,37 @@ export async function POST(request: Request) {
     const anthropic = new Anthropic({ apiKey });
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
+      // Previously 2000 — too tight: 6 dimension summaries + up to 7
+      // recommended_actions (action + detail + structure_ref) + 5 structures
+      // and 5 case studies (each with "why") easily overruns 2000, causing
+      // truncation → malformed JSON → fallback empty verdict. 4096 gives
+      // comfortable headroom without impacting latency much.
+      max_tokens: 4096,
       system: systemWithContext,
       messages: [{ role: 'user', content: userPrompt }],
     });
 
-    const text = response.content[0].type === 'text' ? response.content[0].text : '';
-    const verdict: DealVerdict = JSON.parse(text);
+    // Robustly locate the text block (could be preceded by tool use or
+    // other content types in future model variants).
+    const textBlock = response.content.find((b) => b.type === 'text');
+    if (!textBlock || textBlock.type !== 'text') {
+      throw new Error('No text response from Claude');
+    }
+    const rawText = textBlock.text;
+
+    // Parse JSON with fallback for code-fenced responses (matches the
+    // resilient pattern used in /api/assessment/complete).
+    let verdict: DealVerdict;
+    try {
+      verdict = JSON.parse(rawText);
+    } catch (parseErr) {
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error('Evaluator verdict parse failed, no JSON in response:', rawText.slice(0, 500));
+        throw new Error(`Invalid JSON in Claude response: ${parseErr}`);
+      }
+      verdict = JSON.parse(jsonMatch[0]);
+    }
 
     // Save verdict
     await admin
@@ -233,6 +262,7 @@ export async function POST(request: Request) {
       verdict,
     });
   } catch (err) {
+    console.error('Evaluator Claude call failed, returning fallback verdict:', err);
     // On Claude error, save a basic verdict from scores
     const fallbackVerdict: DealVerdict = {
       signal: {

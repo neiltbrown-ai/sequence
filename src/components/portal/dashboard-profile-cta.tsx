@@ -4,16 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface DashboardProfileCtaProps {
-  completedCount: number;
-  totalCount: number;
+  /**
+   * True when the member has completed their Creative Identity
+   * assessment. When true, the CTA is hidden — they've already
+   * done this step.
+   */
+  creativeIdentityComplete: boolean;
 }
 
 const DISMISS_KEY = "seq-profile-cta-dismissed";
 const DISMISS_DAYS = 7;
 
 export default function DashboardProfileCta({
-  completedCount,
-  totalCount,
+  creativeIdentityComplete,
 }: DashboardProfileCtaProps) {
   const [dismissed, setDismissed] = useState(true); // start hidden to avoid flash
 
@@ -26,7 +29,7 @@ export default function DashboardProfileCta({
     setDismissed(false);
   }, []);
 
-  if (dismissed || completedCount >= totalCount) return null;
+  if (dismissed || creativeIdentityComplete) return null;
 
   function handleDismiss() {
     localStorage.setItem(DISMISS_KEY, String(Date.now()));
@@ -41,26 +44,25 @@ export default function DashboardProfileCta({
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
-          <span className="dash-profile-cta-title">Personalize your library</span>
+          <span className="dash-profile-cta-title">Define your Creative Identity</span>
         </div>
         <p className="dash-profile-cta-desc">
-          Set your discipline and interests so we can surface the structures and case studies most relevant to your work.
+          An 8–10 minute guided flow captures your discipline, creative
+          mode, stage, and ambitions. It tunes every recommendation across
+          the platform — your roadmap, deal evaluations, and advisor
+          guidance — so you get advice built around your actual situation.
         </p>
         <div className="dash-profile-cta-footer">
-          <div className="dash-profile-cta-progress">
-            <div className="dash-profile-cta-progress-bar">
-              <div
-                className="dash-profile-cta-progress-fill"
-                style={{ width: `${(completedCount / totalCount) * 100}%` }}
-              />
-            </div>
-            <span className="dash-profile-cta-progress-text">
-              {completedCount} of {totalCount} preferences set
-            </span>
+          <div className="dash-profile-cta-meta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={14} height={14}>
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            <span>~8–10 minutes</span>
           </div>
           <div className="dash-profile-cta-actions">
-            <Link href="/settings#preferences" className="btn btn--filled">
-              Complete Profile
+            <Link href="/assessment" className="btn btn--filled">
+              Start Creative Identity
             </Link>
             <button type="button" className="btn" onClick={handleDismiss}>
               Remind Me Later

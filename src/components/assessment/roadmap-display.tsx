@@ -310,12 +310,33 @@ export default function RoadmapDisplay({
         {roadmap.vision.transition_signals &&
           roadmap.vision.transition_signals.length > 0 && (
             <div className="rdmp-vision-signals-wrap">
-              <div className="str-stat-lbl" style={{ marginBottom: 12 }}>Transition Signals</div>
-              <ul className="rdmp-vision-signals">
-                {roadmap.vision.transition_signals.map((s, i) => (
-                  <li key={i}>{s}</li>
+              <div className="str-stat-lbl" style={{ marginBottom: 16 }}>Transition Signals</div>
+              <div className="rdmp-signals-grid">
+                {roadmap.vision.transition_signals.slice(0, 6).map((s, i) => (
+                  <div key={i} className="rdmp-signal-card">
+                    <div className="rdmp-signal-num">0{i + 1}</div>
+                    <div className="rdmp-signal-icon" aria-hidden>
+                      {/* Rotating iconography per signal — subtle visual variety */}
+                      {i % 3 === 0 ? (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={22} height={22}>
+                          <path d="M3 12h4l3 8 4-16 3 8h4" />
+                        </svg>
+                      ) : i % 3 === 1 ? (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={22} height={22}>
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 2a10 10 0 0 1 10 10" />
+                          <path d="M12 6v6l4 2" />
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={22} height={22}>
+                          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                      )}
+                    </div>
+                    <p className="rdmp-signal-text">{s}</p>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
       </div>
@@ -335,7 +356,9 @@ export default function RoadmapDisplay({
                 </span>
               </span>
             </div>
-            <div className="rdmp-misalignments">
+            <div
+              className={`rdmp-misalignments${misalignments.length === 1 ? " rdmp-misalignments--single" : ""}`}
+            >
               {misalignments.map((m) => (
                 <div key={m.flag} className="rdmp-misalignment">
                   <h3 className="rdmp-misalignment-flag">

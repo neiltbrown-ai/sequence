@@ -182,8 +182,8 @@ async function FullAccessDashboard() {
     <>
       <DashboardWelcome />
 
-      {/* Profile completion CTA */}
-      <DashboardProfileCta completedCount={profileCompletedCount} totalCount={profileTotalCount} />
+      {/* Creative Identity CTA — hidden once CI is completed */}
+      <DashboardProfileCta creativeIdentityComplete={hasCompletedAssessment} />
 
       {/* Onboarding paths — hidden once user has assets or has completed assessment */}
       {inventoryCount === 0 && !hasCompletedAssessment && (
@@ -274,19 +274,27 @@ async function LibraryDashboard() {
   };
   let bookmarks: { content_slug: string; content_type: string; created_at: string }[] = [];
 
+  let hasCompletedAssessment = false;
+
   if (user) {
-    const [profileResult, bookmarksResult] = await Promise.all([
-      supabase
-        .from("profiles")
-        .select("disciplines, interests, career_stage")
-        .eq("id", user.id)
-        .maybeSingle(),
-      supabase
-        .from("bookmarks")
-        .select("content_slug, content_type, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false }),
-    ]);
+    const [profileResult, bookmarksResult, completedAssessmentResult] =
+      await Promise.all([
+        supabase
+          .from("profiles")
+          .select("disciplines, interests, career_stage")
+          .eq("id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("bookmarks")
+          .select("content_slug, content_type, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("assessments")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("status", "completed"),
+      ]);
 
     if (profileResult.data) {
       profile = {
@@ -296,9 +304,10 @@ async function LibraryDashboard() {
       };
     }
     bookmarks = bookmarksResult.data ?? [];
+    hasCompletedAssessment = (completedAssessmentResult.count || 0) > 0;
   }
 
-  // Profile completion tracking
+  // Profile completion tracking (still used for recommendations)
   const profileFields = [
     { key: "disciplines", filled: profile.disciplines.length > 0 },
     { key: "interests", filled: profile.interests.length > 0 },
@@ -348,8 +357,8 @@ async function LibraryDashboard() {
     <>
       <DashboardWelcome />
 
-      {/* Profile completion CTA */}
-      <DashboardProfileCta completedCount={completedCount} totalCount={3} />
+      {/* Creative Identity CTA — hidden once CI is completed */}
+      <DashboardProfileCta creativeIdentityComplete={hasCompletedAssessment} />
 
       {/* New this week */}
       <DashboardNewContent items={newContent} />

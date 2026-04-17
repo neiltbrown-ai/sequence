@@ -970,24 +970,18 @@ export function EvaluatorFlow({
 
         <div className="eval-verdict-nav">
           {opts.showBackToList ? (
-            <>
-              <button
-                className="btn btn--ghost btn--lg"
-                onClick={() => {
-                  dispatch({ type: 'BACK_TO_LIST' });
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                type="button"
-              >
-                ← Back to Evaluations
-              </button>
-              <a href="/advisor" className="btn btn--filled btn--lg">Discuss with Advisor</a>
-            </>
+            <button
+              className="btn btn--ghost btn--lg"
+              onClick={() => {
+                dispatch({ type: 'BACK_TO_LIST' });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              type="button"
+            >
+              ← Back to Evaluations
+            </button>
           ) : (
-            <>
-              <a href="/dashboard" className="btn btn--ghost btn--lg">Dashboard</a>
-              <a href="/advisor" className="btn btn--filled btn--lg">Discuss with Advisor</a>
-            </>
+            <a href="/dashboard" className="btn btn--ghost btn--lg">Dashboard</a>
           )}
         </div>
       </div>

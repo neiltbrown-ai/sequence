@@ -22,8 +22,19 @@ function wrapText(text: string, maxChars: number): string[] {
 }
 
 export default function RoadmapFlywheel({ data }: Props) {
-  const { nodes, edges, center_label, center_subtitle } = data;
+  const { nodes, center_label, center_subtitle } = data;
   if (!nodes.length) return null;
+
+  // A flywheel by definition is a cycle — each node enables the next.
+  // Claude occasionally outputs non-sequential edges ({0→2}, {1→3}) which
+  // render as lines cutting through the center of the diagram.
+  // We ignore data.edges and always render the outer cycle: 0→1→2→…→n-1→0.
+  // This guarantees arrows stay on the perimeter and the flywheel reads
+  // correctly regardless of AI output.
+  const sequentialEdges = nodes.map((_, i) => ({
+    from: i,
+    to: (i + 1) % nodes.length,
+  }));
 
   const W = 660;
   const H = 480;
@@ -120,8 +131,8 @@ export default function RoadmapFlywheel({ data }: Props) {
             />
           ))}
 
-          {/* Connector arrows between sequential edges */}
-          {edges.map((edge, i) => {
+          {/* Connector arrows — always outer cycle, never cross-diagram */}
+          {sequentialEdges.map((edge, i) => {
             const { sx, sy, ex, ey } = edgePoint(edge.from, edge.to);
             return (
               <path

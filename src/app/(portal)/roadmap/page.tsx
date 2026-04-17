@@ -86,16 +86,17 @@ export default async function RoadmapPage() {
     }
   }
 
-  // Load action tracking. Note: actions are functionally per-user per-order
-  // — the update API at /api/assessment/actions dedups on (user_id,
-  // action_order) without considering plan_id, so a completed action #1
-  // stays completed across regenerations even though its plan_id column
-  // still points to the first plan that created it. Query by user_id so
-  // progress carries forward after Portfolio-driven regenerations.
+  // Load action tracking scoped to THIS plan. Each regenerated plan has
+  // its own set of 3 actions (foundation / positioning / momentum) with
+  // different content — a completed action from a prior plan doesn't
+  // correspond to anything on the current plan, so it shouldn't appear
+  // as pre-checked here. Fresh plan → all actions pending.
+  // (Earlier versions queried by user_id which incorrectly carried old
+  // completion state across regens.)
   const { data: actions } = await admin
     .from("assessment_actions")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("plan_id", plan.id)
     .order("action_order", { ascending: true });
 
   // Load recent completed deal evaluations (last 90 days) — surfaces a

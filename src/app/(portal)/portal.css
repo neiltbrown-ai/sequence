@@ -2657,18 +2657,22 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 }
 
 .rdmp-misalignments {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
+.rdmp-misalignments--single { grid-template-columns: 1fr; }
 
 .rdmp-misalignment {
-  padding: 20px 0;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: 20px 24px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  background: rgba(255,255,255,.02);
 }
 
-.rdmp-misalignment:first-child { padding-top: 0; }
-.rdmp-misalignment:last-child { border-bottom: none; padding-bottom: 0; }
+@media (max-width: 760px) {
+  .rdmp-misalignments { grid-template-columns: 1fr; }
+}
 
 .rdmp-misalignment-flag {
   font-family: var(--sans); font-size: 15px; font-weight: 500;
@@ -6749,3 +6753,57 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   transition: background .15s, color .15s;
 }
 .rdmp-deals-link:hover { background: var(--black); color: var(--white); }
+
+/* ============================================
+   ROADMAP → TRANSITION SIGNAL CARDS
+   ============================================ */
+.rdmp-signals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.rdmp-signal-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 18px 18px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  min-height: 140px;
+}
+.rdmp-signal-num {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+  color: rgba(255,255,255,.35);
+}
+.rdmp-signal-icon {
+  color: rgba(255,255,255,.65);
+  display: flex; align-items: center;
+}
+.rdmp-signal-text {
+  font-family: var(--sans); font-size: 13px; line-height: 1.5;
+  color: rgba(255,255,255,.8);
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .rdmp-signals-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .rdmp-signals-grid { grid-template-columns: 1fr; }
+}
+
+/* Light theme */
+[data-theme="light"] .rdmp-signal-card {
+  background: #fafaf7;
+  border-color: rgba(0,0,0,.08);
+}
+[data-theme="light"] .rdmp-signal-num { color: rgba(0,0,0,.4); }
+[data-theme="light"] .rdmp-signal-icon { color: var(--black); }
+[data-theme="light"] .rdmp-signal-text { color: var(--black); }
+
+[data-theme="light"] .rdmp-misalignment {
+  background: #fafaf7;
+  border-color: rgba(0,0,0,.08);
+}
