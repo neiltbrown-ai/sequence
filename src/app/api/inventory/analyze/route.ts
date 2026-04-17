@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildMemberContext } from "@/lib/advisor/context-builder";
+import { generateStrategicPlan } from "@/lib/roadmap/generate-plan";
 import { getAllStructures } from "@/lib/content";
 import Anthropic from "@anthropic-ai/sdk";
 import type { AssetInventoryItem, InventoryAnalysisContent } from "@/types/inventory";
@@ -227,6 +228,32 @@ Rules:
         status: "completed",
       })
       .eq("id", analysisId);
+
+    // Auto-trigger roadmap regeneration with the new Portfolio signal.
+    // Fire-and-forget — failure here doesn't invalidate the completed analysis.
+    // Includes the member's latest completed assessment (if any) so the roadmap
+    // is generated from both inputs when available.
+    try {
+      const { data: latestAssessment } = await admin
+        .from("assessments")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      await generateStrategicPlan({
+        userId,
+        assessmentId: latestAssessment?.id ?? null,
+        portfolioAnalysisId: analysisId,
+      });
+    } catch (planErr) {
+      console.error(
+        "Portfolio analysis completed but roadmap regen failed:",
+        planErr
+      );
+    }
   } catch (err) {
     console.error("Claude API error:", err);
     await admin

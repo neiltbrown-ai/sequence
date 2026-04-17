@@ -6593,3 +6593,50 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   .ci-summary-grid { grid-template-columns: 1fr; }
   .set-tab { padding: 10px 14px 12px; font-size: 10px; }
 }
+
+/* ============================================
+   PORTFOLIO → ROADMAP TOAST
+   ============================================ */
+.ptl-roadmap-toast {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--black);
+  border-radius: 6px;
+  font-family: var(--sans); font-size: 14px; color: var(--black);
+  line-height: 1.5;
+  animation: ptl-toast-in .35s cubic-bezier(.22, 1, .36, 1);
+}
+@keyframes ptl-toast-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ptl-roadmap-toast-icon {
+  flex-shrink: 0; color: var(--black);
+  display: flex; align-items: center;
+}
+.ptl-roadmap-toast-content { flex: 1; }
+.ptl-roadmap-toast-content strong { font-weight: 500; }
+.ptl-roadmap-toast-link {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--black); text-decoration: none;
+  white-space: nowrap;
+  padding: 6px 10px; border: 1px solid var(--black); border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+.ptl-roadmap-toast-link:hover { background: var(--black); color: var(--white); }
+.ptl-roadmap-toast-dismiss {
+  background: none; border: none; cursor: pointer;
+  color: var(--light); font-size: 20px; line-height: 1;
+  padding: 4px 8px; margin: -4px -4px -4px 0;
+  transition: color .15s;
+}
+.ptl-roadmap-toast-dismiss:hover { color: var(--black); }
+
+@media (max-width: 640px) {
+  .ptl-roadmap-toast { flex-wrap: wrap; }
+  .ptl-roadmap-toast-link { width: 100%; text-align: center; }
+}

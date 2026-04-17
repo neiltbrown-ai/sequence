@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import InventoryPage from "@/components/portal/inventory-page";
 import AnalysisView from "@/components/portal/inventory-analysis-view";
 import type { AssetInventoryItem, AssetInventoryAnalysis } from "@/types/inventory";
@@ -37,6 +38,7 @@ export default function PortfolioTabs({
   const [timedOut, setTimedOut] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stageLabel, setStageLabel] = useState(PROGRESS_STAGES[0].label);
+  const [showRoadmapToast, setShowRoadmapToast] = useState(false);
   const startTimeRef = useRef<number>(0);
 
   const assetCount = items.length;
@@ -106,6 +108,9 @@ export default function PortfolioTabs({
           setTimeout(() => {
             setAnalysis(result as AssetInventoryAnalysis);
             setAnalyzing(false);
+            // Roadmap regeneration is kicked off server-side when the analysis
+            // completes. Surface a toast with a deep link.
+            setShowRoadmapToast(true);
           }, 400);
         } else if (result.status === "failed") {
           throw new Error("Analysis failed");
@@ -123,6 +128,33 @@ export default function PortfolioTabs({
 
   return (
     <>
+      {/* Roadmap regenerated toast — shown after portfolio analysis completes */}
+      {showRoadmapToast && (
+        <div className="ptl-roadmap-toast" role="status">
+          <div className="ptl-roadmap-toast-icon" aria-hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 12l3 3 5-6" />
+            </svg>
+          </div>
+          <div className="ptl-roadmap-toast-content">
+            <strong>Your roadmap has been updated.</strong>{" "}
+            The new Portfolio signal is being woven into your strategic plan.
+          </div>
+          <Link href="/roadmap" className="ptl-roadmap-toast-link">
+            View Roadmap →
+          </Link>
+          <button
+            type="button"
+            className="ptl-roadmap-toast-dismiss"
+            aria-label="Dismiss"
+            onClick={() => setShowRoadmapToast(false)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="ptl-filter-bar" style={{ marginBottom: "24px" }}>
         <button
