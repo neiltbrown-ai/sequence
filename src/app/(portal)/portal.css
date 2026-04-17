@@ -2663,11 +2663,15 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 }
 .rdmp-misalignments--single { grid-template-columns: 1fr; }
 
+/* Inner misalignment cards are always dark (independent of theme) — they
+   sit inside the always-dark misalignments container, and the content
+   uses light-on-dark text. Light-theme override (previously #fafaf7)
+   made the text invisible. */
 .rdmp-misalignment {
   padding: 20px 24px;
   border: 1px solid rgba(255,255,255,.08);
   border-radius: 8px;
-  background: rgba(255,255,255,.02);
+  background: #242424;
 }
 
 @media (max-width: 760px) {
@@ -6794,19 +6798,18 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   .rdmp-signals-grid { grid-template-columns: 1fr; }
 }
 
-/* Light theme */
+/* Light theme — transition signal cards use pure white, not beige */
 [data-theme="light"] .rdmp-signal-card {
-  background: #fafaf7;
-  border-color: rgba(0,0,0,.08);
+  background: #ffffff;
+  border-color: rgba(0,0,0,.1);
 }
 [data-theme="light"] .rdmp-signal-num { color: rgba(0,0,0,.4); }
 [data-theme="light"] .rdmp-signal-icon { color: var(--black); }
 [data-theme="light"] .rdmp-signal-text { color: var(--black); }
 
-[data-theme="light"] .rdmp-misalignment {
-  background: #fafaf7;
-  border-color: rgba(0,0,0,.08);
-}
+/* Misalignment inner cards stay dark in both themes (defined at base rule
+   above). The outer misalignments container is always #1a1a1a, so
+   light-on-dark text inside the inner cards is required for legibility. */
 
 /* ============================================
    GENERATION PROGRESS — SHARED LOADING UI
@@ -7011,4 +7014,20 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
     max-width: 760px;
     margin: 0 auto;
   }
+}
+
+/* ============================================
+   RECOMMENDED READING — TWO-COLUMN LAYOUT
+   ============================================ */
+.rdmp-library-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.rdmp-library-cols > .rdmp-library-group {
+  margin-bottom: 0;
+}
+@media (max-width: 860px) {
+  .rdmp-library-cols { grid-template-columns: 1fr; gap: 28px; }
 }

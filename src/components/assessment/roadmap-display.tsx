@@ -215,13 +215,15 @@ export default function RoadmapDisplay({
       </div>
 
       {/* ── Headline diagrams: Entity Structure + Value Flywheel ── */}
+      {/* Tabbed so each diagram gets full width — side-by-side shrank text
+          below a legible size. Tabs keep the diagrams prominent + readable. */}
       {(roadmap.entity_structure?.children?.length ||
         roadmap.value_flywheel?.nodes?.length) && (
         <div className="rdmp-section rv vis rv-d1">
           <RoadmapDiagrams
             entityStructure={roadmap.entity_structure}
             valueFlywheel={roadmap.value_flywheel}
-            layout="side-by-side"
+            layout="tabs"
           />
         </div>
       )}
@@ -432,46 +434,48 @@ export default function RoadmapDisplay({
       {/* ── 5. Recommended Reading ── */}
       <div className="rdmp-section rv vis rv-d1">
         <div className="rdmp-section-heading">Recommended Reading</div>
-        {roadmap.library.recommended_structures &&
-          roadmap.library.recommended_structures.length > 0 && (
-            <div className="rdmp-library-group">
-              <div className="str-stat-lbl" style={{ marginBottom: 12 }}>Deal Structures</div>
-              <div className="rdmp-library-items">
-                {roadmap.library.recommended_structures.map((s) => (
-                  <a
-                    key={s.id}
-                    href={`/library/structures/${resolveStructureSlug(s.id)}`}
-                    className="rdmp-library-item"
-                  >
-                    <span className="rdmp-library-item-title">
-                      {s.title}
-                    </span>
-                    <span className="rdmp-library-item-why">{s.why}</span>
-                  </a>
-                ))}
+        <div className="rdmp-library-cols">
+          {roadmap.library.recommended_structures &&
+            roadmap.library.recommended_structures.length > 0 && (
+              <div className="rdmp-library-group">
+                <div className="str-stat-lbl" style={{ marginBottom: 12 }}>Deal Structures</div>
+                <div className="rdmp-library-items">
+                  {roadmap.library.recommended_structures.map((s) => (
+                    <a
+                      key={s.id}
+                      href={`/library/structures/${resolveStructureSlug(s.id)}`}
+                      className="rdmp-library-item"
+                    >
+                      <span className="rdmp-library-item-title">
+                        {s.title}
+                      </span>
+                      <span className="rdmp-library-item-why">{s.why}</span>
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        {roadmap.library.recommended_cases &&
-          roadmap.library.recommended_cases.length > 0 && (
-            <div className="rdmp-library-group">
-              <div className="str-stat-lbl" style={{ marginBottom: 12 }}>Case Studies</div>
-              <div className="rdmp-library-items">
-                {roadmap.library.recommended_cases.map((c) => (
-                  <a
-                    key={c.slug}
-                    href={`/library/case-studies/${c.slug}`}
-                    className="rdmp-library-item"
-                  >
-                    <span className="rdmp-library-item-title">
-                      {c.title}
-                    </span>
-                    <span className="rdmp-library-item-why">{c.why}</span>
-                  </a>
-                ))}
+            )}
+          {roadmap.library.recommended_cases &&
+            roadmap.library.recommended_cases.length > 0 && (
+              <div className="rdmp-library-group">
+                <div className="str-stat-lbl" style={{ marginBottom: 12 }}>Case Studies</div>
+                <div className="rdmp-library-items">
+                  {roadmap.library.recommended_cases.map((c) => (
+                    <a
+                      key={c.slug}
+                      href={`/library/case-studies/${c.slug}`}
+                      className="rdmp-library-item"
+                    >
+                      <span className="rdmp-library-item-title">
+                        {c.title}
+                      </span>
+                      <span className="rdmp-library-item-why">{c.why}</span>
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+        </div>
         {roadmap.library.reading_path &&
           roadmap.library.reading_path.length > 0 && (
             <div className="rdmp-library-group">

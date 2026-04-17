@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { resolveApprovedProvider } from "@/lib/roadmap/approved-providers";
 import type {
   RoadmapAction,
   ActionStatus,
@@ -159,27 +160,44 @@ export default function ActionCard({
             </a>
           )}
 
-          {action.providers && action.providers.length > 0 && (
-            <div className="rdmp-action-providers">
-              <strong>Recommended providers</strong>
-              <div className="rdmp-provider-list">
-                {action.providers.map((p) => (
-                  <a
-                    key={p.name}
-                    href={p.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rdmp-provider-link"
-                  >
-                    {p.name}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
-                      <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
-                    </svg>
-                  </a>
-                ))}
+          {(() => {
+            // Only show providers that match our approved-provider whitelist.
+            // Claude frequently produces generic suggestions ("find a tax
+            // accountant") or hallucinated URLs; the whitelist guarantees
+            // every link is real and goes to the canonical domain we verified.
+            const validProviders = (action.providers || [])
+              .map((p) => resolveApprovedProvider({ name: p.name, url: p.url }))
+              .filter((p): p is NonNullable<typeof p> => p !== null)
+              // de-dupe in case Claude emitted e.g. "LegalZoom" twice with
+              // slightly different framing
+              .filter(
+                (p, i, arr) => arr.findIndex((o) => o.name === p.name) === i
+              );
+
+            if (validProviders.length === 0) return null;
+
+            return (
+              <div className="rdmp-action-providers">
+                <strong>Recommended providers</strong>
+                <div className="rdmp-provider-list">
+                  {validProviders.map((p) => (
+                    <a
+                      key={p.name}
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rdmp-provider-link"
+                    >
+                      {p.name}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                      </svg>
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       )}
     </div>
