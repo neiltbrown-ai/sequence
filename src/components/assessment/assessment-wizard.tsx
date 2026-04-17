@@ -474,8 +474,8 @@ export default function AssessmentWizard({
                 <div className="rdmp-generating-spinner asmt-complete-spinner" />
               </div>
               <div className="asmt-complete-header-text">
-                <div className="asmt-complete-label">Assessment</div>
-                <h2 className="asmt-complete-title">Submitting your assessment</h2>
+                <div className="asmt-complete-label">Creative Identity</div>
+                <h2 className="asmt-complete-title">Saving your Creative Identity</h2>
                 <p className="asmt-complete-desc">
                   Building your personalized strategic roadmap...
                 </p>

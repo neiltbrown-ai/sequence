@@ -6458,3 +6458,138 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   /* Structure stats */
   .str-stats-inner { grid-template-columns: 1fr 1fr; }
 }
+
+/* ============================================
+   SETTINGS TABS + CREATIVE IDENTITY
+   ============================================ */
+.set-wrap { padding: 36px 0 0; }
+.set-tabs {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.set-tab {
+  position: relative;
+  background: none; border: none; cursor: pointer;
+  padding: 12px 20px 14px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--light);
+  border-bottom: 2px solid transparent;
+  transition: color .15s ease, border-color .15s ease;
+}
+.set-tab:hover { color: var(--mid); }
+.set-tab--active {
+  color: var(--black);
+  border-bottom-color: var(--black);
+}
+.set-tab-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent, #b8860b);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.set-tab-panel { padding-bottom: 80px; }
+
+/* Creative Identity panel */
+.ci-panel { max-width: 720px; }
+.ci-panel-head { margin-bottom: 28px; }
+.ci-panel-title {
+  font-family: var(--sans); font-size: 32px; font-weight: 300;
+  letter-spacing: -.03em; color: var(--black); margin-bottom: 8px;
+}
+.ci-panel-desc {
+  font-family: var(--sans); font-size: 15px; color: var(--mid);
+  line-height: 1.55; max-width: 580px;
+}
+
+.ci-state {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px 28px 32px;
+  background: var(--bg);
+}
+.ci-state-title {
+  font-family: var(--sans); font-size: 22px; font-weight: 500;
+  color: var(--black); margin-bottom: 10px; letter-spacing: -.02em;
+}
+.ci-state-desc { font-family: var(--sans); font-size: 14px; color: var(--mid); line-height: 1.55; margin-bottom: 20px; }
+.ci-state-copy p { font-family: var(--sans); font-size: 14px; color: var(--mid); line-height: 1.55; margin-bottom: 14px; }
+.ci-state-cta { margin-top: 20px; }
+.ci-state-cta-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+
+.ci-benefits {
+  list-style: none; padding: 0; margin: 16px 0 0;
+  font-family: var(--sans); font-size: 14px; color: var(--mid);
+}
+.ci-benefits li {
+  padding: 6px 0 6px 18px; position: relative; line-height: 1.5;
+}
+.ci-benefits li::before {
+  content: "·"; position: absolute; left: 4px; color: var(--light);
+}
+
+/* In-progress */
+.ci-progress-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 8px;
+}
+.ci-progress-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--black);
+}
+.ci-progress-pct {
+  font-family: var(--mono); font-size: 14px; color: var(--black);
+}
+.ci-progress-bar {
+  height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+  margin-bottom: 20px;
+}
+.ci-progress-fill {
+  height: 100%; background: var(--black);
+  transition: width .4s ease;
+}
+
+/* Complete summary */
+.ci-summary-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px 28px;
+  margin-bottom: 24px;
+}
+.ci-summary-cell {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.ci-summary-label {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--light);
+}
+.ci-summary-value {
+  font-family: var(--sans); font-size: 15px; font-weight: 500; color: var(--black);
+}
+.ci-flags {
+  border-top: 1px solid var(--border);
+  padding-top: 18px; margin-bottom: 18px;
+}
+.ci-flags-label {
+  display: block;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--black); margin-bottom: 10px;
+}
+.ci-flags-list {
+  list-style: none; padding: 0; margin: 0;
+  font-family: var(--sans); font-size: 13px; color: var(--mid); line-height: 1.6;
+}
+.ci-flags-list li { padding-left: 12px; position: relative; }
+.ci-flags-list li::before { content: "·"; position: absolute; left: 0; color: var(--light); }
+.ci-flags-more { color: var(--light) !important; }
+.ci-meta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  color: var(--light); margin-top: 6px;
+}
+
+@media (max-width: 720px) {
+  .ci-summary-grid { grid-template-columns: 1fr; }
+  .set-tab { padding: 10px 14px 12px; font-size: 10px; }
+}

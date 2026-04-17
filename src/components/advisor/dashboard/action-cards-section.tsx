@@ -118,8 +118,8 @@ export default function ActionCardsSection({
       {allCompleted && (
         <div className="adv-dash-actions-complete">
           <p className="adv-dash-actions-complete-text">
-            All actions complete. Retake your assessment to recalibrate your
-            position and unlock the next stage.
+            All actions complete. Refresh your Creative Identity to recalibrate
+            your position and unlock the next stage.
           </p>
           <a href="/assessment" className="adv-dash-actions-complete-btn">
             Update your roadmap

@@ -9,7 +9,7 @@ const EXPECTED_DURATION = 35000; // 35s typical generation time
 const TICK_INTERVAL = 200; // smooth updates
 
 const STAGES = [
-  { at: 0, label: "Analyzing your assessment responses" },
+  { at: 0, label: "Analyzing your Creative Identity" },
   { at: 12, label: "Mapping your position in the creative economy" },
   { at: 28, label: "Identifying structural misalignments" },
   { at: 48, label: "Building your personalized action playbook" },

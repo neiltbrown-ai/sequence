@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getAllCaseStudies, getAllStructures } from '@/lib/content';
+import { buildMemberContext } from '@/lib/advisor/context-builder';
+import { buildMemberContextPrompt } from '@/lib/advisor/system-prompts';
 import Anthropic from '@anthropic-ai/sdk';
 import type { DealVerdict, EvaluationScores, DealType, CreativeMode } from '@/types/evaluator';
 
@@ -191,11 +193,28 @@ export async function POST(request: Request) {
   }
 
   try {
+    // Load the member's Creative Identity + roadmap context for the AI.
+    // The client already passes a compact assessmentContext, but buildMemberContext
+    // gives us the same canonical block used by the advisor — keeps voice consistent
+    // across the platform and surfaces roadmap/action state the client doesn't have.
+    let memberBlock = '';
+    try {
+      const ctx = await buildMemberContext(user.id);
+      memberBlock = buildMemberContextPrompt(ctx);
+    } catch (e) {
+      // Non-fatal — evaluator still works without the extended block
+      console.warn('Failed to load member context for evaluator:', e);
+    }
+
+    const systemWithContext = memberBlock
+      ? `${SYSTEM_PROMPT}\n\n---\n${memberBlock}`
+      : SYSTEM_PROMPT;
+
     const anthropic = new Anthropic({ apiKey });
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
-      system: SYSTEM_PROMPT,
+      system: systemWithContext,
       messages: [{ role: 'user', content: userPrompt }],
     });
 

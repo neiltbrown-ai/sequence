@@ -175,7 +175,7 @@ export default function RoadmapDisplay({
 
         <h1 className="page-title rv vis">Your Strategic Roadmap</h1>
         <p className="page-desc rv vis rv-d1">
-          Personalized guidance based on your assessment results
+          Personalized guidance built from your Creative Identity
         </p>
       </div>
 

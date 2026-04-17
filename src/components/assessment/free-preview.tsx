@@ -27,7 +27,7 @@ export default function FreePreview({
   return (
     <div className="rdmp-free-preview">
       <div className="rdmp-free-header">
-        <h1>Your Assessment Results</h1>
+        <h1>Your Creative Identity Snapshot</h1>
         <p>Here&apos;s what we found about your current position.</p>
       </div>
 

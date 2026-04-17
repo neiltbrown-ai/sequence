@@ -27,12 +27,12 @@ export default function DashboardAssessmentCTA() {
         </svg>
       </div>
       <div className="dash-asmt-cta-content">
-        <div className="dash-asmt-cta-label">Assessment</div>
-        <h2 className="dash-asmt-cta-title">Map your position. Get your roadmap.</h2>
+        <div className="dash-asmt-cta-label">Creative Identity</div>
+        <h2 className="dash-asmt-cta-title">Define your Creative Identity. Personalize your roadmap.</h2>
         <p className="dash-asmt-cta-desc">
-          Answer 25 questions about your creative practice, income structure,
-          and ambitions. Get a personalized strategic roadmap with 3 specific
-          next steps.
+          A 10-minute guided flow capturing your discipline, creative mode,
+          stage, and ambitions. Tunes every recommendation across the platform —
+          roadmap, deal evaluations, and advisor guidance.
         </p>
         <div className="dash-asmt-cta-footer">
           <span className="dash-asmt-cta-time">
@@ -40,10 +40,10 @@ export default function DashboardAssessmentCTA() {
               <circle cx="12" cy="12" r="10" />
               <path d="M12 6v6l4 2" />
             </svg>
-            ~15 minutes
+            ~10 minutes
           </span>
           <span className="dash-asmt-cta-btn">
-            Take Assessment
+            Build Creative Identity
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={12} height={12} className="dash-asmt-cta-arrow">
               <line x1="7" y1="17" x2="17" y2="7" />
               <polyline points="7 7 17 7 17 17" />
