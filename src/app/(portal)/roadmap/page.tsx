@@ -86,12 +86,16 @@ export default async function RoadmapPage() {
     }
   }
 
-  // Load action tracking (scoped to this plan if plan_id is tracked there,
-  // otherwise the user's actions overall)
+  // Load action tracking. Note: actions are functionally per-user per-order
+  // — the update API at /api/assessment/actions dedups on (user_id,
+  // action_order) without considering plan_id, so a completed action #1
+  // stays completed across regenerations even though its plan_id column
+  // still points to the first plan that created it. Query by user_id so
+  // progress carries forward after Portfolio-driven regenerations.
   const { data: actions } = await admin
     .from("assessment_actions")
     .select("*")
-    .eq("plan_id", plan.id)
+    .eq("user_id", user.id)
     .order("action_order", { ascending: true });
 
   // Generating → show progress screen
