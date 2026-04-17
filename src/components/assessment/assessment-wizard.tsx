@@ -518,11 +518,12 @@ export default function AssessmentWizard({
                   </svg>
                 </div>
                 <div className="asmt-complete-header-text">
-                  <div className="asmt-complete-label">Assessment Complete</div>
-                  <h2 className="asmt-complete-title">Your responses have been recorded</h2>
+                  <div className="asmt-complete-label">Creative Identity Complete</div>
+                  <h2 className="asmt-complete-title">Your Creative Identity is saved</h2>
                   <p className="asmt-complete-desc">
-                    A Sequence advisor will review your strategic roadmap
-                    and notify you when it&apos;s ready to view.
+                    Every recommendation across the platform — your roadmap,
+                    deal evaluations, and advisor guidance — is now tuned
+                    to your profile.
                   </p>
                 </div>
               </div>
@@ -549,9 +550,10 @@ export default function AssessmentWizard({
               <div className="asmt-complete-next">
                 <div className="asmt-complete-next-label">What happens next</div>
                 <p className="asmt-complete-next-desc">
-                  Your roadmap includes your detected stage, structural misalignments,
-                  and 3 specific next steps. Once reviewed by a Sequence advisor,
-                  you&apos;ll receive a notification with access to your full strategic roadmap.
+                  Your strategic roadmap is generating now — detected stage,
+                  structural misalignments, and 3 specific next steps. Click
+                  through to view it; the page will populate as soon as it&apos;s
+                  ready (usually under a minute).
                 </p>
                 <a href="/roadmap" className="asmt-complete-btn">
                   View Roadmap
