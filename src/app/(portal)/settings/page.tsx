@@ -4,6 +4,11 @@ import { redirect } from "next/navigation";
 import SettingsTabs from "@/components/portal/settings-tabs";
 import type { CreativeIdentitySnapshot } from "@/types/creative-identity";
 
+// Always fetch fresh — the Creative Identity snapshot depends on the
+// most recent assessment state, which changes right after the wizard
+// submits. Never serve cached.
+export const dynamic = "force-dynamic";
+
 interface SettingsPageProps {
   searchParams: Promise<{ tab?: string }>;
 }
@@ -51,10 +56,22 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
   ]);
   const assessment = completed ?? anyLatest;
 
+  // Trust `completed_at` as the definitive completion signal — more robust
+  // than the status string (which could be out of sync in edge cases or
+  // legacy data). If a completed_at exists OR status is literally
+  // "completed", the panel should show the full portrait view.
+  const hasCompletedAt = !!(assessment && assessment.completed_at);
+  const resolvedStatus: CreativeIdentitySnapshot["status"] =
+    hasCompletedAt
+      ? "completed"
+      : assessment
+        ? (assessment.status as CreativeIdentitySnapshot["status"])
+        : "empty";
+
   const creativeIdentity: CreativeIdentitySnapshot = assessment
     ? {
         id: assessment.id,
-        status: assessment.status as CreativeIdentitySnapshot["status"],
+        status: resolvedStatus,
         currentSection: assessment.current_section ?? 1,
         currentQuestion: assessment.current_question ?? 0,
         detectedStage: assessment.detected_stage ?? null,
