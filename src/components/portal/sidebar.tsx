@@ -28,11 +28,14 @@ interface NavItem {
   requiredTier?: AccessTier;
 }
 
+// Nav flow reads as the member's journey:
+//   Dashboard → Portfolio (input) → Roadmap (output) → Evaluate (ongoing
+//   input that refreshes Roadmap) → Advisor (conversational layer over all)
 const TOP_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
   { href: "/inventory", label: "Portfolio", icon: <InventoryIcon />, requiredTier: "full_access" },
-  { href: "/evaluate", label: "Evaluate", icon: <EvaluateIcon />, requiredTier: "full_access" },
   { href: "/roadmap", label: "Roadmap", icon: <RoadmapIcon />, requiredTier: "full_access" },
+  { href: "/evaluate", label: "Evaluate", icon: <EvaluateIcon />, requiredTier: "full_access" },
   { href: "/advisor", label: "Advisor", icon: <AiAdvisorIcon />, requiredTier: "full_access" },
 ];
 

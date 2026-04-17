@@ -13,6 +13,7 @@ import DashboardWelcome from "@/components/portal/dashboard-welcome";
 import DashboardInventoryCTA from "@/components/portal/dashboard-inventory-cta";
 import DashboardEvalCTA from "@/components/portal/dashboard-eval-cta";
 import DashboardProfileCta from "@/components/portal/dashboard-profile-cta";
+import DashboardRoadmapCTA from "@/components/portal/dashboard-roadmap-cta";
 import DashboardNewContent from "@/components/portal/dashboard-new-content";
 import DashboardSavedPreview from "@/components/portal/dashboard-saved-preview";
 import DashboardLibraryStats from "@/components/portal/dashboard-library-stats";
@@ -21,40 +22,12 @@ import { createClient } from "@/lib/supabase/server";
 import { planTier } from "@/lib/plans";
 import { getRecommendations, getEditorialPicks, getNewContent, getCaseStudyRecommendationsForUser } from "@/lib/recommendations";
 import type { SignalColor } from "@/types/evaluator";
+import type { PlanSource, StageNumber, StrategicRoadmap } from "@/types/assessment";
 
 const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
 
-function DealIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
-      <path d="M14 2v6h6" />
-      <path d="M9 15h6" />
-      <path d="M9 11h6" />
-    </svg>
-  );
-}
-
-function MapIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 2v4" />
-      <path d="M12 18v4" />
-      <path d="M2 12h4" />
-      <path d="M18 12h4" />
-    </svg>
-  );
-}
-
-function ExploreIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="3 11 22 2 13 21 11 13 3 11" />
-    </svg>
-  );
-}
+/* (DealIcon / MapIcon / ExploreIcon — removed with the onboarding
+   path cards; see Batch E. Portfolio is now the canonical first step.) */
 
 /* ─────────────────────────────────────────────
    Full Access Dashboard (existing layout)
@@ -79,6 +52,18 @@ async function FullAccessDashboard() {
   let profileForRecs: { disciplines: string[]; interests: string[]; careerStage: string | null } | undefined;
   let assetsForRecs: { asset_type: string }[] = [];
   let hasCompletedAssessment = false;
+
+  // Roadmap summary for dashboard CTA
+  let roadmapStatus:
+    | "generating"
+    | "draft"
+    | "review"
+    | "published"
+    | null = null;
+  let roadmapStage: StageNumber | null = null;
+  let roadmapStageName: string | null = null;
+  let roadmapSource: PlanSource | null = null;
+  let roadmapActionsCompleted = 0;
 
   if (user) {
     const profileResult = await supabase
@@ -127,6 +112,33 @@ async function FullAccessDashboard() {
 
     inventoryCount = invCountResult.count || 0;
     assetsForRecs = (invAssetsResult.data as { asset_type: string }[]) || [];
+
+    // Load the user's latest strategic plan so the dashboard CTA can
+    // reflect whether a roadmap exists + its current state.
+    const [planResult, actionsResult] = await Promise.all([
+      supabase
+        .from("strategic_plans")
+        .select("id, status, source, plan_content")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("assessment_actions")
+        .select("status")
+        .eq("user_id", user.id)
+        .eq("status", "completed"),
+    ]);
+    if (planResult.data) {
+      roadmapStatus = planResult.data.status as typeof roadmapStatus;
+      roadmapSource = (planResult.data.source as PlanSource) || null;
+      const content = planResult.data.plan_content as StrategicRoadmap | null;
+      if (content?.position) {
+        roadmapStage = (content.position.detected_stage as StageNumber) || null;
+        roadmapStageName = content.position.stage_name || null;
+      }
+    }
+    roadmapActionsCompleted = actionsResult.data?.length || 0;
 
     if (inventoryCount > 0) {
       const { data: analysis } = await supabase
@@ -182,34 +194,26 @@ async function FullAccessDashboard() {
     <>
       <DashboardWelcome />
 
-      {/* Creative Identity CTA — hidden once CI is completed */}
-      <DashboardProfileCta creativeIdentityComplete={hasCompletedAssessment} />
-
-      {/* Onboarding paths — hidden once user has assets or has completed assessment */}
-      {inventoryCount === 0 && !hasCompletedAssessment && (
-        <div className="dash-section rv rv-d1">
-          <div className="adv-path-cards">
-            <Link href="/evaluate" className="adv-path-card">
-              <span className="adv-path-card-icon"><DealIcon /></span>
-              <h3 className="adv-path-card-title">Evaluate a deal</h3>
-              <p className="adv-path-card-desc">Get clarity on a specific offer or opportunity.</p>
-            </Link>
-            <Link href="/advisor?path=map" className="adv-path-card">
-              <span className="adv-path-card-icon"><MapIcon /></span>
-              <h3 className="adv-path-card-title">Map my position</h3>
-              <p className="adv-path-card-desc">Understand where you stand and what to do next.</p>
-            </Link>
-            <Link href="/advisor" className="adv-path-card">
-              <span className="adv-path-card-icon"><ExploreIcon /></span>
-              <h3 className="adv-path-card-title">Just exploring</h3>
-              <p className="adv-path-card-desc">Browse the framework, ask questions, see what&apos;s possible.</p>
-            </Link>
-          </div>
-        </div>
-      )}
-
+      {/* CTA order mirrors the member's journey:
+             1. Portfolio (keystone input — Audit your assets)
+             2. Roadmap (primary output — appears once a plan exists)
+             3. Evaluate (ongoing input — refreshes the roadmap)
+             4. Creative Identity (optional personalization — only shown
+                until completed, auto-hides after)
+          Previous onboarding "paths" cards have been removed — Portfolio
+          is now the canonical first step, so offering three alternative
+          entry points was off-message. */}
       <DashboardInventoryCTA assetCount={inventoryCount} summary={inventorySummary} />
+      <DashboardRoadmapCTA
+        status={roadmapStatus}
+        stage={roadmapStage}
+        stageName={roadmapStageName}
+        source={roadmapSource}
+        actionsCompleted={roadmapActionsCompleted}
+        actionsTotal={3}
+      />
       <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
+      <DashboardProfileCta creativeIdentityComplete={hasCompletedAssessment} />
 
       <div className="dash-section rv rv-d1">
         <SectionHeader title="Featured Case Studies" linkHref="/library/case-studies" linkLabel="Browse all" />
