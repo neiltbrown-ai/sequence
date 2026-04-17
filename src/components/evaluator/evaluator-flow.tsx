@@ -40,6 +40,7 @@ import FreeTextInput from '@/components/assessment/inputs/free-text-input';
 import { VerdictSummary } from './components/verdict-summary';
 import { DimensionCards } from './components/dimension-card';
 import RefreshRoadmapCTA from './refresh-roadmap-cta';
+import GenerationProgress from '@/components/shared/generation-progress';
 import { toTitleCase } from '@/lib/utils';
 
 // ── Summary Helpers ─────────────────────────────────────
@@ -1355,28 +1356,16 @@ export function EvaluatorFlow({
       <div className="asmt-wizard">
         <EvalProgress currentDimension={state.currentDimension} phase={state.phase} />
         <div className="asmt-content">
-          <div className="asmt-complete">
-            <div className="asmt-complete-header">
-              <div className="asmt-complete-graphic">
-                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1" width="48" height="48" className="asmt-complete-graphic-svg">
-                  <circle cx="24" cy="24" r="20" />
-                  <path d="M16 24 L22 30 L32 18" strokeWidth="1.5" opacity="0.3" />
-                </svg>
-                <div className="rdmp-generating-spinner asmt-complete-spinner" />
-              </div>
-              <div className="asmt-complete-header-text">
-                <div className="asmt-complete-label">Deal Evaluator</div>
-                <h2 className="asmt-complete-title">
-                  {state.phase === 'computing' ? 'Scoring your evaluation' : 'Generating your verdict'}
-                </h2>
-                <p className="asmt-complete-desc">
-                  {state.phase === 'computing'
-                    ? 'Calculating scores across six dimensions...'
-                    : 'Building your deal verdict with recommended actions...'}
-                </p>
-              </div>
-            </div>
-          </div>
+          <GenerationProgress
+            label="Deal Evaluator"
+            title={state.phase === 'computing' ? 'Scoring your evaluation' : 'Generating your verdict'}
+            description={
+              state.phase === 'computing'
+                ? 'Calculating scores across six dimensions — financial, career, partner, structure, risk, and legal.'
+                : 'Building your deal verdict with recommended actions and library resources.'
+            }
+            footerNote="Usually under a minute"
+          />
         </div>
       </div>
     );

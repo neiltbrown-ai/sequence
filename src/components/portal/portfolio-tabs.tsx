@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import InventoryPage from "@/components/portal/inventory-page";
 import AnalysisView from "@/components/portal/inventory-analysis-view";
+import GenerationProgress from "@/components/shared/generation-progress";
 import type { AssetInventoryItem, AssetInventoryAnalysis } from "@/types/inventory";
 
 interface PortfolioTabsProps {
@@ -189,39 +190,32 @@ export default function PortfolioTabs({
         <div>
           {/* Loading state — shown while analyzing */}
           {analyzing && (
-            <div className="inv-analyzing-card rv vis">
-              <div className="inv-analyzing-spinner" />
-              <h3 className="inv-analyzing-title">Analyzing your portfolio</h3>
-              <p className="inv-analyzing-stage">{stageLabel}</p>
-              <div className="inv-analyzing-bar">
-                <div
-                  className="inv-analyzing-bar-fill"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="inv-analyzing-note">
-                This typically takes 60&ndash;90 seconds.
-              </p>
-            </div>
+            <GenerationProgress
+              label="Portfolio Analysis"
+              title="Analyzing your portfolio"
+              description="Estimating value ranges, modeling leverage scenarios, and mapping structural opportunities."
+              progress={progress}
+              stageLabel={stageLabel}
+              footerNote="Typically 60–90 seconds"
+            />
           )}
 
           {/* Timeout state */}
           {!analyzing && timedOut && (
-            <div className="inv-analyzing-card rv vis">
-              <h3 className="inv-analyzing-title">Analysis is taking longer than expected</h3>
-              <p style={{ fontFamily: "var(--sans)", fontSize: "14px", color: "var(--mid)", lineHeight: 1.6, margin: "0 0 24px" }}>
-                Your portfolio analysis is still processing in the background.
-                Try refreshing this page in a minute or two, or run a new
-                analysis.
-              </p>
-              <button
-                type="button"
-                className="btn btn--filled"
-                onClick={() => { setTimedOut(false); handleAnalyze(); }}
-              >
-                Try Again
-              </button>
-            </div>
+            <GenerationProgress
+              label="Portfolio Analysis"
+              title=""
+              timedOut
+              timeoutTitle="Analysis is taking longer than expected"
+              timeoutBody="Your portfolio analysis is still processing in the background. Try again in a minute, or run a fresh analysis."
+              timeoutAction={{
+                label: "Try Again",
+                onClick: () => {
+                  setTimedOut(false);
+                  handleAnalyze();
+                },
+              }}
+            />
           )}
 
           {/* No assets yet */}

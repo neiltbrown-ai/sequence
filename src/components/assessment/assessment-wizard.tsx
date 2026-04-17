@@ -25,6 +25,7 @@ import SectionIntro from "./section-intro";
 import QuestionRenderer from "./question-renderer";
 import WizardNav from "./wizard-nav";
 import { useAssessmentAutosave } from "@/hooks/use-assessment-autosave";
+import GenerationProgress from "@/components/shared/generation-progress";
 
 // ── Initial state ──────────────────────────────────────────────
 
@@ -465,22 +466,12 @@ export default function AssessmentWizard({
       <div className="asmt-wizard">
         <div className="asmt-complete">
           {submitting ? (
-            <div className="asmt-complete-header">
-              <div className="asmt-complete-graphic">
-                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1" width="48" height="48" className="asmt-complete-graphic-svg">
-                  <circle cx="24" cy="24" r="20" />
-                  <path d="M16 24 L22 30 L32 18" strokeWidth="1.5" opacity="0.3" />
-                </svg>
-                <div className="rdmp-generating-spinner asmt-complete-spinner" />
-              </div>
-              <div className="asmt-complete-header-text">
-                <div className="asmt-complete-label">Creative Identity</div>
-                <h2 className="asmt-complete-title">Saving your Creative Identity</h2>
-                <p className="asmt-complete-desc">
-                  Building your personalized strategic roadmap...
-                </p>
-              </div>
-            </div>
+            <GenerationProgress
+              label="Creative Identity"
+              title="Saving your Creative Identity"
+              description="Building your personalized strategic roadmap from your answers, archetype, and stage."
+              footerNote="Usually ready in under a minute"
+            />
           ) : submitError ? (
             <>
               <div className="asmt-complete-header">

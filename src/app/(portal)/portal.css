@@ -6807,3 +6807,133 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   background: #fafaf7;
   border-color: rgba(0,0,0,.08);
 }
+
+/* ============================================
+   GENERATION PROGRESS — SHARED LOADING UI
+   Used across Portfolio, Evaluator, Creative Identity,
+   and Roadmap generation screens for a single pattern.
+   ============================================ */
+.gen-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 64px 32px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.gen-progress-graphic {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 28px;
+  color: var(--black);
+}
+.gen-progress-graphic-svg {
+  opacity: 0.9;
+  animation: gen-fade-in .4s ease-out both;
+}
+.gen-progress-icon {
+  color: var(--black);
+  margin-bottom: 24px;
+}
+.gen-progress-icon--alert { color: var(--mid); }
+.gen-progress-spinner {
+  position: absolute;
+  inset: -6px;
+  border: 3px solid var(--border);
+  border-top-color: var(--black);
+  border-radius: 50%;
+  animation: gen-spin 0.9s linear infinite;
+}
+@keyframes gen-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes gen-fade-in {
+  from { opacity: 0; transform: scale(.92); }
+  to { opacity: 0.9; transform: scale(1); }
+}
+
+.gen-progress-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--light);
+  margin-bottom: 10px;
+}
+.gen-progress-title {
+  font-family: var(--sans); font-size: 22px; font-weight: 500;
+  letter-spacing: -.01em; color: var(--black);
+  margin: 0 0 10px;
+}
+.gen-progress-desc {
+  font-family: var(--sans); font-size: 14px; color: var(--mid);
+  line-height: 1.5; max-width: 420px;
+  margin: 0 0 28px;
+}
+
+.gen-progress-bar-wrap {
+  width: 100%; max-width: 380px;
+}
+.gen-progress-stage {
+  font-family: var(--sans); font-size: 13px; color: var(--mid);
+  margin: 0 0 12px;
+  min-height: 20px;
+  transition: opacity .2s ease;
+}
+.gen-progress-stage--standalone {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  min-height: 20px;
+}
+.gen-progress-bar {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.gen-progress-bar-fill {
+  height: 100%;
+  background: var(--black);
+  border-radius: 3px;
+  transition: width 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  min-width: 42px;
+}
+.gen-progress-pct {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: .05em; color: #fff;
+  white-space: nowrap;
+}
+
+.gen-progress-footer {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--light);
+  margin: 24px 0 0;
+}
+.gen-progress-extra { margin-top: 20px; width: 100%; }
+.gen-progress-cta { margin-top: 24px; }
+
+/* Dark theme */
+[data-theme="dark"] .gen-progress {
+  background: #111;
+  border-color: rgba(255,255,255,.08);
+}
+[data-theme="dark"] .gen-progress-graphic,
+[data-theme="dark"] .gen-progress-spinner { color: #fff; }
+[data-theme="dark"] .gen-progress-spinner {
+  border-color: rgba(255,255,255,.12);
+  border-top-color: #fff;
+}
+
+@media (max-width: 640px) {
+  .gen-progress { padding: 48px 24px; }
+  .gen-progress-title { font-size: 19px; }
+}
