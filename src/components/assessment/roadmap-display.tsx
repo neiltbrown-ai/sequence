@@ -82,6 +82,30 @@ function parseReadingPathItem(
   return { text: item, href: null };
 }
 
+/**
+ * Build the subtitle line that tells the user which inputs fed this plan.
+ * E.g.:
+ *   "Built from your Creative Identity"
+ *   "Built from your Portfolio audit + 2 recent deals"
+ *   "Built from your Creative Identity + Portfolio audit + 5 recent deals"
+ */
+function buildSourceSubtitle(plan: StrategicPlan, dealCount: number): string {
+  const inputs: string[] = [];
+  const source = plan.source;
+  if (source === "combined") {
+    inputs.push("Creative Identity", "Portfolio audit");
+  } else if (source === "portfolio") {
+    inputs.push("Portfolio audit");
+  } else {
+    // "assessment" or legacy plans (default) — assume CI
+    inputs.push("Creative Identity");
+  }
+  if (dealCount > 0) {
+    inputs.push(`${dealCount} recent deal${dealCount === 1 ? "" : "s"}`);
+  }
+  return `Built from your ${inputs.join(" + ")}`;
+}
+
 export type RecentDealSummary = {
   id: string;
   deal_name: string | null;
@@ -186,9 +210,21 @@ export default function RoadmapDisplay({
 
         <h1 className="page-title rv vis">Your Strategic Roadmap</h1>
         <p className="page-desc rv vis rv-d1">
-          Personalized guidance built from your Creative Identity
+          {buildSourceSubtitle(plan, recentDeals.length)}
         </p>
       </div>
+
+      {/* ── Headline diagrams: Entity Structure + Value Flywheel ── */}
+      {(roadmap.entity_structure?.children?.length ||
+        roadmap.value_flywheel?.nodes?.length) && (
+        <div className="rdmp-section rv vis rv-d1">
+          <RoadmapDiagrams
+            entityStructure={roadmap.entity_structure}
+            valueFlywheel={roadmap.value_flywheel}
+            layout="side-by-side"
+          />
+        </div>
+      )}
 
       {/* ── 1. Your Position ── */}
       <div className="rdmp-section rv vis rv-d1">
@@ -301,11 +337,7 @@ export default function RoadmapDisplay({
           </div>
         </div>
 
-        {/* Entity structure + Flywheel diagrams (tabbed) */}
-        <RoadmapDiagrams
-          entityStructure={roadmap.entity_structure}
-          valueFlywheel={roadmap.value_flywheel}
-        />
+        {/* Diagrams now live in the page headline — see top of file. */}
 
         {roadmap.vision.transition_signals &&
           roadmap.vision.transition_signals.length > 0 && (

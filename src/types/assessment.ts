@@ -285,10 +285,20 @@ export type StrategicRoadmap = {
 
 // ── Strategic Plan (stored in Supabase) ──────────────────────────
 
+export type PlanSource = "assessment" | "portfolio" | "combined";
+
 export type StrategicPlan = {
   id: string;
   user_id: string;
-  assessment_id: string;
+  assessment_id: string | null;
+  /**
+   * Which input(s) drove this plan. Added in migration 00015.
+   *   - "assessment" — Creative Identity only
+   *   - "portfolio"  — Portfolio analysis only
+   *   - "combined"   — Both CI and Portfolio fed the generator
+   */
+  source: PlanSource;
+  portfolio_analysis_id: string | null;
   plan_content: StrategicRoadmap;
   plan_markdown: string | null;
   status: PlanStatus;
