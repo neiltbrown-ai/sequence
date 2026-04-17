@@ -14,22 +14,50 @@ export default async function RoadmapPage() {
 
   if (!user) redirect("/login");
 
-  // Find the user's most recent completed assessment
-  const { data: assessment } = await supabase
-    .from("assessments")
-    .select("id, detected_stage, misalignment_flags, archetype_primary, status")
+  // In the new consolidated model, a plan may be generated from:
+  //  - Creative Identity alone
+  //  - Portfolio alone
+  //  - Both (combined)
+  // Always surface the user's MOST RECENT plan — that's the source of truth
+  // regardless of which input drove it. Don't filter by assessment_id;
+  // Batch B introduced portfolio-only plans and regenerations that create
+  // new rows.
+  const admin = createAdminClient();
+  const { data: plan } = await admin
+    .from("strategic_plans")
+    .select("*")
     .eq("user_id", user.id)
-    .eq("status", "completed")
-    .order("completed_at", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
-  if (!assessment) {
+  // No plan at all → the user hasn't completed either required input.
+  // Send them to Creative Identity as the lowest-friction first step.
+  if (!plan) {
+    // Check if they have a completed assessment without a plan — shouldn't
+    // happen in practice but handle gracefully with a targeted redirect.
+    const { data: assessment } = await supabase
+      .from("assessments")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("status", "completed")
+      .limit(1)
+      .maybeSingle();
+
+    if (assessment) {
+      // Edge case: completed CI but plan generation never kicked off or was
+      // rolled back. Send to Creative Identity which will no-op and loop
+      // completion logic to re-trigger generation.
+      redirect("/assessment");
+    }
+
+    // No CI, no plan → start with Creative Identity
     redirect("/assessment");
   }
 
-  // Check subscription status for gating
-  const admin = createAdminClient();
+  // Subscription gating uses the linked assessment (if any) for FreePreview
+  // content. Portfolio-only plans skip the free preview since there's no
+  // stage/misalignment pair to tease with.
   const { data: subscription } = await admin
     .from("subscriptions")
     .select("status")
@@ -39,40 +67,39 @@ export default async function RoadmapPage() {
 
   const isMember = !!subscription;
 
-  // Non-members see free preview
-  if (!isMember) {
-    const flags = (assessment.misalignment_flags || []) as MisalignmentFlag[];
-    return (
-      <FreePreview
-        stage={assessment.detected_stage as StageNumber}
-        topMisalignment={flags[0] || null}
-      />
-    );
+  if (!isMember && plan.assessment_id) {
+    // Non-members with a CI-linked plan see the limited preview
+    const { data: assessment } = await admin
+      .from("assessments")
+      .select("detected_stage, misalignment_flags")
+      .eq("id", plan.assessment_id)
+      .maybeSingle();
+
+    if (assessment) {
+      const flags = (assessment.misalignment_flags || []) as MisalignmentFlag[];
+      return (
+        <FreePreview
+          stage={assessment.detected_stage as StageNumber}
+          topMisalignment={flags[0] || null}
+        />
+      );
+    }
   }
 
-  // Find the plan for this assessment
-  const { data: plan } = await supabase
-    .from("strategic_plans")
-    .select("*")
-    .eq("assessment_id", assessment.id)
-    .maybeSingle();
-
-  if (!plan) {
-    redirect("/assessment");
-  }
-
-  // Load action tracking
-  const { data: actions } = await supabase
+  // Load action tracking (scoped to this plan if plan_id is tracked there,
+  // otherwise the user's actions overall)
+  const { data: actions } = await admin
     .from("assessment_actions")
     .select("*")
     .eq("plan_id", plan.id)
     .order("action_order", { ascending: true });
 
-  // Show generating/pending state
+  // Generating → show progress screen
   if (plan.status === "generating") {
     return <RoadmapGenerating planId={plan.id} />;
   }
 
+  // Pending review or draft → holding screen
   if (plan.status === "review" || plan.status === "draft") {
     return (
       <div className="rdmp-pending">
@@ -90,12 +117,8 @@ export default async function RoadmapPage() {
     );
   }
 
-  // Published — render full roadmap
+  // Published → render
   return (
-    <RoadmapDisplay
-      plan={plan}
-      actions={actions || []}
-      userId={user.id}
-    />
+    <RoadmapDisplay plan={plan} actions={actions || []} userId={user.id} />
   );
 }
