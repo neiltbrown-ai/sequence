@@ -245,19 +245,76 @@ async function runGenerationImpl(
   }
 
   if (recentDeals.length > 0) {
+    // Pre-compute patterns so Claude has explicit signals to reference
+    const signalCounts = recentDeals.reduce(
+      (acc, d) => {
+        const s = d.overall_signal ?? "unknown";
+        acc[s] = (acc[s] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+    const typeCounts = recentDeals.reduce(
+      (acc, d) => {
+        const t = d.deal_type ?? "unknown";
+        acc[t] = (acc[t] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+    const flagCounts = recentDeals.reduce(
+      (acc, d) => {
+        for (const f of d.red_flags ?? []) {
+          acc[f] = (acc[f] ?? 0) + 1;
+        }
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+    const recurringFlags = Object.entries(flagCounts)
+      .filter(([, count]) => count >= 2)
+      .map(([flag, count]) => ({ flag, count }))
+      .sort((a, b) => b.count - a.count);
+    const avgScore =
+      recentDeals.reduce((sum, d) => sum + (d.overall_score ?? 0), 0) /
+      recentDeals.filter((d) => d.overall_score != null).length || 0;
+
     sections.push(
-      `RECENT DEAL EVALUATIONS (last 90 days, ${recentDeals.length} deals):\n${JSON.stringify(
-        recentDeals.map((d) => ({
-          deal_type: d.deal_type,
-          deal_name: d.deal_name,
-          overall_score: d.overall_score,
-          overall_signal: d.overall_signal,
-          red_flags: d.red_flags,
-          completed_at: d.completed_at,
-        })),
-        null,
-        2
-      )}`
+      `RECENT DEAL EVALUATIONS (last 90 days, ${recentDeals.length} deals):
+
+SUMMARY PATTERNS:
+- Signal distribution: ${Object.entries(signalCounts)
+        .map(([k, v]) => `${k}=${v}`)
+        .join(", ")}
+- Deal type distribution: ${Object.entries(typeCounts)
+        .map(([k, v]) => `${k}=${v}`)
+        .join(", ")}
+- Average overall score: ${avgScore.toFixed(1)}/10
+- Recurring red flags (appeared 2+ times): ${
+        recurringFlags.length > 0
+          ? recurringFlags.map((rf) => `${rf.flag} (×${rf.count})`).join(", ")
+          : "none"
+      }
+
+DEAL LIST:
+${JSON.stringify(
+  recentDeals.map((d) => ({
+    deal_type: d.deal_type,
+    deal_name: d.deal_name,
+    overall_score: d.overall_score,
+    overall_signal: d.overall_signal,
+    red_flags: d.red_flags,
+    completed_at: d.completed_at,
+  })),
+  null,
+  2
+)}
+
+ROADMAP INSTRUCTIONS RE: DEALS:
+- If recurring red flags are present, at least one of the three actions should address the underlying structural gap (not just "next deal be more careful").
+- If the signal distribution skews yellow/red, treat the roadmap as corrective.
+- If there's a clear deal_type pattern, mention it in position or vision ("Your last 3 licensing deals all scored yellow on structure quality — here's how the plan addresses that").
+- Don't list individual deals in the roadmap output; synthesize the pattern.`
     );
   }
 

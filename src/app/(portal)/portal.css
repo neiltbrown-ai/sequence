@@ -6640,3 +6640,112 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   .ptl-roadmap-toast { flex-wrap: wrap; }
   .ptl-roadmap-toast-link { width: 100%; text-align: center; }
 }
+
+/* ============================================
+   EVALUATOR → REFRESH ROADMAP CTA
+   ============================================ */
+.eval-refresh-cta {
+  border-left: 3px solid var(--black);
+  padding-left: 18px;
+}
+.eval-refresh-cta-desc {
+  font-family: var(--sans); font-size: 14px; color: var(--mid);
+  line-height: 1.55; margin: 0 0 16px;
+}
+.eval-refresh-cta-actions {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.eval-refresh-cta-error {
+  font-family: var(--sans); font-size: 13px; color: #b0413e;
+}
+.eval-refresh-cta-done {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border); border-radius: 4px;
+  font-family: var(--sans); font-size: 14px; color: var(--black);
+  line-height: 1.5;
+}
+.eval-refresh-cta-checkmark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px;
+  background: var(--black); color: var(--white);
+  border-radius: 50%; font-size: 12px; flex-shrink: 0;
+}
+.eval-refresh-cta-done strong { font-weight: 500; }
+.eval-refresh-cta-link {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--black); text-decoration: none;
+  padding: 6px 10px; border: 1px solid var(--black); border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+.eval-refresh-cta-link:hover { background: var(--black); color: var(--white); }
+
+/* ============================================
+   ROADMAP → RECENT DEALS SUMMARY
+   ============================================ */
+.rdmp-deals-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 22px;
+  background: var(--bg);
+}
+.rdmp-deals-intro {
+  font-family: var(--sans); font-size: 14px; color: var(--mid);
+  line-height: 1.55; margin: 0 0 16px;
+}
+.rdmp-deals-intro strong { color: var(--black); font-weight: 500; }
+.rdmp-deals-list {
+  list-style: none; padding: 0; margin: 0 0 12px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.rdmp-deal-item {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--sans); font-size: 14px; color: var(--black);
+}
+.rdmp-deal-item:last-child { border-bottom: none; }
+.rdmp-deal-signal {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.rdmp-deal-signal--green { background: #3d8b55; }
+.rdmp-deal-signal--yellow { background: #c89333; }
+.rdmp-deal-signal--red { background: #b0413e; }
+.rdmp-deal-name {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.rdmp-deal-meta {
+  display: flex; gap: 10px; align-items: center;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--light);
+}
+.rdmp-deal-type { color: var(--light); }
+.rdmp-deal-score {
+  color: var(--black);
+  padding: 2px 6px;
+  border: 1px solid var(--border); border-radius: 3px;
+  background: var(--white);
+}
+.rdmp-deals-more {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .1em; color: var(--light);
+  margin: 0 0 12px;
+}
+.rdmp-deals-link {
+  display: inline-block;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--black); text-decoration: none;
+  padding: 6px 10px; border: 1px solid var(--black); border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+.rdmp-deals-link:hover { background: var(--black); color: var(--white); }

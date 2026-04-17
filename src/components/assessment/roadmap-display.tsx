@@ -82,14 +82,25 @@ function parseReadingPathItem(
   return { text: item, href: null };
 }
 
+export type RecentDealSummary = {
+  id: string;
+  deal_name: string | null;
+  deal_type: string | null;
+  overall_score: number | null;
+  overall_signal: string | null;
+  completed_at: string | null;
+};
+
 export default function RoadmapDisplay({
   plan,
   actions,
   userId,
+  recentDeals = [],
 }: {
   plan: StrategicPlan;
   actions: AssessmentAction[];
   userId: string;
+  recentDeals?: RecentDealSummary[];
 }) {
   const roadmap = plan.plan_content as StrategicRoadmap;
   const stage = roadmap.position.detected_stage as StageNumber;
@@ -206,6 +217,54 @@ export default function RoadmapDisplay({
           )}
         </div>
       </div>
+
+      {/* ── Recent Deals — deal signal feeding the roadmap ── */}
+      {recentDeals.length > 0 && (
+        <div className="rdmp-section rv vis rv-d1">
+          <div className="rdmp-section-heading">Recent Deal Signal</div>
+          <div className="rdmp-deals-card">
+            <p className="rdmp-deals-intro">
+              <strong>
+                {recentDeals.length} deal{recentDeals.length === 1 ? "" : "s"}{" "}
+                evaluated in the last 90 days
+              </strong>{" "}
+              — patterns from this activity are woven into the actions and
+              vision below.
+            </p>
+            <ul className="rdmp-deals-list">
+              {recentDeals.slice(0, 5).map((d) => (
+                <li key={d.id} className="rdmp-deal-item">
+                  <span
+                    className={`rdmp-deal-signal rdmp-deal-signal--${d.overall_signal ?? "unknown"}`}
+                    aria-label={`Signal: ${d.overall_signal ?? "unknown"}`}
+                  />
+                  <span className="rdmp-deal-name">
+                    {d.deal_name || "Untitled deal"}
+                  </span>
+                  <span className="rdmp-deal-meta">
+                    {d.deal_type && (
+                      <span className="rdmp-deal-type">{d.deal_type}</span>
+                    )}
+                    {d.overall_score != null && (
+                      <span className="rdmp-deal-score">
+                        {Number(d.overall_score).toFixed(1)}/10
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {recentDeals.length > 5 && (
+              <p className="rdmp-deals-more">
+                + {recentDeals.length - 5} more
+              </p>
+            )}
+            <a href="/evaluate" className="rdmp-deals-link">
+              View all deals →
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* ── 2. Your Vision + Diagrams ── */}
       <div className="rdmp-section rv vis rv-d1">

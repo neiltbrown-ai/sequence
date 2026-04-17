@@ -39,6 +39,7 @@ import MultiSelectCards from '@/components/assessment/inputs/multi-select-cards'
 import FreeTextInput from '@/components/assessment/inputs/free-text-input';
 import { VerdictSummary } from './components/verdict-summary';
 import { DimensionCards } from './components/dimension-card';
+import RefreshRoadmapCTA from './refresh-roadmap-cta';
 import { toTitleCase } from '@/lib/utils';
 
 // ── Summary Helpers ─────────────────────────────────────
@@ -926,6 +927,14 @@ export function EvaluatorFlow({
             </div>
           </div>
         )}
+
+        {/* Refresh roadmap — only renders if user has a roadmap AND the deal
+            carries meaningful signal (yellow/red or any red flags) */}
+        <RefreshRoadmapCTA
+          verdict={opts.verdict}
+          overallSignal={opts.scores.overall.signal}
+          redFlags={opts.redFlags}
+        />
 
         {opts.verdict.resources && (
           (opts.verdict.resources.structures?.length > 0 || opts.verdict.resources.case_studies?.length > 0) && (

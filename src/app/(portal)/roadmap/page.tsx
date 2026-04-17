@@ -98,6 +98,22 @@ export default async function RoadmapPage() {
     .eq("user_id", user.id)
     .order("action_order", { ascending: true });
 
+  // Load recent completed deal evaluations (last 90 days) — surfaces a
+  // "your deals fed into this plan" summary block. The plan_content itself
+  // already synthesizes patterns via the Claude prompt; this is the
+  // visible counterpart that shows the user their own data is in play.
+  const ninetyDaysAgo = new Date(
+    Date.now() - 90 * 24 * 60 * 60 * 1000
+  ).toISOString();
+  const { data: recentDeals } = await admin
+    .from("deal_evaluations")
+    .select("id, deal_name, deal_type, overall_score, overall_signal, completed_at")
+    .eq("user_id", user.id)
+    .eq("status", "completed")
+    .gte("completed_at", ninetyDaysAgo)
+    .order("completed_at", { ascending: false })
+    .limit(10);
+
   // Generating → show progress screen
   if (plan.status === "generating") {
     return <RoadmapGenerating planId={plan.id} />;
@@ -123,6 +139,11 @@ export default async function RoadmapPage() {
 
   // Published → render
   return (
-    <RoadmapDisplay plan={plan} actions={actions || []} userId={user.id} />
+    <RoadmapDisplay
+      plan={plan}
+      actions={actions || []}
+      userId={user.id}
+      recentDeals={recentDeals || []}
+    />
   );
 }
