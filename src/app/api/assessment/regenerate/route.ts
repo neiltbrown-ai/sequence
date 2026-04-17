@@ -1,4 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+
+export const maxDuration = 60;
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeStageScore } from "@/lib/assessment/scoring";
@@ -244,8 +246,11 @@ Personalize the archetype's action playbook to this member's discipline, creativ
     return NextResponse.json({ error: "No API key configured" }, { status: 500 });
   }
 
-  // Fire-and-forget: generate in background so the page can show "generating" state immediately
-  (async () => {
+  // Schedule the long Claude call via after() so the serverless function
+  // stays alive until it completes. Fire-and-forget without after() gets
+  // killed when the response is sent, leaving the plan stuck in
+  // 'generating' forever.
+  after(async () => {
     try {
       const anthropic = new Anthropic({ apiKey });
 
@@ -289,7 +294,7 @@ Personalize the archetype's action playbook to this member's discipline, creativ
         .update({ status: "published" })
         .eq("id", planId);
     }
-  })();
+  });
 
   return NextResponse.json({ success: true });
 }

@@ -1,11 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeStageScore } from "@/lib/assessment/scoring";
 import { matchArchetype } from "@/lib/assessment/archetype-matching";
 import { getArchetypeById } from "@/lib/assessment/archetypes";
-import { generateStrategicPlan } from "@/lib/roadmap/generate-plan";
+import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
 import type { AssessmentAnswers, CreativeMode } from "@/types/assessment";
+
+// Claude Sonnet 4 generating a ~4k-token structured roadmap can take
+// 30–60s. Without this, Vercel kills the function before after() finishes
+// and the plan stays in 'generating' forever.
+export const maxDuration = 60;
 
 /**
  * Creative Identity completion endpoint.
@@ -153,10 +158,13 @@ export async function POST(request: Request) {
     .eq("id", assessmentId);
 
   // Delegate plan creation + generation to the shared lib.
-  // Pass override context so the generator uses the freshly-merged answers
-  // rather than re-reading stale DB state.
+  // createStrategicPlan does the fast synchronous work (inserts the row);
+  // the returned runGeneration closure performs the long Claude call and
+  // is scheduled via after() so Vercel keeps the function alive until it
+  // completes. Pass override context so the generator uses the freshly-
+  // merged answers rather than re-reading stale DB state.
   try {
-    const { planId } = await generateStrategicPlan({
+    const { planId, runGeneration } = await createStrategicPlan({
       userId: user.id,
       assessmentId,
       overrideAssessmentContext: {
@@ -189,6 +197,10 @@ export async function POST(request: Request) {
         secondary: secondaryArchetype || undefined,
       },
     });
+    // Schedule the long Claude call to run AFTER the response is sent.
+    // after() keeps the function alive (up to maxDuration) so the plan
+    // actually reaches the 'published' state before the container dies.
+    after(runGeneration);
     return NextResponse.json({ planId });
   } catch (err) {
     console.error("Failed to kick off roadmap generation:", err);

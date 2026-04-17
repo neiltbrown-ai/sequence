@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildMemberContext } from "@/lib/advisor/context-builder";
-import { generateStrategicPlan } from "@/lib/roadmap/generate-plan";
+import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
 import { getAllStructures } from "@/lib/content";
 import Anthropic from "@anthropic-ai/sdk";
 import type { AssetInventoryItem, InventoryAnalysisContent } from "@/types/inventory";
+
+// Inventory analysis Claude call + subsequent roadmap regen both take
+// 30–60s each. Extended duration keeps the function alive through both.
+export const maxDuration = 120;
 
 const SYSTEM_PROMPT = `You are the In Sequence asset valuation advisor — an AI that helps creative professionals understand the structural value of their unmonetized IP, judgment, relationships, processes, audience, and brand equity.
 
@@ -88,15 +92,21 @@ export async function POST() {
     );
   }
 
-  // Build context and run analysis async
-  generateAnalysis(
-    analysis.id,
-    user.id,
-    items as AssetInventoryItem[],
-    admin
-  ).catch((err) => {
-    console.error("Inventory analysis failed:", err);
-  });
+  // Schedule the long Claude-driven analysis (and subsequent roadmap regen)
+  // to run AFTER the response. Using after() keeps the serverless function
+  // alive until the work completes, rather than terminating when the response
+  // is sent. Critical: without this, the function container dies mid-Claude-
+  // call and both the analysis and roadmap stay in "generating" forever.
+  after(() =>
+    generateAnalysis(
+      analysis.id,
+      user.id,
+      items as AssetInventoryItem[],
+      admin
+    ).catch((err) => {
+      console.error("Inventory analysis failed:", err);
+    })
+  );
 
   return NextResponse.json({ analysisId: analysis.id });
 }
@@ -230,9 +240,15 @@ Rules:
       .eq("id", analysisId);
 
     // Auto-trigger roadmap regeneration with the new Portfolio signal.
-    // Fire-and-forget — failure here doesn't invalidate the completed analysis.
-    // Includes the member's latest completed assessment (if any) so the roadmap
-    // is generated from both inputs when available.
+    // Includes the member's latest completed assessment (if any) so the
+    // roadmap is generated from both inputs when available.
+    //
+    // NOTE on serverless: both the inventory analysis above and this
+    // roadmap regen involve long Claude calls. This handler already runs
+    // inside an after() from /api/inventory/analyze's POST (where the
+    // Portfolio analysis was scheduled), so we can safely await the row
+    // insert and then await runGeneration — the function will stay alive
+    // up to maxDuration.
     try {
       const { data: latestAssessment } = await admin
         .from("assessments")
@@ -243,11 +259,12 @@ Rules:
         .limit(1)
         .maybeSingle();
 
-      await generateStrategicPlan({
+      const { runGeneration: runRoadmapGeneration } = await createStrategicPlan({
         userId,
         assessmentId: latestAssessment?.id ?? null,
         portfolioAnalysisId: analysisId,
       });
+      await runRoadmapGeneration();
     } catch (planErr) {
       console.error(
         "Portfolio analysis completed but roadmap regen failed:",

@@ -68,20 +68,36 @@ export interface GeneratePlanInput {
 export interface GeneratePlanResult {
   planId: string;
   source: PlanSource;
+  /**
+   * The actual long-running Claude call. Callers MUST invoke this inside
+   * Next.js's `after()` so the serverless function stays alive long enough
+   * for Claude to respond (30–60s typical). Returning the closure instead of
+   * firing it internally prevents accidental termination when the enclosing
+   * request responds before Claude finishes.
+   *
+   *   import { after } from "next/server";
+   *   const { planId, runGeneration } = await createStrategicPlan(input);
+   *   after(runGeneration);
+   *   return NextResponse.json({ planId });
+   */
+  runGeneration: () => Promise<void>;
 }
 
 /**
- * Create a `strategic_plans` row in "generating" status, kick off Claude
- * in the background, and return the planId. Caller can poll
- * `strategic_plans.status` for completion.
+ * Create a `strategic_plans` row in "generating" status and return the
+ * planId plus a `runGeneration` closure that performs the Claude call.
+ *
+ * Caller is responsible for scheduling the closure via Next.js `after()`,
+ * which keeps the serverless function alive after the response is sent.
+ * See GeneratePlanResult.runGeneration docs.
  */
-export async function generateStrategicPlan(
+export async function createStrategicPlan(
   input: GeneratePlanInput
 ): Promise<GeneratePlanResult> {
   const { userId, assessmentId, portfolioAnalysisId } = input;
 
   if (!assessmentId && !portfolioAnalysisId) {
-    throw new Error("generateStrategicPlan: at least one input required");
+    throw new Error("createStrategicPlan: at least one input required");
   }
 
   const admin = createAdminClient();
@@ -113,22 +129,41 @@ export async function generateStrategicPlan(
 
   const planId = plan.id as string;
 
-  // Fire-and-forget Claude generation
-  runGeneration(planId, input, admin).catch((err) => {
-    console.error("Strategic plan generation failed:", err);
-    admin
-      .from("strategic_plans")
-      .update({ status: "draft", plan_content: { error: String(err) } })
-      .eq("id", planId)
-      .then(() => undefined);
-  });
+  const runGeneration = async () => {
+    try {
+      await runGenerationImpl(planId, input, admin);
+    } catch (err) {
+      console.error("Strategic plan generation failed:", err);
+      await admin
+        .from("strategic_plans")
+        .update({ status: "draft", plan_content: { error: String(err) } })
+        .eq("id", planId);
+    }
+  };
 
+  return { planId, source, runGeneration };
+}
+
+/**
+ * @deprecated Use createStrategicPlan + Next.js after() instead. This
+ * fire-and-forget variant is unreliable on Vercel serverless (async work
+ * may be killed when the response returns). Kept temporarily for any
+ * in-flight callers; remove once all callers migrate.
+ */
+export async function generateStrategicPlan(
+  input: GeneratePlanInput
+): Promise<{ planId: string; source: PlanSource }> {
+  const { planId, source, runGeneration } = await createStrategicPlan(input);
+  // Fire and forget — unreliable on serverless
+  runGeneration().catch((err) => {
+    console.error("Strategic plan generation failed (deprecated path):", err);
+  });
   return { planId, source };
 }
 
 // ─── Internal: run the actual generation ─────────────────────────
 
-async function runGeneration(
+async function runGenerationImpl(
   planId: string,
   input: GeneratePlanInput,
   admin: ReturnType<typeof createAdminClient>
