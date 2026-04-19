@@ -28,21 +28,21 @@ export default function LibCard({
   coverImage,
 }: LibCardProps) {
   const hasCover = !!coverImage;
-  // Use a CSS custom property for the cover image URL. The CSS rule
-  // `.lib-card--cover { background-image: var(--cover-image) !important }`
-  // applies it, which unconditionally overrides the conic-gradient from
-  // nth-child rules. Setting `backgroundImage` directly inline was being
-  // shadowed in some cascade paths (bug: gradient still showed through).
   return (
     <Link
       href={href}
       className={`lib-card${dark ? " lib-card--dark" : ""}${hasCover ? " lib-card--cover" : ""}${className ? ` ${className}` : ""}`}
-      style={
-        hasCover
-          ? ({ "--cover-image": `url('${coverImage}')` } as React.CSSProperties)
-          : undefined
-      }
     >
+      {/* Render the cover image as a real <img> element instead of a CSS
+          background-image. Using the CSS approach kept getting shadowed
+          by the conic-gradient rules in the cascade and left some cards
+          displaying the underlying gradient. A DOM image is unambiguous
+          — if the URL loads it renders; if it fails the card falls back
+          to the solid background. */}
+      {hasCover && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img className="lib-card-cover-img" src={coverImage} alt="" aria-hidden />
+      )}
       {isNew && <span className="lib-card-new" />}
       <div className="lib-card-type">
         {number && <span className="card-num">[{number}]</span>}

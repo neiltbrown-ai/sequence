@@ -310,36 +310,38 @@
 }
 
 /* Cover-image variant: case study card backed by its real cover image.
-   Overrides the conic-gradient from :nth-child rules and adds a
-   dark gradient overlay so the text stays readable.
-   Uses a CSS custom property `--cover-image` set via inline style —
-   this both lets the cover image survive the cascade AND guarantees the
-   conic gradient from nth-child rules is gone (the CSS rule here has
-   equal specificity to the nth-child and comes later so it wins). */
-.lib-card--cover,
-.lib-card--dark.lib-card--cover,
-.lib-card--dark.lib-card--cover:nth-child(1),
-.lib-card--dark.lib-card--cover:nth-child(2),
-.lib-card--dark.lib-card--cover:nth-child(3) {
-  background-image: var(--cover-image, none) !important;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+   The image renders as a real <img> element inside the card (see
+   LibCard). This is more reliable than CSS background-image — no
+   cascade conflicts with the nth-child conic gradient rules.
+
+   Stacking order:
+     z-0: cover image  (.lib-card-cover-img)
+     z-1: gradient overlay (::before)
+     z-2: card content (title, description, tags) */
+.lib-card--cover {
   background-color: #111 !important;
+}
+.lib-card-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.6s cubic-bezier(.22, 1, .36, 1);
 }
 .lib-card--cover::before {
   content: "";
   position: absolute;
-  /* inset: -1px — extend beyond the card edge so border-radius rendering
-     doesn't reveal a hairline of the cover image along the corners */
-  inset: -1px;
+  inset: 0;
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0.82) 30%,
     rgba(0, 0, 0, 0.35) 100%
   );
-  opacity: 1;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
   border-radius: inherit;
   transition: background 0.25s ease;
@@ -351,13 +353,18 @@
     rgba(0, 0, 0, 0.15) 100%
   );
 }
-.lib-card--cover.lib-card--dark:hover {
-  background-color: #111 !important;
-  background-image: inherit;
-}
-.lib-card--dark > * {
+.lib-card--cover:hover .lib-card-cover-img { transform: scale(1.03); }
+
+/* All content sits above both the image (z-0) and the overlay (z-1) */
+.lib-card--dark > *,
+.lib-card--cover > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+}
+/* Except the image itself and the overlay ::before — those stay in
+   their layers */
+.lib-card--cover > .lib-card-cover-img {
+  z-index: 0;
 }
 
 .lib-card--dark .lib-card-type {
