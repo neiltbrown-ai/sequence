@@ -1550,9 +1550,9 @@ h3.sec-label {
 .tool-card-img { grid-column: 1 / 5; }
 .tool-card-img img { width: 100%; height: auto; aspect-ratio: 5/3; object-fit: cover; }
 
-/* Browser Frame — slightly darker grey background so the frame stands
-   out clearly against the page */
-.browser-frame { box-shadow: 0 8px 40px rgba(0,0,0,.08), 0 2px 12px rgba(0,0,0,.04); border-radius: 8px; overflow: hidden; background: #e5e3de; }
+/* Browser Frame — darker grey background so the frame stands out
+   clearly against the page */
+.browser-frame { box-shadow: 0 8px 40px rgba(0,0,0,.08), 0 2px 12px rgba(0,0,0,.04); border-radius: 8px; overflow: hidden; background: #d4d1c9; }
 .browser-frame-chrome { line-height: 0; }
 .browser-frame-bar { width: 100%; display: block; }
 .browser-frame-img { width: 100%; height: auto; display: block; object-fit: cover; aspect-ratio: 16 / 10; background: var(--bg); }
