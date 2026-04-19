@@ -1857,7 +1857,11 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   background: rgba(255, 255, 255, 0.04);
   border-color: var(--border);
 }
-[data-theme="dark"] .lib-card--dark::before {
+/* Dark-variant fade-in overlay: solid #111 in dark mode — but NOT for
+   cover cards, which need to keep their gradient overlay so the image
+   shows through. The .lib-card--cover::before rule (earlier) owns its
+   own background and should not be clobbered here. */
+[data-theme="dark"] .lib-card--dark:not(.lib-card--cover)::before {
   background: #111;
 }
 [data-theme="dark"] .lib-card--dark .lib-card-title {
