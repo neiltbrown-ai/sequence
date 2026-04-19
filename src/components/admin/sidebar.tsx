@@ -21,13 +21,6 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-const AdminSettingsIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <circle cx="12" cy="12" r="3" />
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-  </svg>
-);
-
 const ADMIN_ITEMS: NavItem[] = [
   { href: "/admin", label: "Overview", icon: <OverviewIcon /> },
   { href: "/admin/members", label: "Members", icon: <MembersIcon /> },
@@ -42,14 +35,50 @@ const BOTTOM_ITEMS: NavItem[] = [
   { href: "/settings", label: "Settings", icon: <SettingsIcon /> },
 ];
 
+function CollapseIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" width="14" height="14">
+      <path d="M10 3L5 8L10 13" />
+    </svg>
+  );
+}
+
+function ExpandIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" width="14" height="14">
+      <path d="M6 3L11 8L6 13" />
+    </svg>
+  );
+}
+
+/**
+ * Admin sidebar — matches the portal sidebar pattern (logo row with
+ * collapse toggle, icon-only rail when collapsed, label spans when
+ * expanded). Reuses the same CSS classes (.sidebar, .sb-*) + shared
+ * portal-shell context for collapse state.
+ */
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const { sidebarOpen, closeSidebar } = usePortalShell();
+  const { sidebarOpen, closeSidebar, sidebarCollapsed, toggleCollapsed } =
+    usePortalShell();
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
+
+  const renderNavItem = (item: NavItem) => (
+    <Link
+      key={item.href}
+      href={item.href}
+      className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
+      title={sidebarCollapsed ? item.label : undefined}
+      onClick={closeSidebar}
+    >
+      {item.icon}
+      {!sidebarCollapsed && <span className="sb-nav-label">{item.label}</span>}
+    </Link>
+  );
 
   return (
     <>
@@ -57,42 +86,30 @@ export default function AdminSidebar() {
         className={`sidebar-overlay${sidebarOpen ? " open" : ""}`}
         onClick={closeSidebar}
       />
-      <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
+      <aside
+        className={`sidebar${sidebarOpen ? " open" : ""}${sidebarCollapsed ? " collapsed" : ""}`}
+      >
         <button className="sb-close" onClick={closeSidebar}>
           <CloseIcon />
         </button>
 
-        <div className="sb-logo">
-          In Sequence <span>·</span> Admin
+        <div className="sb-logo-row">
+          {!sidebarCollapsed && <div className="sb-logo">Admin</div>}
+          <button
+            type="button"
+            className="sb-collapse-btn"
+            onClick={toggleCollapsed}
+            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {sidebarCollapsed ? <ExpandIcon /> : <CollapseIcon />}
+          </button>
         </div>
 
-        <div className="sb-section">
-          {ADMIN_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
-              onClick={closeSidebar}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
-        </div>
+        <div className="sb-section">{ADMIN_ITEMS.map(renderNavItem)}</div>
 
         <div className="sb-bottom">
           <div className="sb-divider" />
-          {BOTTOM_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sb-nav-item${isActive(item.href) ? " active" : ""}`}
-              onClick={closeSidebar}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
+          {BOTTOM_ITEMS.map(renderNavItem)}
         </div>
       </aside>
     </>

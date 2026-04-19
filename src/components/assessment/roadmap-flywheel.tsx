@@ -113,7 +113,7 @@ export default function RoadmapFlywheel({ data }: Props) {
               refY={3}
               orient="auto"
             >
-              <path d="M0 0L8 3L0 6" fill="#ccc" />
+              <path d="M0 0L8 3L0 6" fill="var(--diag-line)" />
             </marker>
           </defs>
 
@@ -125,9 +125,10 @@ export default function RoadmapFlywheel({ data }: Props) {
               y1={cy}
               x2={pos.x}
               y2={pos.y}
-              stroke="#ddd"
+              stroke="var(--diag-line)"
               strokeWidth={0.75}
               strokeDasharray="3,3"
+              opacity={0.6}
             />
           ))}
 
@@ -138,15 +139,22 @@ export default function RoadmapFlywheel({ data }: Props) {
               <path
                 key={`edge-${i}`}
                 d={`M${sx} ${sy} L${ex} ${ey}`}
-                stroke="#ccc"
+                stroke="var(--diag-line)"
                 strokeWidth={1}
                 markerEnd="url(#flywheel-arrow)"
               />
             );
           })}
 
-          {/* Center circle */}
-          <circle cx={cx} cy={cy} r={centerR} fill="#1a1a1a" />
+          {/* Center circle — fill + 1px border for visibility in dark mode */}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={centerR}
+            fill="var(--diag-center-bg)"
+            stroke="var(--diag-center-border)"
+            strokeWidth={1}
+          />
           {/* Center label — multi-line */}
           {centerLines.map((line, li) => {
             const totalH = centerLines.length * 11 + (subtitleLines.length > 0 ? subtitleLines.length * 10 + 6 : 0);
@@ -157,7 +165,7 @@ export default function RoadmapFlywheel({ data }: Props) {
                 x={cx}
                 y={startY + li * 11}
                 textAnchor="middle"
-                fill="#ffffff"
+                fill="var(--diag-center-text)"
                 fontFamily="monospace"
                 fontSize={8.5}
                 letterSpacing="0.06em"
@@ -177,7 +185,7 @@ export default function RoadmapFlywheel({ data }: Props) {
                 x={cx}
                 y={startY + li * 10}
                 textAnchor="middle"
-                fill="#888888"
+                fill="var(--diag-muted-text)"
                 fontFamily="monospace"
                 fontSize={7}
                 letterSpacing="0.05em"
@@ -192,7 +200,6 @@ export default function RoadmapFlywheel({ data }: Props) {
             const pos = nodePositions[i];
             const rx = pos.x - boxW / 2;
             const ry = pos.y - boxH / 2;
-            const totalLines = nd.labelLines.length + nd.subLines.length;
             const labelBlockH = nd.labelLines.length * 14;
             const subBlockH = nd.subLines.length * 10;
             const totalTextH = labelBlockH + (nd.subLines.length > 0 ? subBlockH + 4 : 0);
@@ -206,8 +213,8 @@ export default function RoadmapFlywheel({ data }: Props) {
                   width={boxW}
                   height={boxH}
                   rx={4}
-                  fill="#f5f5f0"
-                  stroke="#e0e0d8"
+                  fill="var(--diag-child-bg)"
+                  stroke="var(--diag-child-border)"
                   strokeWidth={1}
                 />
                 {/* Node label — wrapped */}
@@ -220,7 +227,7 @@ export default function RoadmapFlywheel({ data }: Props) {
                     fontFamily="Geist, sans-serif"
                     fontSize={11}
                     fontWeight={600}
-                    fill="#1a1a1a"
+                    fill="var(--diag-child-text)"
                   >
                     {line}
                   </text>
@@ -235,7 +242,7 @@ export default function RoadmapFlywheel({ data }: Props) {
                     fontFamily="monospace"
                     fontSize={7.5}
                     letterSpacing="0.06em"
-                    fill="#888"
+                    fill="var(--diag-muted-text)"
                   >
                     {sl}
                   </text>

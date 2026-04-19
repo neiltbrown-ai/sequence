@@ -62,8 +62,18 @@ export default function RoadmapEntityDiagram({ data }: Props) {
           xmlns="http://www.w3.org/2000/svg"
           style={{ width: "100%", maxWidth: svgW, display: "block", margin: "0 auto" }}
         >
-          {/* Parent box */}
-          <rect x={parentX} y={16} width={parentW} height={parentH} rx={4} stroke="#1a1a1a" strokeWidth={1} />
+          {/* Parent box — fills with theme-aware bg + visible border so
+              it stands out in both light and dark mode */}
+          <rect
+            x={parentX}
+            y={16}
+            width={parentW}
+            height={parentH}
+            rx={4}
+            fill="var(--diag-parent-bg)"
+            stroke="var(--diag-parent-border)"
+            strokeWidth={1}
+          />
           {parentLines.map((line, li) => (
             <text
               key={`parent-${li}`}
@@ -73,14 +83,14 @@ export default function RoadmapEntityDiagram({ data }: Props) {
               fontFamily="Geist, sans-serif"
               fontSize={13}
               fontWeight={500}
-              fill="#1a1a1a"
+              fill="var(--diag-parent-text)"
             >
               {line}
             </text>
           ))}
 
           {/* Vertical connector from parent to horizontal rule */}
-          <line x1={svgW / 2} y1={16 + parentH} x2={svgW / 2} y2={connectorY} stroke="#d9d6d1" strokeWidth={1} />
+          <line x1={svgW / 2} y1={16 + parentH} x2={svgW / 2} y2={connectorY} stroke="var(--diag-line)" strokeWidth={1} />
 
           {/* Horizontal rule spanning all children */}
           {count > 1 && (
@@ -89,7 +99,7 @@ export default function RoadmapEntityDiagram({ data }: Props) {
               y1={connectorY}
               x2={startX + (count - 1) * (boxW + gap) + boxW / 2}
               y2={connectorY}
-              stroke="#d9d6d1"
+              stroke="var(--diag-line)"
               strokeWidth={1}
             />
           )}
@@ -101,9 +111,18 @@ export default function RoadmapEntityDiagram({ data }: Props) {
             return (
               <g key={i}>
                 {/* Vertical connector from horizontal rule to child */}
-                <line x1={midX} y1={connectorY} x2={midX} y2={childY} stroke="#d9d6d1" strokeWidth={1} />
+                <line x1={midX} y1={connectorY} x2={midX} y2={childY} stroke="var(--diag-line)" strokeWidth={1} />
                 {/* Child box */}
-                <rect x={bx} y={childY} width={boxW} height={maxBoxH} rx={4} fill="#f5f5f0" stroke="#e0e0d8" strokeWidth={1} />
+                <rect
+                  x={bx}
+                  y={childY}
+                  width={boxW}
+                  height={maxBoxH}
+                  rx={4}
+                  fill="var(--diag-child-bg)"
+                  stroke="var(--diag-child-border)"
+                  strokeWidth={1}
+                />
                 {/* Purpose label lines */}
                 {cd.purposeLines.map((line, li) => (
                   <text
@@ -114,7 +133,7 @@ export default function RoadmapEntityDiagram({ data }: Props) {
                     fontFamily="monospace"
                     fontSize={7.5}
                     letterSpacing="0.08em"
-                    fill="#999"
+                    fill="var(--diag-muted-text)"
                   >
                     {line}
                   </text>
@@ -129,7 +148,7 @@ export default function RoadmapEntityDiagram({ data }: Props) {
                     fontFamily="Geist, sans-serif"
                     fontSize={11}
                     fontWeight={600}
-                    fill="#1a1a1a"
+                    fill="var(--diag-child-text)"
                   >
                     {line}
                   </text>

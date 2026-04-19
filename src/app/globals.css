@@ -223,14 +223,17 @@ h2 {
   letter-spacing: 0.08em;
 }
 
-/* White / dark-background variant */
+/* White / dark-background variant — for use on always-dark surfaces
+   (cs-gate, hero overlays). Hardcodes white text so it doesn't flip to
+   dark in dark mode where var(--white) → #1a1a1a. */
 .btn--white {
   border-color: rgba(255, 255, 255, 0.25);
-  color: var(--white);
+  color: #ffffff;
 }
 .btn--white:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
 }
 
 /* Button arrow animation */
@@ -3154,6 +3157,29 @@ h3.sec-label {
    CASE STUDY — FLYWHEEL
    ============================================ */
 .cs-flywheel { grid-column: 2 / 8; background: var(--white); border-radius: 4px; padding: 48px 32px; text-align: center; }
+
+/* Theme-aware color variables for entity + flywheel diagrams. SVGs
+   reference these via fill=/stroke= attributes (supported in all modern
+   browsers). Dark-mode overrides live in portal.css.
+
+   Diagrams are rendered in two contexts: the portal Roadmap page
+   (theme-aware) and the public case studies (always light). This block
+   handles light defaults; dark overrides are scoped to the portal. */
+.rdmp-diagram-svg-wrap,
+.cs-flywheel {
+  --diag-parent-bg: #ffffff;
+  --diag-parent-border: #1a1a1a;
+  --diag-parent-text: #1a1a1a;
+  --diag-child-bg: #f5f5f0;
+  --diag-child-border: #d9d6d1;
+  --diag-child-text: #1a1a1a;
+  --diag-muted-text: #888888;
+  --diag-line: #d9d6d1;
+  --diag-center-bg: #1a1a1a;
+  --diag-center-border: rgba(255, 255, 255, 0.25);
+  --diag-center-text: #ffffff;
+  --diag-label-bg: #ffffff;
+}
 .cs-flywheel-title {
   font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
   color: var(--light); margin-bottom: 32px;
@@ -3193,7 +3219,11 @@ h3.sec-label {
   position: relative; z-index: 1; margin: 100px var(--margin) 0;
   padding: 56px 48px;
   background: conic-gradient(from 140deg at 50% 50%, #1a1a1a 0%, #335050 30%, #1a1a1a 60%);
-  border-radius: 4px; color: var(--white);
+  border-radius: 4px;
+  /* Hardcoded white — the cs-gate background is always dark regardless of
+     theme, so text must stay white. Using var(--white) flips to dark in
+     dark mode and makes the title invisible. */
+  color: #ffffff;
   display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
 }
 .cs-gate-content { display: flex; flex-direction: column; gap: 20px; }
@@ -3204,6 +3234,7 @@ h3.sec-label {
 .cs-gate-title {
   font-family: var(--sans); font-weight: 300;
   font-size: clamp(24px, 3vw, 36px); letter-spacing: -.03em; line-height: 1.1;
+  color: #ffffff;
 }
 .cs-gate-desc { font-family: var(--sans); font-size: 15px; line-height: 1.65; color: rgba(255,255,255,.6); }
 .cs-gate-desc strong { color: rgba(255,255,255,.92); font-weight: 500; }

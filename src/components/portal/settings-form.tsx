@@ -356,8 +356,56 @@ export default function SettingsForm() {
         </button>
       </div>
 
-      {/* ═══ PASSWORD ═══ */}
+      {/* ═══ PREFERENCES ═══ */}
       <div className="set-section rv vis rv-d2">
+        <div className="set-section-title">Preferences</div>
+        <p className="set-pref-desc">
+          Your content recommendations are based on these selections. Tuning
+          these improves the structures and case studies surfaced throughout
+          the library — your Creative Identity assessment covers the deeper
+          profile.
+        </p>
+
+        <div className="set-pref-label">Discipline</div>
+        <div className="set-tag-grid">
+          {DISCIPLINES.map((d) => (
+            <button
+              key={d}
+              type="button"
+              className={`set-tag${selectedDisciplines.includes(d) ? " selected" : ""}`}
+              onClick={() => toggleDiscipline(d)}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+
+        <div className="set-pref-label">Interests</div>
+        <div className="set-tag-grid">
+          {INTERESTS.map((i) => (
+            <button
+              key={i}
+              type="button"
+              className={`set-tag${selectedInterests.includes(i) ? " selected" : ""}`}
+              onClick={() => toggleInterest(i)}
+            >
+              {i}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="btn btn--filled"
+          disabled={savingPrefs}
+          onClick={handleSavePrefs}
+        >
+          {savedPrefs ? "Saved!" : savingPrefs ? "Saving…" : "Update Preferences"}
+        </button>
+      </div>
+
+      {/* ═══ PASSWORD ═══ */}
+      <div className="set-section rv vis rv-d3">
         <div className="set-section-title">Password</div>
 
         <div className="set-field">
@@ -439,51 +487,6 @@ export default function SettingsForm() {
 
         <button type="button" className="btn" onClick={handleManageStripe}>
           Manage on Stripe
-        </button>
-      </div>
-
-      {/* ═══ PREFERENCES ═══ */}
-      <div className="set-section rv vis rv-d4">
-        <div className="set-section-title">Preferences</div>
-        <p className="set-pref-desc">
-          Your content recommendations are based on these selections.
-        </p>
-
-        <div className="set-pref-label">Discipline</div>
-        <div className="set-tag-grid">
-          {DISCIPLINES.map((d) => (
-            <button
-              key={d}
-              type="button"
-              className={`set-tag${selectedDisciplines.includes(d) ? " selected" : ""}`}
-              onClick={() => toggleDiscipline(d)}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
-
-        <div className="set-pref-label">Interests</div>
-        <div className="set-tag-grid">
-          {INTERESTS.map((i) => (
-            <button
-              key={i}
-              type="button"
-              className={`set-tag${selectedInterests.includes(i) ? " selected" : ""}`}
-              onClick={() => toggleInterest(i)}
-            >
-              {i}
-            </button>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          className="btn btn--filled"
-          disabled={savingPrefs}
-          onClick={handleSavePrefs}
-        >
-          {savedPrefs ? "Saved!" : savingPrefs ? "Saving…" : "Update Preferences"}
         </button>
       </div>
 

@@ -262,14 +262,24 @@
   line-height: 1.5;
 }
 
-/* Dark gradient variant of lib-card */
+/* Dark gradient variant of lib-card — background is always dark, so text
+   is hardcoded white (var(--white) flips to dark in dark mode). */
 .lib-card--dark {
   border: none;
-  color: var(--white);
+  color: #ffffff;
   position: relative;
   overflow: hidden;
   background-color: #111 !important;
 }
+.lib-card--dark .lib-card-title,
+.lib-card--dark .lib-card-desc,
+.lib-card--dark .lib-card-type,
+.lib-card--dark .lib-card-num {
+  color: #ffffff;
+}
+.lib-card--dark .lib-card-desc { color: rgba(255, 255, 255, 0.75); }
+.lib-card--dark .lib-card-type,
+.lib-card--dark .lib-card-num { color: rgba(255, 255, 255, 0.55); }
 
 .lib-card--dark:nth-child(1) {
   background-image: conic-gradient(from 45deg at 30% 70%, #1a1a1a 0%, #363b5e 35%, #1a1a1a 70%);
@@ -315,8 +325,14 @@
 .lib-card--cover::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.92) 30%, rgba(0,0,0,0.5) 100%);
+  /* inset: -1px — extend beyond the card edge so border-radius rendering
+     doesn't reveal a hairline of the cover image along the corners */
+  inset: -1px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.82) 30%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
   opacity: 1;
   z-index: 0;
   pointer-events: none;
@@ -324,7 +340,11 @@
   transition: background 0.25s ease;
 }
 .lib-card--cover:hover::before {
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.2) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65) 30%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
 }
 .lib-card--cover.lib-card--dark:hover {
   background-color: #111 !important;
@@ -662,7 +682,9 @@
 .cs-featured-label .ap-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.3); }
 .cs-featured-name {
   font-family: var(--sans); font-size: clamp(28px, 4vw, 40px); font-weight: 300;
-  letter-spacing: -.03em; color: var(--white); line-height: 1.1; margin-bottom: 10px;
+  /* Hardcoded white — card has always-dark image overlay, so text must
+     stay white even in dark mode (where var(--white) flips to dark). */
+  letter-spacing: -.03em; color: #ffffff; line-height: 1.1; margin-bottom: 10px;
 }
 .cs-featured-desc {
   font-family: var(--sans); font-size: 15px; color: rgba(255,255,255,0.7);
@@ -703,7 +725,8 @@
 }
 .cs-featured-sub-name {
   font-family: var(--sans); font-size: clamp(20px, 2.5vw, 26px); font-weight: 300;
-  letter-spacing: -.02em; color: var(--white); line-height: 1.15; margin-bottom: 8px;
+  /* Always white — sits on top of image overlay */
+  letter-spacing: -.02em; color: #ffffff; line-height: 1.15; margin-bottom: 8px;
 }
 .cs-featured-sub-desc {
   font-family: var(--sans); font-size: 13px; color: rgba(255,255,255,0.6);
@@ -6959,6 +6982,19 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   border-color: rgba(255,255,255,.12);
   border-top-color: #fff;
 }
+/* Progress bar needs explicit colors in dark mode. var(--black) flips to
+   near-white, making the fill nearly invisible against the light-grey
+   bar track, AND the hardcoded white pct text then vanishes on the
+   near-white fill. Lock bar + text colors to readable values. */
+[data-theme="dark"] .gen-progress-bar {
+  background: rgba(255,255,255,0.12);
+}
+[data-theme="dark"] .gen-progress-bar-fill {
+  background: #ffffff;
+}
+[data-theme="dark"] .gen-progress-pct {
+  color: #1a1a1a;
+}
 
 @media (max-width: 640px) {
   .gen-progress { padding: 48px 24px; }
@@ -7287,4 +7323,21 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   }
   .ci-stage-col--right { text-align: center; }
   .ci-facets { grid-template-columns: 1fr; }
+}
+
+/* Dark-theme overrides for entity + flywheel diagrams (portal only) */
+[data-theme="dark"] .rdmp-diagram-svg-wrap,
+[data-theme="dark"] .cs-flywheel {
+  --diag-parent-bg: #1a1a1a;
+  --diag-parent-border: rgba(255, 255, 255, 0.35);
+  --diag-parent-text: #e8e6e3;
+  --diag-child-bg: #242424;
+  --diag-child-border: rgba(255, 255, 255, 0.12);
+  --diag-child-text: #e8e6e3;
+  --diag-muted-text: #888;
+  --diag-line: rgba(255, 255, 255, 0.25);
+  --diag-center-bg: #0e0e0e;
+  --diag-center-border: rgba(255, 255, 255, 0.35);
+  --diag-center-text: #ffffff;
+  --diag-label-bg: #1a1a1a;
 }
