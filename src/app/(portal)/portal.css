@@ -349,18 +349,20 @@ img.lib-card-cover-img {
 .lib-card--cover::before {
   content: "";
   position: absolute;
-  inset: 0;
-  /* Darker gradient at rest so text is fully readable on top of the
-     image. Bottom (behind tags) is nearly opaque; top still muted but
-     lets the image show through. */
+  /* inset:-1px — extend the overlay 1px past the card edges so the
+     image doesn't peek through on border-radius rounding */
+  inset: -1px;
+  /* Gradient: readable tags at bottom, muted image visible at top.
+     Sweet spot between overlay opacity (for legibility) and image
+     visibility. */
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.92) 30%,
-    rgba(0, 0, 0, 0.72) 100%
+    rgba(0, 0, 0, 0.85) 25%,
+    rgba(0, 0, 0, 0.55) 100%
   );
   /* CRITICAL: `.lib-card--dark::before` (earlier in file) sets
-     opacity:0 for the non-hover dark-variant fade-in. With !important
-     we guarantee the cover overlay stays visible at rest. */
+     opacity:0 for the non-hover dark-variant fade-in. Must force
+     opacity back up on the cover variant or text sits on bare image. */
   opacity: 1 !important;
   z-index: 1;
   pointer-events: none;
@@ -369,11 +371,10 @@ img.lib-card-cover-img {
 }
 .lib-card--cover:hover::before {
   opacity: 1 !important;
-  /* On hover the overlay lightens significantly so more of the cover
-     image reads — a visual reward for interaction */
+  /* On hover the overlay lightens so more of the cover image reads */
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.7) 30%,
+    rgba(0, 0, 0, 0.6) 25%,
     rgba(0, 0, 0, 0.2) 100%
   );
 }
