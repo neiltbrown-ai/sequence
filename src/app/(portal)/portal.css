@@ -350,21 +350,26 @@ img.lib-card-cover-img {
   content: "";
   position: absolute;
   inset: 0;
+  /* Darker gradient at rest so text is fully readable on top of the
+     image. Bottom (behind tags) is nearly opaque; top still muted but
+     lets the image show through. */
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.82) 30%,
-    rgba(0, 0, 0, 0.35) 100%
+    rgba(0, 0, 0, 0.92) 30%,
+    rgba(0, 0, 0, 0.72) 100%
   );
   z-index: 1;
   pointer-events: none;
   border-radius: inherit;
-  transition: background 0.25s ease;
+  transition: background 0.3s ease;
 }
 .lib-card--cover:hover::before {
+  /* On hover the overlay lightens significantly so more of the cover
+     image reads — a visual reward for interaction */
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.65) 30%,
-    rgba(0, 0, 0, 0.15) 100%
+    rgba(0, 0, 0, 0.7) 30%,
+    rgba(0, 0, 0, 0.2) 100%
   );
 }
 .lib-card--cover:hover .lib-card-cover-img { transform: scale(1.03); }
