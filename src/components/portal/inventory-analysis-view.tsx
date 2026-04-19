@@ -84,11 +84,26 @@ export default function AnalysisView({
                         <span className="inv-detail-label">Immediate Actions</span>
                         <ul className="inv-action-list">
                           {val.immediate_actions.map((action, j) => {
-                            const structMatch = action.match(/\(Structure #(\d+)\)/);
+                            // Match Structure #N in two common AI output shapes:
+                            //   "Structure #29: Rights reversion clauses…"   (prefix form)
+                            //   "Use rights reversion (Structure #29)"       (parenthetical)
+                            //   "Rights reversion — Structure #29"           (suffix dash)
+                            const structMatch = action.match(
+                              /(?:\(Structure #(\d+)\)|Structure #(\d+))/i
+                            );
                             if (structMatch) {
-                              const num = parseInt(structMatch[1], 10);
+                              const num = parseInt(
+                                structMatch[1] ?? structMatch[2],
+                                10
+                              );
                               const info = structureSlugMap[num];
-                              const textBefore = action.slice(0, structMatch.index).trim();
+                              // Strip the full structure reference (with its
+                              // leading colon/dash) to get the description
+                              let description = action
+                                .replace(/\(Structure #\d+\)/i, "")
+                                .replace(/Structure #\d+\s*[:—-]?\s*/i, "")
+                                .trim();
+                              description = description.replace(/^[:—-]\s*/, "");
                               const href = info
                                 ? `/library/structures/${info.slug}`
                                 : null;
@@ -109,9 +124,11 @@ export default function AnalysisView({
                               );
                               return (
                                 <li key={j}>
-                                  <span className="inv-action-text">
-                                    {textBefore}
-                                  </span>
+                                  {description && (
+                                    <span className="inv-action-text">
+                                      {description}
+                                    </span>
+                                  )}
                                   {href ? (
                                     <Link
                                       href={href}

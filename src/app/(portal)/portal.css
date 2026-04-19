@@ -311,12 +311,17 @@
 
 /* Cover-image variant: case study card backed by its real cover image.
    Overrides the conic-gradient from :nth-child rules and adds a
-   dark gradient overlay so the text stays readable. */
+   dark gradient overlay so the text stays readable.
+   Uses a CSS custom property `--cover-image` set via inline style —
+   this both lets the cover image survive the cascade AND guarantees the
+   conic gradient from nth-child rules is gone (the CSS rule here has
+   equal specificity to the nth-child and comes later so it wins). */
 .lib-card--cover,
 .lib-card--dark.lib-card--cover,
 .lib-card--dark.lib-card--cover:nth-child(1),
 .lib-card--dark.lib-card--cover:nth-child(2),
 .lib-card--dark.lib-card--cover:nth-child(3) {
+  background-image: var(--cover-image, none) !important;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -6878,14 +6883,10 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 
 .gen-progress-graphic {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   margin-bottom: 28px;
   color: var(--black);
-}
-.gen-progress-graphic-svg {
-  opacity: 0.9;
-  animation: gen-fade-in .4s ease-out both;
 }
 .gen-progress-icon {
   color: var(--black);
@@ -6894,7 +6895,7 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 .gen-progress-icon--alert { color: var(--mid); }
 .gen-progress-spinner {
   position: absolute;
-  inset: -6px;
+  inset: 0;
   border: 3px solid var(--border);
   border-top-color: var(--black);
   border-radius: 50%;

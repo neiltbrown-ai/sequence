@@ -116,20 +116,8 @@ export default function GenerationProgress({
   return (
     <div className="gen-progress" style={style}>
       <div className="gen-progress-graphic" aria-hidden>
-        {/* Static circle + checkmark outline — pulses in via the CSS */}
-        <svg
-          className="gen-progress-graphic-svg"
-          viewBox="0 0 48 48"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-          width="48"
-          height="48"
-        >
-          <circle cx="24" cy="24" r="20" />
-          <path d="M16 24 L22 30 L32 18" strokeWidth="1.5" opacity="0.35" />
-        </svg>
-        {/* Rotating ring overlay */}
+        {/* Rotating spinner only — cleaner feel, lets the progress bar
+            below carry the state communication */}
         <span className="gen-progress-spinner" />
       </div>
 
