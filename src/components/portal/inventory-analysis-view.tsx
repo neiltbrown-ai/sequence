@@ -89,15 +89,41 @@ export default function AnalysisView({
                               const num = parseInt(structMatch[1], 10);
                               const info = structureSlugMap[num];
                               const textBefore = action.slice(0, structMatch.index).trim();
+                              const href = info
+                                ? `/library/structures/${info.slug}`
+                                : null;
+                              const badge = (
+                                <>
+                                  Structure #{num}
+                                  <svg
+                                    viewBox="0 0 12 12"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth={1}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M2 10L10 2M10 2H4M10 2V8" />
+                                  </svg>
+                                </>
+                              );
                               return (
                                 <li key={j}>
-                                  {textBefore}
-                                  {info ? (
-                                    <Link href={`/library/structures/${info.slug}`} className="inv-structure-chip" data-cursor="arrow">
-                                      {info.title}
+                                  <span className="inv-action-text">
+                                    {textBefore}
+                                  </span>
+                                  {href ? (
+                                    <Link
+                                      href={href}
+                                      className="cs-struct-badge"
+                                      data-cursor="arrow"
+                                    >
+                                      {badge}
                                     </Link>
                                   ) : (
-                                    <span className="inv-structure-chip">Structure #{num}</span>
+                                    <span className="cs-struct-badge">
+                                      {badge}
+                                    </span>
                                   )}
                                 </li>
                               );

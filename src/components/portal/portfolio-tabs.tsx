@@ -168,7 +168,7 @@ export default function PortfolioTabs({
           className={`ptl-filter-tab${tab === "valuation" ? " active" : ""}`}
           onClick={() => setTab("valuation")}
         >
-          Valuation
+          Analysis
         </button>
       </div>
 

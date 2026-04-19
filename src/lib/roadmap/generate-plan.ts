@@ -305,6 +305,11 @@ ${JSON.stringify(
     overall_signal: d.overall_signal,
     red_flags: d.red_flags,
     completed_at: d.completed_at,
+    verdict_recommended_actions: d.verdict_actions.map((a) => ({
+      order: a.order,
+      action: a.action,
+      detail: a.detail,
+    })),
   })),
   null,
   2
@@ -314,7 +319,8 @@ ROADMAP INSTRUCTIONS RE: DEALS:
 - If recurring red flags are present, at least one of the three actions should address the underlying structural gap (not just "next deal be more careful").
 - If the signal distribution skews yellow/red, treat the roadmap as corrective.
 - If there's a clear deal_type pattern, mention it in position or vision ("Your last 3 licensing deals all scored yellow on structure quality — here's how the plan addresses that").
-- Don't list individual deals in the roadmap output; synthesize the pattern.`
+- Don't list individual deals in the roadmap output; synthesize the pattern.
+- Each recent deal includes the verdict's verdict_recommended_actions. If any of those address a structural pattern (not just that specific deal), either absorb them directly into a roadmap action or reference them in Vision/Misalignments. Recurring themes across verdicts ARE the signal.`
     );
   }
 
@@ -529,36 +535,71 @@ async function loadPortfolio(
   };
 }
 
+type RecentDealEval = {
+  id: string;
+  deal_type: string | null;
+  deal_name: string | null;
+  overall_score: number | null;
+  overall_signal: string | null;
+  red_flags: string[] | null;
+  completed_at: string | null;
+  verdict_actions: Array<{ order: number; action: string; detail?: string }>;
+};
+
 async function loadRecentDealEvaluations(
   userId: string,
   admin: ReturnType<typeof createAdminClient>
-): Promise<
-  Array<{
-    deal_type: string | null;
-    deal_name: string | null;
-    overall_score: number | null;
-    overall_signal: string | null;
-    red_flags: string[] | null;
-    completed_at: string | null;
-  }>
-> {
-  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-  const { data } = await admin
+): Promise<RecentDealEval[]> {
+  const ninetyDaysAgo = new Date(
+    Date.now() - 90 * 24 * 60 * 60 * 1000
+  ).toISOString();
+  const { data: evals } = await admin
     .from("deal_evaluations")
     .select(
-      "deal_type, deal_name, overall_score, overall_signal, red_flags, completed_at"
+      "id, deal_type, deal_name, overall_score, overall_signal, red_flags, completed_at"
     )
     .eq("user_id", userId)
     .eq("status", "completed")
     .gte("completed_at", ninetyDaysAgo)
     .order("completed_at", { ascending: false })
     .limit(10);
-  return (data ?? []) as Array<{
-    deal_type: string | null;
-    deal_name: string | null;
-    overall_score: number | null;
-    overall_signal: string | null;
-    red_flags: string[] | null;
-    completed_at: string | null;
-  }>;
+
+  if (!evals || evals.length === 0) return [];
+
+  // Pull the accompanying verdicts so the roadmap generator can fold each
+  // deal's Recommended Actions into the plan. Only verdicts that reached
+  // 'published' state contribute (draft/generating are skipped).
+  const evalIds = evals.map((e) => e.id);
+  const { data: verdicts } = await admin
+    .from("deal_verdicts")
+    .select("evaluation_id, verdict_content, status")
+    .in("evaluation_id", evalIds)
+    .eq("status", "published");
+
+  const byEvalId = new Map<string, Array<{ order: number; action: string; detail?: string }>>();
+  for (const v of verdicts ?? []) {
+    const vc = v.verdict_content as { recommended_actions?: unknown } | null;
+    const ra = vc?.recommended_actions;
+    if (Array.isArray(ra)) {
+      byEvalId.set(
+        v.evaluation_id as string,
+        ra.map((a: { order?: number; action?: string; detail?: string }) => ({
+          order: a.order ?? 0,
+          action: a.action ?? "",
+          detail: a.detail,
+        }))
+      );
+    }
+  }
+
+  return evals.map((e) => ({
+    id: e.id as string,
+    deal_type: e.deal_type,
+    deal_name: e.deal_name,
+    overall_score: e.overall_score,
+    overall_signal: e.overall_signal,
+    red_flags: e.red_flags,
+    completed_at: e.completed_at,
+    verdict_actions: byEvalId.get(e.id as string) ?? [],
+  }));
 }

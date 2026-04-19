@@ -842,6 +842,7 @@ export function EvaluatorFlow({
             const summary = verdict.dimension_summaries?.[d] ?? '';
             const flags = s?.flags ?? [];
 
+            const dimensionDescription = DIMENSION_META[d].description;
             return (
               <div key={d} className={`eval-bar-row${isOpen ? ' is-expanded' : ''}`}>
                 <button
@@ -856,8 +857,12 @@ export function EvaluatorFlow({
                   </div>
                   <span className="eval-bar-score">{(s?.score ?? 5).toFixed(1)}</span>
                 </button>
-                {isOpen && (summary || flags.length > 0) && (
+                {isOpen && (
                   <div className="eval-bar-detail">
+                    {/* Static dimension description — always shown so the
+                        member understands what this score measures */}
+                    <p className="eval-bar-dim-desc">{dimensionDescription}</p>
+                    {/* AI-generated summary specific to this deal */}
                     {summary && <p className="eval-bar-summary">{summary}</p>}
                     {flags.length > 0 && (
                       <div className="eval-bar-flags">

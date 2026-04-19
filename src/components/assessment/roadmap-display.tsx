@@ -9,6 +9,7 @@ import type {
 } from "@/types/assessment";
 import ActionCard from "./action-card";
 import RoadmapDiagrams from "./roadmap-diagrams";
+import RoadmapAdvisoryCTA from "./roadmap-advisory-cta";
 import { resolveStructureSlug } from "@/lib/structure-slugs";
 
 const STAGE_NAMES: Record<number, string> = {
@@ -346,26 +347,28 @@ export default function RoadmapDisplay({
             <div className="rdmp-vision-signals-wrap">
               <div className="str-stat-lbl" style={{ marginBottom: 16 }}>Transition Signals</div>
               <div className="rdmp-signals-grid">
-                {roadmap.vision.transition_signals.slice(0, 6).map((s, i) => (
+                {roadmap.vision.transition_signals.slice(0, 3).map((s, i) => (
                   <div key={i} className="rdmp-signal-card">
-                    <div className="rdmp-signal-num">0{i + 1}</div>
-                    <div className="rdmp-signal-icon" aria-hidden>
-                      {/* Rotating iconography per signal — subtle visual variety */}
-                      {i % 3 === 0 ? (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={22} height={22}>
-                          <path d="M3 12h4l3 8 4-16 3 8h4" />
-                        </svg>
-                      ) : i % 3 === 1 ? (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={22} height={22}>
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M12 2a10 10 0 0 1 10 10" />
-                          <path d="M12 6v6l4 2" />
-                        </svg>
-                      ) : (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={22} height={22}>
-                          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                        </svg>
-                      )}
+                    <div className="rdmp-signal-head">
+                      <div className="rdmp-signal-icon" aria-hidden>
+                        {/* Rotating iconography per signal — subtle visual variety */}
+                        {i % 3 === 0 ? (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={28} height={28}>
+                            <path d="M3 12h4l3 8 4-16 3 8h4" />
+                          </svg>
+                        ) : i % 3 === 1 ? (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={28} height={28}>
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 2a10 10 0 0 1 10 10" />
+                            <path d="M12 6v6l4 2" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={28} height={28}>
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="rdmp-signal-num">0{i + 1}</div>
                     </div>
                     <p className="rdmp-signal-text">{s}</p>
                   </div>
@@ -440,7 +443,7 @@ export default function RoadmapDisplay({
               <div className="rdmp-library-group">
                 <div className="str-stat-lbl" style={{ marginBottom: 12 }}>Deal Structures</div>
                 <div className="rdmp-library-items">
-                  {roadmap.library.recommended_structures.map((s) => (
+                  {roadmap.library.recommended_structures.slice(0, 3).map((s) => (
                     <a
                       key={s.id}
                       href={`/library/structures/${resolveStructureSlug(s.id)}`}
@@ -460,7 +463,7 @@ export default function RoadmapDisplay({
               <div className="rdmp-library-group">
                 <div className="str-stat-lbl" style={{ marginBottom: 12 }}>Case Studies</div>
                 <div className="rdmp-library-items">
-                  {roadmap.library.recommended_cases.map((c) => (
+                  {roadmap.library.recommended_cases.slice(0, 3).map((c) => (
                     <a
                       key={c.slug}
                       href={`/library/case-studies/${c.slug}`}
@@ -506,6 +509,11 @@ export default function RoadmapDisplay({
               </ol>
             </div>
           )}
+      </div>
+
+      {/* ── 1:1 Advisory CTA ── */}
+      <div className="rdmp-section rv vis rv-d1">
+        <RoadmapAdvisoryCTA />
       </div>
 
       {/* ── Footer ── */}

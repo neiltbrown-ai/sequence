@@ -1363,8 +1363,10 @@
   font-family: var(--sans); font-size: 13px; color: var(--mid);
   line-height: 1.6; padding-left: 18px; margin: 6px 0 0;
 }
-.inv-action-list li { margin-bottom: 4px; }
+.inv-action-list li { margin-bottom: 8px; }
 .inv-action-list li:last-child { margin-bottom: 0; }
+.inv-action-text { display: inline; margin-right: 8px; }
+.inv-action-list .cs-struct-badge { vertical-align: middle; margin-top: 2px; }
 
 /* Scenarios */
 .inv-scenario-grid {
@@ -2962,6 +2964,14 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 }
 
 .rdmp-library-group:last-child { margin-bottom: 0; }
+
+/* Reading Path sits beneath the 2-column structures/cases grid —
+   needs real breathing room so it reads as its own section. */
+.rdmp-library-cols + .rdmp-library-group {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
 
 .rdmp-library-items {
   display: flex;
@@ -6131,12 +6141,21 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 .eval-bar-detail {
   padding: 0 0 16px 152px;
 }
+.eval-bar-dim-desc {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: .06em;
+  color: var(--light);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
 .eval-bar-summary {
   font-size: 14px;
   color: var(--mid);
   line-height: 1.55;
   margin: 0;
 }
+.eval-bar-summary + .eval-bar-flags,
+.eval-bar-dim-desc + .eval-bar-flags { margin-top: 10px; }
 .eval-bar-flags {
   margin-top: 8px;
 }
@@ -6764,30 +6783,35 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 .rdmp-signals-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 18px;
 }
 .rdmp-signal-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px 18px 18px;
+  gap: 20px;
+  padding: 24px 24px 22px;
   background: rgba(255,255,255,.02);
   border: 1px solid rgba(255,255,255,.08);
-  border-radius: 8px;
-  min-height: 140px;
+  border-radius: 10px;
+  min-height: 180px;
 }
-.rdmp-signal-num {
-  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
-  color: rgba(255,255,255,.35);
+.rdmp-signal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 .rdmp-signal-icon {
-  color: rgba(255,255,255,.65);
+  color: rgba(255,255,255,.7);
   display: flex; align-items: center;
 }
+.rdmp-signal-num {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+  color: rgba(255,255,255,.4);
+}
 .rdmp-signal-text {
-  font-family: var(--sans); font-size: 13px; line-height: 1.5;
-  color: rgba(255,255,255,.8);
+  font-family: var(--sans); font-size: 15px; line-height: 1.5;
+  color: rgba(255,255,255,.85);
   margin: 0;
 }
 

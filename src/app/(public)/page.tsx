@@ -260,33 +260,26 @@ export default function HomePage() {
       {/* ===== CONNECTION OPPORTUNITIES ===== */}
       <section className="connections">
         <div className="connections-head">
-          <h2 className="anim-text-up">Connection Opportunities</h2>
+          <h2 className="anim-text-up">
+            Connection
+            <br />
+            Opportunities
+          </h2>
         </div>
-        <div className="conn-grid">
+        <div className="conn-grid conn-grid--single">
           <div className="conn rv rv-d1">
             <span className="conn-num">[01]</span>
-            <h3 className="conn-name">Advisory</h3>
+            <h3 className="conn-name">Advisory &amp; Coaching</h3>
             <p className="conn-desc">
-              Strategic guidance for creative professionals navigating deal
-              structures, ownership transitions, and value capture. One-on-one
-              sessions grounded in the framework — not generic business advice.
+              Strategic advisory and structured coaching for creative
+              professionals navigating deal structures, ownership transitions,
+              and value capture — one-on-one, or small cohorts designed to move
+              you through the four-stage progression. Real deal analysis,
+              negotiation prep, and accountability grounded in the framework —
+              not generic business advice.
             </p>
             <Link href="/coaching" className="btn">
-              ADVISORY INFO
-              <ButtonArrow />
-            </Link>
-          </div>
-          <div className="conn rv rv-d2">
-            <span className="conn-num">[02]</span>
-            <h3 className="conn-name">Coaching</h3>
-            <p className="conn-desc">
-              One-on-one and small cohort coaching designed to move you through
-              the four-stage progression. Structured sessions, real deal
-              analysis, and accountability for creative professionals ready to
-              shift from execution to ownership.
-            </p>
-            <Link href="/coaching" className="btn">
-              COACHING INFO
+              ADVISORY &amp; COACHING INFO
               <ButtonArrow />
             </Link>
           </div>
