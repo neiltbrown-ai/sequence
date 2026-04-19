@@ -358,12 +358,17 @@ img.lib-card-cover-img {
     rgba(0, 0, 0, 0.92) 30%,
     rgba(0, 0, 0, 0.72) 100%
   );
+  /* CRITICAL: `.lib-card--dark::before` (earlier in file) sets
+     opacity:0 for the non-hover dark-variant fade-in. With !important
+     we guarantee the cover overlay stays visible at rest. */
+  opacity: 1 !important;
   z-index: 1;
   pointer-events: none;
   border-radius: inherit;
   transition: background 0.3s ease;
 }
 .lib-card--cover:hover::before {
+  opacity: 1 !important;
   /* On hover the overlay lightens significantly so more of the cover
      image reads — a visual reward for interaction */
   background: linear-gradient(
