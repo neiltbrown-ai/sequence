@@ -95,6 +95,8 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 - `content/reference/deal-evaluator-assessment-integration.md` — evaluator × assessment integration
 - `content/reference/case-study-components.md` — MDX component toolkit
 - `content/reference/design-system.md` — visual + editorial design reference
+- `content/reference/troubleshooting.md` — symptom → cause → fix for recurring bugs
+- `design.md` (root) — digital product design system (tokens, components, patterns)
 
 ---
 
@@ -120,6 +122,28 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 - `title` must never contain `<br />` — sweep periodically for concatenation bugs (`DJto` → `DJ to`)
 - `coverImage` / `heroImage` / `secondaryImage` for images
 - `stats`, `sections` arrays for structured UI
+
+### Portal ↔ public URL handling in MDX
+
+Case study / structure / article MDX files are rendered in two contexts:
+- **Public**: `/case-studies/[slug]`, `/structures/[slug]`, `/articles/[slug]`
+- **Portal**: `/library/case-studies/[slug]`, `/library/structures/[slug]`, `/library/articles/[slug]`
+
+MDX authors typically write public URLs in their content (`/case-studies/rick-rubin`). Inline components must rewrite these to portal paths when rendered in the portal — otherwise logged-in members get kicked out to the public view.
+
+**`CbRelatedCard` already does this** via `usePathname()`. Pattern for any new MDX component that renders links to case studies / articles / structures:
+
+```tsx
+const pathname = usePathname() || "";
+const inPortal = pathname.startsWith("/library/");
+// Rewrite `/case-studies/*` → `/library/case-studies/*` when inPortal
+```
+
+If a case study MDX file authors a raw `<a href="/case-studies/foo">` link, that link won't be rewritten. Prefer `<CbRelatedCard>` (or other components that do the rewrite) for any cross-references.
+
+### SVG in MDX — use diagram CSS vars
+
+Case studies occasionally embed handcrafted SVG diagrams (like the Cowart flywheel). These SVGs must use the `--diag-*` CSS vars (`--diag-parent-bg`, `--diag-child-bg`, `--diag-line`, etc.) for fills and strokes — **never hardcoded hex**. Hardcoded colors break dark mode when the case study is viewed in the portal. See `design.md` section 5 for the full variable list.
 
 ---
 
@@ -238,6 +262,16 @@ Surfaces that got bitten and now hardcode white:
 ### Dark theme diagram overrides
 
 Entity + Flywheel diagrams are theme-aware only when they use the `--diag-*` CSS vars. Case-study MDX files that author their own SVG with hardcoded hex won't respect dark mode — known gap.
+
+### `::before` overlay specificity on cards
+
+Any `::before` pseudo-element overlay on a themed card (e.g., `.lib-card--cover::before`) must **explicitly set both `opacity` and `background`** and guard against earlier rules that set them differently. This session hit three compounding bugs on `.lib-card--cover::before`:
+
+1. `.lib-card--dark::before` sets `opacity: 0` at rest → cover variant overlay was invisible until we added `opacity: 1 !important`
+2. `[data-theme="dark"] .lib-card--dark::before { background: #111 }` → covered cover images in dark mode until scoped to `:not(.lib-card--cover)`
+3. Conic-gradient from `.lib-card--dark:nth-child(N)` kept showing through inline `style={backgroundImage}` → fixed by switching to a real `<img>` element instead of CSS background
+
+**Takeaway:** when adding a new card variant with its own `::before` overlay, audit the chain of existing `::before` rules and dark-theme overrides. Better yet: use a real `<img>` element inside the card (as `.lib-card--cover` now does) to sidestep cascade battles entirely.
 
 ---
 

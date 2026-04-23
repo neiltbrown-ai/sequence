@@ -451,6 +451,63 @@ Feature showcase: label on left column, title + description, then browser-frame-
 
 Grid with distinct cards in each column. Collapses to single column below 760px.
 
+### Dashboard CTA card (`.dash-asmt-cta`)
+
+Two-column card used for the major dashboard calls-to-action (Portfolio Audit, Creative Identity). Left column: geometric SVG icon block. Right column: label chip + title + description + time estimate + action pill.
+
+```html
+<Link href="/..." class="dash-asmt-cta rv rv-d1">
+  <div class="dash-asmt-cta-icon">
+    <svg>[geometric icon]</svg>
+  </div>
+  <div class="dash-asmt-cta-content">
+    <div class="dash-asmt-cta-label">Creative Identity</div>
+    <h2 class="dash-asmt-cta-title">Define your Creative Identity. Personalize your roadmap.</h2>
+    <p class="dash-asmt-cta-desc">A short flow captures your…</p>
+    <div class="dash-asmt-cta-footer">
+      <span class="dash-asmt-cta-time">
+        <svg>[clock icon]</svg>
+        ~3 mins
+      </span>
+      <span class="dash-asmt-cta-btn">
+        Build Creative Identity
+        <svg>[arrow]</svg>
+      </span>
+    </div>
+  </div>
+</Link>
+```
+
+Time estimates: use concise form (`~3 mins`, `~minute`), not `~3 minutes`. Mono 10px.
+
+### cs-gate bottom CTA (dark band)
+
+Used in three places: public case-study paywall (`CaseStudyGate`), roadmap advisory CTA (`RoadmapAdvisoryCTA`), book download (`/about`). Dark conic-gradient band with two-column layout — left: label + title + desc + primary CTA button; right: 4-item feature grid.
+
+```html
+<div class="cs-gate">
+  <div class="cs-gate-content">
+    <div class="cs-gate-lbl">1:1 Advisory</div>
+    <div class="cs-gate-title">Get help turning this plan into action.</div>
+    <div class="cs-gate-desc">Your roadmap maps…</div>
+    <div class="cs-gate-actions">
+      <Link class="btn btn--white">Book a Session</Link>
+    </div>
+  </div>
+  <div class="cs-gate-features">
+    <div class="cs-gate-feat">
+      <div class="cs-gate-feat-title">Deal Review</div>
+      <div class="cs-gate-feat-desc">Pressure-test offers…</div>
+    </div>
+    <!-- 3 more feat cards -->
+  </div>
+</div>
+```
+
+Background is a conic-gradient with teal/grey colors — always dark regardless of theme. **All text here hardcodes `#ffffff`** (see Dark Mode section). The `btn--white` variant is designed exclusively for this + other always-dark surfaces.
+
+Use this pattern when: major conversion moment (paywall, upsell, CTA to a paid tier or advisory service). Don't use for regular secondary CTAs — those use the standard card section pattern.
+
 ---
 
 ## 9. Dark mode rules (critical)
