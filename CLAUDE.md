@@ -97,6 +97,8 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 - `content/reference/design-system.md` — visual + editorial design reference
 - `content/reference/troubleshooting.md` — symptom → cause → fix for recurring bugs
 - `design.md` (root) — digital product design system (tokens, components, patterns)
+- `content/reference/advisor-memory-spec.md` — future: persistent advisor memory (Path B from the advisor evolution discussion). Not yet implemented.
+- `content/reference/sequence-mcp-spec.md` — future: MCP server exposing Sequence data to Claude Desktop + future AI features. Not yet implemented.
 
 ---
 
