@@ -1,3 +1,17 @@
+> **⚠️ SPEC FRESHNESS NOTE — read first**
+>
+> Scoring weights, the 6 dimensions, red flag patterns, and verdict JSON structure in this doc are **still authoritative**.
+>
+> **Updates past spec:**
+> - `max_tokens` on the verdict Claude call is `4096` (not 2000 — that truncated and broke verdicts)
+> - Verdict JSON parse uses code-fence fallback (resilient parse pattern in `src/app/api/evaluator/complete/route.ts`)
+> - "Refresh Roadmap" CTA appears below Recommended Actions on the verdict view when the user has an existing roadmap AND the deal carries meaningful signal (yellow/red overall, or any red flags)
+> - Verdict's `recommended_actions` are now folded back INTO roadmap regeneration via `src/lib/roadmap/generate-plan.ts`
+>
+> **For the current architecture, read `CLAUDE.md` first**, then this spec for the underlying scoring + verdict structure.
+
+---
+
 # The Deal Evaluator — Product Spec
 ## In Sequence Member Portal · Interactive Decision Framework
 ### Version 2.0 · February 2026

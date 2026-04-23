@@ -1,3 +1,16 @@
+> **⚠️ SPEC FRESHNESS NOTE — read first**
+>
+> The integration logic described here (evaluator skipping / pre-filling questions when assessment context exists, surfacing misalignment warnings on verdicts) is current.
+>
+> **Doesn't reflect:**
+> - Bidirectional flow — deal verdicts now feed BACK INTO roadmap regeneration. The shared `src/lib/roadmap/generate-plan.ts` pulls last 90 days of deals + their verdict `recommended_actions` and folds patterns into the plan
+> - "Refresh Roadmap" CTA on verdicts that triggers `/api/roadmap/refresh`
+> - "Creative Identity" rebrand — "Assessment" naming throughout this doc refers to what the UI now calls Creative Identity
+>
+> **For the current architecture, read `CLAUDE.md` first**, then this spec for the integration intent.
+
+---
+
 # Deal Evaluator × Assessment: Integration Analysis
 ## How the Assessment Spec Reshapes the Evaluator
 ### February 2026

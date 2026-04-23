@@ -100,6 +100,18 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 - `content/reference/advisor-memory-spec.md` — future: persistent advisor memory (Path B from the advisor evolution discussion). Not yet implemented.
 - `content/reference/sequence-mcp-spec.md` — future: MCP server exposing Sequence data to Claude Desktop + future AI features. Not yet implemented.
 
+### Spec freshness — read before treating any spec as gospel
+
+Several specs were written before architectural changes shipped. Where a spec disagrees with the current code or with this CLAUDE.md, **the code + this doc win**. Specifically:
+
+- **`seq-assessment-build-spec-v2.md`** — The question bank, stage scoring weights, misalignment flag patterns, and 6 archetype definitions are STILL authoritative. **Outdated:** UI references "Assessment" everywhere — the user-facing brand is now "Creative Identity." Data flow assumed assessment was the only roadmap input — Portfolio + recent deal evaluations also feed `generate-plan.ts` now.
+- **`seq-ai-advisor-experience-v1.md`** — Architectural intent (layered prompts, structured chat components) is still right. Specifics about the pre- vs. post-assessment chat may be outdated. Doesn't mention `buildMemberContext()` injection pattern or the shared roadmap generator.
+- **`deal-evaluator-spec-v2.md`** — Scoring weights, dimensions, and verdict JSON structure are current. **Update past spec:** `max_tokens = 4096`, robust JSON parse with code-fence fallback, "Refresh Roadmap" CTA on the verdict, deal-history aggregation in the roadmap generator prompt.
+- **`deal-evaluator-assessment-integration.md`** — Integration logic (evaluator skipping / pre-filling questions from assessment) is current. **Doesn't reflect:** deal verdict `recommended_actions` now feed BACK INTO roadmap regeneration via `/api/roadmap/refresh` and the shared `generate-plan.ts`.
+- **`design-system.md`** — Scoped to print/collateral brand only. For digital UI, use **`design.md`** (root).
+
+The component reference docs (`case-study-components.md`, `structure-components.md`, `article-components.md`, `email-templates.md`) and the new docs (`troubleshooting.md`, `advisor-memory-spec.md`, `sequence-mcp-spec.md`, `design.md`) are current.
+
 ---
 
 ## Content writing rules

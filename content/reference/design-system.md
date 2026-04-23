@@ -1,3 +1,11 @@
+> **📌 SCOPE NOTE**
+>
+> This doc covers **print + brand collateral** only — book covers, slides, social graphics, anything off-screen.
+>
+> For the **digital product design system** (web UI tokens, components, dark mode rules, motion patterns), use **`design.md`** at the repo root.
+
+---
+
 # In Sequence Design System
 
 A comprehensive visual and editorial design reference for producing branded artifacts — interior book pages, print collateral, slide decks, social graphics, and any other materials that should feel like they belong to the In Sequence world.

@@ -1,3 +1,18 @@
+> **⚠️ SPEC FRESHNESS NOTE — read first**
+>
+> Architectural intent (layered prompts, structured chat components inline in conversation, unified pre-/post-assessment surface) is still right and reflected in the live code.
+>
+> **Outdated or not yet covered in this spec:**
+> - `buildMemberContext()` injection pattern — every AI endpoint pulls a shared member-context block (see `src/lib/advisor/context-builder.ts`)
+> - Shared roadmap generator at `src/lib/roadmap/generate-plan.ts` (Batch B)
+> - Serverless `after()` + `maxDuration` pattern for long Claude calls — fire-and-forget without `after()` gets killed on Vercel
+> - "Creative Identity" rebrand — "Assessment" naming in this spec refers to what the UI now calls Creative Identity
+> - Persistent advisor memory — see `content/reference/advisor-memory-spec.md` (proposed, not yet implemented)
+>
+> **For the current architecture, read `CLAUDE.md` first**, then this spec for the conversational UX intent.
+
+---
+
 # In Sequence — AI Advisor Experience
 ## Unified Conversational Interface Spec
 

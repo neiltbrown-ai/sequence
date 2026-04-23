@@ -1,3 +1,16 @@
+> **⚠️ SPEC FRESHNESS NOTE — read first**
+>
+> This spec was the original design intent. The question bank, stage scoring weights, misalignment flag patterns, and 6 archetype definitions in this doc are **still authoritative** and should not be deviated from.
+>
+> **Outdated in this spec:**
+> - UI naming — "Assessment" is now "Creative Identity" everywhere user-facing (DB table name `assessments` unchanged)
+> - Roadmap data flow — assumed assessment was the only input. Portfolio + last 90 days of deal evaluations now also feed `src/lib/roadmap/generate-plan.ts`
+> - Roadmap trigger — `strategic_plans.assessment_id` is now nullable (migration `00015_roadmap_decoupling.sql`); plans can also originate from Portfolio Analysis
+>
+> **For the current architecture, read `CLAUDE.md` first**, then this spec for the underlying scoring logic.
+
+---
+
 # In Sequence — Assessment + Strategic Roadmap
 ## Build Specification for Claude Code
 
