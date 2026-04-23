@@ -99,6 +99,7 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 - `design.md` (root) — digital product design system (tokens, components, patterns)
 - `content/reference/advisor-memory-spec.md` — future: persistent advisor memory (Path B from the advisor evolution discussion). Not yet implemented.
 - `content/reference/sequence-mcp-spec.md` — future: MCP server exposing Sequence data to Claude Desktop + future AI features. Not yet implemented.
+- `CHANGELOG.md` (root) — session-level architectural log. Read this to reconstruct how the platform got to its current state without parsing every commit.
 
 ### Spec freshness — read before treating any spec as gospel
 
