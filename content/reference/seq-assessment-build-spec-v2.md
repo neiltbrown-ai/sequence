@@ -1,11 +1,12 @@
 > **⚠️ SPEC FRESHNESS NOTE — read first**
 >
-> This spec was the original design intent. The question bank, stage scoring weights, misalignment flag patterns, and 6 archetype definitions in this doc are **still authoritative** and should not be deviated from.
+> This spec was the original design intent. The question bank, stage scoring weights, and misalignment flag patterns in this doc are **still authoritative** and should not be deviated from.
 >
 > **Outdated in this spec:**
 > - UI naming — "Assessment" is now "Creative Identity" everywhere user-facing (DB table name `assessments` unchanged)
 > - Roadmap data flow — assumed assessment was the only input. Portfolio + last 90 days of deal evaluations now also feed `src/lib/roadmap/generate-plan.ts`
 > - Roadmap trigger — `strategic_plans.assessment_id` is now nullable (migration `00015_roadmap_decoupling.sql`); plans can also originate from Portfolio Analysis
+> - **Archetypes** — this spec defines 6; the code now defines **8** (added `capital_allocator` and `creative_principal` for Stage 4). See `src/lib/assessment/archetypes.ts` for the authoritative list. Stage 4 matching is split by `creative_mode`: `builder/service/transition` → Capital Allocator; `maker/performer/hybrid` → Creative Principal.
 >
 > **For the current architecture, read `CLAUDE.md` first**, then this spec for the underlying scoring logic.
 

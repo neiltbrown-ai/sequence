@@ -105,7 +105,7 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 
 Several specs were written before architectural changes shipped. Where a spec disagrees with the current code or with this CLAUDE.md, **the code + this doc win**. Specifically:
 
-- **`seq-assessment-build-spec-v2.md`** — The question bank, stage scoring weights, misalignment flag patterns, and 6 archetype definitions are STILL authoritative. **Outdated:** UI references "Assessment" everywhere — the user-facing brand is now "Creative Identity." Data flow assumed assessment was the only roadmap input — Portfolio + recent deal evaluations also feed `generate-plan.ts` now.
+- **`seq-assessment-build-spec-v2.md`** — The question bank, stage scoring weights, and misalignment flag patterns are STILL authoritative. **Outdated:** UI references "Assessment" everywhere — the user-facing brand is now "Creative Identity." Data flow assumed assessment was the only roadmap input — Portfolio + recent deal evaluations also feed `generate-plan.ts` now. **Archetypes:** the spec defines 6; the code now defines 8 (added Capital Allocator + Creative Principal for Stage 4). Treat `src/lib/assessment/archetypes.ts` as the source of truth.
 - **`seq-ai-advisor-experience-v1.md`** — Architectural intent (layered prompts, structured chat components) is still right. Specifics about the pre- vs. post-assessment chat may be outdated. Doesn't mention `buildMemberContext()` injection pattern or the shared roadmap generator.
 - **`deal-evaluator-spec-v2.md`** — Scoring weights, dimensions, and verdict JSON structure are current. **Update past spec:** `max_tokens = 4096`, robust JSON parse with code-fence fallback, "Refresh Roadmap" CTA on the verdict, deal-history aggregation in the roadmap generator prompt.
 - **`deal-evaluator-assessment-integration.md`** — Integration logic (evaluator skipping / pre-filling questions from assessment) is current. **Doesn't reflect:** deal verdict `recommended_actions` now feed BACK INTO roadmap regeneration via `/api/roadmap/refresh` and the shared `generate-plan.ts`.
@@ -211,7 +211,7 @@ try {
 
 - Stage detection weights (Q6–Q11) defined in `seq-assessment-build-spec-v2.md` Section 5. Do not change.
 - Six misalignment flag patterns defined in the spec. Implement all six.
-- Six archetypes defined in `src/lib/assessment/archetypes.ts`. Do not invent new archetypes.
+- Eight archetypes defined in `src/lib/assessment/archetypes.ts` — six for Stages 1–3 and two for Stage 4 (Capital Allocator, Creative Principal). Stage 4 matching is split by creative_mode: builder/service/transition → Capital Allocator; maker/performer/hybrid → Creative Principal. Do not invent new archetypes beyond these eight.
 - Creative mode (`maker` / `service` / `hybrid` / `performer` / `builder` / `transition`) adapts question language across every surface.
 
 ### What AI must NOT generate
@@ -250,7 +250,7 @@ Stacking order inside `.lib-card--cover`:
 
 `src/components/portal/creative-identity-panel.tsx` has three states (empty / in-progress / complete). Complete state shows a per-archetype sigil SVG (6 unique marks, one per archetype) + stage band + facet grid + friction points. Snapshot loaded server-side in `src/app/(portal)/settings/page.tsx` — prefers completed assessment over any newer in-progress row.
 
-The 6 archetype sigils live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal portrait and the public Platform page's Creative Identity section. **Don't inline the sigil SVGs anywhere else — always import from the shared component.**
+The 8 archetype sigils live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal portrait and the public Platform page's Creative Identity section. **Don't inline the sigil SVGs anywhere else — always import from the shared component.**
 
 ---
 
@@ -354,7 +354,7 @@ Current mode: direct-to-main. Every push triggers a Vercel deploy in ~60–90s. 
 - `src/lib/advisor/context-builder.ts` — `buildMemberContext()`
 - `src/lib/advisor/system-prompts.ts` — `buildMemberContextPrompt()` + base prompt
 - `src/lib/roadmap/approved-providers.ts` — provider whitelist
-- `src/lib/assessment/archetypes.ts` — 6 archetype definitions
+- `src/lib/assessment/archetypes.ts` — 8 archetype definitions (6 for Stages 1–3 + 2 for Stage 4)
 - `src/lib/assessment/scoring.ts` — stage detection + misalignment flags
 
 **Core portal UI**:

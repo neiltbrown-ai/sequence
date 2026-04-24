@@ -63,6 +63,20 @@ const ARCHETYPE_PREVIEWS: ArchetypePreview[] = [
     incomeBand: "$500K–$2M+",
     frictionPoints: ["Income exceeds entity structure", "Judgment given away free"],
   },
+  {
+    id: "capital_allocator",
+    stage: 4,
+    stageName: "Capital Formation",
+    incomeBand: "$2M+",
+    frictionPoints: ["Governance fatigue across boards", "Allocation paralysis"],
+  },
+  {
+    id: "creative_principal",
+    stage: 4,
+    stageName: "Capital Formation",
+    incomeBand: "$2M+",
+    frictionPoints: ["Bandwidth fragmented across ventures", "Taste dilution at scale"],
+  },
 ];
 
 export const dynamic = "force-dynamic";

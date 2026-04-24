@@ -138,6 +138,96 @@ export function ArchetypeSigil({ archetypeId, className = "ci-sigil-svg" }: Arch
         </svg>
       );
 
+    case "capital_allocator":
+      // Central filled square (HQ) with 4 smaller satellite squares at
+      // cardinal offsets, connected by thin lines. Capital deployed
+      // outward from a compact core. Bbox ~28–112.
+      return (
+        <svg viewBox="28 28 84 84" className={className}>
+          {/* connectors, drawn under the satellites */}
+          {[
+            [c, c, c, 38],   // up
+            [c, c, 38, c],   // left
+            [c, c, S - 38, c], // right
+            [c, c, c, S - 38], // down
+          ].map(([x1, y1, x2, y2], i) => (
+            <line
+              key={i}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke={stroke}
+              strokeWidth="0.75"
+              opacity="0.4"
+            />
+          ))}
+          {/* central HQ */}
+          <rect
+            x={c - 10}
+            y={c - 10}
+            width="20"
+            height="20"
+            fill={stroke}
+          />
+          {/* four satellite positions */}
+          {[
+            [c - 7, 30, 14, 14],          // top
+            [30, c - 7, 14, 14],          // left
+            [S - 30 - 14, c - 7, 14, 14], // right
+            [c - 7, S - 30 - 14, 14, 14], // bottom
+          ].map(([x, y, w, h], i) => (
+            <rect
+              key={i}
+              x={x}
+              y={y}
+              width={w}
+              height={h}
+              stroke={stroke}
+              strokeWidth="1"
+              fill="none"
+              opacity="0.75"
+            />
+          ))}
+        </svg>
+      );
+
+    case "creative_principal":
+      // One filled center shape radiating rays to 5 varied satellite
+      // shapes (circle, triangle, square, diamond, ring) — a single
+      // vision diffused into differentiated ventures. Bbox ~18–122.
+      return (
+        <svg viewBox="18 18 104 104" className={className}>
+          {/* rays — drawn under satellites, fanning out */}
+          {[
+            [28, 34],
+            [114, 40],
+            [116, 96],
+            [26, 106],
+            [70, 22],
+          ].map(([x, y], i) => (
+            <line
+              key={i}
+              x1={c}
+              y1={c}
+              x2={x}
+              y2={y}
+              stroke={stroke}
+              strokeWidth="0.6"
+              opacity="0.35"
+            />
+          ))}
+          {/* central filled taste-node */}
+          <circle cx={c} cy={c} r="11" fill={stroke} />
+          {/* satellites — five different geometries */}
+          <circle cx="28" cy="34" r="4.5" stroke={stroke} strokeWidth="1" fill="none" opacity="0.8" />
+          <rect x="110" y="36" width="8" height="8" stroke={stroke} strokeWidth="1" fill="none" opacity="0.8" />
+          <polygon points="112,92 120,100 112,108 104,100" stroke={stroke} strokeWidth="1" fill="none" opacity="0.8" />
+          <polygon points="26,100 32,110 20,110" stroke={stroke} strokeWidth="1" fill="none" opacity="0.8" />
+          <circle cx="70" cy="22" r="4.5" fill={stroke} opacity="0.8" />
+        </svg>
+      );
+
     default:
       return (
         <svg viewBox="20 20 100 100" className={className}>
