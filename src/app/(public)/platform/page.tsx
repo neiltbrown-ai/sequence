@@ -6,6 +6,63 @@ import NewsletterForm from "@/components/newsletter-form";
 import TestimonialsCarousel from "@/components/testimonials-carousel";
 import { getTestimonials } from "@/lib/content";
 import { ArchetypeSigil } from "@/components/shared/archetype-sigil";
+import { getArchetypeById } from "@/lib/assessment/archetypes";
+
+// Preview data for the public Platform page. Authoritative member data
+// comes from the Creative Identity flow; these are representative values
+// for each archetype so visitors understand what the portrait conveys.
+type ArchetypePreview = {
+  id: string;
+  stage: number;
+  stageName: string;
+  incomeBand: string;
+  frictionPoints: [string, string];
+};
+
+const ARCHETYPE_PREVIEWS: ArchetypePreview[] = [
+  {
+    id: "unstructured_creative",
+    stage: 1,
+    stageName: "Execution Excellence",
+    incomeBand: "$75K–$200K",
+    frictionPoints: ["No formal business entity", "IP rights not documented"],
+  },
+  {
+    id: "established_practitioner",
+    stage: 2,
+    stageName: "Judgment Positioning",
+    incomeBand: "$200K–$500K",
+    frictionPoints: ["Judgment given away free", "Relationships not converted"],
+  },
+  {
+    id: "maker_without_structure",
+    stage: 2,
+    stageName: "Judgment Positioning",
+    incomeBand: "$200K–$500K",
+    frictionPoints: ["Talent without structure", "IP rights not documented"],
+  },
+  {
+    id: "platform_builder",
+    stage: 3,
+    stageName: "Ownership Accumulation",
+    incomeBand: "$500K–$2M+",
+    frictionPoints: ["Demand exceeds capacity", "Single-entity overload"],
+  },
+  {
+    id: "untapped_catalog",
+    stage: 2,
+    stageName: "Judgment Positioning",
+    incomeBand: "$200K–$500K",
+    frictionPoints: ["IP not monetized", "Catalog sits dormant"],
+  },
+  {
+    id: "high_earner_no_ownership",
+    stage: 3,
+    stageName: "Ownership Accumulation",
+    incomeBand: "$500K–$2M+",
+    frictionPoints: ["Income exceeds entity structure", "Judgment given away free"],
+  },
+];
 
 export const dynamic = "force-dynamic";
 
@@ -167,50 +224,128 @@ export default function PlatformPage() {
       {/* ===== CREATIVE IDENTITY ===== */}
       <section className="archetypes">
         <div className="archetypes-head">
-          <span className="archetypes-lbl rv">[CREATIVE IDENTITY]</span>
-          <h2 className="anim-text-up">Creative Identity</h2>
-          <p className="archetypes-desc rv rv-d1">
-            Your Creative Identity tunes every recommendation across the
-            platform &mdash; your roadmap, deal evaluations, and AI advisor
-            guidance. Refine over time as your work evolves.
-          </p>
+          <div className="archetypes-head-left">
+            <span className="archetypes-lbl rv">[CREATIVE IDENTITY]</span>
+            <h2 className="anim-text-up">Your Creative Identity</h2>
+          </div>
+          <div className="archetypes-head-right rv rv-d1">
+            <p className="archetypes-desc">
+              Creative Identity is how Sequence understands who you are as a
+              working creative. A 10-minute guided flow asks about your
+              discipline, creative mode, stage, and ambitions &mdash; and maps
+              you to one of six archetypes.
+            </p>
+            <ul className="archetypes-bullets">
+              <li>
+                <strong>Roadmap</strong> &mdash; actions are weighted to your
+                stage and archetype, not generic growth advice.
+              </li>
+              <li>
+                <strong>Deal Evaluator</strong> &mdash; every verdict is scored
+                against your misalignment flags.
+              </li>
+              <li>
+                <strong>AI Advisor</strong> &mdash; context pre-loaded, no
+                warm-up questions.
+              </li>
+              <li>
+                <strong>Library</strong> &mdash; structures and case studies
+                ranked by relevance to your profile.
+              </li>
+            </ul>
+          </div>
         </div>
+
         <div className="archetypes-grid">
-          <div className="archetype-card rv">
-            <div className="archetype-card-sigil">
-              <ArchetypeSigil archetypeId="unstructured_creative" />
-            </div>
-            <span className="archetype-card-lbl">[ARCHETYPE]</span>
-            <h3 className="archetype-card-title">The Unstructured Creative</h3>
-            <p className="archetype-card-desc">
-              Early-stage creative with no formal business entity. Income under
-              $150K. Needs infrastructure foundations before anything else.
-            </p>
-          </div>
-          <div className="archetype-card rv rv-d1">
-            <div className="archetype-card-sigil">
-              <ArchetypeSigil archetypeId="platform_builder" />
-            </div>
-            <span className="archetype-card-lbl">[ARCHETYPE]</span>
-            <h3 className="archetype-card-title">The Platform Builder</h3>
-            <p className="archetype-card-desc">
-              Stage 2&ndash;3, successful core business. Ready to build a
-              holding company or multi-venture structure that carries equity,
-              partnerships, and future exits.
-            </p>
-          </div>
-          <div className="archetype-card rv rv-d2">
-            <div className="archetype-card-sigil">
-              <ArchetypeSigil archetypeId="untapped_catalog" />
-            </div>
-            <span className="archetype-card-lbl">[ARCHETYPE]</span>
-            <h3 className="archetype-card-title">The Untapped Catalog</h3>
-            <p className="archetype-card-desc">
-              Owns work or catalog but isn&rsquo;t generating ongoing revenue
-              from it. One well-structured licensing deal often unlocks more
-              than months of new production.
-            </p>
-          </div>
+          {ARCHETYPE_PREVIEWS.map((p, i) => {
+            const a = getArchetypeById(p.id);
+            const num = String(i + 1).padStart(2, "0");
+            return (
+              <article
+                key={p.id}
+                className={`archetype-card rv ${i > 0 ? `rv-d${Math.min(i, 4)}` : ""}`}
+              >
+                <div className="archetype-card-head">
+                  <div className="archetype-card-sigil" aria-hidden>
+                    <ArchetypeSigil archetypeId={p.id} />
+                  </div>
+                  <div className="archetype-card-kicker">
+                    <span className="archetype-card-num">{num}</span>
+                    <span className="archetype-card-lbl">Archetype</span>
+                  </div>
+                </div>
+
+                <h3 className="archetype-card-title">
+                  {a?.name ?? "Archetype"}
+                </h3>
+                <p className="archetype-card-desc">{a?.description}</p>
+
+                <div className="archetype-card-stage">
+                  <div className="archetype-card-stage-left">
+                    <span className="archetype-card-meta-lbl">
+                      Typical Stage
+                    </span>
+                    <div className="archetype-card-stage-val">
+                      <span className="archetype-card-stage-num-big">
+                        {p.stage}
+                      </span>
+                      <span className="archetype-card-stage-name">
+                        {p.stageName}
+                      </span>
+                    </div>
+                    <div className="archetype-card-stage-rail" aria-hidden>
+                      {[1, 2, 3, 4].map((n) => (
+                        <span
+                          key={n}
+                          className={`archetype-card-stage-dot${
+                            n === p.stage
+                              ? " is-active"
+                              : n < p.stage
+                                ? " is-past"
+                                : ""
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="archetype-card-stage-right">
+                    <span className="archetype-card-meta-lbl">
+                      Income Band
+                    </span>
+                    <span className="archetype-card-income-val">
+                      {p.incomeBand}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="archetype-card-friction">
+                  <div className="archetype-card-friction-head">
+                    <svg
+                      viewBox="0 0 22 20"
+                      fill="none"
+                      width={12}
+                      height={11}
+                      aria-hidden
+                    >
+                      <path
+                        d="M11 1L21 19H1L11 1Z"
+                        stroke="currentColor"
+                        strokeWidth="1.25"
+                      />
+                    </svg>
+                    <span className="archetype-card-meta-lbl">
+                      Example Friction Points
+                    </span>
+                  </div>
+                  <ul className="archetype-card-friction-list">
+                    {p.frictionPoints.map((f) => (
+                      <li key={f}>{f}</li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
 
