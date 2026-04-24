@@ -15,7 +15,6 @@ import {
   InventoryIcon,
   EvaluateIcon,
   CommunityIcon,
-  CloseIcon,
 } from "./icons";
 import type { AccessTier } from "@/lib/plans";
 
@@ -131,17 +130,18 @@ export default function PortalSidebar() {
         onClick={closeSidebar}
       />
       <aside className={`sidebar${sidebarOpen ? " open" : ""}${sidebarCollapsed ? " collapsed" : ""}`}>
-        <button className="sb-close" onClick={closeSidebar}>
-          <CloseIcon />
-        </button>
-
         <div className="sb-logo-row">
           {!sidebarCollapsed && <div className="sb-logo">Sequence</div>}
           <button
             type="button"
             className="sb-collapse-btn"
-            onClick={toggleCollapsed}
-            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            onClick={() => {
+              // Mobile: the sidebar is a drawer — close it.
+              // Desktop: toggle collapsed width.
+              if (sidebarOpen) closeSidebar();
+              else toggleCollapsed();
+            }}
+            title={sidebarOpen ? "Close menu" : sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {sidebarCollapsed ? <ExpandIcon /> : <CollapseIcon />}
           </button>

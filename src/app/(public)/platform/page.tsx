@@ -5,6 +5,7 @@ import BrowserFrame from "@/components/ui/browser-frame";
 import NewsletterForm from "@/components/newsletter-form";
 import TestimonialsCarousel from "@/components/testimonials-carousel";
 import { getTestimonials } from "@/lib/content";
+import { ArchetypeSigil } from "@/components/shared/archetype-sigil";
 
 export const dynamic = "force-dynamic";
 
@@ -159,6 +160,56 @@ export default function PlatformPage() {
               <li>Career positioning and transition planning</li>
               <li>Structure-specific guidance with real examples</li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== CREATIVE IDENTITY ===== */}
+      <section className="archetypes">
+        <div className="archetypes-head">
+          <span className="archetypes-lbl rv">[CREATIVE IDENTITY]</span>
+          <h2 className="anim-text-up">Creative Identity</h2>
+          <p className="archetypes-desc rv rv-d1">
+            Your Creative Identity tunes every recommendation across the
+            platform &mdash; your roadmap, deal evaluations, and AI advisor
+            guidance. Refine over time as your work evolves.
+          </p>
+        </div>
+        <div className="archetypes-grid">
+          <div className="archetype-card rv">
+            <div className="archetype-card-sigil">
+              <ArchetypeSigil archetypeId="unstructured_creative" />
+            </div>
+            <span className="archetype-card-lbl">[ARCHETYPE]</span>
+            <h3 className="archetype-card-title">The Unstructured Creative</h3>
+            <p className="archetype-card-desc">
+              Early-stage creative with no formal business entity. Income under
+              $150K. Needs infrastructure foundations before anything else.
+            </p>
+          </div>
+          <div className="archetype-card rv rv-d1">
+            <div className="archetype-card-sigil">
+              <ArchetypeSigil archetypeId="platform_builder" />
+            </div>
+            <span className="archetype-card-lbl">[ARCHETYPE]</span>
+            <h3 className="archetype-card-title">The Platform Builder</h3>
+            <p className="archetype-card-desc">
+              Stage 2&ndash;3, successful core business. Ready to build a
+              holding company or multi-venture structure that carries equity,
+              partnerships, and future exits.
+            </p>
+          </div>
+          <div className="archetype-card rv rv-d2">
+            <div className="archetype-card-sigil">
+              <ArchetypeSigil archetypeId="untapped_catalog" />
+            </div>
+            <span className="archetype-card-lbl">[ARCHETYPE]</span>
+            <h3 className="archetype-card-title">The Untapped Catalog</h3>
+            <p className="archetype-card-desc">
+              Owns work or catalog but isn&rsquo;t generating ongoing revenue
+              from it. One well-structured licensing deal often unlocks more
+              than months of new production.
+            </p>
           </div>
         </div>
       </section>

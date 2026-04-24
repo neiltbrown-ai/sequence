@@ -222,17 +222,35 @@ export default function AnalysisView({
             ))}
           </div>
 
-          {content.roadmap.medium_term && (
-            <div className="inv-roadmap-horizon">
-              <span className="inv-detail-label">Medium Term</span>
-              <p className="inv-detail-text">{content.roadmap.medium_term}</p>
-            </div>
-          )}
+          {(content.roadmap.medium_term || content.roadmap.long_term_vision) && (
+            <div className="inv-roadmap-horizons">
+              {content.roadmap.medium_term && (
+                <div className="inv-roadmap-horizon">
+                  <div className="inv-roadmap-horizon-icon" aria-hidden>
+                    {/* Medium term — clock with two hands at ~6 months */}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={28} height={28}>
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 7v5l3 2" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <span className="inv-detail-label">Medium Term</span>
+                  <p className="inv-detail-text">{content.roadmap.medium_term}</p>
+                </div>
+              )}
 
-          {content.roadmap.long_term_vision && (
-            <div className="inv-roadmap-horizon">
-              <span className="inv-detail-label">Long Term Vision</span>
-              <p className="inv-detail-text">{content.roadmap.long_term_vision}</p>
+              {content.roadmap.long_term_vision && (
+                <div className="inv-roadmap-horizon">
+                  <div className="inv-roadmap-horizon-icon" aria-hidden>
+                    {/* Long term — horizon / mountain peak */}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} width={28} height={28}>
+                      <path d="M3 18l5-8 4 6 3-4 6 6" strokeLinejoin="round" />
+                      <circle cx="17" cy="6" r="1.5" />
+                    </svg>
+                  </div>
+                  <span className="inv-detail-label">Long Term Vision</span>
+                  <p className="inv-detail-text">{content.roadmap.long_term_vision}</p>
+                </div>
+              )}
             </div>
           )}
 

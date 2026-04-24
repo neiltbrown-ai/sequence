@@ -135,6 +135,12 @@ export default function RoadmapDisplay({
     return actions.find((a) => a.action_order === order) || null;
   }
 
+  const allActionsComplete =
+    roadmap.actions.length > 0 &&
+    roadmap.actions.every(
+      (a) => getTracking(a.order as 1 | 2 | 3)?.status === "completed",
+    );
+
   // Fallback: some regenerated roadmaps put misalignments in position.misalignments only
   const misalignments = roadmap.misalignment_detail?.length
     ? roadmap.misalignment_detail
@@ -189,22 +195,24 @@ export default function RoadmapDisplay({
               onClick={handleRegenerate}
               disabled={regenerating}
               style={{ opacity: regenerating ? 0.5 : 1 }}
+              aria-label={regenerating ? "Regenerating" : "Regenerate roadmap"}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={14} height={14}>
                 <path d="M1 4v6h6M23 20v-6h-6" />
                 <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" />
               </svg>
-              {regenerating ? "Regenerating…" : "Regenerate"}
+              <span className="btn-bookmark-label">{regenerating ? "Regenerating…" : "Regenerate"}</span>
             </button>
             <a
               href={`/api/assessment/pdf?planId=${plan.id}`}
               className="btn-bookmark"
               download
+              aria-label="Download PDF"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={14} height={14}>
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
               </svg>
-              Download PDF
+              <span className="btn-bookmark-label">Download PDF</span>
             </a>
           </div>
         </div>
@@ -256,54 +264,6 @@ export default function RoadmapDisplay({
           )}
         </div>
       </div>
-
-      {/* ── Recent Deals — deal signal feeding the roadmap ── */}
-      {recentDeals.length > 0 && (
-        <div className="rdmp-section rv vis rv-d1">
-          <div className="rdmp-section-heading">Recent Deal Signal</div>
-          <div className="rdmp-deals-card">
-            <p className="rdmp-deals-intro">
-              <strong>
-                {recentDeals.length} deal{recentDeals.length === 1 ? "" : "s"}{" "}
-                evaluated in the last 90 days
-              </strong>{" "}
-              — patterns from this activity are woven into the actions and
-              vision below.
-            </p>
-            <ul className="rdmp-deals-list">
-              {recentDeals.slice(0, 5).map((d) => (
-                <li key={d.id} className="rdmp-deal-item">
-                  <span
-                    className={`rdmp-deal-signal rdmp-deal-signal--${d.overall_signal ?? "unknown"}`}
-                    aria-label={`Signal: ${d.overall_signal ?? "unknown"}`}
-                  />
-                  <span className="rdmp-deal-name">
-                    {d.deal_name || "Untitled deal"}
-                  </span>
-                  <span className="rdmp-deal-meta">
-                    {d.deal_type && (
-                      <span className="rdmp-deal-type">{d.deal_type}</span>
-                    )}
-                    {d.overall_score != null && (
-                      <span className="rdmp-deal-score">
-                        {Number(d.overall_score).toFixed(1)}/10
-                      </span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {recentDeals.length > 5 && (
-              <p className="rdmp-deals-more">
-                + {recentDeals.length - 5} more
-              </p>
-            )}
-            <a href="/evaluate" className="rdmp-deals-link">
-              View all deals →
-            </a>
-          </div>
-        </div>
-      )}
 
       {/* ── 2. Your Vision + Diagrams ── */}
       <div className="rdmp-section rv vis rv-d1">
@@ -418,6 +378,54 @@ export default function RoadmapDisplay({
         </div>
       )}
 
+      {/* ── Recent Deals — deal signal feeding the roadmap ── */}
+      {recentDeals.length > 0 && (
+        <div className="rdmp-section rv vis rv-d1">
+          <div className="rdmp-section-heading">Recent Deal Signal</div>
+          <div className="rdmp-deals-card">
+            <p className="rdmp-deals-intro">
+              <strong>
+                {recentDeals.length} deal{recentDeals.length === 1 ? "" : "s"}{" "}
+                evaluated in the last 90 days
+              </strong>{" "}
+              — patterns from this activity are woven into the actions and
+              vision below.
+            </p>
+            <ul className="rdmp-deals-list">
+              {recentDeals.slice(0, 5).map((d) => (
+                <li key={d.id} className="rdmp-deal-item">
+                  <span
+                    className={`rdmp-deal-signal rdmp-deal-signal--${d.overall_signal ?? "unknown"}`}
+                    aria-label={`Signal: ${d.overall_signal ?? "unknown"}`}
+                  />
+                  <span className="rdmp-deal-name">
+                    {d.deal_name || "Untitled deal"}
+                  </span>
+                  <span className="rdmp-deal-meta">
+                    {d.deal_type && (
+                      <span className="rdmp-deal-type">{d.deal_type}</span>
+                    )}
+                    {d.overall_score != null && (
+                      <span className="rdmp-deal-score">
+                        {Number(d.overall_score).toFixed(1)}/10
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {recentDeals.length > 5 && (
+              <p className="rdmp-deals-more">
+                + {recentDeals.length - 5} more
+              </p>
+            )}
+            <a href="/evaluate" className="rdmp-deals-link">
+              View all deals →
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* ── 4. Your 3 Next Steps ── */}
       <div className="rdmp-section rv vis rv-d1">
         <div className="rdmp-section-heading">Your 3 Next Steps</div>
@@ -432,6 +440,31 @@ export default function RoadmapDisplay({
             />
           ))}
         </div>
+        {allActionsComplete && (
+          <div className="rdmp-refresh-banner rv vis rv-d2" role="status">
+            <div className="rdmp-refresh-banner-icon" aria-hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={22} height={22}>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 12l3 3 5-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div className="rdmp-refresh-banner-body">
+              <div className="rdmp-refresh-banner-title">All three steps complete.</div>
+              <p className="rdmp-refresh-banner-desc">
+                Your situation has moved. Refresh your roadmap so the next
+                three steps reflect where you are now.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn btn--filled"
+              onClick={handleRegenerate}
+              disabled={regenerating}
+            >
+              {regenerating ? "Refreshing…" : "Refresh Roadmap"}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── 5. Recommended Reading ── */}

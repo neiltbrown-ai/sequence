@@ -36,69 +36,88 @@ const s = StyleSheet.create({
     color: "#1a1a1a",
     lineHeight: 1.5,
   },
-  // Header
+  // Header — two-column editorial layout
   header: {
     marginBottom: 32,
+    paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0d8",
-    paddingBottom: 16,
+    borderBottomColor: "#1a1a1a",
+    flexDirection: "row" as const,
+    justifyContent: "space-between" as const,
+    alignItems: "flex-end" as const,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerRight: {
+    alignItems: "flex-end" as const,
   },
   brandName: {
     fontSize: 8,
     letterSpacing: 2,
     textTransform: "uppercase" as const,
-    color: "#999",
-    marginBottom: 8,
+    color: "#777",
+    marginBottom: 10,
   },
   title: {
-    fontSize: 22,
-    fontFamily: "Helvetica-Bold",
-    marginBottom: 4,
+    fontSize: 28,
+    fontFamily: "Helvetica",
+    letterSpacing: -0.5,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 10,
+    fontSize: 11,
     color: "#777",
+    lineHeight: 1.4,
   },
-  memberInfo: {
-    marginTop: 8,
-    fontSize: 9,
+  headerMetaLabel: {
+    fontSize: 7,
+    letterSpacing: 1,
+    textTransform: "uppercase" as const,
     color: "#999",
+    marginBottom: 2,
   },
-  // Section
+  headerMetaValue: {
+    fontSize: 10,
+    color: "#1a1a1a",
+    marginBottom: 6,
+  },
+  // Section — thin black rule above the label
   section: {
-    marginBottom: 24,
+    marginBottom: 22,
+  },
+  sectionTitleWrap: {
+    borderTopWidth: 1,
+    borderTopColor: "#1a1a1a",
+    paddingTop: 8,
+    marginBottom: 14,
   },
   sectionTitle: {
     fontSize: 8,
-    letterSpacing: 1.5,
+    letterSpacing: 2,
     textTransform: "uppercase" as const,
     fontFamily: "Helvetica-Bold",
     color: "#1a1a1a",
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0d8",
-    marginBottom: 16,
   },
-  // Position card
+  // Position card — subtle tinted background
   positionCard: {
     padding: 16,
-    borderWidth: 1,
-    borderColor: "#e0e0d8",
-    borderRadius: 4,
-    marginBottom: 16,
+    backgroundColor: "#fafaf7",
+    borderRadius: 3,
+    marginBottom: 6,
   },
   positionRow: {
     flexDirection: "row" as const,
     justifyContent: "space-between" as const,
     alignItems: "flex-start" as const,
-    marginBottom: 12,
+    marginBottom: 14,
   },
   label: {
     fontSize: 7,
     letterSpacing: 1,
     textTransform: "uppercase" as const,
     color: "#999",
-    marginBottom: 3,
+    marginBottom: 4,
   },
   stageName: {
     fontSize: 14,
@@ -117,22 +136,22 @@ const s = StyleSheet.create({
   bodyText: {
     fontSize: 10,
     lineHeight: 1.6,
-    color: "#555",
+    color: "#333",
     marginBottom: 6,
   },
   industryContext: {
     fontSize: 9,
     lineHeight: 1.5,
-    color: "#999",
+    color: "#777",
     fontStyle: "italic" as const,
-    marginTop: 4,
+    marginTop: 6,
   },
-  // Misalignments (dark card)
+  // Misalignments — dark card
   misalignmentCard: {
     backgroundColor: "#1a1a1a",
-    borderRadius: 4,
+    borderRadius: 3,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 6,
   },
   misalignmentHeader: {
     flexDirection: "row" as const,
@@ -145,7 +164,7 @@ const s = StyleSheet.create({
   },
   misalignmentSectionTitle: {
     fontSize: 8,
-    letterSpacing: 1.5,
+    letterSpacing: 2,
     textTransform: "uppercase" as const,
     fontFamily: "Helvetica-Bold",
     color: "#ef4444",
@@ -177,45 +196,58 @@ const s = StyleSheet.create({
     fontSize: 7,
     letterSpacing: 1,
     textTransform: "uppercase" as const,
-    color: "rgba(255,255,255,0.4)",
+    color: "rgba(255,255,255,0.45)",
     marginTop: 6,
     marginBottom: 2,
   },
   misalignmentText: {
     fontSize: 9,
     lineHeight: 1.5,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(255,255,255,0.75)",
   },
-  // Actions
+  // Actions — numbered circle + body
   actionCard: {
     padding: 14,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#e0e0d8",
-    borderRadius: 4,
+    backgroundColor: "#fafaf7",
+    borderRadius: 3,
+    flexDirection: "row" as const,
+    gap: 14,
+    alignItems: "flex-start" as const,
+  },
+  actionNumberCircle: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "#1a1a1a",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    flexShrink: 0,
+  },
+  actionNumber: {
+    fontSize: 11,
+    fontFamily: "Helvetica-Bold",
+    color: "#ffffff",
+  },
+  actionBody: {
+    flex: 1,
   },
   actionHeaderRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   actionTag: {
     fontSize: 7,
     letterSpacing: 0.8,
     textTransform: "uppercase" as const,
     fontFamily: "Helvetica-Bold",
-    color: "#999",
+    color: "#777",
     borderWidth: 1,
-    borderColor: "#e0e0d8",
-    borderRadius: 3,
+    borderColor: "#d9d6d1",
+    borderRadius: 2,
     padding: "2 6",
-  },
-  actionStep: {
-    fontSize: 7,
-    letterSpacing: 0.8,
-    textTransform: "uppercase" as const,
-    color: "#999",
   },
   actionTitle: {
     fontSize: 12,
@@ -233,8 +265,8 @@ const s = StyleSheet.create({
   },
   actionText: {
     fontSize: 9,
-    lineHeight: 1.5,
-    color: "#555",
+    lineHeight: 1.55,
+    color: "#333",
     marginBottom: 4,
   },
   actionMeta: {
@@ -249,8 +281,9 @@ const s = StyleSheet.create({
   aiAssist: {
     padding: 8,
     marginTop: 8,
+    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e0e0d8",
+    borderColor: "#d9d6d1",
     borderRadius: 3,
   },
   aiTag: {
@@ -276,15 +309,14 @@ const s = StyleSheet.create({
   // Vision
   visionGrid: {
     flexDirection: "row" as const,
-    gap: 16,
-    marginBottom: 16,
+    gap: 14,
+    marginBottom: 12,
   },
   visionCard: {
     flex: 1,
     padding: 14,
-    borderWidth: 1,
-    borderColor: "#e0e0d8",
-    borderRadius: 4,
+    backgroundColor: "#fafaf7",
+    borderRadius: 3,
   },
   visionLabel: {
     fontSize: 7,
@@ -296,21 +328,33 @@ const s = StyleSheet.create({
   visionText: {
     fontSize: 10,
     lineHeight: 1.6,
-    color: "#555",
+    color: "#333",
+  },
+  signalsWrap: {
+    marginTop: 10,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0d8",
   },
   signalItem: {
     fontSize: 9,
     lineHeight: 1.5,
-    color: "#555",
+    color: "#333",
     paddingLeft: 12,
     marginBottom: 3,
   },
   // Library
+  libraryGroup: {
+    marginBottom: 16,
+  },
   libraryItem: {
     padding: 10,
-    marginBottom: 6,
+    marginBottom: 4,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.05)",
+    borderBottomColor: "rgba(0,0,0,0.06)",
+  },
+  libraryItemLast: {
+    borderBottomWidth: 0,
   },
   libraryTitle: {
     fontSize: 10,
@@ -319,16 +363,16 @@ const s = StyleSheet.create({
   },
   libraryWhy: {
     fontSize: 8,
-    color: "#999",
+    color: "#777",
     lineHeight: 1.4,
   },
   readingItem: {
     flexDirection: "row" as const,
-    gap: 8,
+    gap: 10,
     paddingBottom: 8,
     marginBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.05)",
+    borderBottomColor: "rgba(0,0,0,0.06)",
     alignItems: "flex-start" as const,
   },
   readingNum: {
@@ -339,8 +383,9 @@ const s = StyleSheet.create({
   },
   readingText: {
     fontSize: 9,
-    color: "#555",
+    color: "#333",
     flex: 1,
+    lineHeight: 1.5,
   },
   // Footer
   footer: {
@@ -353,15 +398,40 @@ const s = StyleSheet.create({
     paddingTop: 8,
     flexDirection: "row" as const,
     justifyContent: "space-between" as const,
+    alignItems: "center" as const,
   },
   footerText: {
     fontSize: 7,
+    letterSpacing: 0.6,
+    textTransform: "uppercase" as const,
     color: "#999",
   },
 });
 
 function formatFlag(flag: string): string {
   return flag.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <View style={s.sectionTitleWrap}>
+      <Text style={s.sectionTitle}>{children}</Text>
+    </View>
+  );
+}
+
+function PageFooter() {
+  return (
+    <View style={s.footer} fixed>
+      <Text style={s.footerText}>In Sequence · insequence.so</Text>
+      <Text
+        style={s.footerText}
+        render={({ pageNumber, totalPages }) =>
+          `Page ${pageNumber} / ${totalPages}`
+        }
+      />
+    </View>
+  );
 }
 
 export default function RoadmapPDF({
@@ -387,19 +457,25 @@ export default function RoadmapPDF({
       {/* Page 1: Position + Vision + Misalignments */}
       <Page size="A4" style={s.page}>
         <View style={s.header}>
-          <Text style={s.brandName}>In Sequence</Text>
-          <Text style={s.title}>Strategic Roadmap</Text>
-          <Text style={s.subtitle}>
-            Personalized guidance based on your assessment
-          </Text>
-          <Text style={s.memberInfo}>
-            Prepared for {memberName} ({memberEmail}) · {date}
-          </Text>
+          <View style={s.headerLeft}>
+            <Text style={s.brandName}>In Sequence</Text>
+            <Text style={s.title}>Strategic Roadmap</Text>
+            <Text style={s.subtitle}>
+              Personalized guidance based on your Creative Identity,
+              portfolio, and recent deals.
+            </Text>
+          </View>
+          <View style={s.headerRight}>
+            <Text style={s.headerMetaLabel}>Prepared for</Text>
+            <Text style={s.headerMetaValue}>{memberName}</Text>
+            <Text style={s.headerMetaLabel}>Date</Text>
+            <Text style={s.headerMetaValue}>{date}</Text>
+          </View>
         </View>
 
         {/* Position */}
         <View style={s.section}>
-          <Text style={s.sectionTitle}>Your Position</Text>
+          <SectionHeading>Your Position</SectionHeading>
           <View style={s.positionCard}>
             <View style={s.positionRow}>
               <View>
@@ -426,7 +502,7 @@ export default function RoadmapPDF({
         {/* Vision */}
         {roadmap.vision && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Your Vision</Text>
+            <SectionHeading>Your Vision</SectionHeading>
             <View style={s.visionGrid}>
               <View style={s.visionCard}>
                 <Text style={s.visionLabel}>12-Month Target</Text>
@@ -444,7 +520,7 @@ export default function RoadmapPDF({
 
             {roadmap.vision.transition_signals &&
               roadmap.vision.transition_signals.length > 0 && (
-                <View>
+                <View style={s.signalsWrap}>
                   <Text style={s.visionLabel}>Transition Signals</Text>
                   {roadmap.vision.transition_signals.map((sig, i) => (
                     <Text key={i} style={s.signalItem}>
@@ -458,122 +534,118 @@ export default function RoadmapPDF({
 
         {/* Misalignments */}
         {misalignments.length > 0 && (
-          <View style={s.misalignmentCard}>
-            <View style={s.misalignmentHeader}>
-              <Text style={s.misalignmentSectionTitle}>Structural Misalignments</Text>
-              <Text style={s.misalignmentCount}>
-                ▲ {misalignments.length}
-              </Text>
-            </View>
-            {misalignments.map((m, i) => (
-              <View
-                key={m.flag}
-                style={[
-                  s.misalignmentItem,
-                  i === misalignments.length - 1
-                    ? s.misalignmentItemLast
-                    : {},
-                ]}
-              >
-                <Text style={s.misalignmentFlag}>{formatFlag(m.flag)}</Text>
-                <Text style={s.misalignmentLabel}>What it costs you</Text>
-                <Text style={s.misalignmentText}>{m.what_its_costing}</Text>
-                <Text style={s.misalignmentLabel}>Why it matters</Text>
-                <Text style={s.misalignmentText}>{m.why_it_matters}</Text>
+          <View style={s.section}>
+            <View style={s.misalignmentCard}>
+              <View style={s.misalignmentHeader}>
+                <Text style={s.misalignmentSectionTitle}>Structural Misalignments</Text>
+                <Text style={s.misalignmentCount}>
+                  ▲ {misalignments.length}
+                </Text>
               </View>
-            ))}
+              {misalignments.map((m, i) => (
+                <View
+                  key={m.flag}
+                  style={[
+                    s.misalignmentItem,
+                    i === misalignments.length - 1
+                      ? s.misalignmentItemLast
+                      : {},
+                  ]}
+                >
+                  <Text style={s.misalignmentFlag}>{formatFlag(m.flag)}</Text>
+                  <Text style={s.misalignmentLabel}>What it costs you</Text>
+                  <Text style={s.misalignmentText}>{m.what_its_costing}</Text>
+                  <Text style={s.misalignmentLabel}>Why it matters</Text>
+                  <Text style={s.misalignmentText}>{m.why_it_matters}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         )}
 
-        <View style={s.footer} fixed>
-          <Text style={s.footerText}>In Sequence · Strategic Roadmap</Text>
-          <Text
-            style={s.footerText}
-            render={({ pageNumber, totalPages }) =>
-              `Page ${pageNumber} of ${totalPages}`
-            }
-          />
-        </View>
+        <PageFooter />
       </Page>
 
-      {/* Page 2: Actions */}
+      {/* Page 2: 3 Next Steps */}
       <Page size="A4" style={s.page}>
         <View style={s.section}>
-          <Text style={s.sectionTitle}>Your 3 Next Steps</Text>
+          <SectionHeading>Your 3 Next Steps</SectionHeading>
           {roadmap.actions.map((action) => (
             <View key={action.order} style={s.actionCard} wrap={false}>
-              <View style={s.actionHeaderRow}>
-                <Text style={s.actionTag}>{action.type}</Text>
-                <Text style={s.actionStep}>Step {action.order}</Text>
+              <View style={s.actionNumberCircle}>
+                <Text style={s.actionNumber}>{action.order}</Text>
               </View>
-              <Text style={s.actionTitle}>{action.title}</Text>
-              <Text style={s.actionText}>{action.what}</Text>
-
-              <Text style={s.actionFieldLabel}>Why this matters</Text>
-              <Text style={s.actionText}>{action.why}</Text>
-
-              <Text style={s.actionFieldLabel}>How to do it</Text>
-              <Text style={s.actionText}>{action.how}</Text>
-
-              <View style={s.actionMeta}>
-                <View style={s.actionMetaItem}>
-                  <Text style={s.actionFieldLabel}>Timeline</Text>
-                  <Text style={s.actionText}>{action.timeline}</Text>
+              <View style={s.actionBody}>
+                <View style={s.actionHeaderRow}>
+                  <Text style={s.actionTag}>{action.type}</Text>
                 </View>
-                <View style={s.actionMetaItem}>
-                  <Text style={s.actionFieldLabel}>Done when</Text>
-                  <Text style={s.actionText}>{action.done_signal}</Text>
-                </View>
-              </View>
+                <Text style={s.actionTitle}>{action.title}</Text>
+                <Text style={s.actionText}>{action.what}</Text>
 
-              {action.ai_assist?.description && (
-                <View style={s.aiAssist}>
-                  <Text style={s.aiTag}>AI Assist Available</Text>
-                  <Text style={s.actionText}>
-                    {action.ai_assist.description}
-                  </Text>
-                </View>
-              )}
+                <Text style={s.actionFieldLabel}>Why this matters</Text>
+                <Text style={s.actionText}>{action.why}</Text>
 
-              {action.providers && action.providers.length > 0 && (
-                <View>
-                  <Text style={s.actionFieldLabel}>Recommended Providers</Text>
-                  <View style={s.providerRow}>
-                    {action.providers.map((p) => (
-                      <Link key={p.name} src={p.url} style={s.providerLink}>
-                        {p.name}
-                      </Link>
-                    ))}
+                <Text style={s.actionFieldLabel}>How to do it</Text>
+                <Text style={s.actionText}>{action.how}</Text>
+
+                <View style={s.actionMeta}>
+                  <View style={s.actionMetaItem}>
+                    <Text style={s.actionFieldLabel}>Timeline</Text>
+                    <Text style={s.actionText}>{action.timeline}</Text>
+                  </View>
+                  <View style={s.actionMetaItem}>
+                    <Text style={s.actionFieldLabel}>Done when</Text>
+                    <Text style={s.actionText}>{action.done_signal}</Text>
                   </View>
                 </View>
-              )}
+
+                {action.ai_assist?.description && (
+                  <View style={s.aiAssist}>
+                    <Text style={s.aiTag}>AI Assist Available</Text>
+                    <Text style={s.actionText}>
+                      {action.ai_assist.description}
+                    </Text>
+                  </View>
+                )}
+
+                {action.providers && action.providers.length > 0 && (
+                  <View>
+                    <Text style={s.actionFieldLabel}>Recommended Providers</Text>
+                    <View style={s.providerRow}>
+                      {action.providers.map((p) => (
+                        <Link key={p.name} src={p.url} style={s.providerLink}>
+                          {p.name}
+                        </Link>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </View>
             </View>
           ))}
         </View>
 
-        <View style={s.footer} fixed>
-          <Text style={s.footerText}>In Sequence · Strategic Roadmap</Text>
-          <Text
-            style={s.footerText}
-            render={({ pageNumber, totalPages }) =>
-              `Page ${pageNumber} of ${totalPages}`
-            }
-          />
-        </View>
+        <PageFooter />
       </Page>
 
       {/* Page 3: Library */}
       <Page size="A4" style={s.page}>
         {roadmap.library && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Recommended Reading</Text>
+            <SectionHeading>Recommended Reading</SectionHeading>
 
             {roadmap.library.recommended_structures &&
               roadmap.library.recommended_structures.length > 0 && (
-                <View style={{ marginBottom: 16 }}>
+                <View style={s.libraryGroup}>
                   <Text style={s.visionLabel}>Deal Structures</Text>
-                  {roadmap.library.recommended_structures.map((str) => (
-                    <View key={str.id} style={s.libraryItem}>
+                  {roadmap.library.recommended_structures.map((str, i, arr) => (
+                    <View
+                      key={str.id}
+                      style={[
+                        s.libraryItem,
+                        i === arr.length - 1 ? s.libraryItemLast : {},
+                      ]}
+                    >
                       <Text style={s.libraryTitle}>{str.title}</Text>
                       <Text style={s.libraryWhy}>{str.why}</Text>
                     </View>
@@ -583,10 +655,16 @@ export default function RoadmapPDF({
 
             {roadmap.library.recommended_cases &&
               roadmap.library.recommended_cases.length > 0 && (
-                <View style={{ marginBottom: 16 }}>
+                <View style={s.libraryGroup}>
                   <Text style={s.visionLabel}>Case Studies</Text>
-                  {roadmap.library.recommended_cases.map((c) => (
-                    <View key={c.slug} style={s.libraryItem}>
+                  {roadmap.library.recommended_cases.map((c, i, arr) => (
+                    <View
+                      key={c.slug}
+                      style={[
+                        s.libraryItem,
+                        i === arr.length - 1 ? s.libraryItemLast : {},
+                      ]}
+                    >
                       <Text style={s.libraryTitle}>{c.title}</Text>
                       <Text style={s.libraryWhy}>{c.why}</Text>
                     </View>
@@ -598,8 +676,14 @@ export default function RoadmapPDF({
               roadmap.library.reading_path.length > 0 && (
                 <View>
                   <Text style={s.visionLabel}>Reading Path</Text>
-                  {roadmap.library.reading_path.map((item, i) => (
-                    <View key={i} style={s.readingItem}>
+                  {roadmap.library.reading_path.map((item, i, arr) => (
+                    <View
+                      key={i}
+                      style={[
+                        s.readingItem,
+                        i === arr.length - 1 ? s.libraryItemLast : {},
+                      ]}
+                    >
                       <Text style={s.readingNum}>{i + 1}</Text>
                       <Text style={s.readingText}>{item}</Text>
                     </View>
@@ -609,15 +693,7 @@ export default function RoadmapPDF({
           </View>
         )}
 
-        <View style={s.footer} fixed>
-          <Text style={s.footerText}>In Sequence · Strategic Roadmap</Text>
-          <Text
-            style={s.footerText}
-            render={({ pageNumber, totalPages }) =>
-              `Page ${pageNumber} of ${totalPages}`
-            }
-          />
-        </View>
+        <PageFooter />
       </Page>
     </Document>
   );
