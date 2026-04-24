@@ -6,6 +6,7 @@ import NewsletterForm from "@/components/newsletter-form";
 import TestimonialsCarousel from "@/components/testimonials-carousel";
 import { getTestimonials } from "@/lib/content";
 import { ArchetypeSigil } from "@/components/shared/archetype-sigil";
+import { ArchetypeScroller } from "@/components/platform/archetype-scroller";
 import { getArchetypeById } from "@/lib/assessment/archetypes";
 
 // Preview data for the public Platform page. Authoritative member data
@@ -236,27 +237,33 @@ export default function PlatformPage() {
               you to one of six archetypes.
             </p>
             <ul className="archetypes-bullets">
-              <li>
-                <strong>Roadmap</strong> &mdash; actions are weighted to your
-                stage and archetype, not generic growth advice.
-              </li>
-              <li>
-                <strong>Deal Evaluator</strong> &mdash; every verdict is scored
-                against your misalignment flags.
-              </li>
-              <li>
-                <strong>AI Advisor</strong> &mdash; context pre-loaded, no
-                warm-up questions.
-              </li>
-              <li>
-                <strong>Library</strong> &mdash; structures and case studies
-                ranked by relevance to your profile.
-              </li>
+              {[
+                ["Roadmap", "actions are weighted to your stage and archetype, not generic growth advice."],
+                ["Deal Evaluator", "every verdict is scored against your misalignment flags."],
+                ["AI Advisor", "context pre-loaded, no warm-up questions."],
+                ["Library", "structures and case studies ranked by relevance to your profile."],
+              ].map(([label, desc]) => (
+                <li key={label}>
+                  <svg
+                    className="archetypes-bullet-mark"
+                    viewBox="0 0 22 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    aria-hidden
+                  >
+                    <path d="M11 1L21 19H1L11 1Z" />
+                  </svg>
+                  <span>
+                    <strong>{label}</strong> &mdash; {desc}
+                  </span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="archetypes-grid">
+        <ArchetypeScroller>
           {ARCHETYPE_PREVIEWS.map((p, i) => {
             const a = getArchetypeById(p.id);
             const num = String(i + 1).padStart(2, "0");
@@ -346,7 +353,7 @@ export default function PlatformPage() {
               </article>
             );
           })}
-        </div>
+        </ArchetypeScroller>
       </section>
 
       {/* ===== PRICING OVERVIEW — hidden temporarily ===== */}

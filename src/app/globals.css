@@ -1604,23 +1604,21 @@ h3.sec-label {
 .archetypes-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border); }
 .archetypes-bullets li {
   font-family: var(--sans);
-  font-size: 8px;
-  line-height: 1.7;
+  font-size: 11px;
+  line-height: 1.65;
   color: var(--mid);
-  padding-left: 18px;
-  position: relative;
-  letter-spacing: .02em;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  letter-spacing: .01em;
 }
-.archetypes-bullets li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 5px;
+.archetypes-bullet-mark {
+  flex-shrink: 0;
   width: 10px;
   height: 9px;
-  background: var(--black);
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 20' fill='none' stroke='black' stroke-width='1.5'><path d='M11 1L21 19H1L11 1Z'/></svg>") no-repeat center / contain;
-  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 20' fill='none' stroke='black' stroke-width='1.5'><path d='M11 1L21 19H1L11 1Z'/></svg>") no-repeat center / contain;
+  color: var(--black);
+  /* Align with the cap-height center of the mono strong label that follows */
+  margin-top: 5px;
 }
 .archetypes-bullets li strong {
   color: var(--black); font-weight: 500; font-family: var(--mono);
@@ -1628,23 +1626,51 @@ h3.sec-label {
   margin-right: 6px;
 }
 
-/* Grid — 8-col underlying (aligns to bg grid overlay), cards span 3 cols,
-   staggered horizontal offset on alternating rows for asymmetry */
-.archetypes-grid {
-  padding: 0 var(--margin);
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: var(--gutter);
-  row-gap: 32px;
+/* Horizontal scroller — all 6 cards in a single row wider than the viewport.
+   Desktop drives scrollLeft via mouse x-position (see ArchetypeScroller);
+   touch/coarse pointer devices fall back to native scroll + scroll-snap. */
+.archetype-scroller {
+  position: relative;
+  /* Let the track bleed to both viewport edges but keep section in flow */
 }
-/* Row 1: 4 cards fill the full 8-col grid (span 2 cols each) */
-.archetype-card:nth-child(1) { grid-column: 1 / span 2; }
-.archetype-card:nth-child(2) { grid-column: 3 / span 2; }
-.archetype-card:nth-child(3) { grid-column: 5 / span 2; }
-.archetype-card:nth-child(4) { grid-column: 7 / span 2; }
-/* Row 2: 2 cards centered into cols 4-7 for asymmetric bottom */
-.archetype-card:nth-child(5) { grid-column: 4 / span 2; }
-.archetype-card:nth-child(6) { grid-column: 6 / span 2; }
+.archetype-scroller-track {
+  display: flex;
+  gap: var(--gutter);
+  padding: 6px var(--margin) 6px;  /* 6px top/bottom keeps hover borders from clipping */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: auto;  /* rAF lerp handles smoothing */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.archetype-scroller-track::-webkit-scrollbar { display: none; }
+.archetype-scroller-track .archetype-card {
+  flex: 0 0 340px;
+}
+
+/* Edge fade affordance — hints that content is scrollable */
+.archetype-scroller::before,
+.archetype-scroller::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.archetype-scroller::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg), rgba(245,243,240,0));
+}
+.archetype-scroller::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg), rgba(245,243,240,0));
+}
+.archetype-scroller.has-overflow-left::before { opacity: 1; }
+.archetype-scroller.has-overflow-right::after { opacity: 1; }
 
 .archetype-card {
   border: 1px solid var(--border);
@@ -1724,42 +1750,17 @@ h3.sec-label {
 }
 
 /* Responsive */
-@media (max-width: 1080px) {
-  /* Go to 2-up layout — 4 across is too tight below this width.
-     Row 1: cards 1-4 at cols 1-4 & 5-8 (two per row). Row 2: cards 5-6 at
-     same pattern — keeps the asymmetric 4/2 idea by using 2/2/2 rows */
-  .archetype-card:nth-child(1) { grid-column: 1 / span 4; }
-  .archetype-card:nth-child(2) { grid-column: 5 / span 4; }
-  .archetype-card:nth-child(3) { grid-column: 1 / span 4; }
-  .archetype-card:nth-child(4) { grid-column: 5 / span 4; }
-  .archetype-card:nth-child(5) { grid-column: 3 / span 4; }
-  .archetype-card:nth-child(6) { grid-column: 5 / span 4; }
-  .archetype-card-title { font-size: 20px; }
-}
 @media (max-width: 860px) {
   .archetypes { padding: 120px 0 56px; }
   .archetypes-head { grid-template-columns: 1fr; gap: 24px; padding-bottom: 56px; row-gap: 24px; }
   .archetypes-head-left,
   .archetypes-head-right { grid-column: 1; }
-  .archetypes-grid { grid-template-columns: repeat(2, 1fr); }
-  .archetype-card,
-  .archetype-card:nth-child(1),
-  .archetype-card:nth-child(2),
-  .archetype-card:nth-child(3),
-  .archetype-card:nth-child(4),
-  .archetype-card:nth-child(5),
-  .archetype-card:nth-child(6) { grid-column: span 1; }
+  .archetype-scroller-track .archetype-card { flex: 0 0 300px; }
 }
 @media (max-width: 640px) {
   .archetypes { padding: 80px 0 40px; }
-  .archetypes-grid { grid-template-columns: 1fr; row-gap: 20px; }
-  .archetype-card,
-  .archetype-card:nth-child(1),
-  .archetype-card:nth-child(2),
-  .archetype-card:nth-child(3),
-  .archetype-card:nth-child(4),
-  .archetype-card:nth-child(5),
-  .archetype-card:nth-child(6) { grid-column: 1; }
+  .archetype-scroller-track { padding-left: 20px; padding-right: 20px; }
+  .archetype-scroller-track .archetype-card { flex: 0 0 82vw; max-width: 320px; }
   .archetype-card { padding: 22px 20px 20px; gap: 14px; }
   .archetype-card-sigil { width: 64px; height: 64px; }
 }
