@@ -277,6 +277,18 @@ grep -rn "^title:" content/case-studies/ | grep -E "[a-z][A-Z]|[0-9][A-Z]"
 
 Fix each with a targeted sed. Legitimate camelcase names (McMullin, McKinnon) are false positives.
 
+**Useful narrower patterns when the regex above is too noisy:**
+
+```bash
+# Missing space before "to" or "the" after a lowercase word
+grep -iE "[a-z](to|the) [A-Z]" content/case-studies/*.mdx
+
+# All-caps acronym fused to a following word (e.g., "AITransition", "APIDriven")
+grep -E "[A-Z][A-Z]+[A-Z][a-z]+" content/case-studies/*.mdx | grep -v "^Binary"
+```
+
+Run this sweep whenever a title appears to read oddly. Past rounds have caught: `DJto`, `$350,000Trade`, `Loopsto Full`, `Videosto Gagosian`, `Ticketsto the`, `Designerto $385`, `Publishedthe Numbers`, `AITransition`. The pattern recurs because markdown editors and title-case transforms sometimes strip separators silently.
+
 ---
 
 ### Symptom: Recommended Actions in Portfolio Analysis don't show structure badges

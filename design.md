@@ -447,6 +447,35 @@ Full-width dark image with overlay, large white headline, form on the right.
 
 Feature showcase: label on left column, title + description, then browser-frame-wrapped video on the right. Two-column grid at desktop, stacked mobile.
 
+### Archetype preview card (`.archetype-card`)
+
+Used on the public Platform page to surface 3 Creative Identity archetypes. Single-color card, 1px border, 24–32px padding, with the archetype SVG sigil (120×120 line-art) at top-left, followed by a mono `[ARCHETYPE]` label, sans 22px/500 title, and muted description.
+
+```html
+<section class="archetypes">
+  <div class="archetypes-head">
+    <span class="archetypes-lbl">[CREATIVE IDENTITY]</span>
+    <h2>Creative Identity</h2>
+    <p class="archetypes-desc">...</p>
+  </div>
+  <div class="archetypes-grid">
+    <div class="archetype-card">
+      <div class="archetype-card-sigil"><ArchetypeSigil archetypeId="..." /></div>
+      <span class="archetype-card-lbl">[ARCHETYPE]</span>
+      <h3 class="archetype-card-title">...</h3>
+      <p class="archetype-card-desc">...</p>
+    </div>
+    <!-- ×3 -->
+  </div>
+</section>
+```
+
+Grid: 3 columns desktop, 2 columns at 860px (last card spans full width), 1 column at 640px. Hover darkens the border. Sigils use `currentColor` so the card text color drives them automatically.
+
+### Archetype sigils — shared component
+
+The 6 archetype SVG marks live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal's Creative Identity portrait (`creative-identity-panel.tsx`) and the public Platform page. Always use the shared component — **don't inline SVG markup**. Each sigil is a 140×140 viewBox line-art mark that inherits its color from `currentColor`, so the consuming surface controls theming.
+
 ### Two-column content (library, misalignments, vision)
 
 Grid with distinct cards in each column. Collapses to single column below 760px.
@@ -548,6 +577,7 @@ Every piece of UI text should pass these filters:
 
 ### Shared components
 - `src/components/shared/generation-progress.tsx` — loading UI
+- `src/components/shared/archetype-sigil.tsx` — 6 archetype SVG sigils, used by both portal CI portrait and public Platform page
 - `src/components/ui/button-arrow.tsx` — arrow icon
 - `src/components/ui/browser-frame.tsx` — video frame wrapper
 

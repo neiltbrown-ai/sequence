@@ -10,6 +10,28 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-04-24 — Refinements pass (platform, case studies, portal mobile, roadmap)
+
+**Goal:** A series of small, well-scoped refinements across the public site and portal — no architectural change, just surface-level polish and a few UX corrections caught in walkthroughs.
+
+**Shipped:**
+- **Platform page** — new "Creative Identity" section below the tool cards, showcasing 3 archetype preview cards (Unstructured Creative / Platform Builder / Untapped Catalog) with SVG sigils. Sigils extracted from `creative-identity-panel.tsx` into a shared `src/components/shared/archetype-sigil.tsx` so public + portal both consume the same component
+- **Case study titles** — 6 concatenated-word titles fixed (Tyler Mitchell, Tash Sultana, Joey L, Kristian Andersen, Pomplamoose, Paul Trillo). Continuation of the earlier `DJto`-style sweep — one more pattern (`AITransition`) caught this round
+- **Portal mobile nav** — removed the redundant X close button; the carrot collapse button now closes the drawer on mobile and toggles collapsed state on desktop. Single toggle, behavior varies by viewport
+- **Portal top-right buttons** — Save / Regenerate / Download PDF wrap their text in a `.btn-bookmark-label` span and hide it below 640px, leaving just the icon with tightened padding. `aria-label` added so screen readers still get the full label
+- **Roadmap section order** — Recent Deal Signal moved from position 3 (right under Your Position) to position 5 (after Structural Misalignments, before Your 3 Next Steps). Misalignments get more weight; deals now sit closer to the forward-looking actions they influence. Your Vision keeps Transition Signals nested at its bottom — no internal change
+- **Roadmap all-steps-complete banner** — when all 3 `assessment_actions` for the current `plan_id` are `completed`, a banner renders under the actions with a "Refresh Roadmap" CTA that calls the existing `handleRegenerate` flow. Derived from `roadmap.actions.every(...)` — no new API or DB column
+- **Roadmap PDF polish** — editorial two-column header (title left, member/date right), thin black rule above each section label, subtle tinted cards for Position/Vision/Actions, numbered black circles on each Next Step, updated footer ("insequence.so · page N / total"). Same 3-page structure; styling-only pass
+- **Structures mobile** — Alternatives condition can now wrap to its own line (`flex-shrink: 1`, `flex-basis: 100%` at ≤640px) so the structure name doesn't get squeezed into 3 lines. Tables drop their 480px min-width and let the first column wrap, mirroring the `.cb-table` case-study pattern
+- **Portfolio Analysis horizons** — Medium Term and Long Term Vision now render as two side-by-side cards in a grid (stacked below 640px). Each card has a line-art SVG icon (clock for medium, mountain-peak for long-term) and body text bumped from 13px → 15px
+
+**New shared component:**
+- `src/components/shared/archetype-sigil.tsx` — single source of truth for the 6 archetype SVG marks. Consumed by `creative-identity-panel.tsx` (portal) and `platform/page.tsx` (public)
+
+**Outcome:** Public Platform page finally shows the Creative Identity story with its own visual weight. Roadmap narrative reads tighter (misalignments → deal signal → actions) and the "you're done — refresh" loop is closed. Mobile nav is no longer confusing, and Structures + Portfolio read cleanly on phone. PDF download looks worth printing.
+
+---
+
 ## 2026-04-19 — Documentation hardening + future scope
 
 **Goal:** Make the docs robust enough that a fresh Claude session can ramp on architecture in <5 min and avoid re-introducing bugs we already paid for.

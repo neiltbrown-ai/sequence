@@ -250,6 +250,8 @@ Stacking order inside `.lib-card--cover`:
 
 `src/components/portal/creative-identity-panel.tsx` has three states (empty / in-progress / complete). Complete state shows a per-archetype sigil SVG (6 unique marks, one per archetype) + stage band + facet grid + friction points. Snapshot loaded server-side in `src/app/(portal)/settings/page.tsx` — prefers completed assessment over any newer in-progress row.
 
+The 6 archetype sigils live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal portrait and the public Platform page's Creative Identity section. **Don't inline the sigil SVGs anywhere else — always import from the shared component.**
+
 ---
 
 ## Dark mode gotchas
