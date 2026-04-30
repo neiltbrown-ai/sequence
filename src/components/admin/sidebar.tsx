@@ -12,7 +12,6 @@ import {
   AiAdvisorIcon,
   BackIcon,
   SettingsIcon,
-  CloseIcon,
 } from "../portal/icons";
 
 interface NavItem {
@@ -89,10 +88,6 @@ export default function AdminSidebar() {
       <aside
         className={`sidebar${sidebarOpen ? " open" : ""}${sidebarCollapsed ? " collapsed" : ""}`}
       >
-        <button className="sb-close" onClick={closeSidebar}>
-          <CloseIcon />
-        </button>
-
         <div className="sb-logo-row">
           {!sidebarCollapsed && <div className="sb-logo">Admin</div>}
           <button

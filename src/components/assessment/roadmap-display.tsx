@@ -149,13 +149,20 @@ export default function RoadmapDisplay({
       : [];
 
   async function handleRegenerate() {
-    if (!confirm("Regenerate your roadmap? This will replace the current content with a fresh AI-generated version including entity structure and value flywheel diagrams.")) return;
+    if (!confirm("Regenerate your roadmap? This will create a new plan with fresh actions, entity structure, and value flywheel — your previous plan is archived but no longer the active view.")) return;
     setRegenerating(true);
     try {
-      const res = await fetch("/api/assessment/regenerate", {
+      // /api/roadmap/refresh creates a NEW strategic_plan row (rather than
+      // mutating the existing one), which is the correct behavior here:
+      // each regeneration should produce a clean plan_id so action-tracking
+      // doesn't carry "completed" state from a prior set of 3 actions.
+      // (See troubleshooting.md — the older /api/assessment/regenerate
+      // endpoint mutated the existing row in-place and caused the
+      // refresh-banner-still-showing bug after regeneration.)
+      const res = await fetch("/api/roadmap/refresh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: plan.id }),
+        body: JSON.stringify({ triggerReason: "manual" }),
       });
       if (res.ok) {
         window.location.reload();
