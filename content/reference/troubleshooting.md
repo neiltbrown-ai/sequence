@@ -251,6 +251,30 @@ img.lib-card-cover-img {
 
 ---
 
+### Symptom: Programmatic horizontal scroll snaps back instead of moving smoothly
+
+**Reports as:** Setting `track.scrollLeft = 400` jumps to a snap point (e.g. 365) or stays at 0. rAF-driven mouse-follow scroll feels jittery, jerks between snap points, never moves smoothly with the cursor.
+
+**Root cause:** `scroll-snap-type: x mandatory` (or `proximity`) on the track is fighting the rAF programmatic scroll. The browser snaps `scrollLeft` to the nearest snap point on every frame, overriding the per-frame lerp writes. `scroll-behavior: smooth` compounds this by adding an async smoothing layer that the rAF loop has to fight too.
+
+**Fix:** Either use scroll-snap *or* programmatic mouse-follow scroll, not both. For the mouse-follow pattern (see `src/components/platform/archetype-scroller.tsx`):
+
+```css
+.archetype-scroller-track {
+  overflow-x: auto;
+  scroll-behavior: auto;     /* not smooth — rAF lerp handles smoothing */
+  /* no scroll-snap-type here */
+}
+.archetype-scroller-track .archetype-card {
+  flex: 0 0 340px;
+  /* no scroll-snap-align — would pull scrollLeft back */
+}
+```
+
+**Verification:** in DevTools, run `track.scrollLeft = 500; await new Promise(r => setTimeout(r, 100)); track.scrollLeft;` — should return ~500, not a snap point or 0.
+
+---
+
 ### Symptom: Portal case study → click related → taken to public view
 
 **Root cause:** Case study MDX files author related-card `href` with public URLs (`/case-studies/foo`), not portal URLs.

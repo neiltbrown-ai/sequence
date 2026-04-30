@@ -474,7 +474,25 @@ Grid: 3 columns desktop, 2 columns at 860px (last card spans full width), 1 colu
 
 ### Archetype sigils — shared component
 
-The 6 archetype SVG marks live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal's Creative Identity portrait (`creative-identity-panel.tsx`) and the public Platform page. Always use the shared component — **don't inline SVG markup**. Each sigil is a 140×140 viewBox line-art mark that inherits its color from `currentColor`, so the consuming surface controls theming.
+The 8 archetype SVG marks live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal's Creative Identity portrait (`creative-identity-panel.tsx`) and the public Platform page. Always use the shared component — **don't inline SVG markup**. Each sigil uses a tightened viewBox per archetype and inherits its color from `currentColor`, so the consuming surface controls theming.
+
+### Mouse-position-driven horizontal scroller
+
+`src/components/platform/archetype-scroller.tsx` is the canonical pattern when a row of cards exceeds viewport width and you want a richer-feeling interaction than a plain scrollbar. Use it for showcase rows where every card matters and the user shouldn't have to commit to scrolling — they just sweep their cursor.
+
+**Behavior:**
+- Cards render in a single flex row inside a horizontally-overflowing track
+- On fine-pointer + hover-capable devices: cursor x-position inside the section maps linearly to `scrollLeft` (with an 8% inset on each edge as a dead-zone). rAF lerp at 0.14 per frame smooths the motion. Cursor at left edge → first card exposed; cursor at right edge → last card exposed.
+- Touch / coarse pointer / `prefers-reduced-motion`: falls back to native `overflow-x: auto` scroll
+- Edge-fade gradients (`::before` + `::after`) fade in based on overflow state (`has-overflow-left` / `has-overflow-right` classes managed by the component)
+
+**CSS gotchas to avoid (see troubleshooting.md):**
+- Do **not** use `scroll-snap-type: mandatory` or `proximity` on the track — both fight the rAF programmatic scroll. Snap forces scrollLeft back to the nearest snap point on every frame, producing a jerk-and-stop visual. Either use snap *or* the mouse-follow lerp, not both.
+- Set `scroll-behavior: auto` on the track (not `smooth`) — the rAF lerp handles smoothing; CSS `smooth` adds an async layer that fights the per-frame writes.
+
+**When to use:** archetype showcase, library curation rails, case-study highlights — anywhere you have ~5–10 cards that should *feel* like a single curated row, not a scrollbar list.
+
+**When not to use:** standard product/article grids where users intentionally browse and scroll. The mouse-follow behavior is delightful for showcases but actively annoying when users want to read.
 
 ### Two-column content (library, misalignments, vision)
 
@@ -577,7 +595,8 @@ Every piece of UI text should pass these filters:
 
 ### Shared components
 - `src/components/shared/generation-progress.tsx` — loading UI
-- `src/components/shared/archetype-sigil.tsx` — 6 archetype SVG sigils, used by both portal CI portrait and public Platform page
+- `src/components/shared/archetype-sigil.tsx` — 8 archetype SVG sigils, used by both portal CI portrait and public Platform page
+- `src/components/platform/archetype-scroller.tsx` — mouse-position-driven horizontal scroll row (Platform page CI section)
 - `src/components/ui/button-arrow.tsx` — arrow icon
 - `src/components/ui/browser-frame.tsx` — video frame wrapper
 

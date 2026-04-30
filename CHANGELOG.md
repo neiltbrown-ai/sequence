@@ -10,6 +10,30 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-04-24 — Stage 4 archetypes + Platform CI horizontal scroller
+
+**Goal:** Close the Stage 4 gap in the archetype system and rebuild the public Platform page's Creative Identity section as a richer, asymmetric showcase that all 8 archetypes can live in.
+
+**Shipped:**
+
+**Two new Stage 4 archetypes** in `src/lib/assessment/archetypes.ts` — the first 6 topped out at stage_range `[2, 3.5]`, so any member detected at Stage 4 (Capital Formation, $2M+) was getting routed into a Stage 3 archetype that undersold their position.
+- **Capital Allocator** (`builder / service / transition`) — operator graduating to portfolio role. 3 actions: formalize allocator role (family office / fund / investment LLC) · write investment thesis · make first structured portfolio bet. Sigil: filled HQ + 4 cardinal satellite squares with connecting rays.
+- **Creative Principal** (`maker / performer / hybrid`) — Virgil Abloh-style: taste as IP across multiple ventures, written doctrine, second principal. 3 actions: creative services holding structure · codify the taste · hire second principal. Sigil: filled center taste-node + 5 rays fanning to varied satellites (mixed geometry = multi-discipline).
+- Routing happens automatically through the existing weighted matcher (+3 stage range, +2 mode match) — no change needed in `archetype-matching.ts`. A maker at Stage 4 → Creative Principal; a builder/service → Capital Allocator.
+
+**Public Platform page CI section — full redesign** in `src/app/(public)/platform/page.tsx` + `src/components/platform/archetype-scroller.tsx` (new) + `src/app/globals.css`.
+- Iterated through three layouts to land on the right one: 3-up grid (initial) → 4-up + 2-centered asymmetric (request 1) → single-row horizontal scroller (request 2). The scroller is the keeper.
+- New `ArchetypeScroller` client component: all 8 cards in a single horizontal row wider than the viewport. On fine-pointer + hover-capable devices, mouse x-position inside the section drives `scrollLeft` via rAF lerp (14% easing per frame). Touch / coarse pointer / reduced-motion fall back to native overflow-x scroll. Edge-fade gradients toggle via `has-overflow-left` / `has-overflow-right` to hint scrollability.
+- Card content went from sigil + title + desc → sigil + kicker + title + desc + typical stage band with dot-rail + income band + 2 example friction points with stroked-triangle markers.
+- Section head reflowed: title spans cols 1-7 on row 1, description + bullets sit on row 2 at cols 3-6 for asymmetric indent. Bullets use mono `[LABEL]` + 11px sans copy with stroked-triangle markers (inline SVG, flex layout, pixel-perfect vertical centering with the mono label — verified delta 0).
+
+**New shared component:**
+- `src/components/platform/archetype-scroller.tsx` — first instance of mouse-position-driven horizontal scroll in the codebase. Reusable for any showcase row that needs to feel rich without claiming vertical real estate.
+
+**Outcome:** Creative Identity section on the public Platform page now does the conceptual heavy lifting it was supposed to — all 8 archetypes visible, all coverage from Stage 1 to Stage 4 represented, the system's logic legible to a visitor before they sign up. Members at Stage 4 finally land in an archetype that matches their position.
+
+---
+
 ## 2026-04-24 — Refinements pass (platform, case studies, portal mobile, roadmap)
 
 **Goal:** A series of small, well-scoped refinements across the public site and portal — no architectural change, just surface-level polish and a few UX corrections caught in walkthroughs.
