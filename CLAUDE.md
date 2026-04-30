@@ -96,6 +96,7 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 - `content/reference/case-study-components.md` — MDX component toolkit
 - `content/reference/design-system.md` — visual + editorial design reference
 - `content/reference/troubleshooting.md` — symptom → cause → fix for recurring bugs
+- `content/reference/test-users.md` — quick-glance reference for the 10 seeded test/demo users (password, expected data shape per user, what each is best for testing/demoing)
 - `design.md` (root) — digital product design system (tokens, components, patterns)
 - `content/reference/advisor-memory-spec.md` — future: persistent advisor memory (Path B from the advisor evolution discussion). Not yet implemented.
 - `content/reference/sequence-mcp-spec.md` — future: MCP server exposing Sequence data to Claude Desktop + future AI features. Not yet implemented.
