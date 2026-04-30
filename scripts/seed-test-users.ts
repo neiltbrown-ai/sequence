@@ -643,7 +643,7 @@ async function seedMakerUser() {
   });
 
   // Deal 2 — licensing deal, yellow signal, pending
-  await insertRow("deal_evaluations", {
+  const evalId2 = await insertRow("deal_evaluations", {
     id: randomUUID(),
     user_id: id,
     status: "completed",
@@ -726,6 +726,62 @@ async function seedMakerUser() {
     });
   }
 
+  // Verdict for deal 2 — Netflix doc distribution
+  if (evalId2) {
+    await insertRow("deal_verdicts", {
+      id: randomUUID(),
+      user_id: id,
+      evaluation_id: evalId2,
+      status: "published",
+      verdict_content: {
+        signal: {
+          color: "yellow",
+          headline: "Visibility play with structural compromises worth renegotiating",
+          summary: "Netflix distribution unlocks audience scale you can't get elsewhere, but the $25K flat fee + template territorial terms leave significant value on the table. Push for split-rights structure and a backend kicker.",
+        },
+        dimension_summaries: {
+          financial: "$25K flat for worldwide rights is materially below market for a Netflix-tier doc with festival pedigree.",
+          career: "Streaming visibility builds your director profile. Strong portfolio piece for the next narrative pitch.",
+          partner: "Netflix is the right platform — the issue is terms, not the partner.",
+          structure: "Template terms include broad worldwide rights without territory-by-territory rate cards. That's where the value leaks.",
+          risk: "You self-funded production; locking in worldwide rights at this rate forecloses other licensing opportunities.",
+          legal: "Entertainment attorney engaged — good. Have them push specifically on territory splits and reversion windows.",
+        },
+        recommended_actions: [
+          {
+            order: 1,
+            action: "Negotiate territory-by-territory rights split",
+            detail: "Push to license US/UK to Netflix, retain non-anglophone rights for separate licensing. Each territory often pays 30-50% of US rate.",
+            structure_ref: { id: 31, slug: "territory-media-rights-splitting", title: "Territory + Media Rights Splitting" },
+          },
+          {
+            order: 2,
+            action: "Add a viewership-tier kicker",
+            detail: "Propose a $10K bonus at 5M views, $25K bonus at 10M. Netflix has the data; this aligns incentives at almost no marginal cost to them.",
+            structure_ref: { id: 22, slug: "gross-participation", title: "Gross Participation" },
+          },
+          {
+            order: 3,
+            action: "Negotiate a 5-year reversion clause",
+            detail: "After 5 years on Netflix, rights revert to you. Doc long-tail value is increasingly meaningful as streaming aggregators compete.",
+            structure_ref: { id: 29, slug: "rights-reversion-clauses", title: "Rights Reversion Clauses" },
+          },
+        ],
+        resources: {
+          structures: [
+            { id: 31, slug: "territory-media-rights-splitting", title: "Territory + Media Rights Splitting", why: "How to license worldwide deals piece by piece." },
+            { id: 27, slug: "non-exclusive-licensing", title: "Non-Exclusive Licensing", why: "Preserves ability to license to other distributors." },
+            { id: 29, slug: "rights-reversion-clauses", title: "Rights Reversion Clauses", why: "Get rights back after a defined window." },
+          ],
+          case_studies: [
+            { slug: "ryan-coogler", title: "Ryan Coogler", why: "Negotiated 25-year reversion on Sinners — the canonical reversion case." },
+            { slug: "ava-duvernay", title: "Ava DuVernay", why: "ARRAY's distribution-side leverage with Netflix and other platforms." },
+          ],
+        },
+      },
+    });
+  }
+
   // Inventory — filmmaker assets
   const items = [
     { asset_name: "Original screenplay catalog (12 scripts)", asset_type: "ip", description: "12 original screenplays: drama, thriller, sci-fi. 3 currently optioned.", ownership_status: "own_fully", licensing_potential: "high", sort_order: 1 },
@@ -790,7 +846,7 @@ async function seedMakerUser() {
   });
 
   await addBookmarks(id, 5);
-  console.log("  ✓ Filmmaker seeded (assessment + roadmap + 2 deals + verdict + 6 assets + analysis + bookmarks)");
+  console.log("  ✓ Filmmaker seeded (assessment + roadmap + 2 deals [green/yellow] + 2 verdicts + 6 assets + analysis + bookmarks)");
 }
 
 // ---------------------------------------------------------------------------
@@ -982,7 +1038,7 @@ async function seedServiceUser() {
   }
 
   // Deal — service deal with equity component, yellow (needs restructure)
-  await insertRow("deal_evaluations", {
+  const priyaDeal1Id = await insertRow("deal_evaluations", {
     id: randomUUID(),
     user_id: id,
     status: "completed",
@@ -1025,7 +1081,7 @@ async function seedServiceUser() {
   });
 
   // Second deal — advisory, red signal, declined
-  await insertRow("deal_evaluations", {
+  const priyaDeal2Id = await insertRow("deal_evaluations", {
     id: randomUUID(),
     user_id: id,
     status: "completed",
@@ -1061,6 +1117,116 @@ async function seedServiceUser() {
     started_at: new Date("2026-03-09").toISOString(),
     completed_at: new Date("2026-03-09").toISOString(),
   });
+
+  // Verdict for deal 1 — Fintech design system + advisory (yellow, renegotiated)
+  if (priyaDeal1Id) {
+    await insertRow("deal_verdicts", {
+      id: randomUUID(),
+      user_id: id,
+      evaluation_id: priyaDeal1Id,
+      status: "published",
+      verdict_content: {
+        signal: {
+          color: "yellow",
+          headline: "Strong client + portfolio piece, but you're trading judgment for fees",
+          summary: "Funded fintech with aligned vision is the kind of client you want, but $10K/mo flat for design system + product strategy is service-pricing for what is structurally an advisory engagement. Convert to fee + equity.",
+        },
+        dimension_summaries: {
+          financial: "$10K/mo flat is below market for combined design system + strategic input. The strategy hours alone are worth $250+/hr.",
+          career: "Strong portfolio piece. Series-A fintech with growth trajectory. Worth doing on the right structure.",
+          partner: "Funded company, founder-aligned, communicating clearly. Partner is fine — the issue is structure.",
+          structure: "SOW covers deliverables but no equity, no IP retention for the design system framework you're building.",
+          risk: "Low operational risk; the real risk is opportunity cost of 6-12 months at flat-fee pricing.",
+          legal: "No attorney review on the SOW is a flag. At minimum, get IP ownership clarified.",
+        },
+        recommended_actions: [
+          {
+            order: 1,
+            action: "Restructure to fee + equity vesting",
+            detail: "Propose $8K/mo + 0.75% equity vesting over 24 months. You're building infrastructure they'll use for years; participate in the upside.",
+            structure_ref: { id: 26, slug: "26-hybrid-fee-backend", title: "Hybrid Fee + Backend Model" },
+          },
+          {
+            order: 2,
+            action: "Retain IP rights to your design system methodology",
+            detail: "License the design system to this client; retain right to use the underlying framework with future clients. The framework is your IP, not theirs.",
+            structure_ref: { id: 27, slug: "27-non-exclusive-licensing", title: "Non-Exclusive Licensing" },
+          },
+          {
+            order: 3,
+            action: "Add formal advisor designation",
+            detail: "Title shift: from contractor → advisor + designer. Same work, different posture. Advisor terms typically include equity and signaling value beyond the fee.",
+            structure_ref: { id: 4, slug: "04-advisory-consultant-model", title: "Advisory / Consultant Model" },
+          },
+        ],
+        resources: {
+          structures: [
+            { id: 26, slug: "26-hybrid-fee-backend", title: "Hybrid Fee + Backend Model", why: "Add equity component to service retainers." },
+            { id: 17, slug: "17-equity-for-services", title: "Equity-for-Services", why: "Framework for proposing equity to clients." },
+            { id: 4, slug: "04-advisory-consultant-model", title: "Advisory / Consultant Model", why: "Reframe service work as advisory." },
+          ],
+          case_studies: [
+            { slug: "kristian-andersen", title: "Kristian Andersen", why: "Freelance designer to $385M venture partner — the canonical service-to-equity transition." },
+            { slug: "jessica-walsh", title: "Jessica Walsh", why: "Design partnerships with equity components." },
+          ],
+        },
+      },
+    });
+  }
+
+  // Verdict for deal 2 — Pre-seed advisory (red, declined)
+  if (priyaDeal2Id) {
+    await insertRow("deal_verdicts", {
+      id: randomUUID(),
+      user_id: id,
+      evaluation_id: priyaDeal2Id,
+      status: "published",
+      verdict_content: {
+        signal: {
+          color: "red",
+          headline: "Don't do this deal. Every dimension is a structural red flag.",
+          summary: "Zero cash, no equity terms in writing, verbal-only agreement, unfunded company. Even the 'network value' framing assumes the founder has a network — they don't yet, by definition. Decline politely and offer to revisit post-funding with proper terms.",
+        },
+        dimension_summaries: {
+          financial: "$0 cash + verbal equity promise = zero compensation in any enforceable sense.",
+          career: "Pre-seed unfunded company has no track record yet. The 'network' you'd build is hypothetical.",
+          partner: "Founder is unfunded and pre-track-record. No flag against them personally — just objectively risky.",
+          structure: "Verbal-only, no SOW, no equity grant document. Nothing to enforce, nothing to point at six months in.",
+          risk: "Maximum downside (your time + IP) for minimum upside (uncertain equity in unfunded co).",
+          legal: "No attorney, no agreement, no equity grant docs. There's nothing legal here to review because there's nothing in writing.",
+        },
+        recommended_actions: [
+          {
+            order: 1,
+            action: "Decline politely, offer to revisit at funding",
+            detail: "Send a kind decline. Frame it as structural: 'Once you've closed your seed and have advisor agreements in place, I'd love to talk again.' Keeps the door open without the structural risk.",
+            structure_ref: { id: 4, slug: "04-advisory-consultant-model", title: "Advisory / Consultant Model" },
+          },
+          {
+            order: 2,
+            action: "Set a personal threshold for advisory engagements",
+            detail: "Define your minimum bar for advisory work — funded company, written equity grant, attorney review on both sides. Use it as a filter for the next 5 founders who ask.",
+            structure_ref: { id: 4, slug: "04-advisory-consultant-model", title: "Advisory / Consultant Model" },
+          },
+          {
+            order: 3,
+            action: "Build a formal advisor offering with terms",
+            detail: "Productize the advisory tier: 0.25-1.0% equity over 24mo vesting, monthly office hours, deliverables defined upfront. Have it ready when funded founders approach.",
+            structure_ref: { id: 17, slug: "17-equity-for-services", title: "Equity-for-Services Model" },
+          },
+        ],
+        resources: {
+          structures: [
+            { id: 4, slug: "04-advisory-consultant-model", title: "Advisory / Consultant Model", why: "Standard advisor terms protect both sides." },
+            { id: 17, slug: "17-equity-for-services", title: "Equity-for-Services", why: "Formal equity grant structure." },
+          ],
+          case_studies: [
+            { slug: "kristian-andersen", title: "Kristian Andersen", why: "Built advisory practice with formal equity terms." },
+          ],
+        },
+      },
+    });
+  }
 
   // Inventory — designer assets
   const items = [
@@ -1124,7 +1290,7 @@ async function seedServiceUser() {
   });
 
   await addBookmarks(id, 4);
-  console.log("  ✓ Product designer seeded (assessment + roadmap + 2 deals [yellow + red] + 5 assets + analysis + bookmarks)");
+  console.log("  ✓ Product designer seeded (assessment + roadmap + 2 deals [yellow + red] + 2 verdicts + 5 assets + analysis + bookmarks)");
 }
 
 // ---------------------------------------------------------------------------
@@ -1365,7 +1531,7 @@ async function seedPerformerUser() {
   });
 
   // Deal 2 — catalog partial sale offer, yellow (complex, needs thought)
-  await insertRow("deal_evaluations", {
+  const marcusDeal2Id = await insertRow("deal_evaluations", {
     id: randomUUID(),
     user_id: id,
     status: "completed",
@@ -1405,7 +1571,7 @@ async function seedPerformerUser() {
   });
 
   // Deal 3 — brand partnership, red (exploitative terms)
-  await insertRow("deal_evaluations", {
+  const marcusDeal3Id = await insertRow("deal_evaluations", {
     id: randomUUID(),
     user_id: id,
     status: "completed",
@@ -1489,6 +1655,118 @@ async function seedPerformerUser() {
           ],
           case_studies: [
             { slug: "tash-sultana", title: "Tash Sultana", why: "Independent licensing success story." },
+          ],
+        },
+      },
+    });
+  }
+
+  // Verdict for deal 2 — Hipgnosis catalog partial sale (yellow, pending)
+  if (marcusDeal2Id) {
+    await insertRow("deal_verdicts", {
+      id: randomUUID(),
+      user_id: id,
+      evaluation_id: marcusDeal2Id,
+      status: "published",
+      verdict_content: {
+        signal: {
+          color: "yellow",
+          headline: "Real capital at a strong multiple, but the irrevocable terms need work",
+          summary: "$750K for 50% of catalog rights at current royalty levels is roughly 12-15x NPS — strong market multiple. The structural concern is permanence: irrevocable transfer + no sync approval rights means you lose creative input on how your music is used. Counter for a 30% stake with retained sync veto.",
+        },
+        dimension_summaries: {
+          financial: "$750K at ~12-15x NPS is at-market for top-tier catalog deals in 2026. Timing is favorable.",
+          career: "Catalog sale to a major fund signals you've arrived. But surrendering sync approval cuts off creative agency on how your work travels.",
+          partner: "Hipgnosis has a real track record acquiring and managing catalogs. They're the right kind of buyer.",
+          structure: "Irrevocable rights transfer is the term to renegotiate. Section 203 statutory reversion still kicks in at 35yrs, but contractual control during the window matters.",
+          risk: "Permanent rights transfer = you can never undo this. Worth taking the time to structure correctly.",
+          legal: "Entertainment attorney is engaged. Push specifically on sync approval, advance against future earnings, and partial-sale structure.",
+        },
+        recommended_actions: [
+          {
+            order: 1,
+            action: "Counter at 30% stake (not 50%)",
+            detail: "Cuts the proceeds to ~$450K but preserves majority economic control. You retain 70% of future royalties + sync approval position.",
+            structure_ref: { id: 14, slug: "14-catalog-ip-securitization", title: "Catalog IP Securitization" },
+          },
+          {
+            order: 2,
+            action: "Retain sync approval rights for the sold portion",
+            detail: "Even if you sell rights, retain veto power on commercial / political / brand uses. Standard request from name songwriters; Hipgnosis can accept this.",
+            structure_ref: { id: 30, slug: "30-subsidiary-rights-retention", title: "Subsidiary Rights Retention" },
+          },
+          {
+            order: 3,
+            action: "Negotiate retained writer credit + post-sale annual reports",
+            detail: "Hipgnosis owns the rights but you keep the writer credit on every license. Plus annual royalty reports so you can track the catalog's performance under new ownership.",
+            structure_ref: { id: 25, slug: "25-royalty-structures", title: "Royalty Structures" },
+          },
+        ],
+        resources: {
+          structures: [
+            { id: 14, slug: "14-catalog-ip-securitization", title: "Catalog IP Securitization", why: "The structural framework — how partial sales work." },
+            { id: 22, slug: "22-gross-participation", title: "Gross Participation", why: "Backend on the retained 70% if you counter at 30%." },
+            { id: 25, slug: "25-royalty-structures", title: "Royalty Structures", why: "Optimize how royalties flow post-sale." },
+          ],
+          case_studies: [
+            { slug: "mikkel-eriksen-stargate", title: "Stargate", why: "The canonical catalog sale case — Sony retained admin, Section 203 reversion preserved, recent songs excluded." },
+            { slug: "taylor-swift", title: "Taylor Swift", why: "What happens when catalog control is lost — the master re-recording response." },
+          ],
+        },
+      },
+    });
+  }
+
+  // Verdict for deal 3 — Headphone Brand Ambassador (red, declined)
+  if (marcusDeal3Id) {
+    await insertRow("deal_verdicts", {
+      id: randomUUID(),
+      user_id: id,
+      evaluation_id: marcusDeal3Id,
+      status: "published",
+      verdict_content: {
+        signal: {
+          color: "red",
+          headline: "Decline. Every dimension is structurally exploitative.",
+          summary: "$5K for 2-year exclusivity + perpetual image rights from a consumer brand with no track record working with musicians is not a deal — it's a one-sided contract. Decline politely. Use the experience to build a personal threshold for future brand partnerships.",
+        },
+        dimension_summaries: {
+          financial: "$5K for 2 years exclusivity in your category is severely below market. Comparable deals are $30-100K+ for top-tier indie acts.",
+          career: "Visibility is real but the brand association cuts both ways. Headphone brand ambassador with no music heritage adds nothing to your positioning.",
+          partner: "Consumer goods brand with no prior music industry track record. They want your audience; they don't understand your category.",
+          structure: "Perpetual image rights + exclusivity in your category = you can't work with any competing brand for the rest of your life. Standard ambassador deals have 1-2 yr terms with image rights tied to the campaign window.",
+          risk: "Maximum downside (locked out of the entire category permanently) for minimum upside ($5K). Asymmetric in the wrong direction.",
+          legal: "No attorney review. Standard template ambassador agreement that's been written aggressively for the brand's interests.",
+        },
+        recommended_actions: [
+          {
+            order: 1,
+            action: "Decline. Don't counter — walk away.",
+            detail: "Brands that lead with this kind of one-sided ask aren't going to negotiate to fair terms. The $5K is the ceiling, not the floor. Save the relationship-building energy for partners with proper terms upfront.",
+            structure_ref: { id: 1, slug: "01-premium-service-model", title: "Premium Service Model" },
+          },
+          {
+            order: 2,
+            action: "Build a brand partnership rate card before the next inquiry",
+            detail: "Define your minimum: $25K+ for category exclusivity (1 year max), no perpetual image rights, attorney review on both sides. Use it as a filter; the brands worth working with will accept these terms.",
+            structure_ref: { id: 1, slug: "01-premium-service-model", title: "Premium Service Model" },
+          },
+          {
+            order: 3,
+            action: "Identify the partnership categories you actually want",
+            detail: "Audio gear, studio equipment, music software — categories where the brand authentically intersects with your work. Brands in these categories pay better AND treat you as a peer.",
+            structure_ref: { id: 6, slug: "06-product-partnership-model", title: "Product Partnership Model" },
+          },
+        ],
+        resources: {
+          structures: [
+            { id: 1, slug: "01-premium-service-model", title: "Premium Service Model", why: "Set your floor for brand engagements." },
+            { id: 6, slug: "06-product-partnership-model", title: "Product Partnership Model", why: "Co-develop products with brands that have real distribution + cultural fit." },
+            { id: 24, slug: "24-revenue-share-partnership", title: "Revenue Share Partnership", why: "Better economics than flat-fee ambassador deals." },
+          ],
+          case_studies: [
+            { slug: "emma-chamberlain", title: "Emma Chamberlain", why: "Took founder equity in Chamberlain Coffee instead of endorsement fees. The structural counter-example." },
+            { slug: "temi-coker", title: "Temi Coker", why: "Brand partnerships structured as licensing, not endorsement — full creative control + revenue share." },
           ],
         },
       },
@@ -1585,7 +1863,7 @@ async function seedPerformerUser() {
   });
 
   await addBookmarks(id, 6);
-  console.log("  ✓ Musician seeded (assessment + roadmap + 3 deals [green/yellow/red] + verdict + 7 assets + analysis + bookmarks)");
+  console.log("  ✓ Musician seeded (assessment + roadmap + 3 deals [green/yellow/red] + 3 verdicts + 7 assets + analysis + bookmarks)");
 }
 
 // ---------------------------------------------------------------------------
