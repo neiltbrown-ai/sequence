@@ -1,0 +1,348 @@
+---
+title: "Jason Fried: The Anti-Exit Playbook for $80M Revenue"
+slug: jason-fried
+type: case-study
+number: 87
+discipline: "Design / Software"
+industry: "Design"
+excerpt: "Three founders, $30,000 in 1999, no outside capital ever. By 2024: $80M+ revenue, double-digit million profits, no exit pressure. The Bezos minority deal that made it possible without giving up control."
+subtitle: "From $30K founder investment to $80M+ in annual revenue across 25 years — without venture capital, without an exit timeline, and with a Bezos minority stake structured to require neither."
+structures: [13, 9, 4]
+tags: [software, saas, bootstrapping, holding-company, minority-investment]
+access: member
+heroImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=2400"
+heroAlt: "Code editor — software development context"
+readTime: 18
+stats:
+  - value: "$80M+"
+    label: "2024 Annual Revenue"
+  - value: "$30K"
+    label: "Total Outside Capital"
+  - value: "<80"
+    label: "Employees, 25 Years In"
+  - value: "3"
+    label: "Structures Applied"
+sections:
+  - id: thesis
+    label: The Thesis
+  - id: timeline
+    label: Timeline
+  - id: structure-13
+    label: Constraint-Based Production
+  - id: structure-4
+    label: The Bezos Deal
+  - id: structure-9
+    label: Holding Company
+  - id: compounding
+    label: Compounding Effect
+  - id: lessons
+    label: Lessons
+  - id: related
+    label: Related
+published: true
+updatedAt: "2026-04-24"
+---
+
+<CbSection id="thesis">
+
+<CbHeading>The Thesis: Capital Without Control, Constraint as Strategy</CbHeading>
+
+<CbDropCap>Three founders invested $30,000 total — $10,000 each — in 1999. No additional outside capital ever entered the operating company. By 2024, that company generates $80M+ annually with double-digit million profits, fewer than 80 employees, no board, no CFO, and a minority investor (Jeff Bezos) who receives profit distributions rather than exit pressure. Jason Fried built the anti-VC playbook by living it for 26 years.</CbDropCap>
+
+The structure most software founders accept as inevitable — raise capital, hire fast, chase enterprise contracts, exit within a decade — is a choice, not a law. **Fried turned down 30+ VC firms.** When Jeff Bezos eventually invested in 2006, the deal was structured to preserve control: minority stake, no board seat, no liquidation preference, profit distributions instead of exit pressure. Bezos has received those distributions for 18+ years and still holds his stake.
+
+<CbPullQuote>The hardest part was actually talking Jeff down on the size of the purchase. Originally he wanted a bigger slice — which would have meant more money for Jason and David, but giving up more of the company.</CbPullQuote>
+
+This case study breaks down three structures that made this possible: constraint-based production as competitive moat, advisory-style minority investment that doesn't require exit, and a holding-company architecture that lets a small team run multiple SaaS products at scale.
+
+</CbSection>
+
+<CbSection id="timeline">
+
+<CbHeading>Jason Fried's Evolution</CbHeading>
+
+Four phases. Each transition was a structural decision to refine the model, not scale it conventionally.
+
+<CbTimeline>
+  <CbTimelineEra label="Era 1: Web Design Agency (1999–2003)">
+    <CbTimelineEvent year="1999">37signals founded with Carlos Segura and Ernest Kim. **$30K total — $10K each.** Named after unexplained radio signals from the SETI project. Constraints set from day one: no investors, opinionated work only, small team by design.</CbTimelineEvent>
+    <CbTimelineEvent year="2000">Carlos leaves. Signal v. Noise blog launched — distinctive voice on design and business philosophy.</CbTimelineEvent>
+    <CbTimelineEvent year="2001">**DHH (David Heinemeier Hansson)** answers a PHP question on the blog from Denmark. Collaboration begins.</CbTimelineEvent>
+    <CbTimelineEvent year="2002">Ernest leaves. Fried runs solo. Revenue likely $200–500K as a boutique agency.</CbTimelineEvent>
+  </CbTimelineEra>
+  <CbTimelineEra label="Era 2: Agency → SaaS Product Company (2003–2006)">
+    <CbTimelineEvent year="2003">Applied <CbStructureBadge num="13" href="/library/structures/constraint-based-production" inline /> Begin building Basecamp internally — fewer features than competitors, simpler interface.</CbTimelineEvent>
+    <CbTimelineEvent year="2004">**Basecamp launches Feb 5** (same day as Facebook). DHH extracts framework, releases **Ruby on Rails** open source. Subscription pricing from day one.</CbTimelineEvent>
+    <CbTimelineEvent year="2005">Within a year, Basecamp revenue exceeds web design revenue. **Stop client work entirely.** DHH becomes partner / co-owner.</CbTimelineEvent>
+  </CbTimelineEra>
+  <CbTimelineEra label="Era 3: The Bezos Deal & Product Suite (2006–2014)">
+    <CbTimelineEvent year="2006">Applied <CbStructureBadge num="04" href="/library/structures/advisory-consultant-model" inline /> **Bezos minority stake** — secondary transaction (~$10M est.). No money into the company; Jason and David put it in the bank personally. **No board, no control provisions, profit distributions to all stakeholders.**</CbTimelineEvent>
+    <CbTimelineEvent year="2007">Highrise (CRM), Campfire (chat), Backpack (wiki) launch as additional products.</CbTimelineEvent>
+    <CbTimelineEvent year="2010">**REWORK** published — NYT bestseller. Thought leadership as marketing.</CbTimelineEvent>
+    <CbTimelineEvent year="2014">Renames company "Basecamp." Shuts down all other products to focus on flagship. Constraint discipline reasserted.</CbTimelineEvent>
+  </CbTimelineEra>
+  <CbTimelineEra label="Era 4: Holding Company Re-Formation (2020–2025)">
+    <CbTimelineEvent year="2020">**HEY launches** — premium email at $99/year. Apple App Store battle generates massive press.</CbTimelineEvent>
+    <CbTimelineEvent year="2022">Reverts to "37signals" name. Applied <CbStructureBadge num="09" href="/library/structures/holding-company-model" inline /> **Cloud exit initiated** — moving from AWS to owned hardware. Projected $10M+ savings over 5 years.</CbTimelineEvent>
+    <CbTimelineEvent year="2024">**ONCE product line** — buy software once, own it forever. Campfire relaunched at $299 one-time. **$80M+ revenue.**</CbTimelineEvent>
+    <CbTimelineEvent year="2025">Campfire open-sourced (MIT license). Multi-product holding company architecture mature.</CbTimelineEvent>
+  </CbTimelineEra>
+</CbTimeline>
+
+</CbSection>
+
+<CbSection id="structure-13">
+
+<CbStructureBadge num="13" href="/library/structures/constraint-based-production" />
+
+<CbHeading>Constraint-Based Production: Doing Less as Competitive Moat</CbHeading>
+
+The first structural commitment Fried made was a constraint that most founders treat as a temporary stage — a phase you outgrow once you raise enough money. **Fried turned constraint into the permanent strategy.** Basecamp launched in 2004 with deliberately fewer features than competitors. HEY launched in 2020 with deliberately fewer features than Gmail. ONCE products launched in 2024 deliberately rejecting the SaaS subscription orthodoxy 37signals had helped invent.
+
+Each constraint was a strategic choice: less complexity meant faster development cycles, lower costs, smaller teams, and — counterintuitively — clearer market positioning. **When everyone else is bloating their feature set, the simpler product becomes a category of one.**
+
+<CbSubheading>Constraint vs. Conventional Production</CbSubheading>
+
+<CbTabs tabsJson='["Constraint-Based (37signals)","Conventional SaaS","Outcome Comparison"]'>
+  <CbTabPanel>
+    <CbTabGrid>
+      <CbTabItem label="Feature Count" value="Deliberately limited" />
+      <CbTabItem label="Team Size" value="<80 across all products" />
+      <CbTabItem label="Funding" value="Bootstrapped + secondary" />
+    </CbTabGrid>
+    <CbTabNote>**Less to maintain, less to support, less to break.** A simpler product means fewer engineers, fewer customer-success reps, fewer edge cases. The constraint is the moat — competitors can't easily copy "less."</CbTabNote>
+  </CbTabPanel>
+  <CbTabPanel>
+    <CbTabGrid>
+      <CbTabItem label="Feature Count" value="Maximum (every roadmap item)" />
+      <CbTabItem label="Team Size" value="200+ at comparable revenue" />
+      <CbTabItem label="Funding" value="VC-backed; exit timeline" />
+    </CbTabGrid>
+    <CbTabNote>**Every feature accumulates maintenance debt.** The conventional SaaS hires aggressively, ships everything customers ask for, and burns capital on complexity. Profitability becomes structurally hard.</CbTabNote>
+  </CbTabPanel>
+  <CbTabPanel>
+    <CbTabGrid>
+      <CbTabItem label="37signals 2024" value="$80M rev / <80 staff" />
+      <CbTabItem label="Comparable SaaS" value="$80M rev / 200–400 staff" />
+      <CbTabItem label="Profit Margin" value="~30–50% vs. <10%" />
+    </CbTabGrid>
+    <CbTabNote>**Same revenue, half the people, an order of magnitude more profit margin.** This is not slower — it's structurally different. The constraint compounds: fewer staff means faster decisions, lower overhead, simpler ops.</CbTabNote>
+  </CbTabPanel>
+</CbTabs>
+
+<CbSubheading>How It Works</CbSubheading>
+
+<CbAccordion>
+  <CbAccordionCard num="01" label="Constraint as Differentiator, Not Limitation">
+    <p className="cb-card-text">Most companies treat constraints as failure states they're trying to escape. Fried treats them as strategic choices that create competitive advantage. **Basecamp doesn't have features Asana has — and that's exactly why some teams choose Basecamp.** The simpler product fits a specific use case better than the loaded product fits any. Picking your constraint is positioning.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="02" label="Build for Yourself First, Sell Second">
+    <p className="cb-card-text">Basecamp was built for 37signals' own use, then sold when clients asked "what is this thing?" HEY was built because Fried and DHH were unhappy with email. ONCE was built because they were unhappy with the SaaS subscription model they helped create. **Building for yourself produces natural product-market fit — the constraint is your own use case.**</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="03" label="Open Source as Talent Pipeline">
+    <p className="cb-card-text">Ruby on Rails (2004) and Campfire-as-open-source (2025) are not direct revenue plays — they're talent pipelines and credibility moats. Releasing infrastructure for free generates goodwill that compounds for decades. **The Rails community has produced engineers, customers, and a permanent technical reputation that no marketing budget could buy.**</p>
+  </CbAccordionCard>
+</CbAccordion>
+
+</CbSection>
+
+<CbSection id="structure-4">
+
+<CbStructureBadge num="04" href="/library/structures/advisory-consultant-model" />
+
+<CbHeading>The Bezos Deal: Minority Capital Without Control</CbHeading>
+
+In 2006, Jeff Bezos wanted to invest in 37signals. Most founders would have either refused on principle or accepted standard VC terms. Fried did neither — he negotiated a structurally distinct deal that has become a template for non-exit equity. **Bezos bought a minority stake as a secondary transaction. No money went into the company.** Jason and David put the money in their personal bank accounts. 37signals remained an LLC; Bezos became a member, not a board director.
+
+The terms preserved control absolutely. Bezos receives the same profit distributions the founders do. There is no liquidation preference. There is no exit timeline. **An optional buyback provision after 7 years was never triggered — Bezos chose to remain.**
+
+<CbMetrics>
+  <CbMetric value="~$10M" label="Estimated Initial Stake" />
+  <CbMetric value="0" label="Board Seats Created" />
+  <CbMetric value="18+ yrs" label="Distribution Period (Ongoing)" />
+</CbMetrics>
+
+<CbTable
+  headersJson='["Standard VC Round","Bezos Deal","Implication"]'
+  rowsJson='[["Money into company","Money to founders personally","No growth obligation, no burn obligation"],["Liquidation preference","No preference","No exit pressure on founders"],["Board seat + control","No board, no control","Founders retain full operational authority"],["Exit timeline (5–7 yrs)","No timeline","Infinite-game compatibility"],["Common-stock options for talent","LLC member units","No stock-pool dilution dynamics"]]'
+/>
+
+<CbSubheading>How It Works</CbSubheading>
+
+<CbAccordion>
+  <CbAccordionCard num="01" label="Why Secondary, Not Primary">
+    <p className="cb-card-text">Primary investment puts capital into the company — which then has to deploy it, account for it, and generate returns on it. Secondary investment buys existing equity from founders. **The company doesn't change financially; the founders take chips off the table without changing operations.** This is the structural difference that lets the deal preserve everything else: no capital needs to be deployed, no growth rate needs to be hit, no burn justified.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="02" label="Profit Distributions vs. Exit Returns">
+    <p className="cb-card-text">VC investors require exits because their funds have 7–10 year lifecycles. Bezos isn't a fund — he's a long-horizon individual investor. The deal pays him via annual profit distributions on the LLC, the same way it pays the founders. **18+ years of distributions on a $10M stake have already returned the principal multiple times — and he still holds the equity.** The structure aligns infinite-game incentives.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="03" label="Talking the Investor Down on Stake Size">
+    <p className="cb-card-text">DHH wrote: "The hardest part was actually talking Jeff down on the size of the purchase. Originally he wanted a bigger slice — which would have meant more money for Jason and I, but it would also have meant giving up more of the company." **The lesson: when negotiating non-exit equity, the goal isn't to maximize cash today — it's to minimize the equity you give up.** Smaller stake at the same valuation means more upside retention.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="04" label="Why This Pattern Hasn't Been Replicated at Scale">
+    <p className="cb-card-text">Almost no one else has structured a deal like this with a comparable investor. Why? Because it requires (a) a profitable business that doesn't need primary capital, (b) an investor willing to take returns via distributions rather than exits, and (c) founders confident enough to refuse standard terms. **Most founders fail filter (c) — they accept standard VC terms because they don't know the Bezos pattern is even available.**</p>
+  </CbAccordionCard>
+</CbAccordion>
+
+<CbPullQuote>We decided that all we needed were a few million each to protect the downside of a bust. So that's what we sold him.</CbPullQuote>
+
+</CbSection>
+
+<CbSection id="structure-9">
+
+<CbStructureBadge num="09" href="/library/structures/holding-company-model" />
+
+<CbHeading>Holding Company Model: Multi-Product From a Small Team</CbHeading>
+
+By 2020, 37signals was running multiple distinct products under one roof. Basecamp (project management SaaS), HEY (premium email), ONCE (buy-once software), books, and Ruby on Rails as open-source infrastructure. **The challenge wasn't building products — it was running them with the same small team.**
+
+The holding-company architecture allowed shared infrastructure (engineering, design, support) across products without proliferating subsidiaries. Each product has product-specific positioning and economics, but operations are shared. The 2014 consolidation (closing Highrise, Campfire-as-product, Backpack to focus on Basecamp) and the 2020+ re-expansion (HEY, ONCE) are the same architecture applied at different cycles — focus when complexity exceeds value, expand when the operating discipline can absorb new products.
+
+<CbOrgChart
+  title="37signals Product Architecture"
+  parent="37signals (LLC) — Jason Fried + DHH + Bezos minority"
+  itemsJson='[{"name":"Basecamp","desc":"SaaS subscription, ~$40-50M rev"},{"name":"HEY","desc":"Email service, $99/yr individual"},{"name":"ONCE","desc":"Buy-once software ($299 Campfire)"},{"name":"Books","desc":"REWORK, REMOTE, Shape Up — royalty income"},{"name":"Ruby on Rails","desc":"Open source — talent + reputation moat"}]'
+/>
+
+<CbSubheading>How It Works</CbSubheading>
+
+<CbAccordion>
+  <CbAccordionCard num="01" label="Shared Infrastructure, Distinct Positioning">
+    <p className="cb-card-text">Each product has its own brand, pricing, and customer audience — but engineering, design system, support staffing, and infrastructure are pooled. **This is what lets fewer than 80 people run 4+ products at $80M+ revenue.** A conventional structure would have product-specific teams that scale with each product; the holding-company structure scales operations once for all of them.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="02" label="Closing Products Is a Structural Skill">
+    <p className="cb-card-text">In 2014, 37signals shut down Highrise, Campfire (as a product), and Backpack to refocus on Basecamp. **Most companies treat product closure as failure; 37signals treats it as portfolio discipline.** When complexity exceeds value, you concentrate. The 2014 consolidation was what enabled the 2020 expansion (HEY) — focus before you expand again.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="03" label="Cloud Exit as Infrastructure Re-Ownership">
+    <p className="cb-card-text">The 2022–2024 cloud exit (AWS to owned hardware) is the holding-company logic applied to infrastructure. **Owning your own servers is unfashionable but structurally aligned with the no-VC, no-exit model.** Projected $10M+ in 5-year savings; permanent insulation from cloud-vendor pricing changes; control over the entire operational stack. Same logic as the Bezos deal: don't accept structures that create future obligations you don't need.</p>
+  </CbAccordionCard>
+</CbAccordion>
+
+</CbSection>
+
+<CbSection id="compounding">
+
+<CbHeading>The Compounding Effect: 26 Years, $30K to $80M</CbHeading>
+
+The three structures form a self-reinforcing loop. **Constraint-based production keeps team size and complexity small enough that no outside capital is needed.** **The Bezos minority deal preserved the no-capital, no-exit model when capital became available.** **The holding-company architecture lets that small team run multiple products at scale, generating the profit distributions that justify the entire structure.**
+
+<CbFlywheel title="37signals Value Flywheel">
+  <svg viewBox="0 0 580 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="290" cy="200" r="52" fill="#1a1a1a"/>
+    <text x="290" y="193" textAnchor="middle" fill="#ffffff" fontFamily="monospace" fontSize="9" letterSpacing="0.08em">37SIGNALS</text>
+    <text x="290" y="210" textAnchor="middle" fill="#999999" fontFamily="monospace" fontSize="7.5" letterSpacing="0.05em">LLC — NO BOARD</text>
+
+    <rect x="225" y="18" width="130" height="48" rx="4" fill="#f5f5f0" stroke="#e0e0d8" strokeWidth="1"/>
+    <text x="290" y="38" textAnchor="middle" fill="#1a1a1a" fontFamily="sans-serif" fontSize="11" fontWeight="600">Constraint Production</text>
+    <text x="290" y="53" textAnchor="middle" fill="#888" fontFamily="monospace" fontSize="8">STRUCTURE #13</text>
+
+    <rect x="435" y="100" width="130" height="48" rx="4" fill="#f5f5f0" stroke="#e0e0d8" strokeWidth="1"/>
+    <text x="500" y="120" textAnchor="middle" fill="#1a1a1a" fontFamily="sans-serif" fontSize="11" fontWeight="600">Bezos Minority Deal</text>
+    <text x="500" y="135" textAnchor="middle" fill="#888" fontFamily="monospace" fontSize="8">STRUCTURE #4</text>
+
+    <rect x="435" y="252" width="130" height="48" rx="4" fill="#f5f5f0" stroke="#e0e0d8" strokeWidth="1"/>
+    <text x="500" y="272" textAnchor="middle" fill="#1a1a1a" fontFamily="sans-serif" fontSize="11" fontWeight="600">Holding Company</text>
+    <text x="500" y="287" textAnchor="middle" fill="#888" fontFamily="monospace" fontSize="8">STRUCTURE #9</text>
+
+    <rect x="225" y="334" width="130" height="48" rx="4" fill="#f5f5f0" stroke="#e0e0d8" strokeWidth="1"/>
+    <text x="290" y="354" textAnchor="middle" fill="#1a1a1a" fontFamily="sans-serif" fontSize="11" fontWeight="600">Profit Distributions</text>
+    <text x="290" y="369" textAnchor="middle" fill="#888" fontFamily="monospace" fontSize="8">$10M+/YEAR</text>
+
+    <rect x="15" y="252" width="130" height="48" rx="4" fill="#f5f5f0" stroke="#e0e0d8" strokeWidth="1"/>
+    <text x="80" y="272" textAnchor="middle" fill="#1a1a1a" fontFamily="sans-serif" fontSize="11" fontWeight="600">Books / Open Source</text>
+    <text x="80" y="287" textAnchor="middle" fill="#888" fontFamily="monospace" fontSize="8">REWORK + RAILS</text>
+
+    <rect x="15" y="100" width="130" height="48" rx="4" fill="#f5f5f0" stroke="#e0e0d8" strokeWidth="1"/>
+    <text x="80" y="120" textAnchor="middle" fill="#1a1a1a" fontFamily="sans-serif" fontSize="11" fontWeight="600">Audience &amp; Trust</text>
+    <text x="80" y="135" textAnchor="middle" fill="#888" fontFamily="monospace" fontSize="8">SIGNAL V. NOISE</text>
+
+    <path d="M355 42 L435 112" stroke="#ccc" strokeWidth="1" markerEnd="url(#arrowJF)"/>
+    <path d="M500 148 L500 252" stroke="#ccc" strokeWidth="1" markerEnd="url(#arrowJF)"/>
+    <path d="M435 276 L355 347" stroke="#ccc" strokeWidth="1" markerEnd="url(#arrowJF)"/>
+    <path d="M225 358 L145 288" stroke="#ccc" strokeWidth="1" markerEnd="url(#arrowJF)"/>
+    <path d="M80 252 L80 148" stroke="#ccc" strokeWidth="1" markerEnd="url(#arrowJF)"/>
+    <path d="M145 112 L225 42" stroke="#ccc" strokeWidth="1" markerEnd="url(#arrowJF)"/>
+
+    <line x1="290" y1="148" x2="290" y2="66" stroke="#ddd" strokeWidth="0.75" strokeDasharray="3,3"/>
+    <line x1="338" y1="180" x2="435" y2="124" stroke="#ddd" strokeWidth="0.75" strokeDasharray="3,3"/>
+    <line x1="338" y1="220" x2="435" y2="276" stroke="#ddd" strokeWidth="0.75" strokeDasharray="3,3"/>
+    <line x1="290" y1="252" x2="290" y2="334" stroke="#ddd" strokeWidth="0.75" strokeDasharray="3,3"/>
+    <line x1="242" y1="220" x2="145" y2="276" stroke="#ddd" strokeWidth="0.75" strokeDasharray="3,3"/>
+    <line x1="242" y1="180" x2="145" y2="124" stroke="#ddd" strokeWidth="0.75" strokeDasharray="3,3"/>
+
+    <defs>
+      <marker id="arrowJF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#ccc"/>
+      </marker>
+    </defs>
+  </svg>
+</CbFlywheel>
+
+The cycle: **Constraint** (#13) keeps the team small and decisions fast. The small team produces a profitable business that doesn't need primary capital — which made the **Bezos minority deal** (#4) possible without giving up control. The deal monetized founder equity without obligating the company. The **Holding Company** (#9) architecture lets the same small team run multiple products, generating distributions back to all stakeholders. Books and open source build audience and trust, which compound back into demand for the products. Each cycle reinforces the others.
+
+<CbChart title="Revenue Architecture (2024)">
+  <CbChartRow label="Basecamp" value="~$40–50M" pct="100" />
+  <CbChartRow label="HEY" value="~$15–25M" pct="50" />
+  <CbChartRow label="ONCE" value="(new)" pct="10" />
+  <CbChartRow label="Books" value="~$1–2M" pct="4" avg />
+</CbChart>
+
+</CbSection>
+
+<CbSection id="lessons">
+
+<CbHeading>Transferable Lessons</CbHeading>
+
+<CbAccordion>
+  <CbAccordionCard num="01" label="Pick Your Constraint Before Capital Picks It For You">
+    <p className="cb-card-text">Constraints that come from outside (not enough customers, not enough capital) feel like failure. Constraints chosen on purpose feel like strategy. **37signals chose a constraint — small team, simple products, no outside capital — and treated it as the moat.** The constraint preserves optionality forever; capital extracts optionality immediately.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="02" label="If You Take Capital, Take It on Bezos Terms">
+    <p className="cb-card-text">The default assumption is "take VC = lose control." The 37signals counter-example proves there's a third path: secondary minority investment with no board, no liquidation preference, and profit-distribution returns. **This requires a profitable business and a long-horizon investor — but if you have both, it's negotiable.** Don't accept standard VC terms because you didn't know an alternative existed.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="03" label="Profit Every Year, Pull Money Out Along the Way">
+    <p className="cb-card-text">Fried: "Pull out money along the way so you have something to show for your work, because there's a very good chance it isn't going to work." **The infinite-game posture isn't "work for free until exit." It's "profit annually, distribute proceeds, and let the equity appreciate as a separate asset."** Distributions de-risk the founder. They also align everyone (including outside investors like Bezos) on annual outcomes rather than terminal exits.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="04" label="Teaching Is Marketing">
+    <p className="cb-card-text">Signal v. Noise (1999), REWORK (2010), REMOTE (2013), Shape Up, It Doesn't Have to Be Crazy at Work — 37signals has published more thought leadership than most companies five times its size. **Each book and post is also a customer-acquisition vehicle.** The teaching IS the marketing. No advertising budget needed because the audience is built through the publishing.</p>
+  </CbAccordionCard>
+  <CbAccordionCard num="05" label="Build for Yourself, Sell What You Already Use">
+    <p className="cb-card-text">Basecamp, HEY, and ONCE were all built to solve problems 37signals had internally. Selling those tools to others required almost no validation step — they were already validated by their own use. **Building for yourself is the cheapest, fastest, most accurate market research method available.** It also ensures you have at least one passionate user from day one: yourself.</p>
+  </CbAccordionCard>
+</CbAccordion>
+
+</CbSection>
+
+<CbSources>
+  <CbSourceGroup title="Primary Sources">
+    <CbSourceItem>Tidemark Capital interview with Jason Fried (2023) — founding story, Bezos deal mechanics</CbSourceItem>
+    <CbSourceItem>Lenny's Newsletter podcast (2023) — business philosophy, bootstrapping advice</CbSourceItem>
+    <CbSourceItem>SaaStock USA interview (2024) — financial details, decision-making</CbSourceItem>
+    <CbSourceItem>Signal v. Noise / HEY World blog posts — DHH on Bezos deal</CbSourceItem>
+  </CbSourceGroup>
+  <CbSourceGroup title="Secondary Sources">
+    <CbSourceItem>Wikipedia — 37signals, HEY, Basecamp histories</CbSourceItem>
+    <CbSourceItem>TechCrunch — Bezos investment coverage (2006)</CbSourceItem>
+    <CbSourceItem>Latka database — 2024 revenue figures</CbSourceItem>
+  </CbSourceGroup>
+  <CbSourceGroup title="Verification Notes">
+    <CbSourceItem>Revenue: $80.8M (2024) via Latka; $100M+ (2021) cited in Tidemark interview</CbSourceItem>
+    <CbSourceItem>Employee count: &lt;80 confirmed across multiple sources</CbSourceItem>
+    <CbSourceItem>Bezos stake: ~$10M estimated; "few million each" per DHH</CbSourceItem>
+  </CbSourceGroup>
+  <CbSourceGroup title="Gaps to Verify">
+    <CbSourceItem>Exact Bezos stake percentage — never publicly disclosed</CbSourceItem>
+    <CbSourceItem>Revenue breakdown between Basecamp / HEY / ONCE — not reported</CbSourceItem>
+    <CbSourceItem>ONCE sales figures — too new for reliable data</CbSourceItem>
+  </CbSourceGroup>
+</CbSources>
+
+<CbSection id="related">
+
+<CbRelated>
+  <CbRelatedCard num="13" title="Constraint-Based Production" desc="How budget and feature limits create competitive advantages" href="/library/structures/constraint-based-production" />
+  <CbRelatedCard num="04" title="Advisory / Consultant Model" desc="Minority equity that doesn't require operational control" href="/library/structures/advisory-consultant-model" />
+  <CbRelatedCard num="09" title="Holding Company Model" desc="Multi-product architecture sharing infrastructure across brands" href="/library/structures/holding-company-model" />
+</CbRelated>
+
+</CbSection>
