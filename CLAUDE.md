@@ -252,6 +252,22 @@ Stacking order inside `.lib-card--cover`:
 
 The 8 archetype sigils live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal portrait and the public Platform page's Creative Identity section. **Don't inline the sigil SVGs anywhere else — always import from the shared component.**
 
+### Dashboard Portfolio State cards
+
+`src/components/portal/dashboard-cards.tsx` exports three cards rendered when the member has portfolio data:
+
+- `DashValuationCard` — full-width hero (valuation range + leverage score color-coded green/yellow/red + 5 driver bars)
+- `DashRiskFlagsCard` — list of up to 5 portfolio risks with severity-coded icons
+- `DashDealsEvaluatedCard` — last 5 individual deal evaluations as a list
+
+All three follow the **head + body-link + action pill** pattern (see `design.md`). Renders only when underlying data exists; pre-2026-04 analyses without `value_drivers` / `risks` fall through gracefully (the valuation hero alone still shows).
+
+**Layout:** Valuation card spans full main-body width on row 1; Risk Flags + Deals Evaluated render 2-up on row 2 (`.dash-portfolio-row`). Stacks below 900px.
+
+**Conditional CTAs:** when this section renders, `DashboardInventoryCTA` and `DashboardEvalCTA` auto-hide because they'd duplicate the cards' content. The Roadmap and Creative Identity CTAs stay regardless (they don't duplicate Portfolio State).
+
+**Deep-linking:** Valuation + Risk Flags cards link to `/inventory?tab=analysis` (the Analysis tab); the "+ Add Assets" pill stays on `/inventory` (Assets tab) since adding is the natural action there. The tab URL param is wired in `portfolio-tabs.tsx` via `useSearchParams`.
+
 ---
 
 ## Dark mode gotchas
@@ -297,6 +313,9 @@ Any `::before` pseudo-element overlay on a themed card (e.g., `.lib-card--cover:
 - `assessments` table has **no `updated_at` column** — selecting it silently fails the whole query. The snapshot loader on Settings initially broke because of this. Columns: `id`, `user_id`, `status`, `current_section`, `current_question`, `detected_stage`, `archetype_primary`, `creative_mode`, `discipline`, `sub_discipline`, `misalignment_flags`, `completed_at`, `created_at`, `started_at` (+ all the question JSONB fields).
 - `strategic_plans` has `source` (`'assessment' | 'portfolio' | 'combined'`) + nullable `assessment_id` + nullable `portfolio_analysis_id` (migration `00015_roadmap_decoupling.sql`). At least one of the two FKs must be non-null (DB constraint).
 - Dashboard queries use `maybeSingle()` for "user's most recent X" lookups. Never use `.single()` for user-scoped queries — if the user has 2+ rows (e.g., two completed assessments from regen), `.single()` throws instead of returning null.
+- `InventoryAnalysisContent.summary.leverage_score` is contractually **one word** (`low | medium | high`); the explanation lives in a separate `summary.leverage_rationale` field. Pre-2026-04 analyses may have a full sentence in `leverage_score` — render layer extracts the first matching word + parses "High — text" patterns out as fallback rationale (see `parseLeverage` / `extractLegacyRationale` in `src/components/portal/dashboard-cards.tsx`).
+- `InventoryAnalysisContent` also has optional `value_drivers` (5 named scores in fixed order: IP Strength · Market Demand · Differentiation · Execution Readiness · Financial Upside) and `risks` (top 5 portfolio risks with severity). Both optional for forward-compat; the dashboard Portfolio State cards conditionally render based on field presence.
+- **`/api/assessment/regenerate` is deprecated for member-facing use** — it mutates the existing strategic_plans row in place rather than creating a new one, which leaves `assessment_actions` orphaned at "completed" status across the regen. Use `/api/roadmap/refresh` instead (calls `createStrategicPlan()` to create a fresh row + plan_id). The old endpoint still exists because the admin `/regenerate-all` references it; consider it pending removal.
 
 ---
 

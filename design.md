@@ -476,6 +476,53 @@ Grid: 3 columns desktop, 2 columns at 860px (last card spans full width), 1 colu
 
 The 8 archetype SVG marks live in `src/components/shared/archetype-sigil.tsx` and are consumed by both the portal's Creative Identity portrait (`creative-identity-panel.tsx`) and the public Platform page. Always use the shared component — **don't inline SVG markup**. Each sigil uses a tightened viewBox per archetype and inherits its color from `currentColor`, so the consuming surface controls theming.
 
+### Dashboard portfolio cards (head + body-link + action pill)
+
+The three Portfolio State cards on the dashboard (`DashValuationCard`, `DashRiskFlagsCard`, `DashDealsEvaluatedCard` in `src/components/portal/dashboard-cards.tsx`) share a card structure worth adopting whenever you have a richly-styled card that needs both a primary navigation target AND a secondary action button:
+
+```html
+<div class="dash-card">
+  <div class="dash-card-head">
+    <span class="dash-card-lbl">SECTION LABEL</span>
+    <a href="/secondary-action" class="dash-card-pill">+ Action</a>
+  </div>
+  <a href="/primary-target" class="dash-card-body-link">
+    <!-- rich card content here — anything inside this link navigates to primary target -->
+  </a>
+</div>
+```
+
+**Why this structure:**
+- Card root is `<div>`, not `<Link>` — so the action pill in the head can navigate independently without the body link intercepting clicks
+- Body content is wrapped in `.dash-card-body-link` (a `<Link>` block element) — clicking anywhere in the data area goes to the primary target
+- Section label and pill sit side-by-side in `.dash-card-head` via flex `space-between`
+- Pill spec: mono 9px / `.12em` tracking / uppercase / `var(--bg)` background / `var(--border)` outline / 3px radius. Hovers to inverted (white bg, black border, black text)
+
+**When to use:** dashboard cards, portal panels, any place a card represents a content area whose primary action is "see more" but where you want a secondary action accessible without leaving the dashboard. Don't use for pure-navigation tiles (the simple `<Link>` card pattern in `.lib-card` is fine for those).
+
+### URL-param tab deep-linking
+
+Pattern for letting external links land on a specific tab inside a tabbed surface (e.g. `/inventory?tab=analysis` lands on the Analysis tab instead of the default Assets tab):
+
+```tsx
+"use client";
+import { useSearchParams } from "next/navigation";
+
+const searchParams = useSearchParams();
+const initialTab: "assets" | "valuation" =
+  searchParams?.get("tab") === "analysis" && initialAnalysis
+    ? "valuation"
+    : "assets";
+const [tab, setTab] = useState<"assets" | "valuation">(initialTab);
+```
+
+**Conventions:**
+- URL param uses the **user-facing tab name** (`analysis`), not the internal state name (`valuation`) — preserves shareable URLs that read naturally
+- Guard against landing on a tab that has no data yet (the `&& initialAnalysis` check above) — fall through to default rather than render an empty state
+- Don't sync subsequent tab changes back to the URL unless deep-linking is the primary use case; the cost (push/replace state on every click) usually isn't worth it
+
+**Live example:** `src/components/portal/portfolio-tabs.tsx`. The dashboard's Valuation + Risk Flags cards link to `/inventory?tab=analysis`; "+ Add Assets" pill stays on default `/inventory` because that's where you'd actually go to add assets.
+
 ### Mouse-position-driven horizontal scroller
 
 `src/components/platform/archetype-scroller.tsx` is the canonical pattern when a row of cards exceeds viewport width and you want a richer-feeling interaction than a plain scrollbar. Use it for showcase rows where every card matters and the user shouldn't have to commit to scrolling — they just sweep their cursor.

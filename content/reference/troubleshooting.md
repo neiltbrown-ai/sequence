@@ -6,6 +6,116 @@ Symptom → root cause → fix for recurring bugs we've hit. Consult this before
 
 ## AI / Roadmap
 
+### Symptom: "Refresh Roadmap" button creates the regeneration screen, then reloads with the same 3 actions still marked complete (banner stays up)
+
+**Reports as:** User completes all 3 roadmap actions → "All steps complete — refresh your roadmap" banner appears → click "Refresh Roadmap" → see the regeneration progress screen → page reloads — but the same 3 actions are still showing as completed and the banner is still there.
+
+**Root cause:** `handleRegenerate` in `roadmap-display.tsx` was POSTing to `/api/assessment/regenerate`, which **mutated the existing `strategic_plans` row in place** (same `plan_id`, just new `plan_content`). Because plan_id never changed, the `assessment_actions` rows scoped to that plan_id were still showing "completed" status when the page reloaded — so `allActionsComplete` still evaluated true and the banner kept showing.
+
+**Fix:** Point `handleRegenerate` at `/api/roadmap/refresh` instead. That endpoint calls `createStrategicPlan()` to create a NEW row with a fresh plan_id. After reload, `assessment_actions` scoped by the new plan_id returns empty → all 3 actions render as pending → banner correctly hides.
+
+```tsx
+// src/components/assessment/roadmap-display.tsx
+const res = await fetch("/api/roadmap/refresh", {  // not /api/assessment/regenerate
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ triggerReason: "manual" }),
+});
+```
+
+The legacy `/api/assessment/regenerate` endpoint still exists (admin `/regenerate-all` references it) but should be considered deprecated for member-facing use. The `/api/roadmap/refresh` flow is the correct create-new-plan pattern documented earlier in this file.
+
+---
+
+### Symptom: Giant X icon appears in the admin sidebar after a portal sidebar refactor
+
+**Reports as:** After removing the redundant X close button from the portal sidebar (only the carrot collapse button remains), an oversized X icon appears in the admin sidebar header.
+
+**Root cause:** The portal-side cleanup removed BOTH the JSX `<button className="sb-close">` AND the `.sb-close` CSS rules. But the admin sidebar (`src/components/admin/sidebar.tsx`) still rendered the same `<button className="sb-close">`. With no CSS to style it, the button rendered with default browser styling — large, unpositioned, and very visible.
+
+**Fix:** Remove the orphaned JSX from the admin sidebar (and the unused `CloseIcon` import). The carrot collapse button alone handles both close-on-mobile and toggle-on-desktop in both surfaces.
+
+```tsx
+// REMOVE from src/components/admin/sidebar.tsx:
+<button className="sb-close" onClick={closeSidebar}>
+  <CloseIcon />
+</button>
+```
+
+**Pattern to remember:** when removing a CSS-styled component from one surface, search every other place that uses the same className. Shared CSS classes are landmines for this kind of orphan-JSX bug.
+
+---
+
+### Symptom: Dashboard Valuation card hero shows the leverage_score as a giant orange sentence instead of just "High"
+
+**Reports as:** The dashboard Valuation card's right hero (where "High / Medium / Low" should display in big colored type) instead renders a full sentence in oversized hero font: "High — catalog is the primary asset with significant untapped licensing potential."
+
+**Root cause:** The `summary.leverage_score` field was originally typed as a free-form string. The Claude prompt + seed data populated it with a full sentence. The Valuation card was designed for a one-word value rendered at hero size with color coding.
+
+**Fix:** Schema split. `leverage_score` is now contractually one word (`low | medium | high`); a separate optional `leverage_rationale` field holds the explanation sentence.
+
+```ts
+// src/types/inventory.ts
+summary: {
+  leverage_score: string;          // one word: low | medium | high
+  leverage_rationale?: string;     // 1-2 sentence explanation
+  ...
+}
+```
+
+The render layer (`DashValuationCard`) handles both new and legacy data shapes:
+
+```ts
+function parseLeverage(raw: string) {
+  const m = raw.toLowerCase().match(/\b(high|medium|low)\b/);
+  return m ? { word: m[1], className: `dash-leverage--${m[1]}` } : { word: "Unknown" };
+}
+
+function extractLegacyRationale(raw: string): string | null {
+  // Pulls "the explanation part" out of "High — the explanation part"
+  const m = raw.match(/^(?:high|medium|low)\s*[—\-:.]+\s*(.+)$/i);
+  return m ? m[1].trim() : null;
+}
+```
+
+The Claude prompt in `/api/inventory/analyze/route.ts` was updated to emit the two fields separately. Seed data in `scripts/seed-test-users.ts` was updated. Re-running `npx tsx scripts/seed-test-users.ts --reset` backfills.
+
+---
+
+### Symptom: Drivers axis label "High" renders huge in default sans, while "Low" + "Medium" render correctly in mono
+
+**Reports as:** Under the bar chart in the dashboard Valuation card, the axis labels are inconsistent — Low and Medium look right (small mono caps) but High renders in oversized body sans.
+
+**Root cause:** The CSS only styled `:nth-child(2)` of the 3-span axis row, leaving `:nth-child(1)` ("Low") and `:nth-child(3)` ("High") with whatever default styling cascaded through. The original CSS had assumed the 3 labels would be inside a single child for `space-between` flex distribution.
+
+**Fix:** Wrap the 3 labels in a single track span placed in grid column 2 (under the bar). All 3 children inherit mono / 9px / `.12em` tracking from the parent.
+
+```tsx
+<div className="dash-drivers-axis" aria-hidden>
+  <span className="dash-drivers-axis-track">
+    <span>Low</span><span>Medium</span><span>High</span>
+  </span>
+</div>
+```
+
+```css
+.dash-drivers-axis { display: grid; grid-template-columns: 150px 1fr 70px; }
+.dash-drivers-axis-track {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--light);
+}
+```
+
+**Pattern to remember:** if styling N sibling elements that share visual treatment, apply the rule to all of them (or to a wrapper that they inherit from) — never via `:nth-child(2)` alone.
+
+---
+
 ### Symptom: Roadmap stuck in "generating" forever
 
 **Reports as:** Wizard submits → "Saving your Creative Identity" flashes → `/roadmap` shows the progress bar → it stays at 50–90% → eventually "This is taking longer than expected."

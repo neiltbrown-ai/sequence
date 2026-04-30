@@ -10,6 +10,72 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-04-30 — Dashboard portfolio state + 10 new case studies
+
+**Goal:** Transform the dashboard from a CTA navigation hub into a portfolio-state surface that meets active members where their data already lives. Plus a substantial library expansion (10 new case studies) and two bug fixes from member testing.
+
+### Dashboard portfolio cards
+
+Three new cards in `src/components/portal/dashboard-cards.tsx` surface portfolio-level state without requiring drill-down:
+
+- **DashValuationCard** — full-width hero with valuation range left, leverage score right (green/yellow/red color-coded), divider between, then 5 horizontal driver bars (IP Strength · Market Demand · Differentiation · Execution Readiness · Financial Upside) with low/medium/high axis below the bar. Editorial big-number treatment per Neil's reference screenshots. Body link → `/inventory?tab=analysis`.
+- **DashRiskFlagsCard** — list of up to 5 risks with severity-coded icons (filled red circle for high, hollow ring for medium/low). Body link → `/inventory?tab=analysis`.
+- **DashDealsEvaluatedCard** — last 5 individual deals with signal dot, type chip, score, and "View all deals →" footer. Body link → `/evaluate`. Distinct from the existing aggregated `DashboardEvalCTA` (which stays as a navigation prompt).
+
+**Schema additions** in `src/types/inventory.ts`:
+- `summary.leverage_score` is now contractually one word (`low | medium | high`); the explanation moved to a separate `summary.leverage_rationale` field
+- `value_drivers: ValueDriver[]` (5 named, in fixed order, with `pct` 0-100 + `score` low/medium/high + `rationale`)
+- `risks: PortfolioRisk[]` (top 5, sorted by severity descending)
+- All optional for back-compat; render layer extracts the first matching word from any legacy single-field `leverage_score` and parses "High — text" patterns out as fallback rationale
+
+The portfolio-analysis Claude prompt (`/api/inventory/analyze/route.ts`) was updated to emit the new fields with constraints documented inline.
+
+### Dashboard layout: Portfolio State at top
+
+After two iterations on placement, the final layout for active users (those with data):
+1. Portfolio State section (top) — **Valuation card spans the full main-body width** on row 1; Risk Flags + Deals Evaluated render 2-up on row 2
+2. Roadmap CTA (kept — unique value not duplicated by Portfolio State)
+3. Creative Identity CTA (only when not yet completed — auto-hides after)
+4. Featured Case Studies
+
+**Conditional CTAs eliminated duplication**:
+- `DashboardInventoryCTA` renders only when `!inventoryAnalysis` (Valuation card subsumes its info once data exists)
+- `DashboardEvalCTA` renders only when `recentDeals.length === 0` (Deals Evaluated card subsumes once data exists)
+- New users still see all CTAs above the fold; active users see state instead
+
+**Card structure unified**: all three cards moved from `<Link>` root to `<div>` root with a separated `.dash-card-head` row + `.dash-card-body-link`. Head holds the section label and optional action pill (`+ Add Assets` on Valuation, `+ New Evaluation` on Deals); pills navigate independently of the body link.
+
+**`?tab=analysis` URL param** added in `src/components/portal/portfolio-tabs.tsx` — Valuation + Risk Flags cards deep-link directly to the Analysis tab instead of dumping users on the default Assets tab. URL uses the user-facing name "analysis"; internal state stays "valuation" for back-compat.
+
+### 10 new case studies
+
+10 case studies converted from `.md` source drafts to MDX, all with hero / cover / secondary images sourced via the image-sourcer tool:
+
+**Batch 1** (#86–#89): Emma Chamberlain (founder equity + product partnership + premium service), Jason Fried (constraint-based + Bezos minority deal + holding company), Mark Rober (creator-as-platform + franchise/licensing + holding company), Sahil Lavingia (creator-as-platform + revenue share + holding company; the only regression case in the library).
+
+**Batch 2** (#90–#95): Ava DuVernay (4-entity ARRAY: holding + creative collective + platform cooperative), Coralie Fargeat (final cut as asset + 3-party JV + Stage-2 holding company), Mikkel Eriksen / Stargate (catalog IP securitization + JV + creator-as-platform), Ryan Coogler (first-dollar gross + 25-year reversion + Proximity Media), Sean Baker (constraint-based + persistent team + pre-sale deal), Tina Roth Eisenberg (5-venture portfolio + light-touch franchise + the Tattly/BIC exit reckoning).
+
+Each follows the gold-standard structure: CbDropCap thesis + CbPullQuote · CbTimeline (3-6 eras) · 3 structure sections with badge + heading + body + CbTabs/CbTable/CbAccordion · **CbFlywheel hub-and-spoke "circles of circles" SVG** (central black circle + 6 satellites + perimeter cycle arrows + dashed spokes) · Transferable Lessons accordion · CbSources · CbRelated.
+
+Library count: was 85, now 95.
+
+### Two bugs fixed (member testing)
+
+- **Admin sidebar X rendering large**: when the portal sidebar's `.sb-close` JSX + CSS was removed earlier, the admin sidebar still had the same JSX. With no CSS to style it, the button rendered with default browser styling. Removed the orphaned JSX and unused `CloseIcon` import.
+- **Refresh Roadmap not creating a new plan**: `handleRegenerate` POSTed to `/api/assessment/regenerate`, which mutated the existing `strategic_plans` row in place. Plan_id never changed, so `assessment_actions` rows tied to that plan still showed completed on reload — banner stayed up. Fix: point `handleRegenerate` at `/api/roadmap/refresh` instead, which calls `createStrategicPlan()` to create a NEW row with a fresh plan_id.
+
+### Drivers axis label bug fixed
+
+"High" was rendering as default body sans at full size because the prior CSS only styled `:nth-child(2)` ("Medium"). Restructured: 3 labels wrap in a single `.dash-drivers-axis-track` span placed in grid column 2 (under the bar), all 3 children share mono 9px / `.12em` tracking via inheritance.
+
+### Seed updates
+
+All 4 power users (Jordan / Priya / Marcus / Maya) in `scripts/seed-test-users.ts` got the new schema fields (one-word leverage_score, leverage_rationale, value_drivers, risks). Email domain flipped from `insequence.co` → `insequence.so` across all 10 test/demo accounts. SQL cleanup of `.co` orphans documented in the session.
+
+**Outcome:** Members with data now land on their portfolio status first; CTAs drop below as "what's next" navigation. Library expanded by 10 cases covering filmmaker holding-co architecture (Coogler, DuVernay), the discipline path (Baker), contractual leverage (Fargeat), catalog economics (Stargate), exit reckoning (Tina), and four creator-economy plays (Emma, Jason, Mark, Sahil). Two member-reported bugs closed.
+
+---
+
 ## 2026-04-24 — Stage 4 archetypes + Platform CI horizontal scroller
 
 **Goal:** Close the Stage 4 gap in the archetype system and rebuild the public Platform page's Creative Identity section as a richer, asymmetric showcase that all 8 archetypes can live in.
