@@ -752,7 +752,8 @@ async function seedMakerUser() {
       summary: {
         total_assets: items.length,
         estimated_total_value_range: "$600K - $1.4M",
-        leverage_score: "Medium — strong creative judgment and audience, but no formal IP or licensing infrastructure to monetize them.",
+        leverage_score: "medium",
+        leverage_rationale: "Strong creative judgment and audience, but no formal IP or licensing infrastructure to monetize them.",
         key_insight: "Your catalog of completed films + creative direction judgment are independently valuable. Together with the right entity structure, they could underwrite consulting + licensing income that doubles project revenue.",
       },
       asset_valuations: [
@@ -1085,7 +1086,8 @@ async function seedServiceUser() {
       summary: {
         total_assets: items.length,
         estimated_total_value_range: "$300K - $750K",
-        leverage_score: "Medium — strong judgment + network with no structural framing to convert into equity or recurring revenue.",
+        leverage_score: "medium",
+        leverage_rationale: "Strong judgment + network with no structural framing to convert into equity or recurring revenue.",
         key_insight: "You're trading judgment for fees. With one entity restructure and a productized advisory tier, that same judgment becomes equity in 3-4 portfolio companies.",
       },
       asset_valuations: [
@@ -1518,7 +1520,8 @@ async function seedPerformerUser() {
       summary: {
         total_assets: 7,
         estimated_total_value_range: "$1.5M - $3.5M",
-        leverage_score: "High — catalog is the primary asset with significant untapped licensing potential.",
+        leverage_score: "high",
+        leverage_rationale: "Catalog is the primary asset with significant untapped licensing potential.",
         key_insight: "Your catalog generates $40K/yr but market potential is $150K-$300K. The gap is distribution and organization, not quality.",
       },
       asset_valuations: [
@@ -1756,7 +1759,8 @@ async function seedDemoSales() {
       summary: {
         total_assets: demoAssets.length,
         estimated_total_value_range: "$800K - $2.2M",
-        leverage_score: "High — strong brand-strategy IP and a positioned audience; ready to convert from retainer to equity participation.",
+        leverage_score: "high",
+        leverage_rationale: "Strong brand-strategy IP and a positioned audience; ready to convert from retainer to equity participation.",
         key_insight: "Three of your last five engagements would have qualified for backend participation. You're sitting on $200K-$500K in unrealized equity from work already shipped.",
       },
       asset_valuations: [

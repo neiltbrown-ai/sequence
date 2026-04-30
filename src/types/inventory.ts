@@ -32,7 +32,17 @@ export type InventoryAnalysisContent = {
   summary: {
     total_assets: number;
     estimated_total_value_range: string;
+    /**
+     * One word: "low" | "medium" | "high". Legacy analyses may contain
+     * a full sentence here — render layer extracts the first word.
+     */
     leverage_score: string;
+    /**
+     * Optional explanation (1-2 sentences) for the leverage score.
+     * Newer analyses split this from leverage_score so the dashboard
+     * Valuation card can show "High" big + rationale small.
+     */
+    leverage_rationale?: string;
     key_insight: string;
   };
   asset_valuations: AssetValuation[];

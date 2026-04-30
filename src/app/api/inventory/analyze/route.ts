@@ -164,7 +164,8 @@ Generate the InventoryAnalysisContent following this exact JSON schema:
   "summary": {
     "total_assets": <number>,
     "estimated_total_value_range": "<string, e.g. '$50K-$200K'>",
-    "leverage_score": "<low|medium|high>",
+    "leverage_score": "<MUST be exactly one word: low | medium | high>",
+    "leverage_rationale": "<1-2 sentences explaining the score>",
     "key_insight": "<1-2 sentences: the single most important structural observation>"
   },
   "asset_valuations": [

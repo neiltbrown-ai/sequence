@@ -224,7 +224,13 @@ async function FullAccessDashboard() {
           Previous onboarding "paths" cards have been removed — Portfolio
           is now the canonical first step, so offering three alternative
           entry points was off-message. */}
-      <DashboardInventoryCTA assetCount={inventoryCount} summary={inventorySummary} />
+      {/* Asset Inventory CTA — only when no portfolio analysis exists.
+          Once an analysis exists, the Portfolio State Valuation card
+          subsumes this CTA's information and adds drivers + actions. */}
+      {!inventoryAnalysis && (
+        <DashboardInventoryCTA assetCount={inventoryCount} summary={inventorySummary} />
+      )}
+
       <DashboardRoadmapCTA
         status={roadmapStatus}
         stage={roadmapStage}
@@ -233,7 +239,14 @@ async function FullAccessDashboard() {
         actionsCompleted={roadmapActionsCompleted}
         actionsTotal={3}
       />
-      <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
+
+      {/* Deal Evaluator CTA — only when no deals evaluated yet. Once any
+          deal exists, the Portfolio State Deals Evaluated card subsumes
+          this CTA with per-deal detail. */}
+      {recentDeals.length === 0 && (
+        <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
+      )}
+
       <DashboardProfileCta creativeIdentityComplete={hasCompletedAssessment} />
 
       {/* Portfolio state — three cards surfacing actual data the member
@@ -250,6 +263,7 @@ async function FullAccessDashboard() {
               <DashValuationCard
                 valuationRange={inventoryAnalysis.summary.estimated_total_value_range}
                 leverageScore={inventoryAnalysis.summary.leverage_score}
+                leverageRationale={inventoryAnalysis.summary.leverage_rationale}
                 drivers={inventoryAnalysis.value_drivers}
               />
             )}
