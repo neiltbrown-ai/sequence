@@ -86,7 +86,7 @@ export function DashValuationCard({
         </Link>
       </div>
 
-      <Link href="/inventory" className="dash-card-body-link">
+      <Link href="/inventory?tab=analysis" className="dash-card-body-link">
         {/* Hero — valuation range left, leverage score right, divider between */}
         <div className="dash-val-hero">
           <div className="dash-val-hero-left">
@@ -160,7 +160,7 @@ export function DashRiskFlagsCard({ risks }: RiskFlagsProps) {
       <div className="dash-card-head">
         <span className="dash-card-lbl">Risk Flags</span>
       </div>
-      <Link href="/inventory" className="dash-card-body-link">
+      <Link href="/inventory?tab=analysis" className="dash-card-body-link">
         <ul className="dash-risk-list">
           {risks.slice(0, 5).map((r, i) => (
             <li key={`${r.name}-${i}`} className="dash-risk-row">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import InventoryPage from "@/components/portal/inventory-page";
 import AnalysisView from "@/components/portal/inventory-analysis-view";
@@ -31,7 +32,16 @@ export default function PortfolioTabs({
   initialAnalysis,
   structureSlugMap = {},
 }: PortfolioTabsProps) {
-  const [tab, setTab] = useState<"assets" | "valuation">("assets");
+  // Allow deep-linking to the Analysis tab via ?tab=analysis (e.g. from
+  // the dashboard Valuation + Risk Flags cards). Internal state name
+  // stays "valuation" for back-compat; the URL uses the user-facing
+  // "analysis" name.
+  const searchParams = useSearchParams();
+  const initialTab: "assets" | "valuation" =
+    searchParams?.get("tab") === "analysis" && initialAnalysis
+      ? "valuation"
+      : "assets";
+  const [tab, setTab] = useState<"assets" | "valuation">(initialTab);
   const [items, setItems] = useState<AssetInventoryItem[]>(initialItems);
   const [analysis, setAnalysis] = useState<AssetInventoryAnalysis | null>(initialAnalysis);
   const [analyzing, setAnalyzing] = useState(false);
