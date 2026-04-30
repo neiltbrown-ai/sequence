@@ -129,10 +129,16 @@ export function DashValuationCard({
                   );
                 })}
               </ul>
+              {/* Axis runs only under the bar column. The outer grid
+                  matches the driver row (name | bar | score), with the
+                  inner flex distributing the three labels across the
+                  bar's full width. */}
               <div className="dash-drivers-axis" aria-hidden>
-                <span>Low</span>
-                <span>Medium</span>
-                <span>High</span>
+                <span className="dash-drivers-axis-track">
+                  <span>Low</span>
+                  <span>Medium</span>
+                  <span>High</span>
+                </span>
               </div>
             </div>
           </>

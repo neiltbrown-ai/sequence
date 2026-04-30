@@ -215,6 +215,40 @@ async function FullAccessDashboard() {
     <>
       <DashboardWelcome />
 
+      {/* Portfolio State — three cards surfacing actual data the member
+          has generated. Promoted to the top of the dashboard so active
+          users land on their portfolio status first; CTAs below act as
+          "what's next" navigation rather than the entry point.
+
+          Layout: Valuation+Drivers card spans full width on row 1.
+          Risk Flags + Deals Evaluated render 2-up on row 2. Each card
+          conditionally renders so users with partial data still see a
+          coherent layout. */}
+      {(inventoryAnalysis || recentDeals.length > 0) && (
+        <div className="dash-section rv rv-d1">
+          <SectionHeader title="Portfolio State" />
+          {inventoryAnalysis && (
+            <DashValuationCard
+              valuationRange={inventoryAnalysis.summary.estimated_total_value_range}
+              leverageScore={inventoryAnalysis.summary.leverage_score}
+              leverageRationale={inventoryAnalysis.summary.leverage_rationale}
+              drivers={inventoryAnalysis.value_drivers}
+            />
+          )}
+          {((inventoryAnalysis?.risks && inventoryAnalysis.risks.length > 0) ||
+            recentDeals.length > 0) && (
+            <div className="dash-portfolio-row">
+              {inventoryAnalysis?.risks && inventoryAnalysis.risks.length > 0 && (
+                <DashRiskFlagsCard risks={inventoryAnalysis.risks} />
+              )}
+              {recentDeals.length > 0 && (
+                <DashDealsEvaluatedCard deals={recentDeals} />
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* CTA order mirrors the member's journey:
              1. Portfolio (keystone input — Audit your assets)
              2. Roadmap (primary output — appears once a plan exists)
@@ -248,36 +282,6 @@ async function FullAccessDashboard() {
       )}
 
       <DashboardProfileCta creativeIdentityComplete={hasCompletedAssessment} />
-
-      {/* Portfolio state — three cards surfacing actual data the member
-          has generated (valuation + drivers, risk flags, last 5 deals).
-          Renders only when the underlying data exists; fields added in
-          the 2026-04 schema (value_drivers, risks) are gracefully
-          optional so older analyses still render their valuation hero.
-       */}
-      {(inventoryAnalysis || recentDeals.length > 0) && (
-        <div className="dash-section rv rv-d1">
-          <SectionHeader title="Portfolio State" />
-          <div className="dash-portfolio-grid">
-            {inventoryAnalysis && (
-              <DashValuationCard
-                valuationRange={inventoryAnalysis.summary.estimated_total_value_range}
-                leverageScore={inventoryAnalysis.summary.leverage_score}
-                leverageRationale={inventoryAnalysis.summary.leverage_rationale}
-                drivers={inventoryAnalysis.value_drivers}
-              />
-            )}
-            <div className="dash-portfolio-side">
-              {inventoryAnalysis?.risks && inventoryAnalysis.risks.length > 0 && (
-                <DashRiskFlagsCard risks={inventoryAnalysis.risks} />
-              )}
-              {recentDeals.length > 0 && (
-                <DashDealsEvaluatedCard deals={recentDeals} />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="dash-section rv rv-d1">
         <SectionHeader title="Featured Case Studies" linkHref="/library/case-studies" linkLabel="Browse all" />
