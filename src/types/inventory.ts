@@ -38,6 +38,42 @@ export type InventoryAnalysisContent = {
   asset_valuations: AssetValuation[];
   scenarios: Scenario[];
   roadmap: InventoryRoadmap;
+  /**
+   * Five named drivers of value across the portfolio. Drives the
+   * "Drivers of Value" bar chart on the dashboard. Optional so existing
+   * analyses (pre-2026-04 schema) still type-check; render layer falls
+   * through gracefully when missing.
+   */
+  value_drivers?: ValueDriver[];
+  /**
+   * Top 5 portfolio-level risk flags surfaced to the dashboard "Risk
+   * Flags" card. Drawn from the AI analysis of the asset mix, not from
+   * the Creative Identity misalignment_flags. Optional for the same
+   * forward-compat reason.
+   */
+  risks?: PortfolioRisk[];
+};
+
+export type ValueDriverScore = "high" | "medium" | "low";
+
+export type ValueDriver = {
+  /** "IP Strength" | "Market Demand" | "Differentiation" | "Execution Readiness" | "Financial Upside" */
+  name: string;
+  score: ValueDriverScore;
+  /** 0-100; drives the bar fill width */
+  pct: number;
+  /** 1-2 sentences explaining why this driver got this score */
+  rationale?: string;
+};
+
+export type RiskSeverity = "high" | "medium" | "low";
+
+export type PortfolioRisk = {
+  /** e.g. "Market concentration", "IP ownership clarity" */
+  name: string;
+  severity: RiskSeverity;
+  /** 1-2 sentences explaining the risk */
+  rationale?: string;
 };
 
 export type AssetValuation = {

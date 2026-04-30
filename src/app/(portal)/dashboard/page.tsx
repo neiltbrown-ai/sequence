@@ -18,11 +18,18 @@ import DashboardNewContent from "@/components/portal/dashboard-new-content";
 import DashboardSavedPreview from "@/components/portal/dashboard-saved-preview";
 import DashboardLibraryStats from "@/components/portal/dashboard-library-stats";
 import DashboardUpgradeNudge from "@/components/portal/dashboard-upgrade-nudge";
+import {
+  DashValuationCard,
+  DashRiskFlagsCard,
+  DashDealsEvaluatedCard,
+  type RecentDealRow,
+} from "@/components/portal/dashboard-cards";
 import { createClient } from "@/lib/supabase/server";
 import { planTier } from "@/lib/plans";
 import { getRecommendations, getEditorialPicks, getNewContent, getCaseStudyRecommendationsForUser } from "@/lib/recommendations";
 import type { SignalColor } from "@/types/evaluator";
 import type { PlanSource, StageNumber, StrategicRoadmap } from "@/types/assessment";
+import type { InventoryAnalysisContent } from "@/types/inventory";
 
 const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
 
@@ -41,6 +48,8 @@ async function FullAccessDashboard() {
 
   let inventoryCount = 0;
   let inventorySummary: { estimated_total_value_range: string; leverage_score: string } | null = null;
+  let inventoryAnalysis: InventoryAnalysisContent | null = null;
+  let recentDeals: RecentDealRow[] = [];
   let evalCount = 0;
   let evalSummary: { count: number; medianScore: number | null; signals: { green: number; yellow: number; red: number }; latestName: string | null; latestSignal: SignalColor | null } | null = null;
 
@@ -150,12 +159,24 @@ async function FullAccessDashboard() {
         .limit(1)
         .maybeSingle();
       if (analysis?.analysis_content?.summary) {
+        inventoryAnalysis = analysis.analysis_content as InventoryAnalysisContent;
         inventorySummary = {
           estimated_total_value_range: analysis.analysis_content.summary.estimated_total_value_range,
           leverage_score: analysis.analysis_content.summary.leverage_score,
         };
       }
     }
+
+    // Last 5 individual deals — fuels the new "Deals Evaluated" list
+    // card (distinct from the existing aggregated DashboardEvalCTA).
+    const { data: recentDealsData } = await supabase
+      .from("deal_evaluations")
+      .select("id, deal_name, deal_type, overall_signal, overall_score, completed_at")
+      .eq("user_id", user.id)
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false })
+      .limit(5);
+    recentDeals = (recentDealsData ?? []) as RecentDealRow[];
 
     const evals = evalResult.data ?? [];
     evalCount = evals.length;
@@ -214,6 +235,35 @@ async function FullAccessDashboard() {
       />
       <DashboardEvalCTA evalCount={evalCount} summary={evalSummary} />
       <DashboardProfileCta creativeIdentityComplete={hasCompletedAssessment} />
+
+      {/* Portfolio state — three cards surfacing actual data the member
+          has generated (valuation + drivers, risk flags, last 5 deals).
+          Renders only when the underlying data exists; fields added in
+          the 2026-04 schema (value_drivers, risks) are gracefully
+          optional so older analyses still render their valuation hero.
+       */}
+      {(inventoryAnalysis || recentDeals.length > 0) && (
+        <div className="dash-section rv rv-d1">
+          <SectionHeader title="Portfolio State" />
+          <div className="dash-portfolio-grid">
+            {inventoryAnalysis && (
+              <DashValuationCard
+                valuationRange={inventoryAnalysis.summary.estimated_total_value_range}
+                leverageScore={inventoryAnalysis.summary.leverage_score}
+                drivers={inventoryAnalysis.value_drivers}
+              />
+            )}
+            <div className="dash-portfolio-side">
+              {inventoryAnalysis?.risks && inventoryAnalysis.risks.length > 0 && (
+                <DashRiskFlagsCard risks={inventoryAnalysis.risks} />
+              )}
+              {recentDeals.length > 0 && (
+                <DashDealsEvaluatedCard deals={recentDeals} />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="dash-section rv rv-d1">
         <SectionHeader title="Featured Case Studies" linkHref="/library/case-studies" linkLabel="Browse all" />

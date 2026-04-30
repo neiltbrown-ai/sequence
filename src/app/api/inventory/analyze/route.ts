@@ -195,7 +195,18 @@ Generate the InventoryAnalysisContent following this exact JSON schema:
     "medium_term": "<1-2 sentences>",
     "long_term_vision": "<1-2 sentences>",
     "recommended_structures": [<structure numbers>]
-  }
+  },
+  "value_drivers": [
+    { "name": "IP Strength",         "score": "<low|medium|high>", "pct": <0-100>, "rationale": "<1-2 sentences>" },
+    { "name": "Market Demand",       "score": "<low|medium|high>", "pct": <0-100>, "rationale": "<1-2 sentences>" },
+    { "name": "Differentiation",     "score": "<low|medium|high>", "pct": <0-100>, "rationale": "<1-2 sentences>" },
+    { "name": "Execution Readiness", "score": "<low|medium|high>", "pct": <0-100>, "rationale": "<1-2 sentences>" },
+    { "name": "Financial Upside",    "score": "<low|medium|high>", "pct": <0-100>, "rationale": "<1-2 sentences>" }
+  ],
+  "risks": [
+    { "name": "<short risk label, 2-4 words>", "severity": "<low|medium|high>", "rationale": "<1-2 sentences>" },
+    ... up to 5 ...
+  ]
 }
 
 Rules:
@@ -203,6 +214,8 @@ Rules:
 - Generate 2-3 realistic scenarios showing how assets could be leveraged together
 - Roadmap actions must be STRUCTURAL (legal, financial, contractual) — not marketing or content tactics
 - Be conservative with value estimates. Use real market comparables where possible.
+- value_drivers MUST contain exactly 5 entries with the names listed above (in that order). pct is the bar fill percentage 0-100; align it to the score (low ≈ 25-40, medium ≈ 50-70, high ≈ 80-100).
+- risks: surface the top 3-5 portfolio-level risk flags. Use short noun-phrase names (e.g. "Market concentration", "IP ownership clarity", "Dependency on key talent", "Seasonality of revenue", "Single-buyer dependency"). Sort by severity descending (high first).
 - Return ONLY valid JSON.`;
 
     const anthropic = new Anthropic({ apiKey });

@@ -62,7 +62,7 @@ const supabase: SupabaseClient = createClient(SUPABASE_URL, SERVICE_KEY, {
 // ---------------------------------------------------------------------------
 
 const TEST_PASSWORD = "TestPass123!";
-const EMAIL_DOMAIN = "insequence.co";
+const EMAIL_DOMAIN = "insequence.so";
 
 const ALL_EMAILS = [
   `test-fresh@${EMAIL_DOMAIN}`,
@@ -740,8 +740,56 @@ async function seedMakerUser() {
     await insertRow("asset_inventory_items", { id: randomUUID(), user_id: id, ...item });
   }
 
+  // Portfolio analysis — gives the dashboard Valuation + Drivers + Risk Flags cards
+  // something to render. Mirrors the depth of Marcus's analysis but scaled to a
+  // Stage-3 maker's asset mix (catalog of films, audience, creative judgment).
+  await insertRow("asset_inventory_analyses", {
+    id: randomUUID(),
+    user_id: id,
+    item_count: items.length,
+    status: "completed",
+    analysis_content: {
+      summary: {
+        total_assets: items.length,
+        estimated_total_value_range: "$600K - $1.4M",
+        leverage_score: "Medium — strong creative judgment and audience, but no formal IP or licensing infrastructure to monetize them.",
+        key_insight: "Your catalog of completed films + creative direction judgment are independently valuable. Together with the right entity structure, they could underwrite consulting + licensing income that doubles project revenue.",
+      },
+      asset_valuations: [
+        { asset_name: "Film catalog (4 features)", asset_type: "ip", estimated_value_range: "$200K - $500K", value_rationale: "Indie films with festival placement command licensing fees of $40-150K per territory. Catalog value depends on rights clarity.", immediate_actions: ["Audit each film for retained rights", "Quantify gross participation owed", "Package for streaming licensing"] },
+        { asset_name: "Creative direction judgment", asset_type: "judgment", estimated_value_range: "$150K - $400K (annualized)", value_rationale: "Advisory engagements at $50-150K reflect rare directorial judgment. Currently unpriced in deals.", immediate_actions: ["Define advisory tier offering", "Convert one collab into paid creative-director role"] },
+      ],
+      scenarios: [
+        { scenario_name: "Rights audit + licensing (12 months)", description: "Audit catalog rights and pursue 2-3 streaming/territory licenses.", potential_value: "$80K - $200K additional annual revenue", required_steps: ["Rights audit", "Sign sales agent", "Submit to 3 streaming buyers"], timeline: "12 months", risk_level: "Low" },
+      ],
+      roadmap: {
+        immediate_actions: [
+          { order: 1, action: "Audit film catalog for retained rights", why: "Can't license what you don't formally own.", timeline: "6 weeks" },
+          { order: 2, action: "Form production LLC with IP assignment provisions", why: "Future projects need clean rights from day one.", timeline: "4 weeks" },
+          { order: 3, action: "Define paid creative-director offering", why: "Convert advisory work into structured engagement with deliverables and equity.", timeline: "3 weeks" },
+        ],
+        medium_term: "Production LLC operating. 2 catalog titles licensed. Advisory revenue exceeds project revenue.",
+        long_term_vision: "Director-driven production company with backend on every project.",
+        recommended_structures: [9, 17, 22, 27, 28],
+      },
+      value_drivers: [
+        { name: "IP Strength",         score: "medium", pct: 65, rationale: "4 completed features with festival pedigree, but rights clarity is uneven across the catalog." },
+        { name: "Market Demand",       score: "high",   pct: 82, rationale: "Indie streaming licensing demand is structurally strong; festival pedigree opens doors." },
+        { name: "Differentiation",     score: "high",   pct: 88, rationale: "Distinctive directorial voice — collaborators cite this as the primary reason for partnership." },
+        { name: "Execution Readiness", score: "medium", pct: 55, rationale: "Strong on creative; weak on legal and licensing infrastructure to commercialize at scale." },
+        { name: "Financial Upside",    score: "medium", pct: 70, rationale: "Real upside on licensing + advisory tracks if rights and offerings are structured." },
+      ],
+      risks: [
+        { name: "IP ownership clarity",      severity: "high",   rationale: "Multiple film projects lack documented chain-of-title; can't be licensed until cleared." },
+        { name: "Single-project income",     severity: "medium", rationale: "Income concentrates around one feature at a time; gaps between films create cashflow stress." },
+        { name: "Dependency on key talent",  severity: "medium", rationale: "All revenue tied to founder's direction time; no scalable layer beneath." },
+        { name: "Brand-as-judgment opacity", severity: "low",    rationale: "Creative judgment is the asset, but it's not packaged for buyers — invisible market value." },
+      ],
+    },
+  });
+
   await addBookmarks(id, 5);
-  console.log("  ✓ Filmmaker seeded (assessment + roadmap + 2 deals + verdict + 6 assets + bookmarks)");
+  console.log("  ✓ Filmmaker seeded (assessment + roadmap + 2 deals + verdict + 6 assets + analysis + bookmarks)");
 }
 
 // ---------------------------------------------------------------------------
@@ -1026,8 +1074,55 @@ async function seedServiceUser() {
     await insertRow("asset_inventory_items", { id: randomUUID(), user_id: id, ...item });
   }
 
+  // Portfolio analysis — Stage-2 service provider (designer) with strong network
+  // and judgment IP but no entity structure or licensing layer.
+  await insertRow("asset_inventory_analyses", {
+    id: randomUUID(),
+    user_id: id,
+    item_count: items.length,
+    status: "completed",
+    analysis_content: {
+      summary: {
+        total_assets: items.length,
+        estimated_total_value_range: "$300K - $750K",
+        leverage_score: "Medium — strong judgment + network with no structural framing to convert into equity or recurring revenue.",
+        key_insight: "You're trading judgment for fees. With one entity restructure and a productized advisory tier, that same judgment becomes equity in 3-4 portfolio companies.",
+      },
+      asset_valuations: [
+        { asset_name: "Newsletter audience (12K subscribers)", asset_type: "audience", estimated_value_range: "$60K - $180K", value_rationale: "Founder-skewed list with strong open rates. Sponsorship rates $1-3K per send.", immediate_actions: ["Audit current sponsor pipeline", "Define content licensing tier"] },
+        { asset_name: "Product strategy judgment", asset_type: "judgment", estimated_value_range: "$200K - $500K (annualized)", value_rationale: "Founders consistently cite this as the reason they hire. Currently un-priced in fixed-fee deals.", immediate_actions: ["Convert one client to advisory + equity", "Productize as standalone offering"] },
+      ],
+      scenarios: [
+        { scenario_name: "Equity-for-services pivot (12 months)", description: "Restructure 2-3 client engagements to include equity component.", potential_value: "$150K-$400K paper equity within 12 months", required_steps: ["Form advisory LLC", "Draft equity-for-services template", "Renegotiate 2-3 active engagements"], timeline: "12 months", risk_level: "Low" },
+      ],
+      roadmap: {
+        immediate_actions: [
+          { order: 1, action: "Form S-Corp / LLC for advisory income", why: "Currently sole-proprietor; missing tax efficiency and equity-receipt vehicle.", timeline: "3 weeks" },
+          { order: 2, action: "Draft equity-for-services contract template", why: "Baseline for converting any future client to equity participation.", timeline: "4 weeks" },
+          { order: 3, action: "Pitch one current client on advisor-with-equity restructure", why: "First proof point to learn pricing and structure.", timeline: "6 weeks" },
+        ],
+        medium_term: "Active in 2-3 portfolio companies via equity-for-services. Newsletter generating $30K+/yr in sponsorships.",
+        long_term_vision: "Pure advisory practice + portfolio of equity stakes; project work becomes optional.",
+        recommended_structures: [4, 17, 18, 22, 24],
+      },
+      value_drivers: [
+        { name: "IP Strength",         score: "medium", pct: 60, rationale: "Strategy frameworks have value but aren't documented as licensable IP." },
+        { name: "Market Demand",       score: "high",   pct: 85, rationale: "Founder demand for product strategy advisors is structurally rising — every YC batch needs this." },
+        { name: "Differentiation",     score: "high",   pct: 80, rationale: "Founder-cited as the reason for engagement; track record across 50+ products." },
+        { name: "Execution Readiness", score: "high",   pct: 78, rationale: "Engaged, organized, and in-demand — ready to convert to advisory + equity model." },
+        { name: "Financial Upside",    score: "medium", pct: 65, rationale: "Equity-for-services portfolio can compound, but takes 3-5 years before exits materialize." },
+      ],
+      risks: [
+        { name: "Single-buyer dependency",  severity: "high",   rationale: "Top client represents 60%+ of revenue. If they pause, income halves." },
+        { name: "No equity participation",  severity: "high",   rationale: "All judgment given for fees; no upside on the products you help build." },
+        { name: "IP ownership clarity",     severity: "medium", rationale: "Strategy frameworks delivered to clients without explicit retention clauses." },
+        { name: "Sole-proprietor exposure", severity: "medium", rationale: "No entity structure means personal liability and tax-inefficient income flow." },
+      ],
+    },
+  });
+
   await addBookmarks(id, 4);
-  console.log("  ✓ Product designer seeded (assessment + roadmap + 2 deals [yellow + red] + 5 assets + bookmarks)");
+  console.log("  ✓ Product designer seeded (assessment + roadmap + 2 deals [yellow + red] + 5 assets + analysis + bookmarks)");
 }
 
 // ---------------------------------------------------------------------------
@@ -1470,6 +1565,19 @@ async function seedPerformerUser() {
         long_term_vision: "Catalog income > touring income. Publishing company operational. Passive income enables creative freedom.",
         recommended_structures: [14, 25, 27, 28, 29, 31],
       },
+      value_drivers: [
+        { name: "IP Strength",         score: "high",   pct: 88, rationale: "200+ owned tracks with active sync history. Splits mostly clear; 12 tracks need cleanup." },
+        { name: "Market Demand",       score: "high",   pct: 85, rationale: "Indie catalog sync demand is structurally rising; placements doubled YoY in similar genres." },
+        { name: "Differentiation",     score: "medium", pct: 65, rationale: "Distinctive sound but undifferentiated metadata; competing with creators who tag better." },
+        { name: "Execution Readiness", score: "medium", pct: 60, rationale: "Material exists; organization and packaging gap blocks agent submission." },
+        { name: "Financial Upside",    score: "high",   pct: 90, rationale: "Current $40K/yr vs. market potential $150K-$300K. 3-7x upside on existing catalog alone." },
+      ],
+      risks: [
+        { name: "IP ownership clarity", severity: "medium", rationale: "12 tracks have disputed or undocumented splits; can't be pitched until cleared." },
+        { name: "Single-agent dependency", severity: "medium", rationale: "Sync revenue routes through one agent. Loss of relationship would interrupt income." },
+        { name: "Catalog organization", severity: "high", rationale: "150 of 200 tracks lack metadata sufficient for agent submission. Largest unlock blocker." },
+        { name: "Touring income concentration", severity: "low", rationale: "Touring is dominant income today; capacity-bounded and not scalable without team." },
+      ],
     },
   });
 
@@ -1636,6 +1744,55 @@ async function seedDemoSales() {
   for (const item of demoAssets) {
     await insertRow("asset_inventory_items", { id: randomUUID(), user_id: id, ...item });
   }
+
+  // Portfolio analysis — Stage-2 brand strategist (Maya). Polished, demo-friendly
+  // example of the dashboard cards in their richest state.
+  await insertRow("asset_inventory_analyses", {
+    id: randomUUID(),
+    user_id: id,
+    item_count: demoAssets.length,
+    status: "completed",
+    analysis_content: {
+      summary: {
+        total_assets: demoAssets.length,
+        estimated_total_value_range: "$800K - $2.2M",
+        leverage_score: "High — strong brand-strategy IP and a positioned audience; ready to convert from retainer to equity participation.",
+        key_insight: "Three of your last five engagements would have qualified for backend participation. You're sitting on $200K-$500K in unrealized equity from work already shipped.",
+      },
+      asset_valuations: [
+        { asset_name: "Brand strategy frameworks (5 productized)", asset_type: "ip", estimated_value_range: "$300K - $800K", value_rationale: "Documented frameworks command licensing fees of $25-75K per deployment; productized version unlocks recurring revenue.", immediate_actions: ["Trademark framework names", "Build licensing tier pricing"] },
+        { asset_name: "Founder advisory judgment", asset_type: "judgment", estimated_value_range: "$200K - $500K (annualized)", value_rationale: "Repeat founders cite Maya as the reason they re-engage. Currently fee-only.", immediate_actions: ["Convert top client to equity component", "Define formal advisor role"] },
+        { asset_name: "Conference / speaking platform", asset_type: "audience", estimated_value_range: "$80K - $200K", value_rationale: "Recurring keynote slots at top brand strategy conferences = ongoing pipeline + premium positioning.", immediate_actions: ["Lock in 2026 keynote calendar"] },
+      ],
+      scenarios: [
+        { scenario_name: "Equity conversion (12 months)", description: "Restructure 2-3 retainer engagements to include 1-2% equity stakes.", potential_value: "$300K-$700K paper equity within 12 months", required_steps: ["Form advisory LLC", "Equity-for-services template", "Renegotiate top 3 engagements"], timeline: "12 months", risk_level: "Low" },
+        { scenario_name: "IP licensing (24 months)", description: "License brand strategy frameworks to agencies and consultancies.", potential_value: "$200K-$500K annual licensing revenue", required_steps: ["Trademark frameworks", "Build licensing kit", "Sign 3-5 licensee agencies"], timeline: "24 months", risk_level: "Medium" },
+      ],
+      roadmap: {
+        immediate_actions: [
+          { order: 1, action: "Form advisory LLC for equity engagements", why: "Currently sole-prop; need entity to receive equity.", timeline: "3 weeks" },
+          { order: 2, action: "Trademark top 3 framework names", why: "Foundation for licensing tier; protects IP from agency knockoffs.", timeline: "8 weeks" },
+          { order: 3, action: "Convert top retainer client to advisor + equity", why: "First proof point. Use to learn pricing for the next 4-5.", timeline: "6 weeks" },
+        ],
+        medium_term: "3+ active equity stakes. 2 framework licenses live. Retainer income is 50% of total (was 90%).",
+        long_term_vision: "Pure advisory + IP licensing practice. Project work is optional. Equity portfolio compounds independently.",
+        recommended_structures: [4, 17, 18, 22, 24, 27],
+      },
+      value_drivers: [
+        { name: "IP Strength",         score: "high",   pct: 88, rationale: "5 productized frameworks with documented case studies. Trademark + license-ready." },
+        { name: "Market Demand",       score: "high",   pct: 85, rationale: "Brand strategy demand from Series A/B founders is structurally rising; pipeline is 2x capacity." },
+        { name: "Differentiation",     score: "medium", pct: 70, rationale: "Distinctive frameworks but competitive category; speaking platform is the moat." },
+        { name: "Execution Readiness", score: "medium", pct: 65, rationale: "Strong on delivery; weak on entity structure and licensing infrastructure." },
+        { name: "Financial Upside",    score: "high",   pct: 90, rationale: "Equity-for-services portfolio + IP licensing both have multi-million-dollar upside paths." },
+      ],
+      risks: [
+        { name: "Market concentration",     severity: "high",   rationale: "70% of revenue from fintech / SaaS founders. A category downturn would hit hard." },
+        { name: "IP ownership clarity",     severity: "medium", rationale: "Frameworks delivered to clients without explicit retention clauses; competitors could copy." },
+        { name: "Dependency on key talent", severity: "medium", rationale: "All advisory revenue depends on Maya's calendar; no scalable layer beneath her." },
+        { name: "Seasonality of revenue",   severity: "low",    rationale: "Q1 and Q4 are strong; summer dips reliably 30%. Predictable but not yet smoothed." },
+      ],
+    },
+  });
 
   // Deal 1 — Fintech retainer, yellow, renegotiated (her first evaluator win)
   const deal1Id = await insertRow("deal_evaluations", {
