@@ -315,6 +315,52 @@ Run this sweep whenever a title appears to read oddly. Past rounds have caught: 
 
 ---
 
+### Symptom: MDX page returns 500 — "Unexpected character `\"` (U+0022) before attribute name"
+
+**Reports as:** Newly authored case study / structure / article MDX file fails to compile. The error mentions an unexpected `"` or `'` and points roughly at a `*Json` prop.
+
+**Root cause:** An apostrophe inside a JSON-string prop (e.g. `rowsJson='[["Levi'\''s",...]]'`) was escaped using bash-style escaping (`'"'"'`). MDX parses that as 4 separate characters and the JSON is broken. Bash escape syntax is for the shell, not for MDX.
+
+**Fix:** Use an HTML entity instead — `&rsquo;` (right single quote) reads cleanly in the rendered output and never confuses the parser:
+
+```mdx
+<!-- WRONG (bash-style; breaks the JSON) -->
+rowsJson='[["Levi'"'"'s","Co-branded apparel"]]'
+
+<!-- RIGHT (HTML entity) -->
+rowsJson='[["Levi&rsquo;s","Co-branded apparel"]]'
+```
+
+For other special characters in JSON strings: use `&amp;` for `&`, `&quot;` if you need a literal `"` inside a JSON string (rare; usually rewrite to avoid).
+
+---
+
+### Symptom: MDX page returns 500 — "Unexpected character `8` (or other digit) before name"
+
+**Reports as:** Newly authored MDX file fails to compile with an error pointing at a digit. The digit usually appears immediately after a `<` somewhere in body prose.
+
+**Root cause:** Body prose like "lets `<80` people run 4+ products" hits the MDX/JSX parser. `<` triggers tag-name parsing; a digit can't start a tag name; compile fails. JSX attribute values (`value="<80"`) are unaffected because the string content isn't parsed as JSX — only tag-text and standalone JSX expressions are.
+
+**Fix:** Either rewrite the prose, or escape the `<`:
+
+```mdx
+<!-- WRONG (parsed as start of a JSX tag) -->
+This is what lets <80 people run 4+ products at $80M+ revenue.
+
+<!-- RIGHT (rewrite) -->
+This is what lets fewer than 80 people run 4+ products at $80M+ revenue.
+
+<!-- ALSO RIGHT (HTML entity escape) -->
+This is what lets &lt;80 people run 4+ products at $80M+ revenue.
+```
+
+**Other danger patterns to scan for** before authoring MDX:
+- `<` followed by a digit (`<80`, `<10%`, `<5 minutes`)
+- `<` followed by space-then-text (treated as broken tag)
+- `>` standalone in prose is generally fine — only `<` triggers tag parsing
+
+---
+
 ### Symptom: Recommended Actions in Portfolio Analysis don't show structure badges
 
 **Root cause:** Regex `/\(Structure #(\d+)\)/` only matched parenthetical form. Claude often outputs `Structure #29: Rights reversion clauses…` (prefix form, no parens).
