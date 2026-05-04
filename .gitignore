@@ -47,3 +47,6 @@ Start Sequence Dev.command
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# case study audit working artifacts (proposal docs, calibration batches, scratch)
+/audit-output/
