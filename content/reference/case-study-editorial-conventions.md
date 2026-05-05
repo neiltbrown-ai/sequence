@@ -372,7 +372,55 @@ Either name the actual evidence OR name the gap directly.
 
 ## 12. Verification block structure
 
-> *Placeholder — to be populated by Phase 6.1 of the audit. The substance: every case's Sources & Verification section will follow the same five-subsection structure (Verification Info / Primary Sources / Secondary Sources / Verified Data Points / Gaps to Verify) with confidence ratings on every Verified Data Point. The `george-lucas` case is the canonical reference for verification block structure. See the Phase 6.1 work when complete for the full convention.*
+Every case study ends with a `<CbSources>` block that wraps a "Sources & Verification" toggle. The block contains five sub-sections in this canonical order:
+
+1. **Verification Info** (`<CbSourceGroup title="Verification Info">`) — 2–3 short bullets describing the overall confidence character of the case. What's disclosed vs. estimated vs. privately held.
+2. **Primary Sources** (`<CbSourceGroup title="Primary Sources">`) — Named sources, linked where possible. Interviews, SEC filings, press releases, official sites.
+3. **Secondary Sources** (`<CbSourceGroup title="Secondary Sources">`) — Named secondary sources, linked where possible. Trade press, analysis, encyclopedic references.
+4. **Verified Data Points** (`<CbVerifiedDataPoints>` with `<CbDataPoint confidence="...">` children) — Bulleted list of the case's key factual claims with confidence levels. Three values: `confidence="very-high"`, `confidence="high"`, `confidence="medium"`. The new component renders the confidence as a chip after the claim text.
+5. **Gaps to Verify** (`<CbSourceGroup title="Gaps to Verify">`) — Bulleted list of what isn't disclosed.
+
+### Canonical reference: `george-lucas`
+
+`content/case-studies/george-lucas.mdx` is the canonical reference. Read its `<CbSources>` block before writing or auditing a verification block.
+
+### Component reference
+
+```mdx
+<CbSources>
+  <CbSourceGroup title="Verification Info">
+    <CbSourceItem>...</CbSourceItem>
+  </CbSourceGroup>
+  <CbSourceGroup title="Primary Sources">
+    <CbSourceItem>...</CbSourceItem>
+  </CbSourceGroup>
+  <CbSourceGroup title="Secondary Sources">
+    <CbSourceItem>...</CbSourceItem>
+  </CbSourceGroup>
+  <CbVerifiedDataPoints>
+    <CbDataPoint confidence="very-high">Disney acquisition $4.05B — SEC filings</CbDataPoint>
+    <CbDataPoint confidence="high">Salary reduction $500K → $150K — Deadline, NFS, CNW</CbDataPoint>
+    <CbDataPoint confidence="medium">Net worth $7B — Forbes 2025</CbDataPoint>
+  </CbVerifiedDataPoints>
+  <CbSourceGroup title="Gaps to Verify">
+    <CbSourceItem>...</CbSourceItem>
+  </CbSourceGroup>
+</CbSources>
+```
+
+### Confidence calibration
+
+- **`very-high`** — primary-source verified (SEC filing, official press release, named on-record interview, court filing). The claim is essentially indisputable.
+- **`high`** — multiple independent secondary sources agree, or one strong primary source. Industry-standard reporting context.
+- **`medium`** — single source, self-reported, or inferred from comparables. Use this when the claim is plausible but not independently confirmed.
+
+The Phase 6.1.b approval gate calibrates confidence assignments against Neil's editorial judgment before the bulk pass.
+
+### Phase 6.1.a status
+
+The format restructure (this section's structure) shipped May 2026. Every case has either populated Verified Data Points (57 cases at the time of the sweep) or a placeholder `<CbVerifiedDataPoints>{/* TODO: Phase 6.1.b — generate confidence-rated claims */}</CbVerifiedDataPoints>` (41 cases). Phase 6.1.b will populate the placeholders.
+
+**Drift not yet normalized** (deferred to Phase 7b): some cases use "Verification Notes" instead of "Verification Info"; some use multiple themed Primary Sources groups instead of separate Primary / Secondary; ordering occasionally drifts. The component structure is in place across all 98 cases — title and order normalization is a polish pass.
 
 ---
 
@@ -519,7 +567,7 @@ When in doubt about any of these, read the corresponding section of the calibrat
 
 ## Provenance
 
-This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), Phase 5 (the "What Wouldn't Transfer" lesson, §13), and Phase 4 (Related-cases conventions, §14). Sections 11 and 12 remain placeholders to be populated by Phases 6.3 and 6.1 respectively. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
+This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), Phase 5 (the "What Wouldn't Transfer" lesson, §13), Phase 4 (Related-cases conventions, §14), and Phase 6.1.a (Verification block structure, §12). Section 11 remains a placeholder to be populated by Phase 6.3. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
 
 Five gold-standard exemplars are referenced throughout. Read them in full before writing or auditing a case:
 

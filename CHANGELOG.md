@@ -10,6 +10,71 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 6.1.a Verification block format restructure + new components
+
+**Goal:** Bring all 98 cases' verification blocks into a canonical 5-subsection structure with the new structured `<CbVerifiedDataPoints>` / `<CbDataPoint>` components. Phase 6.1.a is format-only — content generation for missing data points is Phase 6.1.b's job.
+
+### New components
+
+- **`<CbVerifiedDataPoints>`** — wraps children, renders the "Verified Data Points" subheading inside `<CbSources>`. Replaces the old `<CbSourceGroup title="Verified Data Points">` pattern.
+- **`<CbDataPoint confidence="very-high|high|medium">`** — renders text + small confidence chip with theme-aware styling (very-high: solid black/white; high: light translucent; medium: bordered transparent). ARIA label for screen readers.
+
+Files: `src/components/mdx/case-study/cb-verified-data-points.tsx` (new), `src/components/mdx/case-study/index.tsx` (registered in MDX components map + re-exports), `src/app/globals.css` (chip styling).
+
+### Inventory before sweep
+
+- Cases with all 5 subsections in canonical form: **11 / 98**
+- Cases missing Verification Info: 13
+- Cases missing Secondary Sources: 67
+- Cases missing Verified Data Points: 41 (becomes 42 once we account for components and a slug correction)
+- Cases missing Gaps to Verify: 1
+- Cases using `<CbVerifiedDataPoints>`: **0**
+
+### Three-batch sweep across 97 cases (george-lucas was pilot-converted in the component commit)
+
+- **george-lucas pilot** (`014a805`) — components built + first conversion. Validated the `(very high)` / `(high)` / `(medium)` parens-text → `confidence="..."` translation.
+- **Batch 1A** (`afa7b42`, 28 cases a–jo) — VDP component conversion. 318 insertions = 318 deletions. 54 items defaulted to `confidence="medium"` (no explicit confidence marker in the original) — flagged for Phase 6.1.b re-rating in batch summary.
+- **Batch 1B** (`55cb783`, 28 cases jo–w) — VDP component conversion. 291 data points processed. 4 items flagged with non-canonical `(medium-high)` markers stripped to `confidence="medium"` (kyla-scanlon, refik-anadol, roxane-gay, ryan-reynolds).
+- **Batch 2** (`e569e45`, 41 cases) — VDP placeholder injection. Each gets a `<CbVerifiedDataPoints>{/* TODO: Phase 6.1.b — generate confidence-rated claims */}</CbVerifiedDataPoints>` placeholder, positioned canonically AFTER the last Sources group, BEFORE Gaps to Verify (or as last group if no Gaps section).
+
+### Phase 6.1.a complete state
+
+Every case in the library now has a `<CbVerifiedDataPoints>` component — 57 populated with confidence-rated data points, 41 with TODO placeholders. Phase 6.1.b is unblocked: a `grep -r "TODO: Phase 6.1.b" content/case-studies/` finds the 41 cases that need data-point generation.
+
+### Editorial conventions §12 populated
+
+`content/reference/case-study-editorial-conventions.md` §12 (Verification block structure) was a placeholder; now populated. Documents the canonical 5-subsection order, the new component reference, confidence calibration (very-high / high / medium), and the Phase 6.1.a status. Provenance updated.
+
+### Drift deferred to Phase 7b
+
+Surfaced during the sweep — not normalized in 6.1.a:
+
+- 4 cases use "Verification Notes" instead of "Verification Info" (emma-chamberlain, jason-fried, mark-rober, sahil-lavingia)
+- 9 cases use multiple themed Primary Sources groups instead of separate Primary / Secondary splits (aries-moross, ava-duvernay, coralie-fargeat, liz-lambert, mikkel-eriksen-stargate, ryan-coogler, sean-baker, steph-smith, tina-roth-eisenberg)
+- 6 cases drift to Primary→Verification Info→Gaps ordering (no Secondary)
+- 4 cases have Verification Info + Primary + Gaps (no Secondary): paul-trillo, tash-sultana, temi-coker, virgil-abloh
+- 1 case (ohneis-andries-ohneisser) has non-canonical title "Gaps to Verify (Outreach Recommended)"
+- 1 case (sahil-lavingia) has no Gaps to Verify subsection
+
+These are title and ordering issues, not structural — the component is in place across all 98 cases. Phase 7b will normalize.
+
+### Operational learnings
+
+- **Browser preview verification was blocked by port 3000 in use** (Neil's existing dev server in main checkout). Visual chip rendering not verified during the sweep — Neil can verify when convenient by hitting `/case-studies/george-lucas` after fast-forwarding the main checkout.
+- **Default-to-medium for missing confidence markers** is the safe call. 58 items across the library defaulted; the calibration pass in Phase 6.1.b will re-rate them based on source quality.
+
+### Files touched
+
+97 case studies (`content/case-studies/*.mdx`) + 1 new component file + 2 modified component-system files + 1 CSS file + 1 conventions doc + this CHANGELOG.
+
+5 commits this phase (`014a805`, `afa7b42`, `55cb783`, `e569e45`, plus this doc commit). Build clean throughout.
+
+### Phase 6.1.b unblocked
+
+Calibration batch (10 cases per the briefing's fixed list — george-lucas, ryan-coogler, a24, liz-lambert, tyler-the-creator, loveis-wise, steph-smith, bjarke-ingels, temi-coker, aries-moross) → Neil approval gate → bulk pass on remaining 31 cases with TODO placeholders. The 58 default-to-medium items in already-populated cases also get re-rated.
+
+---
+
 ## 2026-05-05 (continued) — Phase 4 Related-cases audit: 14 cases gain peer links + conventions §14
 
 **Goal:** Audit the `<CbRelated>` block at the bottom of every case study. Two rules in the v5 briefing: each block should pull from at least 3 of 5 relational axes (structural overlap / outcome contrast / stage progression / discipline contrast / counterfactual), and no more than 50% of case-card links should point to cases published within 90 days.
