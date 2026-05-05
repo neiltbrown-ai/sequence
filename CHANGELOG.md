@@ -10,6 +10,67 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 6.2 Confidence Badge: new component + per-case assignment
+
+**Goal:** Build a new `<CbConfidenceBadge>` component that renders next to the existing case header labels, and assign each of 98 cases a `confidence: disclosed | mixed | inferred` frontmatter value.
+
+### New component
+
+`src/components/mdx/case-study/cb-confidence-badge.tsx` — text-only chip per the v5 briefing's "no color coding" placeholder treatment for v1:
+
+- `[ DISCLOSED ]` / `[ MIXED ]` / `[ INFERRED ]` rendered in monospace small caps
+- Hover-darkening transition matching the existing `cs-header-cat` style
+- Click scrolls to `#sources` anchor
+- `title` attribute carries the long-form definition; `aria-label` for screen readers
+
+Registered in the MDX components map (so MDX can also use it directly) and re-exported.
+
+### Header plumbing
+
+- `CaseStudyHeader` accepts an optional `confidence` prop
+- Badge renders in the meta row after `readTime` (separated by the existing dot pattern)
+- Public + portal page.tsx pass `fm.confidence` through
+- `CaseStudyFrontmatter` type extended with optional `confidence: "disclosed" | "mixed" | "inferred"` + `publishedAt: string`
+
+### Confidence assignment math
+
+Iteratively refined logic ran across all 98 cases (Python script over the worktree):
+
+- **Inputs:** VDP confidence distribution (very-high / high / medium counts), Gaps to Verify count, Verification Info text scanned for estimate-language signals (regex over "estimat", "industry-comparab", "privately held", "self-reported", etc.).
+- **Heuristics (v3):**
+  - `inferred` if VDP <40% high+very-high, OR (≥3 medium VDP items AND ≥2 estimate signals in VI)
+  - `disclosed` if VDP ≥85% high+very-high AND 0 medium AND ≤4 gaps AND ≤2 estimate signals (Lucas pattern: SEC-verified core with scope-limited carve-outs)
+  - `mixed`: everything else (the briefing-anticipated default — "most cases will fall here")
+
+### Calibration vs. worked examples
+
+The briefing names 5 worked-example anchors. v3 math agreed on 3 (george-lucas, liz-lambert, tyler-the-creator), conflicted on 2:
+
+- **a24** — math said disclosed; expected mixed. Override applied. Verification Info explicitly says financial figures are estimates.
+- **temi-coker** — math said disclosed; expected inferred. Override applied. Heavy-inference case per audit register; Phase 6.1.b pushed mediums to body prose, leaving a clean-looking VDP.
+
+### Final distribution
+
+**46 disclosed / 43 mixed / 9 inferred** across 98 cases.
+
+### Browser preview verified
+
+Started a dev server on port 3010 (port 3000 was in use by Neil's existing main-checkout server). Curl-verified badge rendering across 4 representative cases: george-lucas (disclosed), a24 (mixed override), temi-coker (inferred override), beeple (inferred math). Badge HTML emits correct `class="cb-confidence-badge cb-confidence-badge--<level>"` + `title` + `aria-label` for each. Visual confirmation of styling deferred to Neil whenever he hits the local main checkout (after a `git pull` to fast-forward the main checkout to match origin).
+
+### Files touched
+
+2 new files (`cb-confidence-badge.tsx` + `phase-6-2-confidence-assignment.md` proposal). 7 modified component-system files. 98 case study frontmatter additions.
+
+3 commits this phase: `874dac9` component + plumbing, `e378c3e` 98-case frontmatter mass mutation, plus this CHANGELOG.
+
+### Phase status after 6.2
+
+Remaining phases: **6.3** (Stat header `estimated` prop — extends existing `<CbMetric>` component, also populates conventions §11), **7a** (component-level docs in `case-study-components.md` for the components shipped in 6.1.a + 6.2 + 6.3), **7b** (polish editorial-conventions doc + cross-link).
+
+Phase 6.3 is mechanical extension of an existing component. Phase 7 closes out the audit.
+
+---
+
 ## 2026-05-05 (continued) — Phase 6.1.c section nav update across all 98 cases
 
 **Goal:** Bring all 98 cases to a canonical section nav structure with `Sources & Verification` as a navigable peer item between Lessons and Related — both in `sections:` frontmatter and as `<CbSection id="sources">` body wrapper.
