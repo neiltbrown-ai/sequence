@@ -94,6 +94,8 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 - `content/reference/deal-evaluator-spec-v2.md` — evaluation dimensions, scoring weights, verdict structure
 - `content/reference/deal-evaluator-assessment-integration.md` — evaluator × assessment integration
 - `content/reference/case-study-components.md` — MDX component toolkit
+- `content/reference/case-study-editorial-conventions.md` — case study voice register, evidence honesty, three-verb system for structure attribution, anti-hedge rule, body-softening register, and the 4 systemic structure-mapping patterns. Sister doc to `case-study-components.md` (HOW to write inside the components vs. WHAT components to use). Created during the May 2026 case study audit. Read before authoring or editing any case study prose.
+- `content/reference/library-expansion-candidates.md` — patterns surfaced by the audit that don't fit the 35-structure library cleanly. Two candidates so far: Permanent Equity / Patient Capital Investment (Bezos/Tiny/Wilkinson pattern), and Creative Studio Company distinct from #8 Creative Collective (MSCHF/unified-studio pattern). When writing a new case and no existing structure fits cleanly, flag the pattern there rather than stretching an existing structure.
 - `content/reference/design-system.md` — visual + editorial design reference
 - `content/reference/troubleshooting.md` — symptom → cause → fix for recurring bugs
 - `content/reference/test-users.md` — quick-glance reference for the 10 seeded test/demo users (password, expected data shape per user, what each is best for testing/demoing)

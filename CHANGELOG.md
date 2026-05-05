@@ -10,6 +10,74 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-04/05 — Case study audit (Phases 0, 1, 1.5, 2, retro): 98 cases recalibrated
+
+**Goal:** Run a comprehensive editorial audit of the case study library — calibrate language honesty about evidence type, fix structure-mapping drift, normalize case numbers, soften the public CTA on `/the-library`, and create a persistent in-repo home for the editorial conventions that emerged. Multi-day work; this entry covers the first session.
+
+### Phases completed (of the original v5 briefing)
+
+- **Phase 0** — `publishedAt` backfilled across all 98 cases (`updatedAt` value copied where missing). Required by Phase 4 recency cap. (`b48a0ef`)
+- **Phase 1** — Structure-mapping audit. Subagent reviewed 593 `<CbStructureBadge>` instances; surfaced 19 auto-correction proposals + 11 flag-for-review. Neil approved all 30.
+- **Phase 1.5** — Applied approved structure corrections across 21 cases. Body badge `num`+`href` swaps + frontmatter `structures: [...]` array updates. (`f0d2238`)
+- **Case-number renumber** — Numbers had drifted (4 duplicates, 10 gaps, max 104). Renumbered sequentially 1-98 sorted by `(publishedAt, original-num, slug)`. 94 cases changed. (`8839ba0`)
+- **Phase 2 (Pattern 8)** — Softened the cases-gate CTA on `/the-library` ("Real deals / Real terms / Real outcomes" → "Real careers / Real structures / Real receipts"; 70+ → 100+ count fixes). (`e547d1a`)
+- **Phase 2 calibration** — 5 cases (`george-lucas`, `a24`, `temi-coker`, `tyler-the-creator`, `reese-witherspoon`) edited per the 5 active patterns. Self-imposed approval gate. Calibration revealed body-softening gap (Coker thesis body asserted licensing as fact while the closing disclosure walked it back) — addressed in extension commits before bulk pass. (`f6e6539`, `1ead8c9`, `192233a`)
+- **Phase 2 bulk pass** — 6 parallel subagent batches edited the remaining 93 cases. 476 edits applied across all batches, 0 cases skipped. (`31e1f87`, `7c358e8`, `411cdd1`, `bdcabf0`, `a1a8267`, `026df75`)
+- **Phase 1.5 retro** — Consolidated 19 borderlines surfaced during Phase 2 into a single retro pass: §A 6-case `#14` systemic fix, §B 2 calibration carry-forwards (tyler `#12`, reese `#6`), §C 11 individual mismappings. Applied 17 of 19. (`f4fe9e1`, `ba4525b`, `8581662`)
+
+### New persistent reference docs
+
+- **`content/reference/case-study-editorial-conventions.md`** (412 lines) — Sister doc to `case-study-components.md`. Covers voice register, evidence honesty, three-verb system, Pattern 6 disclosure register, body-softening, anti-hedge rule, and the 4 systemic structure-mapping patterns. Calibrated against the 5 gold-standard exemplars. (`4cc5d24`)
+- **`content/reference/library-expansion-candidates.md`** — Tracks structural patterns that don't fit the 35-structure library cleanly. (`18ae81c`)
+
+### Editorial conventions encoded
+
+The audit produced a body of editorial calibration that's now codified in `case-study-editorial-conventions.md`:
+
+- **Two-register rule** — declarative when evidence supports, attributed/sourced when it doesn't, never the throat-clearing middle.
+- **Banned hedge phrases** — "appears to apply", "seems to have used", "what looks like", "could be characterized as", "may have likely", "reportedly" (without source), "according to industry sources" (without source). When softening unverified claims, name the actual evidence OR name the gap directly. (Anti-hedge rule self-corrected mid-audit when "reportedly" was caught creeping into a Coker softening edit — encoded as §10.)
+- **Three-verb system** for structure attribution: "Used / Applied / Structured the deal as" (documented), "The deal pattern matches / The arrangement is structured as" (inferred-with-public-mechanics), "Functions as / Resembles / Consistent with" (analytical-framing). Lucas knew he was retaining rights but did NOT know he was "applying Structure #30" — verbs must reflect that we're reading our framework onto deals, regardless of disclosure level.
+- **Pattern 6 disclosure sentence** at the end of every thesis paragraph, voice-tuned per case (Lucas direct, A24 institutional, Coker careful, Tyler defiant, Witherspoon analytical).
+- **Body-softening register** — extends Pattern 6 past the thesis end-sentence into drop-caps, paragraphs, pull-quotes, section intros, accordion cards, lesson cards, tab notes. If body asserts deal-mechanism / IP-retention / specific-contract-terms / career-long behaviors as fact when those claims aren't in the verification block, soften.
+- **Two-track judgment** — separate Track A (verification-block-confirmed) from Track B (case-body-asserted). Where B outruns A, soften B to general structural principle for that tier of work, not creator-specific assertion. Lucas is the gold-standard exception (most behaviors ARE in primary sources); most other cases need Track-B softening.
+
+### Systemic findings worth preserving
+
+- **4 structure-mapping patterns** from Phase 1, all encoded into `case-study-editorial-conventions.md` §9:
+  1. `#11 Franchise/Licensing` was being conflated with `#28 Exclusive Licensing` on single-buyer deals (5 Phase 1 cases + 2 more in Phase 1.5 retro)
+  2. `#14 Catalog/IP Securitization` was used metaphorically rather than for actual SPV/bond transactions
+  3. `#15 DAO/Web3` was used for non-blockchain venture rounds and ordinary creative collaborations
+  4. `#03 Project Equity` was conflated with film-deal structures (#22 Gross Participation, #28 Exclusive Licensing) on Coogler and Baker
+- **`#14` systemic over-application** (Phase 2 bulk): 6 cases (sanderson, vernon, miranda, refik-anadol, sylvan-esso, taylor-swift) used `#14` where there was no actual SPV/bond mechanism. The Mikkel-Eriksen-Stargate 2018 Shamrock deal is the cleanest tier-1 `#14` in the inventory; the 6 others got reattributed in the Phase 1.5 retro (per-case: 4 to `#25`, 1 to `#5`, 1 dropped).
+- **`#8` Creative Collective vs `#17` Equity-for-Services href mismatches** — three cases (collins, issa-rae, mschf) had `num="8"` paired with `href="/library/structures/equity-for-services"`. Two were resolved by fixing the href; collins was dropped entirely.
+
+### Library expansion candidates surfaced
+
+Two patterns the audit identified as not-fitting the existing library:
+- **Permanent Equity / Patient Capital Investment** — minority secondary investment with profit-distribution returns, no exit, no board control. Seed case: Jason Fried's Bezos minority stake on Basecamp. Future cases: Andrew Wilkinson / Tiny, Sahil Lavingia / Gumroad, Tyler Tringas / Calm Fund, Brent Beshore / Permanent Equity.
+- **Creative Studio Company** distinct from `#8` Creative Collective — unified entity with salaried employees and rapid creative cadence, vs. `#8`'s strict "loose association of independents" definition. Seed case: MSCHF (42 employees, VC-funded).
+
+### Operational learnings (for future bulk-style work)
+
+- **Subagent batched bulk passes** work at scale for editorial calibration. Pattern: write a brief in `audit-output/`, point at canonical reference docs, give subagent a case list, have them apply edits directly + write a per-batch summary. 6 parallel subagent batches completed Phase 2 in ~25 wall-clock minutes.
+- **Self-imposed calibration gates** before unleashing bulk subagent work caught the body-softening gap on Coker before it replicated across 93 cases. Worth adding before any future ~100-case sweep.
+- **Apply edits directly + per-batch git-diff review** beats proposal-then-apply for bulk work. At ~500-edit scale, per-edit Neil review is impractical; per-batch review via diffs is.
+- **Phase 1.5 retro pattern** — when a structure-mapping issue surfaces during downstream work (a Pattern 5 verb borderline that's actually a structure-mapping concern), defer rather than mis-edit. Accumulate in a retro list and run a focused pass periodically.
+
+### Files touched
+
+98 case studies (`content/case-studies/*.mdx`), `src/app/(public)/the-library/page.tsx`, 2 new reference docs (`content/reference/case-study-editorial-conventions.md`, `content/reference/library-expansion-candidates.md`), `.gitignore` (new `audit-output/` entry), `content/structures/34-profit-participation-mgmt-fee.mdx` (deleted stub).
+
+~22 commits. ~750 edits applied across all phases. Build clean throughout (395 static pages every commit).
+
+### Phases remaining (next session)
+
+3 (Era audit), 4 (Related-cases audit), 5 (What Wouldn't Transfer lesson — also populates editorial-conventions §13), 6.1.a/b/c (Verification block standardization + Verified Data Points generation **APPROVAL GATE on calibration batch** + section nav update), 6.2 (Confidence badge component), 6.3 (Stat header `estimated` prop — also populates §11), 7a (`case-study-components.md` updates for new components), 7b (polish editorial-conventions doc + cross-link).
+
+Session handoff written to user memory at `~/.claude/projects/-Users-neilbrown-Documents-00-Neil-01-In-Sequence-sequence/memory/audit-handoff.md`. New session can resume by opening the worktree at `.claude/worktrees/hardcore-napier-c36d51/` (or by creating a fresh worktree if cleaned up).
+
+---
+
 ## 2026-04-30 — Dashboard portfolio state + 10 new case studies
 
 **Goal:** Transform the dashboard from a CTA navigation hub into a portfolio-state surface that meets active members where their data already lives. Plus a substantial library expansion (10 new case studies) and two bug fixes from member testing.
