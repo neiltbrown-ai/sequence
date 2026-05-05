@@ -69,6 +69,7 @@ export default async function PublicCaseStudyPage({
         stats={fm.stats}
         backHref="/platform"
         backLabel="Platform"
+        confidence={fm.confidence}
       />
 
       {/* Scroll-spy sidenav (public only) */}

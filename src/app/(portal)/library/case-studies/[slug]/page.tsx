@@ -38,6 +38,7 @@ export default async function CaseStudyDetailPage({
         backHref="/library/case-studies"
         backLabel="All Case Studies"
         saveButton={<SaveButton contentType="case_study" slug={slug} />}
+        confidence={fm.confidence}
       />
 
       <CaseStudyProvider

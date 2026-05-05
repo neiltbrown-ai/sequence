@@ -63,6 +63,8 @@ export interface CaseStudyMeta {
   featured?: boolean;
   published: boolean;
   updatedAt: string;
+  publishedAt?: string;
+  confidence?: "disclosed" | "mixed" | "inferred";
 }
 
 export interface ArticleImage {

@@ -2989,6 +2989,12 @@ h3.sec-label {
   font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
   color: var(--light);
 }
+.cb-confidence-badge {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--light); text-decoration: none; cursor: pointer;
+  transition: color .15s;
+}
+.cb-confidence-badge:hover { color: var(--black); }
 .cs-header-title { padding: 0 var(--margin) 16px; }
 .cs-header-title-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--gutter); }
 .cs-header-title h1 {

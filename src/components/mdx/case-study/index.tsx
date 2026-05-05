@@ -14,6 +14,7 @@ import { CbTabs, CbTabPanel, CbTabGrid, CbTabItem, CbTabNote } from "./cb-tabs";
 import { CbAccordion, CbAccordionCard } from "./cb-accordion";
 import { CbSources, CbSourceGroup, CbSourceItem } from "./cb-sources";
 import { CbVerifiedDataPoints, CbDataPoint } from "./cb-verified-data-points";
+import { CbConfidenceBadge } from "./cb-confidence-badge";
 
 /* MDX element overrides for case study body content */
 function CbParagraph(props: React.ComponentProps<"p">) {
@@ -94,6 +95,7 @@ export const caseStudyMdxComponents = {
   CbSourceItem,
   CbVerifiedDataPoints,
   CbDataPoint,
+  CbConfidenceBadge,
 };
 
 /* Re-export all components for direct imports */
@@ -128,4 +130,5 @@ export {
   CbSourceItem,
   CbVerifiedDataPoints,
   CbDataPoint,
+  CbConfidenceBadge,
 };

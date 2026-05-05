@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import { CbConfidenceBadge } from "./mdx/case-study/cb-confidence-badge";
 
 interface CaseStudyHeaderProps {
   number: number;
@@ -15,6 +16,7 @@ interface CaseStudyHeaderProps {
   backHref?: string;
   backLabel?: string;
   saveButton?: ReactNode;
+  confidence?: "disclosed" | "mixed" | "inferred";
 }
 
 export default function CaseStudyHeader({
@@ -31,6 +33,7 @@ export default function CaseStudyHeader({
   backHref = "/case-studies",
   backLabel = "All Case Studies",
   saveButton,
+  confidence,
 }: CaseStudyHeaderProps) {
   const caseNum = String(number).padStart(2, "0");
 
@@ -64,6 +67,12 @@ export default function CaseStudyHeader({
                 <>
                   <span className="cs-header-dot" />
                   <span className="cs-header-cat">{readTime} Min Read</span>
+                </>
+              )}
+              {confidence && (
+                <>
+                  <span className="cs-header-dot" />
+                  <CbConfidenceBadge level={confidence} />
                 </>
               )}
             </div>
