@@ -49,7 +49,7 @@ export default function LibraryPage() {
             <span className="lib-metric-lbl">DEAL STRUCTURES</span>
           </div>
           <div className="lib-metric rv rv-d1">
-            <span className="lib-metric-val">70+</span>
+            <span className="lib-metric-val">100+</span>
             <span className="lib-metric-lbl">CASE STUDIES</span>
           </div>
           <div className="lib-metric rv rv-d2">
@@ -195,7 +195,7 @@ export default function LibraryPage() {
         <div className="cases-intro">
           <div className="cases-intro-grid">
             <p className="cases-intro-text rv">
-              <strong>70+ case studies</strong> mapping how creative
+              <strong>100+ case studies</strong> mapping how creative
               professionals structured deals, captured value, and built
               ownership &mdash; from independent musicians to billion-dollar
               holding companies. Each study documents the specific terms, the
@@ -237,18 +237,16 @@ export default function LibraryPage() {
         <div className="cases-gate rv rv-d4">
           <div className="cases-gate-left">
             <span className="cases-gate-headline">
-              Real deals.
+              Real careers.
               <br />
-              Real terms.
+              Real structures.
               <br />
-              Real outcomes.
+              Real receipts.
             </span>
             <p className="cases-gate-desc">
-              <strong>70+ case studies &mdash; and growing.</strong> Each one
-              documents the actual deal structure, the strategic reasoning
-              behind it, and the financial outcomes. Not theory. Not
-              inspiration. The specific mechanics of how creative professionals
-              captured value.
+              <strong>100+ case studies &mdash; and growing.</strong> Each one
+              documents the deal structures, the strategic reasoning behind
+              them, and the outcomes that followed. Sourcing on every claim.
             </p>
             <div className="cases-gate-cta">
               <Link href="/pricing" className="btn btn--white">
@@ -260,20 +258,20 @@ export default function LibraryPage() {
           <div className="cases-gate-right">
             <div className="cases-gate-feature">
               <span className="cases-gate-feature-title">
-                Actual Deal Terms
+                Structural Patterns
               </span>
               <span className="cases-gate-feature-desc">
-                Equity splits, revenue percentages, vesting schedules, and
-                compensation structures &mdash; not vague summaries.
+                Equity arrangements, revenue splits, licensing terms, and
+                ownership configurations &mdash; with sources cited.
               </span>
             </div>
             <div className="cases-gate-feature">
               <span className="cases-gate-feature-title">
-                Financial Outcomes
+                Career Trajectories
               </span>
               <span className="cases-gate-feature-desc">
-                What the deal was worth. ROI timelines. How value compounded or
-                didn&apos;t. The numbers that matter.
+                How each structure played out over time. What compounded. What
+                didn&apos;t.
               </span>
             </div>
             <div className="cases-gate-feature">
