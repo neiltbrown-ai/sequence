@@ -1,0 +1,769 @@
+# In Sequence Case Study Audit — Briefing for Claude Code (v5)
+
+**Source of authority:** This briefing was developed in a strategy session with Neil and revised through three rounds of review by Claude Code. It is the agreed plan for the audit. Where this document conflicts with prior conventions in the case studies, this document wins. Where this document is silent, defer to existing project conventions.
+
+**A note on rendering.** All filename references in this document are wrapped in backtick code spans (e.g., ` voice-guide.md ). If your markdown viewer auto-links bare filenames into broken [file.md](http://file.md)` markup, that is a viewer-side issue, not a source issue. Read the raw file directly if rendering is unreliable.
+
+**Scope:** All published case studies in the In Sequence library (~88 cases as of audit start).
+
+**Working principle.** This audit is editorial calibration, not rewriting. Most case studies are good; they need targeted adjustments to language register and structure attribution. Do not rewrite analytical content unless explicitly required by a pattern below. Preserve voice, preserve insight, preserve specificity. The goal is honesty about evidence type, not softer claims.
+
+---
+
+## Reference Documents — Authoritative Locations
+
+The following project-level reference documents are canonical. When this briefing names them, use these paths:
+
+- **Voice Guide** — sequence/content/reference/[voice-guide.md](http://voice-guide.md) (canonical version; ignore any duplicate elsewhere)
+- **Deal Structures Index** — sequence/content/reference/[deal-structures-index.md](http://deal-structures-index.md)
+- **Project Context** — sequence/content/reference/[project-context.md](http://project-context.md)
+- **Workflow** — sequence/content/reference/[workflow.md](http://workflow.md)
+- **File Index** — sequence/content/reference/[file-index.md](http://file-index.md)
+- **Case Study Components** — sequence/content/reference/[case-study-components.md](http://case-study-components.md)
+
+(Note: Neil is consolidating the project reference docs into sequence/content/reference/ and dropping the core_ filename prefix. Where the briefing references these docs, the canonical location is the path above.)
+
+Case study MDX files live in the standard repo location (sequence/content/case-studies/ or as configured). Use the actual MDX component names as defined in [case-study-components.md](http://case-study-components.md) — do not invent component names from the rendered HTML output.
+
+---
+
+## Operational Rhythm
+
+This audit is a multi-phase, multi-day operation. Code should follow this rhythm:
+
+- **Working directory:** Work in the main repo (sequence/). Do not create a worktree for the audit — the per-phase commit cadence and approval gates provide sufficient isolation.
+- **Builds:** Run npm run build after each phase completes. If a phase touches multiple cases, also build at the end of each batch of ~10 cases to catch component or MDX errors early.
+- **Commits:** Commit per phase with descriptive messages — e.g., audit: phase 1 structure-mapping proposal, audit: phase 2 language patterns batch 1 (cases 1-15). For multi-case phases, batch commits in groups of ~10–15 cases.
+- **Push and deploy:** After each phase passes build, push to main. Vercel auto-deploys. Code should verify deploy success before starting the next phase.
+- **Backups:** Each phase that mutates case files should preserve enough git history that any phase can be cleanly reverted if review surfaces issues.
+- **Audit working artifacts:** Proposal docs, calibration batches, and other working artifacts produced during the audit live at sequence/audit-output/. Add this directory to .gitignore — the audit's permanent output is the case study changes themselves, committed via the phase cadence above. The proposal docs are short-shelf-life working artifacts and should not clutter the repo.
+
+If a build fails mid-phase, stop and surface the error rather than continuing.
+
+---
+
+## Approval Gate Mechanics
+
+Two phases require Neil's approval before they cascade: Phase 1 (structure-mapping proposal) and Phase 6.1.b (Verified Data Points calibration batch). Approval flows through a consistent markdown-annotation convention.
+
+**Code's output:** A proposal markdown document at the path specified in each phase, with one item per line or one item per block.
+
+**Neil's review:** Edit the proposal markdown in place, prefixing each item with one of:
+
+- [APPROVED] — accept Code's recommendation as-is
+- [REJECTED] — leave the case unchanged; do not apply
+- [REVISED: <new value>] — accept the change but with a different value (e.g., a different structure number, a different confidence rating)
+
+**Code's intake:** Parse the annotated markdown. Before applying anything, print a parse summary of what was found:
+
+> "Parsed N items: X approved, Y rejected, Z revised, W unmarked (treated as rejected). Continue?"
+
+This gives Neil a chance to catch a missed page of annotations before Code commits to applying. Code waits for explicit confirmation to proceed. Once confirmed, apply only [APPROVED] and [REVISED] items. Skip [REJECTED] items entirely. Items with no annotation are treated as [REJECTED] by default — Code does not act on un-marked items.
+
+**Failure mode:** If Code encounters annotation it cannot parse (unfamiliar markup, conflicting annotations on the same item), surface the issue and stop rather than guessing.
+
+---
+
+## Order of Operations
+
+Phases run in this order. Some can parallelize as noted; some have hard dependencies.
+
+| Phase | Description | Depends On | Approval Gate |
+|-------|-------------|------------|---------------|
+| 0 | Data hygiene — backfill publishedAt field | none | none |
+| 1 | Structure-mapping audit (proposal only) | none | **Yes — Neil approves before Phase 1.5** |
+| 1.5 | Apply approved structure-mapping corrections | Phase 1 approved | none |
+| 2 | Language pattern application | Phase 1.5 complete | none |
+| 3 | Era audit | none (parallel to Phase 2) | none |
+| 4 | Related-cases audit | Phase 0 | none |
+| 5 | Required "What Wouldn't Transfer" lesson | none (parallel to Phase 2) | none |
+| 6.1.a | Verification block sub-section structure standardization | Phase 1.5 complete | none |
+| 6.1.b | Verified Data Points generation (the heavy editorial lift) | Phase 1.5 complete | **Yes — Neil reviews 10-case calibration batch before batching the rest** |
+| 6.1.c | Section nav and frontmatter mass update (88-file mutation) | Phase 6.1.a | none |
+| 6.2 | Confidence badge component and per-case assignment | Phase 6.1.b complete | none |
+| 6.3 | Stat header estimated prop treatment | Phase 1.5 complete | none |
+| 7a | Update [case-study-components.md](http://case-study-components.md) for new components | Phase 6.1.a, 6.2, 6.3 components shipped | none |
+| 7b | Update [case-study-components.md](http://case-study-components.md) for Verified Data Points conventions | Phase 6.1.b complete | none |
+
+The two approval gates (Phase 1 and Phase 6.1.b) exist because both phases involve interpretive judgment that cascades into other work. Getting them wrong forces redo of downstream phases.
+
+---
+
+## Phase 0: Data Hygiene — publishedAt Backfill
+
+### Why this phase exists
+
+Phase 4 (Related-cases audit) uses a 50% recency cap based on publication date. Currently, case frontmatter has updatedAt but most cases lack publishedAt. Without publishedAt, the recency cap can't reliably distinguish "recently published" from "recently edited," which the audit needs to differentiate.
+
+### Task
+
+For every case study in the library, ensure frontmatter has both publishedAt and updatedAt fields.
+
+**Backfill logic:**
+
+If publishedAt is missing, set it to the value of updatedAt. If publishedAt already exists, leave both fields alone.
+
+The recency cap in Phase 4 only needs month-granularity precision (last 90 days). Per-file git history queries are unnecessary overhead.
+
+### Output
+
+- Every case study has both publishedAt and updatedAt in frontmatter.
+- Single batch commit: audit: phase 0 publishedAt backfill across all cases.
+
+---
+
+## Phase 1: Structure-Mapping Audit (Proposal)
+
+### What this phase does
+
+For every <CbStructureBadge num="X"> in every case study, verify that Structure #X actually describes the deal as documented in the case body. The reference for what each structure means is [deal-structures-index.md](http://deal-structures-index.md).
+
+**Important:** Phase 1 produces a proposal document. It does NOT mutate any case files. Mutations happen in Phase 1.5 after Neil approves the proposal.
+
+### Adjudication threshold (moderately aggressive)
+
+**Propose auto-correction when:** The current structure is a clear category mismatch and a different structure is a clear better fit. "Clear better fit" means the corrected structure's defined mechanism matches the deal mechanics as described in the case body, and no other structure is equally plausible.
+
+**Propose flag-for-review when:** The case is genuinely hybrid (two structures both apply meaningfully and choosing one understates the deal); the public record is too thin to disambiguate; or the existing mapping is defensible-but-arguable rather than wrong.
+
+**Do not include in the proposal:** Mappings that are correct as-is. Most existing mappings are correct. The proposal should only contain cases where Code is making a recommendation.
+
+### Audit logic per structure badge
+
+For each structure badge in a case, run three checks against the case body:
+
+**1. Mechanism check.** What did the counterparty actually receive in this deal?
+- Equity in an entity → equity structures (#17–#21)
+- A right to exploit IP within scope → rights structures (#27–#31)
+- Ongoing income from defined revenue → participation structures (#22–#26)
+- Distribution rights / advance against revenue → licensing or hybrid structures (#26, #28, #33)
+
+**2. Asset class check.** Does the structure's asset class (defined in [deal-structures-index.md](http://deal-structures-index.md)) match what the deal actually transferred?
+
+**3. Hybrid check.** If the deal involves multiple mechanisms, is the case attributing it to the dominant mechanism or to a partial component?
+
+### Worked example: Sean Baker / Clockwork (slug: sean-baker)
+
+The current Sean Baker case labels Clockwork's pre-buying of distribution rights as Structure #03 (Project Equity Model). This is wrong. Clockwork did not take equity in the project entity; they purchased a downstream right (distribution within scope) in exchange for an advance.
+
+**Proposed correction:** Most likely Structure #28 (Exclusive Licensing) for the territorial/window rights Clockwork acquired, possibly combined with Structure #33 (Milestone Payments) if the advance triggered against deliverables. If the deal is hybrid, attribute to #28 as dominant and reference #33 secondarily.
+
+### Worked example: when to flag rather than auto-correct
+
+If a case attributes a deal to #18 (Founder/Co-Founder Equity) but the body describes both founder equity and ongoing profit participation, both #18 and #34 (Profit Participation + Management Fee) apply. This is hybrid — flag with a one-paragraph rationale naming both options and recommending which to attribute as dominant.
+
+### Output (Phase 1)
+
+A single proposal document at sequence/audit-output/[phase-1-structure-mapping-proposal.md](http://phase-1-structure-mapping-proposal.md) containing:
+
+1. **Auto-correction proposals** — Cases where Code recommends re-mapping. Format: case slug, current structure, proposed structure, one-sentence rationale.
+2. **Flag-for-review proposals** — Cases where the mapping is genuinely ambiguous. Format: case slug, current structure, alternative options, one-paragraph rationale.
+3. **Confidence summary** — Across the full library: total badges audited, count of correct as-is, count of auto-correction proposals, count of flag-for-review proposals.
+
+Do NOT include cases where the mapping is correct as-is. The proposal should be scannable.
+
+### Approval gate
+
+Neil reviews the proposal document and annotates each item per the markup convention defined in **Approval Gate Mechanics** above ([APPROVED] / [REJECTED] / [REVISED: new value]). Code parses the annotated doc and applies only approved/revised items in Phase 1.5.
+
+---
+
+## Phase 1.5: Apply Approved Structure-Mapping Corrections
+
+### What this phase does
+
+Code reads Neil's marked-up proposal doc and applies the approved corrections to case files.
+
+### Mechanics
+
+- For each approved correction: update the <CbStructureBadge num="X"> in the case body, update the structures: [N, N, N] array in the case frontmatter, and update any in-body references to the structure number.
+- Do NOT update body language about the structure beyond the number swap. Pattern 5 verb system rewrites happen in Phase 2.
+- Commit per case or per batch (~10 cases) with descriptive messages.
+
+### Output
+
+- Updated case files with corrected structure mappings.
+- Commit log showing exactly which cases were modified.
+
+---
+
+## Phase 2: Language Pattern Application
+
+### Working principle
+
+The patterns below are calibration rules, not search-and-replace mechanics. Code should read each case study and apply judgment about where each pattern triggers. The voice guide ([voice-guide.md](http://voice-guide.md)) governs all rewrites: economical prose, no throat-clearing, declarative statements when evidence supports them, attributed framing when it doesn't.
+
+**Critical voice rule.** Avoid wishy-washy hedge phrasing. The two registers are (a) declarative when evidence supports it, (b) attributed/sourced when it doesn't. Never the throat-clearing middle. Banned phrases:
+
+- ❌ "appears to apply"
+- ❌ "seems to have used"
+- ❌ "what looks like"
+- ❌ "could be characterized as"
+- ❌ "may have likely"
+
+### Pattern 1: Specific dollar figures attached to specific named deals
+
+**Drift.** Specific dollar amounts (e.g., "Google Pixel campaign — $180K single deal") are stated as fact when they are inferred from industry comparables.
+
+**Rule.** A specific dollar figure attached to a specific named deal can only be stated unattributed if the figure is on the public record (court filing, SEC, the creator's own statement to a credible outlet, trade-press reporting that names a primary source). Otherwise, use one of:
+
+- **Attributed range with explicit framing:** "Industry comparables for [creator type] at this brand tier suggest fees in the $X–$Y range; specific terms are not public."
+- **Decoupled framing:** Describe the deal mechanics without the specific figure. "Exclusive license with a defined window. Fees for designer-led exclusive campaigns at this brand tier typically run several multiples of equivalent non-exclusive work."
+
+**Application.** When in doubt about whether a specific dollar figure attached to a specific deal is disclosed or inferred, check the verification block. If the verification block says it's estimated, rewrite. If the verification block says it's disclosed/sourced, leave it.
+
+### Pattern 2: Cumulative or annual revenue totals stated as fact
+
+**Drift.** "Cumulative licensing revenue passes $2.8M" stated as a milestone, when the figure is estimated.
+
+**Rule.** Cumulative and annual revenue figures for private creators are almost always estimated. Body prose must carry the qualifier the header carries. Use one of:
+
+- "Estimated cumulative [revenue type] of approximately $X, based on [evidence type]."
+- "Industry comparables suggest cumulative revenue in the $X–$Y range."
+- Attribute to source: "Coker has indicated in interviews that…"
+
+### Pattern 3: Rate ranges stated without attribution
+
+**Drift.** Deal Comparison tables present industry-comparable rate ranges as if they were the creator's specific terms.
+
+**Rule.** When a rate range is illustrative of industry practice rather than the specific creator's known terms, the framing must say so. Update chart captions or column headers:
+
+- ❌ "Coker Partnership Terms / Upfront Fee: $15–40K"
+- ✅ "Industry-comparable terms for designer-led product partnerships / Upfront Fee: $15–40K"
+
+If specific terms ARE known for this creator, label that column accordingly. Don't conflate "what we know about this creator" with "industry standard."
+
+### Pattern 4: Aggregated stat headers — consistent confidence indication
+
+**Drift.** Within a single case, some stat headers use "Est." or "~" while others render as definitive when they shouldn't.
+
+**Rule.** Within any single case, stat header treatment must be consistent. The mechanics of the "Est." chip are specified in Phase 6.3.
+
+- **Disclosed figures** (Box Office Mojo, SEC, named primary source): No qualifier. "$4.05B Disney Acquisition."
+- **Disclosed-with-rounding** (precise figure rounded for display): Use "~". "~$6M Avg. Production Budget."
+- **Inferred figures** (industry comparables, analyst estimates): Use the estimated prop on the stat component (see Phase 6.3). Do not embed "Est." in the label.
+
+### Pattern 5: The three-verb system for structure attribution
+
+**Drift.** "Applied Structure #X" is the universal default verb. It implies the creator was working from our framework (they weren't) and doesn't distinguish documented intent from analytical fit.
+
+**Rule.** Replace "applied" as the default. Use one of three verbs based on the interpretive confidence axis:
+
+- **"Applied" / "Used" / "Structured the deal as"** — Only when deal terms are publicly documented and clearly match the structure. Examples: A24's adjusted gross participation deals (documented in director interviews and trade press); the 2015 Standard / Bunkhouse 51% transfer (documented in trade press); Lucas's 1973 rights-retention trade (documented in Tom Pollock interview and multiple secondary sources).
+- **"The deal pattern matches" / "The arrangement is structured as"** — When the specific terms are inferred but the public record establishes the basic mechanics. Examples: Coker publicly described doing licensing work, so "the deal pattern matches Structure #27 (Non-Exclusive Licensing)" is honest.
+- **"Consistent with" / "Functions as" / "Resembles"** — When the structure is an analytical framing of behavior we've inferred from outcomes. Examples: Moross's "founder-led studio" framing of Holding Company — we are doing the structural analysis, the creator never publicly described it that way.
+
+**Critical:** This rule applies to high-disclosure cases as well as low-disclosure ones. Lucas knew he was retaining rights. He did not know he was "applying Structure #30" because Structure #30 didn't exist as a named framework in 1973. The verb must reflect that we are reading our framework onto the historical deal, regardless of how much financial data is available.
+
+### Pattern 6: Thesis paragraph analytical-framing disclosure
+
+**Drift.** Thesis paragraphs treat structures as the creator's own framework. "He applied three distinct structures..."
+
+**Rule.** Every thesis paragraph that introduces the structures applied to the case must include explicit framing that the structure mapping is analytical, not biographical. One sentence is enough. After this sentence is set, the rest of the case can use the verbs from Pattern 5 cleanly.
+
+**Template (adapt to voice):**
+
+> [Creator]'s deal pattern over [time period] maps onto [N] structures from the In Sequence library: [list with structure numbers]. [Creator] did not work from this framework — we are reading it onto a body of public work. The fit is what makes the case study useful.
+
+**Voice register.** Make this honest, not apologetic. The creator did things; we are interpreting them through a framework. That's a normal analytical operation and worth naming once at the top.
+
+### Pattern 7: Confidence summary line under header subtitle
+
+**Drift.** Verification blocks sit at the bottom and are rarely referenced from the body. Readers either trust the body language or scroll, and most don't scroll.
+
+**Rule.** Cases with significant inferred content (badge level mixed or inferred, set in frontmatter per Phase 6.2) get a single sentence under the case header subtitle, before the body begins:
+
+> "Specific deal terms in this case are inferred from industry comparables; see Sources & Verification for evidence type by claim."
+
+The exact wording adapts to the case — but it's always one sentence, naming what's disclosed and what's inferred, with a link to the verification block. Disclosed cases do not get this line.
+
+This rule is co-located with the confidence badge (also under the header) so the reader gets the visual signal and the prose signal in the same eye-scan.
+
+
+### Pattern 8: Case Study CTA — Aligned with Confidence Level
+
+**Drift.** The case study CTA component (the call-to-action that appears toward the end of each case) currently uses declarative framing — "Actual Deal Terms," "Financial Outcomes" — that overstates the certainty of the case data. For Mixed and Inferred cases, the CTA promises specificity the body has just spent thousands of words being honest about not having.
+
+**Rule.** CTA copy must align with the case's confidence level. Two viable approaches; Code proposes during Phase 2 and Neil chooses:
+
+- **Option A (component-level rewrite).** Update the default CTA copy globally to language that's accurate across the confidence spectrum. Replace "Actual Deal Terms" with "Deal Structures Documented" or "Structural Patterns Applied." Replace "Financial Outcomes" with "Outcome Patterns" or "Career Trajectory." Single component change applies to all 88 cases.
+- **Option B (confidence-aware copy).** Add a confidence prop to the CTA component. Disclosed cases keep the existing assertive copy. Mixed and Inferred cases render alternative copy that names structural pattern rather than specific terms. More component work, more flexibility.
+
+**Application.** Code identifies the CTA component during Phase 2 (verify component name against [case-study-components.md](http://case-study-components.md)). Code proposes Option A vs. Option B with revised copy drafts before applying.
+
+**Voice register.** The CTA stays a call-to-action — preserve the energy. The fix is honesty about what we have, not softening the call. Structural patterns ARE applicable; specific dollar figures are sometimes estimated. The CTA should reflect that asymmetry.
+
+---
+
+*Note:  Earlier briefing drafts had patterns numbered 9–13 that were placeholders pointing to other phases. Those have been folded into the phases that own them (Phase 1, Phase 3, Phase 4, Phase 5). The eight patterns above are the complete set.*
+
+---
+
+## Phase 3: Era Audit
+
+### Working principle
+
+An era is a structural phase, not a moment. The default target is 4–6 eras per case, but the rule is structural meaning, not numerical count. A long career with three distinct structural phases earns 3 eras. A medium career with seven genuine inflections earns 7. The validity tests below adjudicate per case.
+
+### Era validity tests
+
+For each era in each case, run three tests:
+
+**1. Duration test.** Does the era span at least 2–3 years? (Exception: a single-year inflection event that genuinely changes everything that follows, like Lambert's 2015 acquisition era.)
+
+**2. Inflection test.** Does the era boundary mark a structural change — new structure adopted, new revenue model, new operating reality, new ownership configuration? "A year passed and a thing happened" is not enough.
+
+**3. Coherence test.** Within the era, are the activities coherent in nature? An era containing "founding the studio" + "winding down the prior label" + "becoming a juror" is three different structural events that span different time scales — not one era.
+
+### Adjudication
+
+**Auto-merge eras when:** An era fails the duration test AND the inflection test. The events in the failing era should be folded into an adjacent era (typically the one immediately preceding) under a reframed era heading.
+
+**Flag for review when:** An era passes one test but fails another. Or the case has high era count (8+) and the audit results would significantly restructure the case timeline. Neil decides whether to merge or keep separate.
+
+**Do not flag:** Eras that pass all three tests, regardless of era count. Lambert's 8 eras pass the tests; leave them alone.
+
+### Worked example: Aries Moross (slug: aries-moross)
+
+Currently 5 eras. Era 3 ("Studio Moross Opens, 2012") fails duration and is borderline on inflection (founding is real, but the era contains only one year). **Auto-merge Era 3 into Era 2**, reframing Era 2 as "Pulse Films, Pre-Studio, and Studio Moross Opens (2009–2012)." Resulting era count: 4.
+
+### Bjarke Ingels (slug: bjarke-ingels) — flag, don't auto-merge
+
+Currently 9 eras. Run the three validity tests on each era and report results. Merge only those that fail the tests. Do not anchor to a target count. Some long-career cases legitimately have many eras; the tests do the work, not a number prediction.
+
+### Output
+
+Per case: list of era validity test results, proposed merges with rationale, final proposed era count. Cases with 8+ eras should be flagged for Neil's review even if all tests pass, given the substantial restructure involved.
+
+---
+
+## Phase 4: Related Cases Audit
+
+### Five-axis selection rule
+
+Each case study's Related section should pull from at least three of these five selection axes:
+
+1. **Structural overlap** — Same Structure # appears in another case.
+2. **Outcome contrast** — What happened when someone *didn't* do this; counterfactual to the case's central move.
+3. **Stage progression** — Same structural move at a different career stage.
+4. **Discipline contrast** — Same structure used in a different discipline.
+5. **Counterfactual** — Opposite structural choice produced a different outcome.
+
+### Recency cap
+
+No case's Related section should have more than 50% of its links pointing to cases with publishedAt within the last 90 days from today.
+
+**Use publishedAt, not updatedAt.** This is why Phase 0 had to run first.
+
+### Adjudication
+
+**Auto-update when:** Related section fails the three-axis test or the 50% recency cap, and there are clear candidates from the existing library that satisfy the missing axes. Code can re-select Related cards.
+
+**Flag for review when:** Related section is sparse because the missing axes don't have clear candidates in the library yet (some structural patterns are under-documented).
+
+### Output
+
+Per case: current Related selection axes, missing axes, proposed updated Related cards with one-line rationale per card.
+
+---
+
+## Phase 5: Required "What Wouldn't Transfer" Lesson
+
+### Rule
+
+Every case study must include a "What Wouldn't Transfer" lesson in the Transferable Lessons section. This is required across all cases regardless of data confidence level — it's a quality marker, not a disclosure mechanism for inferred cases.
+
+### Canonical reference: tyler-the-creator
+
+Use the Tyler, the Creator case (slug: tyler-the-creator) as the canonical reference for the voice register and structure of this lesson. The pattern is:
+
+- Bold lead phrases naming what's specific to the creator's circumstances.
+- Specific reasons each item won't transfer.
+- A closing turn that names what *does* transfer — the structural pattern itself.
+
+### Template (adapt to voice)
+
+> **05 What Wouldn't Transfer**
+>
+> **[Specific factor 1].** [One-sentence reason.] **[Specific factor 2].** [One-sentence reason.] **[Specific factor 3].** [One-sentence reason.] [Optional: financial-data caveat if the case is Mixed or Inferred. "Financial data is estimated. Revenue figures are analyst projections, not disclosed."]
+>
+> **But [the structural pattern] is universal.** [Two or three sentences naming what does transfer — the principles or moves that work at any scale.]
+
+### Application
+
+For cases that already have this lesson (tyler-the-creator, george-lucas confirmed, others possible): leave as-is unless the existing lesson deviates from the voice register above.
+
+For cases without one: add as the final lesson in the Transferable Lessons section. Adding the lesson should not require rewriting the rest of the Lessons section.
+
+---
+
+## Phase 6.1.a: Verification Block Sub-Section Structure
+
+### Canonical reference: george-lucas
+
+Use the George Lucas case (slug: george-lucas) as the canonical reference for verification block structure. Phase 6.1.a brings every case into alignment with the Lucas pattern.
+
+### Required sub-sections, in this order (5 total)
+
+1. **Verification Info** — 2–3 short bullets describing the overall confidence character of the case. Example (from Lucas): "$4.05B Disney acquisition of Lucasfilm (2012) is a public transaction verified through SEC filings. Personal net worth estimates are media calculations based on post-acquisition holdings. Merchandising royalty retention and rights negotiation history are verified through business press; specific ongoing payment flows and estate structure are privately held."
+
+2. **Primary Sources** — Named, linked where possible.
+
+3. **Secondary Sources** — Named, linked where possible.
+
+4. **Verified Data Points** — Bulleted list of the case's key factual claims with confidence levels in parens. Confidence levels: (very high), (high), (medium). Format: "Salary reduction $500K → $150K — Deadline, No Film School, CNW (high)". *(Generation of this content is Phase 6.1.b — see below.)*
+
+5. **Gaps to Verify** — Bulleted list of what isn't disclosed.
+
+### Phase 6.1.a scope
+
+Phase 6.1.a is the **format restructure** — ensuring every case's verification block has all five sub-sections in the correct order, using the existing source components (<CbSources>, <CbSourceGroup>, <CbSourceItem>).
+
+For cases where a sub-section is missing or its content has not yet been generated (especially Verified Data Points for ~86 of 88 cases), Phase 6.1.a creates the section with a placeholder marker. Phase 6.1.b generates the actual content.
+
+**Placeholder format.** For Verified Data Points sections that need to be generated in Phase 6.1.b, insert:
+
+<CbVerifiedDataPoints>
+  {/* TODO: Phase 6.1.b — generate confidence-rated claims */}
+</CbVerifiedDataPoints>
+The HTML/MDX comment makes the placeholder grep-able when Phase 6.1.b runs (grep -r "TODO: Phase 6.1.b").
+
+### New component to create
+
+<CbVerifiedDataPoints> is the new wrapper component, with <CbDataPoint confidence="very-high|high|medium"> children. Specifications:
+
+<CbVerifiedDataPoints>
+  <CbDataPoint confidence="high">Salary reduction $500K → $150K — Deadline, No Film School, CNW</CbDataPoint>
+  <CbDataPoint confidence="very-high">Star Wars $775M worldwide (1977) — box office records</CbDataPoint>
+  <CbDataPoint confidence="medium">Net worth $7B — Forbes 2025</CbDataPoint>
+</CbVerifiedDataPoints>
+The confidence prop is required. Three values only: very-high, high, medium. Render the confidence label as a small chip after the claim text.
+
+### Output
+
+- Every case has a verification block with all five sub-sections in correct order.
+- Verified Data Points is present as a <CbVerifiedDataPoints> element with the TODO: Phase 6.1.b comment, ready for Phase 6.1.b to populate.
+- New <CbVerifiedDataPoints> and <CbDataPoint> components added to the codebase. Documentation in [case-study-components.md](http://case-study-components.md) follows in Phase 7a (component-level docs ship with the components, so the reference doc isn't stale during the audit).
+
+---
+
+## Phase 6.1.b: Verified Data Points Generation
+
+### Why this is a separate phase
+
+This is the most labor-intensive part of the audit. For 86 of 88 cases, Verified Data Points doesn't currently exist — it has to be generated from scratch by re-reading each case body, identifying every factual claim, and rating its confidence level.
+
+This is editorial judgment work, not formatting. Confidence rating ("high" vs. "medium") depends on source quality, which requires Code to assess each claim against its sourcing. Code's calibration to Neil's sense of confidence levels needs to be checked early, before the work batches across the full library.
+
+### Calibration approval gate
+
+Code generates Verified Data Points for a **pre-selected calibration batch of 10 cases** chosen to span the full confidence spectrum:
+
+| Slug | Expected confidence |
+|------|---------------------|
+| george-lucas | disclosed |
+| ryan-coogler | disclosed |
+| a24 | mixed (lean disclosed) |
+| liz-lambert | mixed |
+| tyler-the-creator | mixed |
+| loveis-wise | mixed |
+| steph-smith | mixed |
+| bjarke-ingels | mixed |
+| temi-coker | inferred |
+| aries-moross | inferred |
+
+This batch is fixed — do not substitute alphabetically-adjacent cases or alternates. The mix is calibration-critical.
+
+Neil reviews the calibration batch and annotates each Verified Data Point per the markup convention in **Approval Gate Mechanics** above. He'll be evaluating:
+
+- Are the factual claims correctly identified (not too few, not too many)?
+- Are the confidence levels (very-high / high / medium) calibrated to Neil's judgment?
+- Is the citation format consistent and useful?
+
+After Neil approves the calibration batch (or returns it with revisions), Code applies the same approach to the remaining cases.
+
+### Generation logic per case
+
+For each case:
+
+1. Identify factual claims in the case body — specific dollar figures, dates, deal terms, ownership percentages, awards, named transactions.
+2. For each claim, consult the existing Primary and Secondary Sources lists in the verification block to determine source type.
+3. Assign confidence level:
+   - **Very high** — Claim is sourced to a primary document (SEC filing, court record, named statement by the creator in a credible outlet, audited reports, official press releases).
+   - **High** — Claim is sourced to multiple credible secondary sources (trade press) reporting the same figure, or to one primary source plus secondary corroboration.
+   - **Medium** — Claim is sourced to a single secondary source, or to industry-comparable estimates, or to analyst projections.
+4. Format: "[Claim] — [Source 1, Source 2, ...] (confidence)"
+
+### Cases to use as canonical reference
+
+- **george-lucas** — gold standard for high-disclosure case Verified Data Points. Use this format and confidence-rating approach as the model.
+- **tyler-the-creator** — gold standard for mixed-confidence case where the list mixes (very high) for awards/streaming metrics and (medium) for revenue estimates.
+
+When in doubt about a confidence rating, lean conservative (lower) rather than aspirational (higher).
+
+### Output
+
+- Calibration batch proposal at sequence/audit-output/[phase-6-1-b-calibration-batch.md](http://phase-6-1-b-calibration-batch.md) containing the 10 cases listed above with generated Verified Data Points for Neil's review.
+- After approval, Verified Data Points lists generated for the remaining cases.
+- Commits batched per ~10–15 cases for the post-calibration application phase.
+
+---
+
+## Phase 6.1.c: Section Nav and Frontmatter Mass Update
+
+### What this phase does
+
+Adds "Sources & Verification" as a peer item in the section nav across all 88 cases. This is a global frontmatter mutation.
+
+### Mechanics
+
+For each case study's frontmatter sections: array, add:
+
+- id: sources
+  label: Sources & Verification
+Position: between Lessons and Related, matching the existing in-page anchor structure.
+
+### Output
+
+- All 88 cases have updated sections: arrays.
+- Section nav renders "Sources & Verification" as a navigable peer.
+- Single batch commit: audit: phase 6.1.c section nav update across all cases.
+
+---
+
+## Phase 6.2: Confidence Badge
+
+### Frontmatter field
+
+confidence: disclosed | mixed | inferred
+### New MDX component
+
+<CbConfidenceBadge level={frontmatter.confidence} />. Renders next to the existing [Case 23] and discipline labels in the case header band.
+
+### Three states
+
+- **Disclosed terms** — Public financial record, named primary sources, deal terms verifiable through filings or named interviews.
+- **Mixed sources** — Some disclosed figures, some industry-comparable estimates. Most cases will fall here.
+- **Inferred from comparables** — Most figures are industry estimates; structural pattern is documented but specific numbers are inferred.
+
+### Initial visual treatment (placeholder for v1 ship)
+
+Code ships v1 with a neutral placeholder treatment — text-only chip with the confidence label, monospace small caps, no color coding. Example: [ DISCLOSED ], [ MIXED ], [ INFERRED ].
+
+Neil iterates on the visual after first deploy. Critical constraint: do not use red for inferred. Inferred is a different evidence type, not a worse one — the color choice should not imply quality judgment.
+
+### Behavior
+
+Badge is clickable and scrolls to the verification block (#sources anchor).
+
+### Confidence assignment logic
+
+Run after Phase 6.1.b is complete (badge depends on the Verified Data Points list to assign accurately). For each case:
+
+- disclosed if Verified Data Points are >75% high or very-high confidence and Gaps to Verify is short.
+- inferred if Verified Data Points are <40% high or very-high confidence, or if the verification block explicitly states most financial figures are estimated.
+- mixed for everything in between.
+
+**Tiebreaker — when math and worked-example intuition disagree.** The thresholds above are mechanical, but the worked examples below represent Neil's intuitive calls. If a case's threshold math produces a result that conflicts with the spirit of the worked examples — for instance, math says disclosed but most of the case's headline financial claims are estimates — surface the conflict in the assignment proposal rather than choosing. Neil will adjudicate.
+
+Format: list the case, the math result, the conflicting signal, and your recommendation. One line per conflicted case.
+
+### Worked examples
+
+- george-lucas — disclosed (SEC filings, named interviews, Box Office Mojo).
+- a24 — mixed (box office disclosed, deal terms estimated from industry standards).
+- temi-coker — inferred (most figures industry-comparable estimates).
+- liz-lambert — mixed (Hyatt acquisition price disclosed, 2015 acquisition price not).
+- tyler-the-creator — mixed (album/streaming/award metrics disclosed, revenue and net worth estimated).
+
+### Output
+
+- New CbConfidenceBadge component in the codebase.
+- confidence: field added to every case's frontmatter with assigned value.
+- Badge renders in case header band.
+
+---
+
+## Phase 6.3: Stat Header estimated Prop
+
+### What this phase does
+
+Updates the existing stat header components to accept an estimated prop. When true, the component renders a small "EST." chip below the figure value (not embedded in the label).
+
+### Component naming
+
+The stat header components are <CbMetrics> (wrapper) and <CbMetric> (individual stat). Extend the existing <CbMetric> component with an estimated prop. Do not create a sibling component.
+
+### Mechanics
+
+<CbMetric value="$7B" label="Net Worth (2025)" />            {/* disclosed - default */}
+<CbMetric value="$2.8M+" label="Licensing Revenue" estimated />   {/* shows "EST." chip */}
+The chip should be visually subtle — small caps, slightly muted, positioned below the figure but inside the metric block. Not a separate badge; a quiet annotation.
+
+### Application
+
+- Update <CbMetric> to support the estimated prop.
+- Across all 88 cases, audit the stat header for each case and add estimated to metrics that are inferred.
+- This depends on Phase 1.5 being complete (so the language rewrites in Phase 2 don't get out of sync with stat treatments) but can run in parallel with Phase 2 once Phase 1.5 is done.
+
+### Output
+
+- Component updated to accept estimated prop.
+- All 88 case stat headers reviewed and estimated props applied where needed.
+
+---
+
+## Phase 7a: Update [case-study-components.md](http://case-study-components.md) for New Components
+
+### Why this phase exists
+
+Future case studies (and edits to existing ones) reference [case-study-components.md](http://case-study-components.md) to know what's available. If the audit ships new components but doesn't document them, mid-audit case work will follow stale conventions and re-introduce drift.
+
+Phase 7a ships immediately after the components ship in Phases 6.1.a, 6.2, and 6.3. It is not blocked on the long-running editorial work in Phase 6.1.b. This keeps the reference doc current during the audit, not stale until completion.
+
+### Required updates
+
+Add or update documentation for:
+
+1. **<CbVerifiedDataPoints> and <CbDataPoint>** — props, render behavior, confidence prop values (very-high / high / medium).
+2. **<CbConfidenceBadge>** — props, frontmatter integration via confidence field, three states.
+3. **estimated prop on <CbMetric>** — when to use, how it renders.
+4. **Verification block standardized structure** — the five sub-sections in correct order, what each contains, when each is required.
+5. **Section nav sources entry** — required across all cases.
+6. **Frontmatter additions** — publishedAt, confidence fields.
+
+### Output
+
+- Updated [case-study-components.md](http://case-study-components.md) reflecting the new components and their conventions.
+- Doc is current as soon as new components are available, even while Phase 6.1.b is still running.
+
+---
+
+## Phase 7b: Update [case-study-components.md](http://case-study-components.md) for Verified Data Points Conventions
+
+### Why this phase exists
+
+Component documentation (Phase 7a) tells the reader *what's available*. Conventions documentation (Phase 7b) tells them *how to use it well* — specifically, how to write Verified Data Points lists, how to apply the verb system, how to do the analytical-framing thesis disclosure. These conventions can only be documented authoritatively after Phase 6.1.b's calibration batch is approved, because that's where the editorial conventions get pressure-tested.
+
+### Required updates
+
+Add documentation for:
+
+1. **Verified Data Points writing conventions** — how to identify factual claims, how to assign confidence levels, citation format. Reference george-lucas as canonical.
+2. **Pattern 5 verb system** — the three-verb decision tree for structure attribution.
+3. **Pattern 6 thesis-paragraph framing** — required disclosure sentence template.
+4. **"What Wouldn't Transfer" lesson** — required across all cases, voice register. Reference tyler-the-creator as canonical.
+
+### Output
+
+- Updated [case-study-components.md](http://case-study-components.md) reflecting all editorial conventions.
+- Future case study creation references the updated document and produces calibrated cases by default.
+
+---
+
+## Cases Needing Attention by Issue Type
+
+Worked examples to anchor the audit. Code should not limit attention to these — they are illustrative.
+
+### Structure-mapping fixes (Phase 1)
+
+- **sean-baker** — Clockwork pre-buying distribution rights mislabeled as #03 (Project Equity). Re-map to #28 (Exclusive Licensing), possibly with #33 (Milestone Payments) secondary.
+- (Code to surface other mismapping candidates during Phase 1.)
+
+### Era audit fixes (Phase 3)
+
+- **aries-moross** — 5 eras; Era 3 fails duration and is borderline on inflection. Auto-merge into Era 2.
+- **bjarke-ingels** — 9 eras. Run full audit; flag results for Neil's review rather than auto-merging.
+
+### Language pattern fixes (Phase 2 — representative, not exhaustive)
+
+- **temi-coker** — Definitive dollar amounts attached to specific named deals (Google Pixel $180K, Apple iPad $130K, etc.) need attribution or decoupling per Pattern 1. "Cumulative licensing revenue passes $2.8M" needs estimation framing per Pattern 2. Deal Comparison table needs industry-comparable framing per Pattern 3. Stat header needs Phase 6.3 treatment for estimated figures.
+- **aries-moross** — Body language is generally well-disciplined on financial restraint. Apply Pattern 5 verb system to "Applied Structure #X" instances.
+- **tyler-the-creator** — Body language is mostly disciplined. Verify Pattern 5 verb system. Confidence badge: mixed.
+- **george-lucas** — Apply Pattern 5 to "Applied Structure #X" instances despite high financial disclosure (the analytical framing is still our reading). Confidence badge: disclosed. Pattern 6 thesis-disclosure sentence still applies.
+- **a24** — Apply Pattern 5/6 treatment. Confidence badge: mixed. Pattern 7 inline reference applies.
+- **liz-lambert** — Body language is the gold standard. Apply Pattern 5 to "Applied Structure #X" instances. Confidence badge: mixed.
+
+### "What Wouldn't Transfer" lesson additions (Phase 5)
+
+- Cases lacking this lesson: add per Phase 5 template. Reference: tyler-the-creator.
+- Cases that have it (tyler-the-creator, george-lucas confirmed): preserve.
+
+### Related cases audit (Phase 4 — representative)
+
+- Cases with publishedAt in the last 90 days are most likely to need the recency-cap fix. Code to surface during Phase 4.
+
+---
+
+## Out of Scope for This Audit
+
+The following issues are known and intentionally deferred to a separate session after this audit completes:
+
+- **Mobile hero image regression** (Ava DuVernay, Loveis Wise, Mikkel Eriksen, others). CSS / layout debug across viewport widths — different problem domain from editorial calibration. Deserves a dedicated session with focused viewport testing.
+- **Public /case-studies index page is a stub.** src/app/(public)/case-studies/page.tsx currently renders only <div>Case Studies</div>. Rebuilding will benefit from being deferred until after Phase 6.2 ships <CbConfidenceBadge> so the index can consume the new component from day one.
+
+Do not fix these during the audit. If encountered while editing case files, note them in commit messages or a follow-up file but do not modify them.
+
+
+---
+
+## Calibration: What "Working" Looks Like
+
+After this audit, a reader should be able to:
+
+1. **Tell at a glance** what kind of case they're reading (badge in header).
+2. **Read body prose** that matches the evidence type — declarative when disclosed, attributed when inferred, no throat-clearing in either direction.
+3. **Find the verification block** through nav, not by scrolling past Lessons.
+4. **Read the verification block** in a consistent five-section structure across all cases.
+5. **Trust the structure mapping** — every Structure # reference matches the deal mechanics described in the body.
+6. **See "what wouldn't transfer"** in the Lessons section, regardless of data confidence level.
+
+The case studies should still feel like the In Sequence voice — economical, specific, analytically edged. The honesty about evidence type is a quality marker, not a softening of the analysis.
+
+---
+
+## Operating Notes for Code
+
+1. **Read the case before editing.** Each case has a voice and structure that the audit should preserve. Pattern application is calibration, not rewriting.
+2. **Surface uncertainty rather than guessing.** When a pattern's application is ambiguous on a specific case, flag for Neil's review with a one-paragraph rationale.
+3. **Preserve the verification block content where accurate.** Phase 6.1.a restructures the format, not the content. If the case's existing verification block has accurate sub-sections, preserve them as-is.
+4. **Don't introduce throat-clearing.** Re-read Pattern 5's three-verb system and the banned phrases list before each language rewrite.
+5. **Phase ordering matters.** Hard dependencies are documented in the Order of Operations table. Soft dependencies (parallelizable phases) can run concurrently. The two approval gates (Phase 1, Phase 6.1.b) are non-negotiable.
+6. **Use slugs, not loose names.** When referencing cases in commits, proposal docs, or comments, always use the slug (e.g., tyler-the-creator, not "Tyler"). Avoids ambiguity with similarly-named cases.
+7. **Component names are stated authoritatively.** This briefing names actual components: <CbMetrics> / <CbMetric>, <CbSources> / <CbSourceGroup> / <CbSourceItem>, <CbStructureBadge>, plus the new <CbVerifiedDataPoints> / <CbDataPoint> and <CbConfidenceBadge>. Use them as named.
+8. **Inline rendering fixes during editorial passes.** When editing a case file for any pattern application, if you encounter a markdown rendering issue (e.g., bjarke-ingels intro unordered list rendering without styles), fix it in passing as part of that commit. Do not proactively scan for these issues — fix only when already in the file for an audit reason. Larger UI/CSS issues remain out of scope (see "Out of Scope" section).
+
+---
+
+*End of briefing v4. Reference [voice-guide.md](http://voice-guide.md), [case-study-components.md](http://case-study-components.md), and [deal-structures-index.md](http://deal-structures-index.md) for project conventions not specified above.*
+
+---
+
+Operational expectations for this kickoff:
+
+1. **Verify your environment first.** Confirm you can locate and read these reference files:
+   - sequence/content/reference/[voice-guide.md](http://voice-guide.md)
+   - sequence/content/reference/[deal-structures-index.md](http://deal-structures-index.md)
+   - sequence/content/reference/[case-study-components.md](http://case-study-components.md)
+   - One sample case file: sequence/content/case-studies/george-lucas.mdx
+
+   If any are missing or unreadable, surface that before starting any phase.
+
+2. **Confirm working directory.** Verify you are operating in the current git worktree (not main). PATH must include /Users/neilbrown/.nvm/versions/node/v24.14.0/bin.
+
+3. **Use TodoWrite** to track phase progress across the full audit. Each phase from the Order of Operations table is a todo. Mark phases in_progress / completed as you advance. Surface ambiguity rather than guessing.
+
+4. **Describe Phase 0 before executing.** Once environment is confirmed, report back:
+   - How many case study files have publishedAt already vs. missing
+   - The exact frontmatter mutation you'll apply (show me one example before / after)
+   - The commit message you'll use
+
+   Wait for my approval before mutating any file.
+
+5. **Create sequence/audit-output/ and add to .gitignore** when you reach the first phase that needs it (Phase 1). Do not create proactively.
+
+6. **After Phase 0 is committed and pushed**, proceed through the Order of Operations table. Stop at the two approval gates: Phase 1 (structure-mapping proposal) and Phase 6.1.b (Verified Data Points calibration batch). Wait for my annotated reply using the [APPROVED] / [REJECTED] / [REVISED:] convention before applying.
+
+7. **Build cadence.** Run npm run build after each phase. If a phase touches multiple cases, build at the end of each batch of ~10. The Resend / Supabase env-var issues we've hit before are pre-existing in unrelated API routes — they manifest only if .env.local is missing in the worktree. Confirm .env.local is present at start.
+
+Begin with step 1: environment verification. Report back what you find before proceeding.
