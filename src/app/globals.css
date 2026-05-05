@@ -2995,6 +2995,12 @@ h3.sec-label {
   transition: color .15s;
 }
 .cb-confidence-badge:hover { color: var(--black); }
+
+/* Stat header — Est. chip (top-of-case stats + in-body CbMetric) */
+.cs-stat-est, .cb-metric-est {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--light); line-height: 1; margin-top: -2px;
+}
 .cs-header-title { padding: 0 var(--margin) 16px; }
 .cs-header-title-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--gutter); }
 .cs-header-title h1 {

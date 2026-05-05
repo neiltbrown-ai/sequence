@@ -58,7 +58,7 @@ export interface CaseStudyMeta {
   secondaryPosition?: string;
   subtitle?: string;
   readTime?: number;
-  stats?: Array<{ value: string; label: string }>;
+  stats?: Array<{ value: string; label: string; estimated?: boolean }>;
   sections?: Array<{ id: string; label: string }>;
   featured?: boolean;
   published: boolean;

@@ -12,7 +12,7 @@ interface CaseStudyHeaderProps {
   heroAlt?: string;
   heroPosition?: string;
   heroCredit?: string;
-  stats?: Array<{ value: string; label: string }>;
+  stats?: Array<{ value: string; label: string; estimated?: boolean }>;
   backHref?: string;
   backLabel?: string;
   saveButton?: ReactNode;
@@ -124,6 +124,7 @@ export default function CaseStudyHeader({
             {stats.map((s) => (
               <div key={s.label} className="cs-stat">
                 <span className="cs-stat-val">{s.value}</span>
+                {s.estimated && <span className="cs-stat-est">Est.</span>}
                 <span className="cs-stat-lbl">{s.label}</span>
               </div>
             ))}
