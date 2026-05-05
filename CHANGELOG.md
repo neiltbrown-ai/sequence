@@ -10,6 +10,34 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 7a `case-study-components.md` updated for new components + conventions
+
+**Goal:** Bring the components reference doc up to date with the new components shipped in Phases 6.1.a, 6.2, and 6.3, plus the new frontmatter fields and the canonical 5-subsection verification block structure.
+
+### Updates to `content/reference/case-study-components.md`
+
+- **`CbMetrics` example** — added `estimated` prop usage on `CbMetric` (rubric pointer to conventions §11)
+- **`CbSources` section** — replaced minimal example with the canonical 5-subsection structure: Verification Info / Primary Sources / Secondary Sources / `<CbVerifiedDataPoints>` / Gaps to Verify, all wrapped in `<CbSection id="sources">`
+- **New `CbVerifiedDataPoints + CbDataPoint` section** — usage, `confidence` prop values (`very-high` | `high` | `medium`) with rubric for each, conservative-bias note, pointer to conventions §12
+- **New `CbConfidenceBadge` section** — clarifies it auto-renders from frontmatter `confidence:` field (typical path), but is registered for direct MDX use too. Three states: `disclosed` | `mixed` | `inferred`
+- **Frontmatter Template** — extended with `confidence:` field (with comment), `stats[].estimated` flag (with comment showing both flagged and unflagged entries), required `sections:` array entries for `lessons`, `sources`, `related`, plus `publishedAt:` field. Field Notes appendix updated with new fields and pointers to conventions sections.
+- **Standard Case Study Structure** — section 5 now requires the "What Wouldn't Transfer" lesson per §13; section 6 references the canonical 5-subsection verification block; section 7 references the §14 relational desc-line guidance.
+- **New "Cross-references" section** — explicit pointer to `case-study-editorial-conventions.md` as the sister doc covering HOW to write inside the components, vs. WHAT components are available here.
+
+### Files touched
+
+`content/reference/case-study-components.md` — single edit pass. Build clean (no MDX changes; doc-only).
+
+1 commit this phase.
+
+### Phase status after 7a
+
+Only **7b** remaining — polish editorial-conventions doc + cross-link with components doc. The components doc now points at the conventions doc; 7b will return the cross-link and polish any remaining drift.
+
+The audit's content-and-component substance is complete. Phase 7b is the closing polish.
+
+---
+
 ## 2026-05-05 (continued) — Phase 6.3 Stat header `estimated` prop + per-case audit
 
 **Goal:** Extend `<CbMetric>` and the top-of-case stat header rendering with an `estimated` prop that renders an "Est." chip below the value. Audit all 98 cases and flag estimated metrics.
