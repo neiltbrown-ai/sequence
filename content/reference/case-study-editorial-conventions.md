@@ -4,7 +4,10 @@ In-repo persistent reference for case study authors and editors. Sister doc to `
 
 These conventions emerged from the multi-phase case study audit (May 2026). They apply to every case study in the library — both new cases being created and edits to existing ones. The 5 calibration cases — `george-lucas`, `a24`, `temi-coker`, `tyler-the-creator`, `reese-witherspoon` — are the gold-standard exemplars referenced throughout.
 
-> **Cross-reference:** `case-study-components.md` for component syntax. `voice-guide.md` for the broader project voice principles this doc operationalizes for case studies specifically.
+> **Cross-references:**
+> - `case-study-components.md` — component syntax (what to use)
+> - `library-expansion-candidates.md` — when none of the 35 structures fits a case cleanly, flag the pattern there rather than stretching an existing structure
+> - `voice-guide.md` — broader project voice principles this doc operationalizes for case studies specifically
 
 ---
 
