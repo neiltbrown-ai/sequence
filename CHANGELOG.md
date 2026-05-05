@@ -10,6 +10,71 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 6.3 Stat header `estimated` prop + per-case audit
+
+**Goal:** Extend `<CbMetric>` and the top-of-case stat header rendering with an `estimated` prop that renders an "Est." chip below the value. Audit all 98 cases and flag estimated metrics.
+
+### Component extension
+
+- **`<CbMetric>`** (in-body MDX) — added optional `estimated?: boolean` prop. Renders `cb-metric-est` chip when true.
+- **Top-of-case stat header** (`cs-stat`) — extended frontmatter `stats:` array entry type with optional `estimated?: boolean`. CaseStudyHeader renders `cs-stat-est` chip per entry when true.
+- **Frontmatter type** (`src/lib/content.ts`) — `stats:` array updated to allow `estimated?: boolean`.
+- **CSS** — `.cs-stat-est, .cb-metric-est` shared rules. Mono 8px, `.12em` letter-spacing, `var(--light)` color, slight negative margin-top to position below value as a quiet annotation.
+
+The chip is intentionally subtle per the briefing — not a separate badge.
+
+### Per-case audit (3 parallel subagent batches)
+
+181 estimated flags applied across 98 cases (113 top-stats + 68 in-body):
+
+- **Batch A** (`dc4c0a5`, 33 cases a–em): 79 flags (47 top-stats + 32 in-body)
+- **Batch B** (`a557aec`, 33 cases fu–oh): 53 flags (31 top-stats + 22 in-body)
+- **Batch C** (`fcde9df`, 32 cases paul–wes): 49 flags (35 top-stats + 14 in-body)
+
+### Calibration calls — confidence-tier prior held
+
+The Phase 6.2 `confidence:` frontmatter served well as a prior:
+- **Disclosed** cases (e.g., paula-scher, ryan-coogler, sean-baker, sahil-lavingia, sylvan-esso, taylor-swift, viktoria-harrison, wes-kao) averaged 0–1 flags
+- **Mixed** cases varied — george-lucas (canonical disclosed) had 3 top-stat flags ($7B Forbes net worth, $20B+ lifetime merch, 14,000x derived multiple) per the brief's prediction
+- **Inferred** cases (blumhouse 4/4, codie-sanchez 4/4, temi-coker 6, tom-cruise 6, virgil-abloh 6) got the most aggressive flagging
+
+Conservative bias preserved throughout. Box Office Mojo / AMPAS / SEC-disclosed values left unflagged even with `+` rounding; the audit only flagged values where source quality was demonstrably weak.
+
+Surprise zero-flag inferred case: **paul-trillo** — frontmatter avoids dollar figures entirely; every stat is a named institution or verifiable timeframe.
+
+### Browser preview verified
+
+Started dev server on port 3010 (port 3000 still busy with Neil's main-checkout server). Curl-verified EST chip rendering on:
+- george-lucas top stats: `$7B` (Est.), `$4.05B` (no chip), `$20B+` (Est.), `14,000x` (Est.) — matches spec
+- a24 top stats: `$2.5B+` (Est.), `~$6M` (Est.), `12x` (Est.), `3` (no chip — categorical) — matches spec
+- george-lucas in-body CbMetric: `$20B+` (Est.), `$4.05B` (no chip), `2,000+` (Est.), `$7B` (Est.) — matches spec
+
+Visual styling iteration is yours when convenient — chip uses `var(--light)` mono small caps to match the briefing's "quiet annotation" intent.
+
+### Conventions §11 populated
+
+`content/reference/case-study-editorial-conventions.md` §11 (Stat header chip conventions) was the last placeholder; now populated. Documents the two-surface convention (frontmatter + MDX), the per-metric judgment rubric (mark / don't mark / borderline), and the confidence-tier calibration prior.
+
+### Provenance now complete
+
+All numbered sections (§1–14) of the editorial conventions doc are populated. Phase 7b will polish and cross-link with `case-study-components.md` at audit close.
+
+### Files touched
+
+4 new/extended component-system files (`cb-metrics.tsx`, `case-study-header.tsx`, `content.ts`, `globals.css`). 68 case studies (`content/case-studies/*.mdx`) modified. Conventions doc + CHANGELOG.
+
+5 commits this phase: `825eb23` component extension, `dc4c0a5` batch A, `a557aec` batch B, `fcde9df` batch C, plus this CHANGELOG. Build clean throughout.
+
+### Phase status after 6.3
+
+Remaining phases:
+- **7a** — Component-level docs in `case-study-components.md` for the new components shipped in 6.1.a, 6.2, and 6.3 (`<CbVerifiedDataPoints>`, `<CbDataPoint>`, `<CbConfidenceBadge>`, `estimated` prop on `<CbMetric>`).
+- **7b** — Polish editorial-conventions doc + cross-link with components doc.
+
+Both are documentation phases. The audit is essentially complete from a content-and-component standpoint; Phase 7 closes the loop on reference docs.
+
+---
+
 ## 2026-05-05 (continued) — Phase 6.2 Confidence Badge: new component + per-case assignment
 
 **Goal:** Build a new `<CbConfidenceBadge>` component that renders next to the existing case header labels, and assign each of 98 cases a `confidence: disclosed | mixed | inferred` frontmatter value.

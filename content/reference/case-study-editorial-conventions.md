@@ -366,7 +366,71 @@ Either name the actual evidence OR name the gap directly.
 
 ## 11. Stat header chip conventions
 
-> *Placeholder — to be populated by Phase 6.3 of the audit (stat header `estimated` prop treatment). The substance: every `<CbMetric>` in a case's stat header that represents an estimated figure should carry the `estimated` prop, which renders a small "EST." chip below the value. Disclosed figures get no qualifier; rounded-disclosed figures get "~" prefix. See the Phase 6.3 work when complete for the full convention.*
+Every metric in a case's stat header (top-of-case `stats:` frontmatter array AND in-body `<CbMetric>` blocks) carries an implicit confidence judgment. Estimated figures should carry the `estimated` prop/flag, which renders a small "Est." chip below the value. Disclosed figures get no qualifier.
+
+### Two surfaces, one convention
+
+**Top-of-case stat header (frontmatter):**
+
+```yaml
+stats:
+  - value: "$7B"
+    label: "Net Worth (2025)"
+    estimated: true                   # Forbes estimate — flag
+  - value: "$4.05B"
+    label: "Disney Acquisition"        # SEC-verified — no flag
+```
+
+**In-body `<CbMetric>` blocks (MDX):**
+
+```mdx
+<CbMetric value="$7B" label="Net Worth (2025)" estimated />
+<CbMetric value="$4.05B" label="Disney Acquisition Price" />
+```
+
+Both surfaces render the same chip styling — `cs-stat-est` and `cb-metric-est` use shared CSS rules.
+
+### Rubric: when to flag a metric as estimated
+
+**Mark estimated:**
+- Contains `~` prefix (e.g., `~$10M`, `~50`)
+- Contains `+` after a financial figure where the suffix signals "at least N" (e.g., `$20B+`, `$2.8M+`)
+- Forbes / Bloomberg / Celebrity Net Worth figures
+- Lifetime merchandise totals (industry estimates, not audited)
+- Annual revenue figures unless from public-company filings
+- Subscriber counts when self-reported with `+`
+- Tour gross figures unless disclosed by the artist/promoter
+- Derived multiples (`12x ROI`, `14,000x Return`)
+- Catalog valuations (most are analyst estimates)
+- "Est." or "Estimated" appearing in label
+
+**Don't mark as estimated:**
+- Years and dates (`2014`, `Sept 17, 2019`)
+- Time spans where the lower bound is verifiable (`13+ yrs of operation`, `30 yrs`)
+- Specific named transactions verified by SEC filings, official press releases, or named primary interviews — even with rough rounding (e.g., `$4.05B Disney Acquisition`, `$1.347B Black Panther`, `$370.2M Sinners`)
+- Awards counts (`4 Personal Oscars`, `12 Tony Noms`, `Coretta Scott King Honor`)
+- Box office numbers from Box Office Mojo
+- Trade-press-disclosed deal values (e.g., `$22M Ti Amo! Distribution Deal`)
+- Award/honor names
+- Counts that are publicly visible in third-party systems (`8,500+ Retail Stores` if verified via Walmart/Target listings)
+- Categorical or sequential labels (`3 Structures Applied`)
+
+**Borderline — judgment call:**
+- Subscriber counts: `72M+ YouTube Subscribers` is platform-verified; `100K+ Instagram Following` with `+` leans estimated
+- Multi-year revenue figures: `$80M+ 2024 Revenue` — `+` typically estimated; lean estimated unless case body cites a specific public source
+
+### Calibration anchor
+
+The case's `confidence:` frontmatter (set in Phase 6.2) is a useful prior:
+- **disclosed** cases: most metrics verified, flag only obvious estimates (Forbes net worth, lifetime merch, `+`/`~` prefixes, derived multiples). Lucas's 4 stats include 3 estimated.
+- **mixed** cases: more aggressive flagging. Annual revenues, valuations, deal-side estimates. A24's 4 stats include 3 estimated.
+- **inferred** cases: most metrics estimated. Temi-coker's stats are mostly flagged.
+
+But the case-level confidence is just a prior. Apply per-metric judgment regardless. Even disclosed cases have estimated metrics (Forbes net worth, lifetime totals); even inferred cases may have a verifiable metric.
+
+### Visual treatment
+
+The "Est." chip is intentionally subtle — quiet annotation, not a separate badge. Mono small caps, slightly muted color, positioned below the figure but inside the metric block. Style matches `--mid` color tone.
 
 ---
 
@@ -567,7 +631,7 @@ When in doubt about any of these, read the corresponding section of the calibrat
 
 ## Provenance
 
-This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), Phase 5 (the "What Wouldn't Transfer" lesson, §13), Phase 4 (Related-cases conventions, §14), and Phase 6.1.a (Verification block structure, §12). Section 11 remains a placeholder to be populated by Phase 6.3. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
+This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), Phase 5 (the "What Wouldn't Transfer" lesson, §13), Phase 4 (Related-cases conventions, §14), Phase 6.1.a (Verification block structure, §12), and Phase 6.3 (Stat header chip conventions, §11). All numbered sections (1–14) are now populated. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
 
 Five gold-standard exemplars are referenced throughout. Read them in full before writing or auditing a case:
 
