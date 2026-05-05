@@ -10,6 +10,68 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 6.1.b Verified Data Points generation: 41 cases populated (8 calibration + 33 bulk)
+
+**Goal:** Generate confidence-rated Verified Data Points for the 41 cases that had a TODO placeholder injected in Phase 6.1.a. The placeholder pattern enables a calibration approval gate before bulk generation.
+
+### Calibration approval gate
+
+8 cases drafted fresh and surfaced for Neil's review at `audit-output/phase-6-1-b-calibration-proposal.md`: a24, aries-moross, bjarke-ingels, liz-lambert, loveis-wise, ryan-coogler, steph-smith, temi-coker. The pre-existing populated cases (george-lucas, tyler-the-creator) were displayed as canonical reference exemplars per the v5 briefing.
+
+Per-item confidence calibration:
+- **`very-high`** — SEC filings, official press releases (Disney/Hyatt/Apple/Google etc.), AMPAS/Grammy/awards body records, Box Office Mojo, named on-record interviews, Wikipedia for verifiable chart/award/release facts
+- **`high`** — multiple credible secondary sources, named primary statements without separate corroboration, trade press confirmation (Variety/Deadline/THR/Axios/Dezeen), LinkedIn-confirmed roles
+- **`medium`** — single secondary source, industry-comparable estimates, analyst projections, self-reported figures without third-party verification
+
+Medium-tier items mostly stay in **Gaps to Verify** with parens-text per the Lucas/Tyler convention. VDP card itself is majority high + very-high.
+
+Calibration approved 2026-05-05. Applied via `ddab017` (8 cases, 86 inserted).
+
+### Bulk pass
+
+3 parallel subagent batches, 11 cases each, 33 cases total:
+- **Batch A** (`3793c16`) — 11 cases (a-em + futura). 127 items, distribution 49 vh / 70 h / 8 m.
+- **Batch B** (`d75f028`) — 11 cases (jacob-paula). 140 items.
+- **Batch C** (`ddeb724`) — 11 cases (rich-virgil). 132 items, only 1 medium-tier item across the batch (Goodman's 250+ mural count self-report).
+
+Total: **399 confidence-rated data points** generated across the 33 bulk cases.
+
+### Phase 6.1.b complete state
+
+**Library is now 98/98 cases with populated `<CbVerifiedDataPoints>` components.** Zero TODO placeholders remain (verified via `grep -r "TODO: Phase 6.1.b" content/case-studies/` → 0 matches).
+
+Combined item totals:
+- 8 calibration cases: 86 items (Neil-approved)
+- 33 bulk cases: 399 items
+- Pre-existing converted cases (Phase 6.1.a 1A + 1B): ~609 items
+- **Total VDP items across the library: ~1,094**
+
+### Notable judgment calls flagged
+
+- **viktoria-harrison** "co-founder" framing softened to "Joined charity: water in 2007 as brand manager / designer" — secondary-source chain doesn't fully support the case-body co-founder claim. Flag for editorial review whether the case body needs its own correction.
+- **paul-trillo** has the highest medium-tier proportion in any single VDP — case body is explicit that structures are still emerging, calibration matches case-body honesty.
+- **chris-koerner** has 4 medium-tier items — gross-revenue claims rest only on his own podcast/newsletter without third-party verification.
+
+### Carry-forward (Phase 7b polish + future targeted edits)
+
+- **viktoria-harrison co-founder framing** — see above; possible case-body correction needed.
+- **11 default-to-medium cases from Phase 6.1.a** (barrel-holdings, beeple, blumhouse, bonobo, brandon-sanderson, brandon-stanton, brett-williams, codie-sanchez, kyla-scanlon, refik-anadol, roxane-gay, ryan-reynolds) — converted-but-flagged items from the 6.1.a parens-strip pass. These are still labeled `confidence="medium"` from the conversion default; a future re-rating pass against the calibrated register would lift legitimately-high items to `confidence="high"` where source quality supports it. Not blocking; logged for Phase 7b or a focused follow-up.
+- **Phase 6.1.a structural drift** continues to wait for Phase 7b normalization (Verification Notes vs Verification Info, multiple themed Primary Sources groups, etc.).
+
+### Files touched
+
+41 case studies (`content/case-studies/*.mdx`) + this CHANGELOG.
+
+4 commits this phase (`ddab017` calibration apply, `3793c16` batch A, `d75f028` batch B, `ddeb724` batch C). Build clean throughout.
+
+### Phase status after 6.1.b
+
+Remaining phases: **6.1.c** (Section nav + frontmatter mass update — adds Sources & Verification to sections array across all 98 cases), **6.2** (Confidence badge component + per-case assignment), **6.3** (Stat header `estimated` prop + populates §11), **7a** (component-level docs in case-study-components.md for the new components), **7b** (polish editorial-conventions doc + cross-link).
+
+Phase 6.1.c is mechanical (frontmatter mutation across 98 cases). Phase 6.2 introduces a new component. Phase 6.3 extends an existing component.
+
+---
+
 ## 2026-05-05 (continued) — Phase 6.1.a Verification block format restructure + new components
 
 **Goal:** Bring all 98 cases' verification blocks into a canonical 5-subsection structure with the new structured `<CbVerifiedDataPoints>` / `<CbDataPoint>` components. Phase 6.1.a is format-only — content generation for missing data points is Phase 6.1.b's job.
