@@ -10,6 +10,49 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 4 Related-cases audit: 14 cases gain peer links + conventions §14
+
+**Goal:** Audit the `<CbRelated>` block at the bottom of every case study. Two rules in the v5 briefing: each block should pull from at least 3 of 5 relational axes (structural overlap / outcome contrast / stage progression / discipline contrast / counterfactual), and no more than 50% of case-card links should point to cases published within 90 days.
+
+### Two systemic findings reshaped the phase
+
+The inventory subagent surfaced two issues that materially changed the phase's shape:
+
+- **Recency cap is structurally unsatisfiable.** Every case has `publishedAt >= 2026-02-25` because Phase 0 backfilled `publishedAt = updatedAt` and the audit happened in late April / early May 2026. The 90-day cutoff is 2026-02-04 — zero cases predate it. So any case with even one peer case-card link is at 100% recent ratio.
+- **61 of 98 cases sit at axis coverage `{1, 4}`.** The dominant authorial pattern in case-card desc lines is descriptive ("Another holding-company case — different model, same principle") rather than relational. Conservative axis classification registers descriptive cards as axis 1 only, plus axis 4 if disciplines differ. Editorial issue, not card-selection issue.
+
+### Neil's directional decisions
+
+- **Recency cap → pause** until the library has a wider age distribution (or until a Phase 0 follow-up uses git first-touch dates instead of `updatedAt` for `publishedAt`).
+- **3-axis test → tolerate `{1, 4}`** as the de-facto bar; document the 3-axis aspiration in the conventions doc as forward-looking guidance for new cases, not as a sweep target.
+
+### What landed
+
+- **12 auto-updates** (`2308cee`) — case-card additions on cases that had structure-only Related blocks (zero peer case cards). Adds 1–3 case cards per case with relational desc lines (axis 2/3/4/5 framing). Cases: ava-duvernay, tash-sultana, mark-rober, ryan-coogler, coralie-fargeat, sean-baker, tina-roth-eisenberg, mikkel-eriksen-stargate, jason-fried, sahil-lavingia, emma-chamberlain, temi-coker.
+- **Path-β extension** (`455d3aa`) — 2 more structurally-thin cases (virgil-abloh, ohneis-andries-ohneisser) get peer additions analogous to the 12 auto-updates.
+- **Editorial conventions §14** (`455d3aa`) — new section documenting the 5-axis selection rule, desc-line templates for axes 2 / 3 / 5 with in-library models (taylor-swift, donald-glover, chase-jarvis, emma-chamberlain), authoring expectation (2–3 structure cards + 2–3 case cards with at least one relational desc), recency cap pause status with rationale.
+- **Authoring checklist** updated to add §14 check (item 12).
+- **18 flag-for-review proposals** triaged: 11 resolved by recency pause (recency-only failures), 5 in 2-axis tolerance bucket, 2 absorbed into path-β. None required Neil's per-item annotation under the relaxed framing.
+
+### What didn't land (and why)
+
+- **flag-bulk-A** (61 cases at coverage {1, 4} — desc-line drift). Skipped per the "tolerate {1, 4}" decision. Future cases get relational desc lines via the §14 convention; existing 61-case sweep deferred indefinitely.
+- **flag-bulk-B** (cases failing recency cap). Skipped per the recency-cap pause.
+- **The desc-rewrite work on rick-rubin / belsky-corea / brett-williams** (genuinely failing axes under any framing). Deferred to a future polish pass; the cards are right, only the desc lines need reframing.
+
+### Operational learnings
+
+- **The recency cap reveals a Phase 0 data-integrity issue.** `publishedAt = updatedAt` makes "publication date" a moving target — cases edited during the audit got new `publishedAt` values. A Phase 0 follow-up using git first-touch dates would fix this. Worth doing before a future related-cases pass with the recency cap re-enabled.
+- **Conservative axis classification + editorial pattern drift = under-fire.** When a rule's binding constraint is editorial pattern rather than card selection, the rule's enforcement mechanism is the editorial-conventions doc, not a sweep. §14 is the right place for the relational-desc-line guidance.
+
+### Files touched
+
+14 case studies (`content/case-studies/*.mdx`) — auto-update peer additions. `content/reference/case-study-editorial-conventions.md` — new §14, authoring checklist item 12, provenance update. `CHANGELOG.md` — this entry.
+
+3 commits this phase (`2308cee`, `455d3aa`, plus the doc update). Build clean throughout.
+
+---
+
 ## 2026-05-05 — Case study audit Phases 3 and 5: era restructure (10 cases) + WWT lesson (98/98)
 
 **Goal:** Continue the multi-phase case study audit. This session covered Phase 3 (era validity audit) and Phase 5 ("What Wouldn't Transfer" lesson — required across all 98 cases).
