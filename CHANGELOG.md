@@ -10,6 +10,44 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 6.1.c section nav update across all 98 cases
+
+**Goal:** Bring all 98 cases to a canonical section nav structure with `Sources & Verification` as a navigable peer item between Lessons and Related — both in `sections:` frontmatter and as `<CbSection id="sources">` body wrapper.
+
+### Inventory before sweep
+
+- 60 cases had `id: sources` in frontmatter with label "Sources" (older form)
+- 38 cases were missing `id: sources` from frontmatter entirely (the cases that received VDP placeholder/population in Phase 6.1.a + 6.1.b but lacked the surrounding section anchor)
+- 1 case (ohneis-andries-ohneisser) was missing `id: related` from frontmatter
+
+### Three sub-task sweep (single commit `f861070`)
+
+- **Sub-task A — 60 cases:** standardized `label: Sources` → `label: Sources & Verification` to match the v5 briefing's canonical label.
+- **Sub-task B — 37 cases:** inserted `- id: sources / label: Sources & Verification` into frontmatter between `lessons` and `related`, AND wrapped the body's `<CbSources>...</CbSources>` block with `<CbSection id="sources">...</CbSection>`. (Reconciliation note: brief listed 38 candidates but only 37 actually needed Sub-task B — `artists-equity` and `mschf` had `id: sources` already and were handled by Sub-task A; `ohneis-andries-ohneisser` was handled by Sub-task C.)
+- **Sub-task C — 1 case:** ohneis-andries-ohneisser was missing `id: related` from frontmatter; added the entry and wrapped the body's `<CbRelated>` block with `<CbSection id="related">...</CbSection>` so both new section nav anchors would resolve cleanly.
+
+### Final corpus integrity
+
+Strict per-file regex check showed 0 anomalies across 98 files. Every case study now has:
+- Exactly 1 frontmatter `- id: sources` entry (canonical label `Sources & Verification`)
+- Exactly 1 frontmatter `- id: related` entry
+- Exactly 1 body `<CbSection id="sources">` wrap
+- Exactly 1 body `<CbSection id="related">` wrap
+
+Section nav across the library is now homogeneous. The `Sources & Verification` link in any case's left rail jumps to the verification block.
+
+### Files touched
+
+98 case studies (`content/case-studies/*.mdx`). Single commit (`f861070`): 294 insertions (+) / 60 deletions (-). Build clean.
+
+### Phase status after 6.1.c
+
+Remaining phases: **6.2** (Confidence badge — new MDX component + per-case `confidence: disclosed | mixed | inferred` frontmatter field), **6.3** (Stat header `estimated` prop — extends existing `<CbMetric>` component, also populates conventions §11), **7a** (component-level docs in `case-study-components.md`), **7b** (polish editorial-conventions doc + cross-link).
+
+Phase 6.2 is the next visible UI addition. Phase 6.3 is mechanical extension. Phase 7 closes out the audit.
+
+---
+
 ## 2026-05-05 (continued) — Phase 6.1.b Verified Data Points generation: 41 cases populated (8 calibration + 33 bulk)
 
 **Goal:** Generate confidence-rated Verified Data Points for the 41 cases that had a TODO placeholder injected in Phase 6.1.a. The placeholder pattern enables a calibration approval gate before bulk generation.
