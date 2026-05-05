@@ -1,0 +1,412 @@
+# Case Study Editorial Conventions
+
+In-repo persistent reference for case study authors and editors. Sister doc to `case-study-components.md` — that doc covers WHAT components to use; this doc covers HOW to write inside them: voice register, evidence honesty, verb selection, framing conventions.
+
+These conventions emerged from the multi-phase case study audit (May 2026). They apply to every case study in the library — both new cases being created and edits to existing ones. The 5 calibration cases — `george-lucas`, `a24`, `temi-coker`, `tyler-the-creator`, `reese-witherspoon` — are the gold-standard exemplars referenced throughout.
+
+> **Cross-reference:** `case-study-components.md` for component syntax. `voice-guide.md` for the broader project voice principles this doc operationalizes for case studies specifically.
+
+---
+
+## 1. Voice register — the two registers
+
+Case studies operate in exactly two registers. Anything between them — the throat-clearing middle — is the audit's anti-pattern.
+
+**Register A — Declarative.** Use when evidence supports the claim. Direct, confident, no qualifier:
+> "The Disney acquisition closed at $4.05 billion in October 2012."
+> "Star Wars grossed $775M worldwide on first release."
+> "Big Little Lies won 8 Emmy Awards."
+
+**Register B — Attributed / sourced.** Use when evidence is inferred, estimated, or based on industry comparables:
+> "Industry analysts estimate Hello Sunshine generated cumulative revenue in the $X–$Y range."
+> "Coker has indicated in interviews that …"
+> "Cumulative licensing revenue is estimated to have passed the low millions, based on the cadence of partnerships and industry-comparable fees."
+
+**The rule:** Pick one register per claim. Never the middle.
+
+### Banned phrases (the throat-clearing middle)
+
+These phrases imply attribution without actually attributing, or hedge without naming the gap. Banned:
+
+- "appears to apply"
+- "seems to have used"
+- "what looks like"
+- "could be characterized as"
+- "may have likely"
+- "reportedly" *(unless paired with an actual citation in the same paragraph)*
+- "according to industry sources" *(unless naming a specific source)*
+- "it has been suggested"
+- "industry watchers note"
+- "is said to be"
+
+If you find yourself reaching for one of these, you're in the throat-clearing middle. Step out either by:
+- Strengthening to Register A if the evidence supports it
+- Stepping back to Register B (named gap or named source) if it doesn't
+
+---
+
+## 2. Evidence-honesty principle
+
+Every case study has a verification block (Sources & Verification section) that lists Primary Sources, Secondary Sources, Verified Data Points (with confidence levels), and Gaps to Verify. The body must match what the verification block can support.
+
+### Two-track judgment
+
+For any claim in the body, separate two distinct things:
+
+| Track | What it means | Examples |
+|-------|---------------|----------|
+| **Track A** — Verified | Confirmed in the verification block (verified-high or verified-very-high), or in primary sources | Awards, prize recognitions; box office / streaming metrics; acquisition prices in SEC filings or press confirmations; direct quotes from the creator in cited sources |
+| **Track B** — Asserted | Claims about the creator's structural choices, deal terms, IP retention, strategic patterns, specific contract clauses, career-long behaviors | Deal terms ("X% of adjusted gross"); IP retention or transfer; "X consistently accepted lower fees"; "rights reverted after 18 months" |
+
+**The rule:** Where Track B outruns Track A, soften Track B to general structural principle for that tier of work, not creator-specific assertion.
+
+### The Lucas exception
+
+Most behaviors in the `george-lucas` case ARE in primary sources — Tom Pollock interview, SEC filings, named trade-press reporting. Lucas can support more declarative Track-B claims than most cases because the primary-source record is unusually rich.
+
+Most other cases need more Track-B softening. When in doubt, default to softening — it's better to under-claim and stay honest than to over-claim and have the verification block contradict the body.
+
+---
+
+## 3. The three-verb system for structure attribution
+
+Every `<CbStructureBadge>` reference in body prose is preceded by a verb that signals how confident the structural attribution is. The audit's worst anti-pattern was using "Applied" as the universal default — it implies the creator was working from the In Sequence library framework, which they weren't.
+
+Use one of three verb tiers based on interpretive confidence:
+
+### Tier 1 — Documented
+
+> **"Applied" / "Used" / "Structured the deal as"**
+
+Use when the deal terms are publicly documented and clearly match the structure.
+
+**Examples:**
+- George Lucas's 1973 trade with Fox — documented in Tom Pollock interview cited in case sources → "**Structured the deal as** #30 Subsidiary Rights Retention"
+- Lucas's 1980 Empire self-financing — documented in business press → "**Used** #9 Holding Company Model"
+- Witherspoon's 2021 Hello Sunshine partial-exit — Bloomberg + THR sourced → "**Structured the deal as** #18 Founder Equity"
+
+### Tier 2 — Inferred-with-public-mechanics
+
+> **"The deal pattern matches" / "The arrangement is structured as"**
+
+Use when the specific terms are inferred but the public record establishes the basic mechanics.
+
+**Examples:**
+- A24's 2016 production shift — budget caps documented in trade press, specific contracts not public → "**The arrangement is structured as** #13 Constraint-Based Production"
+- Coker's Adobe Creative Residency — documented as a licensing-adjacent program structure, specific contract not public → "**The arrangement is structured as** #27 Non-Exclusive Licensing"
+
+### Tier 3 — Analytical-framing
+
+> **"Consistent with" / "Functions as" / "Resembles"**
+
+Use when the structure is an analytical framing of behavior we've inferred from outcomes — the creator didn't structure their work this way; we're reading the framework onto a body of public work.
+
+**Examples:**
+- Tyler, the Creator's interlocking verticals — Tyler doesn't legally operate as a holding company, his verticals function like one → "**Functions as** #9 Holding Company Model"
+- Lucas's 1983 ILM/Skywalker Sound diversification — Lucas built tools he needed and then sold the surplus, not consciously diversifying per a model → "**Functions as** #10 Diversified Revenue Streams"
+
+### Critical: applies to high-disclosure cases too
+
+Lucas knew he was retaining rights. He did NOT know he was "applying Structure #30." The verb must reflect that we are reading our framework onto historical deals, regardless of disclosure level.
+
+### Decision tree
+
+```
+Is the deal term publicly documented in the case's verification block?
+├── Yes, with high/very-high confidence → Tier 1 (Used / Applied / Structured the deal as)
+└── No
+    ├── Are the basic mechanics public (e.g., "Coker did licensing work for brands") even if specific terms aren't?
+    │   ├── Yes → Tier 2 (The deal pattern matches / The arrangement is structured as)
+    │   └── No → Tier 3 (Functions as / Consistent with / Resembles)
+    └── Edge case: structure mapping itself feels uncertain → flag for structure-mapping review, do not change verb
+```
+
+When uncertain between two tiers, default to the lower (more conservative) tier.
+
+---
+
+## 4. The Pattern 6 disclosure sentence
+
+Every thesis paragraph that introduces the structures applied must include explicit framing that the structure mapping is analytical, not biographical. **One sentence (or one consolidated sub-paragraph) per case.**
+
+### Voice rules
+
+- **No literal template.** Voice-tune to each case (Lucas direct, A24 institutional, Coker careful, Tyler defiant, Witherspoon analytical).
+- **Position at end of thesis paragraph.** Either replace the existing closing sentence or insert as new closing sentence.
+- **Honest, not apologetic.** The creator did things; we are interpreting them through a framework. Worth naming once at the top.
+
+### What the disclosure must convey
+
+- The structure mapping is the case study's analytical reading
+- The creator did not pick these structures off a menu
+- The fit between what the creator did and what the structures describe is what makes the case useful (the closing cadence — variations welcome)
+
+### Worked examples (from the 5 calibration cases)
+
+**Lucas (direct, slightly contrarian):**
+> "It is also the purest expression of Structure #30 in the inventory — though the framework is ours, not Lucas's. He didn't sit down in 1973 to 'apply subsidiary rights retention.' He fought for sequel and merchandise rights because Fox wouldn't pay him what he wanted in cash, and the rights were what he could get instead. The structure name is how we read the deal half a century later. The fit is what makes the case useful."
+
+**A24 (institutional):**
+> "Together, these structures turned taste into an appreciating asset. We're reading three structures from the In Sequence library onto A24's history — the company didn't build itself from a deal-structure menu. But the fit between what they did and how the structures behave is what makes the case worth studying."
+
+**Coker (careful, instructional):**
+> "We read three structures from the In Sequence library against Coker's career: product partnerships with major brands, non-exclusive licensing for editorial and multi-brand work, and selective exclusive licenses on flagship campaigns. Where Coker has publicly described his deal terms (the Adobe Creative Residency, editorial assignments), the licensing reading is well-supported. Where he hasn't (the headline tech-brand campaigns), we use industry-typical terms for designer-led work at this tier as the comparison — specific contract structure for those deals is not public, and the case is honest about which figures and structures are inferred."
+
+**Tyler (direct, slightly defiant):**
+> "The aesthetic itself functions as intellectual property. Tyler didn't build any of this from a deal-structure manual — he built what he wanted, in the order it occurred to him. The structures we map onto his career (holding company, product partnership, diversified revenue) are our reading of what the ecosystem behaves like, not a plan he ran. The behavior is what makes the case useful."
+
+**Witherspoon (analytical / case-method):**
+> "And she is the clearest demonstration of the counterfactual: acting alone → $150–200M over nine years; acting + company → $650–800M. The structures we read onto her decisions — holding company, diversified revenue, founder equity — are our framework, not the playbook she carried into 2012. Witherspoon and Sarah Harden built a company; we map structures onto what they built. The fit between the two is what makes the case useful."
+
+---
+
+## 5. Body-softening register (extended Pattern 6)
+
+The Pattern 6 disclosure at the end of the thesis is necessary but not sufficient. **If the rest of the case body asserts the same structural mechanism that the closing disclosure walks back, those body assertions must be softened too.** Otherwise the disclosure reads as a contradictory hedge after the body has already over-claimed.
+
+### Where the body-softening sweep applies
+
+Scan for declarative-as-fact assertions across:
+
+- **Drop-cap and thesis paragraphs** (not just the closing disclosure sentence)
+- **Pull-quotes** (visually emphasized — especially worth getting right)
+- **Section intros** (the prose between `<CbHeading>` and the first chart/table/accordion)
+- **Accordion cards** (`<CbAccordionCard>` body text)
+- **Lesson cards** (Transferable Lessons section)
+- **Tab notes** (`<CbTabNote>` content)
+
+### What to soften
+
+The pattern is consistent. Look for body claims that assert as fact:
+- Deal mechanism — "X structured deals," "X used licensing," "X negotiated equity"
+- IP retention — "X retained ownership," "the underlying work stayed with X"
+- Specific contract terms — "rights reverted after 18 months," "X paid Z%"
+- Career-long strategic patterns — "X consistently accepted lower upfront fees"
+
+### How to soften
+
+Two moves work:
+
+**(a) Generalize.** Rewrite the assertion as a description of how the structure typically works for this tier of creator, not a creator-specific claim.
+
+> Before: "Coker's first structural shift was moving from flat-fee commissions to product partnerships. He contributed creative IP; the brand contributed manufacturing, distribution, and marketing. Revenue was shared based on contribution."
+
+> After: "Designer-led product partnerships at Coker's tier typically work this way: the designer contributes recognizable creative IP and brand authority; an operational partner contributes capital, distribution, and marketing infrastructure. Revenue scales with contribution rather than hours billed. Coker's brand collaborations look from the outside like this pattern; specific contract terms for his individual deals are not public."
+
+**(b) Name the gap.** Acknowledge directly that the specific terms are not on the public record while keeping the structural reading.
+
+> Before: "After 18 months, all rights reverted to Coker."
+
+> After: "Coker's Google Pixel campaign is publicly documented; specific deal structure (whether exclusive, term length, fee, reversion conditions) is not on the public record. The framing above describes how exclusive licensing typically works for designer-led work at this tier, not Coker's specific contract."
+
+### The Coker case as worked example
+
+The `temi-coker` case shows the full sweep applied — thesis body, three structure-section intros, four accordion cards inside the #28 section, and lesson card #05. Read it end-to-end before applying body-softening to a new case.
+
+---
+
+## 6. Pattern 1 — Specific dollar attached to specific named deal
+
+**Drift:** Specific dollar amounts attached to specific named deals (e.g., "Google Pixel campaign — $180K single deal") stated as fact when they are inferred from industry comparables.
+
+**Rule:** A specific dollar figure attached to a specific named deal can only be stated unattributed if the figure is on the public record (court filing, SEC, the creator's own statement to a credible outlet, trade-press reporting that names a primary source). Otherwise:
+
+**Option A — Attributed range with explicit framing:**
+> "Industry comparables for [creator type] at this brand tier suggest fees in the $X–$Y range; specific terms are not public."
+
+**Option B — Decoupled framing:** Describe the deal mechanics without the specific figure.
+> "Exclusive license with a defined window. Fees for designer-led exclusive campaigns at this brand tier typically run several multiples of equivalent non-exclusive work."
+
+### How to judge
+
+Check the case's verification block. If a figure is in Verified Data Points with high or very-high confidence, it's disclosed — leave alone. If marked estimated/medium/inferred, or absent from verification, treat as inferred and apply Option A or B.
+
+---
+
+## 7. Pattern 2 — Cumulative or annual revenue stated as fact
+
+**Drift:** "Cumulative licensing revenue passes $2.8M" stated as a milestone, when figure is estimated.
+
+**Rule:** Cumulative and annual revenue figures for private creators are almost always estimated. Body must carry the qualifier the verification block carries:
+
+- "Estimated cumulative [revenue type] of approximately $X, based on [evidence type]."
+- "Industry comparables suggest cumulative revenue in the $X–$Y range."
+- Source attribution: "X has indicated in interviews that …"
+
+**Exception:** Public-company revenue, SEC-filed transaction values, and box-office aggregations from Box Office Mojo / The Numbers are publicly verifiable — those can stay declarative.
+
+---
+
+## 8. Pattern 3 — Industry-comparable rate ranges in tables
+
+**Drift:** Deal Comparison tables (`<CbTabs>` with deal terms; `<CbChart>` with fee comparisons) present industry-comparable rate ranges as if they were the creator's specific terms.
+
+**Rule:** When a rate range is illustrative of industry practice rather than the specific creator's known terms, the framing must say so.
+
+### Tab labels
+
+Update the `tabsJson` label and the corresponding `<CbTabNote>`:
+
+- ❌ `tabsJson='["Coker Partnership Terms",...]'`
+- ✅ `tabsJson='["Designer-Brand Partnership Terms (Industry-Comparable)",...]'`
+
+If specific terms ARE known for this creator, label the column accordingly. Don't conflate "what we know about this creator" with "industry standard."
+
+### Chart titles and rows
+
+Update `<CbChart>` titles to flag tier-based / industry-comparable framing, and replace named-brand rows with structural tier descriptors.
+
+**Before (Coker, original):**
+```mdx
+<CbChart title="Revenue Per Brand Partnership (Est.)">
+  <CbChartRow label="Google Pixel" value="$180K" pct="100" />
+  <CbChartRow label="Apple iPad" value="$130K" pct="72" />
+  <CbChartRow label="Adobe Creative" value="$100K" pct="56" />
+  ...
+</CbChart>
+```
+
+**After (calibrated):**
+```mdx
+<CbChart title="Industry-Comparable Designer-Brand Partnership Fees (Est., by tier)">
+  <CbChartRow label="Tier 1 (flagship tech, exclusive)" value="$150–200K" pct="100" />
+  <CbChartRow label="Tier 2 (flagship tech, non-exclusive)" value="$100–140K" pct="70" />
+  <CbChartRow label="Tier 3 (creative platform partnership)" value="$80–110K" pct="55" />
+  ...
+</CbChart>
+```
+
+### Worked-example tab notes
+
+When a tab note describes a hypothetical scenario that reads like a real Coker (or whoever) deal, flag it as a worked example:
+
+**Before:** "Same creative effort. A product partnership for a tech campaign reaching 10M users: $25K upfront + 10% of $1M in attributable revenue = $125K total. The partnership model pays 12x — and Coker still owns the art."
+
+**After:** "Worked example, not a specific contract. A product partnership for a tech campaign reaching 10M users at industry-comparable terms: ~$25K upfront + ~10% of ~$1M in attributable revenue = ~$125K total. The partnership model pays roughly 12x — and the designer still owns the art."
+
+---
+
+## 9. Systemic structure-mapping patterns (Phase 1 outputs)
+
+These four patterns surfaced during the Phase 1 structure-mapping audit. Authoring discipline rules to prevent recurrence in new cases.
+
+### #11 Franchise / Licensing Model — system replication only
+
+Use only when a proven business system is being replicated by independent operators (Skillshare-style course licensing, franchise systems, wholesale distribution to many independent retailers).
+
+❌ Do NOT use for:
+- Single-buyer territorial / format / publication licensing → use **#28 Exclusive Licensing**
+- Recording artist distribution deals → use #28
+- Traditional book publishing → use **#25 Royalty Structures** (or #28 if it's the case's structural focus)
+- Gallery representation → use #28
+
+### #14 Catalog / IP Securitization — actual SPV/bond transactions only
+
+Use only when the case body describes an actual financialization mechanism: SPV formation, bond issuance, institutional investors purchasing royalty streams (Bowie Bonds, Stargate's Shamrock deal, Sanderson exploring securitization for the Cosmere).
+
+❌ Do NOT use for:
+- "Catalog appreciating in cultural value over time" — that's not a financial transaction
+- General "IP-as-asset" framings without an actual securitization
+- A24's catalog valuation discussions until/unless an actual securitization transaction exists
+
+### #15 DAO / Web3 Governance — actual blockchain governance only
+
+Use only when the case body describes actual decentralized blockchain governance, smart-contract revenue distribution, or token-holder voting (e.g., Holly Herndon's Holly+).
+
+❌ Do NOT use for:
+- Web2 venture-backed creator platforms (Patreon, Substack, Craigstarter) → use **#12 Creator-as-Platform Model**
+- Co-founder venture funding rounds → use **#18 Founder / Co-Founder Equity**
+- Creative collaborations between named principals → use **#5 Co-Creation Joint Venture**
+
+### #03 Project Equity Model — fees-for-stakes-in-client-companies only
+
+Use only for the canonical pattern: a creative professional accepts reduced fees in exchange for equity in the client's business (a Series A startup, a brand, etc.).
+
+❌ Do NOT use for:
+- Film backend / first-dollar gross / adjusted gross participation → use **#22 Gross Participation**
+- Net profit participation in film → use **#23 Net Profit Participation**
+- Pre-sale of distribution rights → use **#28 Exclusive Licensing** (possibly + **#33 Milestone Payments** if advance-against-deliverables)
+
+---
+
+## 10. The anti-hedge rule
+
+When softening unverified claims, do **not** reach for citation-hedge words that imply attribution without an actual source. The audit's anti-pattern is using these to "sound careful" while making no actual statement of evidence:
+
+### ❌ Banned (citation hedges with no actual source)
+
+- "reportedly"
+- "according to industry sources"
+- "industry watchers note"
+- "it has been suggested"
+- "is said to be"
+
+### ✅ Required pattern when softening
+
+Either name the actual evidence OR name the gap directly.
+
+**Evidence-naming examples:**
+- "documented in the Pollock interview cited in the verification block"
+- "marked verified-high in the case's Verified Data Points"
+- "publicly described by [creator] in [venue]"
+
+**Gap-naming examples:**
+- "specific contract terms are not on the public record"
+- "no primary source has disclosed the deal structure"
+- "the framing above describes how [structure type] typically works for [tier], not [creator]'s specific contract"
+
+### Why this matters
+
+"Reportedly" without a source is dishonesty pretending to be carefulness. It implies someone reported something we can point to, when no such report exists. The audit's central voice rule is the two registers — declarative when evidence supports, attributed when it doesn't. Citation-hedge words occupy the throat-clearing middle the rule bans.
+
+---
+
+## 11. Stat header chip conventions
+
+> *Placeholder — to be populated by Phase 6.3 of the audit (stat header `estimated` prop treatment). The substance: every `<CbMetric>` in a case's stat header that represents an estimated figure should carry the `estimated` prop, which renders a small "EST." chip below the value. Disclosed figures get no qualifier; rounded-disclosed figures get "~" prefix. See the Phase 6.3 work when complete for the full convention.*
+
+---
+
+## 12. Verification block structure
+
+> *Placeholder — to be populated by Phase 6.1 of the audit. The substance: every case's Sources & Verification section will follow the same five-subsection structure (Verification Info / Primary Sources / Secondary Sources / Verified Data Points / Gaps to Verify) with confidence ratings on every Verified Data Point. The `george-lucas` case is the canonical reference for verification block structure. See the Phase 6.1 work when complete for the full convention.*
+
+---
+
+## 13. The "What Wouldn't Transfer" lesson
+
+> *Placeholder — to be populated by Phase 5 of the audit. The substance: every case study must include a "What Wouldn't Transfer" lesson in the Transferable Lessons section. Pattern: bold lead phrases naming what's specific to the creator's circumstances, specific reasons each item won't transfer, then a closing turn that names what does transfer (the structural pattern itself). The `tyler-the-creator` case is the canonical reference for the voice register. See the Phase 5 work when complete for the full convention.*
+
+---
+
+## Authoring checklist for new case studies
+
+When writing or substantially editing a case study, walk through this checklist:
+
+1. **Voice register** — Is every claim in either Register A (declarative, evidence-supported) or Register B (attributed, gap-named)? No throat-clearing middle.
+2. **Verification block** — Have you populated Sources & Verification (all five subsections per §12) with confidence ratings? Body claims should not outrun what the verification block can support (per §2).
+3. **Three-verb system** — For every `<CbStructureBadge>` reference in body prose, is the preceding verb at the right tier (per §3)? Default to the more conservative tier when uncertain.
+4. **Pattern 6 disclosure** — Does the thesis paragraph end with a voice-tuned analytical-framing disclosure sentence (per §4)?
+5. **Body-softening** — Do body claims (drop-cap, paragraphs, pull-quote, section intros, accordion cards, lesson cards, tab notes) avoid asserting deal mechanism / IP retention / specific contract terms / career-long behaviors as fact when those claims aren't in the verification block (per §5)?
+6. **Pattern 1** — Are all specific dollar figures attached to specific named deals either verified-high in Verified Data Points or framed as industry-comparable ranges with named gap (per §6)?
+7. **Pattern 2** — Are cumulative / annual revenue claims qualified as estimated unless from public-company filings or other publicly verifiable sources (per §7)?
+8. **Pattern 3** — Do rate-range tables and deal comparison tabs carry industry-comparable framing in their titles / labels / tab notes when the rates aren't creator-specific (per §8)?
+9. **Structure mapping** — Are the structures attributed actually the right structures for what the case body describes? Re-read §9 for the four systemic mismapping patterns to avoid.
+10. **Anti-hedge** — Have you avoided every banned phrase from §10? Either name evidence or name gap.
+11. **"What Wouldn't Transfer" lesson** — Is the case's Transferable Lessons section closed by a "What Wouldn't Transfer" item per the §13 convention?
+
+When in doubt about any of these, read the corresponding section of the calibration exemplar (`george-lucas` for high-disclosure; `temi-coker` for heavy-inference; `tyler-the-creator` for analytical-framing) and pattern-match.
+
+---
+
+## Provenance
+
+This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit) and Phase 2 (language pattern application). Sections 11–13 will be populated as Phases 5, 6.1, and 6.3 complete. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
+
+Five gold-standard exemplars are referenced throughout. Read them in full before writing or auditing a case:
+
+- `content/case-studies/george-lucas.mdx` — high-disclosure, primary-sourced behaviors
+- `content/case-studies/a24.mdx` — institutional voice, mixed-confidence
+- `content/case-studies/temi-coker.mdx` — heavy-inference, full body-softening register applied
+- `content/case-studies/tyler-the-creator.mdx` — analytical-framing-heavy, defiant voice
+- `content/case-studies/reese-witherspoon.mdx` — analytical / case-method voice
