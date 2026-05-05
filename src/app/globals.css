@@ -2996,10 +2996,13 @@ h3.sec-label {
 }
 .cb-confidence-badge:hover { color: var(--black); }
 
-/* Stat header — Est. chip (top-of-case stats + in-body CbMetric) */
+/* Stat header — Est. chip (top-of-case stats + in-body CbMetric)
+   Visually distinct from the .cs-stat-lbl / .cb-metric-lbl below (which are mono uppercase).
+   Uses italic mixed-case sans + faint color so the eye doesn't read it as part of the label phrase. */
 .cs-stat-est, .cb-metric-est {
-  font-family: var(--mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--light); line-height: 1; margin-top: -2px;
+  font-family: var(--sans); font-size: 10px; font-style: italic; font-weight: 400;
+  letter-spacing: 0; text-transform: none;
+  color: var(--border); line-height: 1; margin-top: 2px;
 }
 .cs-header-title { padding: 0 var(--margin) 16px; }
 .cs-header-title-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--gutter); }
