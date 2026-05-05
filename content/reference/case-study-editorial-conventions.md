@@ -446,6 +446,56 @@ Read these to internalize the voice register:
 
 ---
 
+## 14. Related-cases conventions
+
+Every case study ends with a `<CbRelated>` block inside `<CbSection id="related">`. Two conventions govern what goes in it.
+
+### Selection: aim for at least 3 of 5 relational axes
+
+A case's Related cards should collectively pull from at least **3 of these 5 axes** (a single card can satisfy multiple axes):
+
+1. **Structural overlap** — same Structure # appears in another case
+2. **Outcome contrast** — what happened when someone *didn't* do this; the cautionary parallel
+3. **Stage progression** — the same structural move at a different career stage (Stage 2 → Stage 3 endpoint, or earlier-stage antecedent)
+4. **Discipline contrast** — the same structure used in a different discipline
+5. **Counterfactual** — the opposite structural choice produced a different outcome
+
+The 3-axis aspiration is the target, not a hard test. Most existing cases sit at coverage `{1, 4}` — structural overlap plus discipline contrast — because case-card desc lines have historically been descriptive ("Another holding-company case — different model, same principle") rather than relational. That's tolerable but underwired. New cases should aspire to richer axis coverage by writing **relational** desc lines.
+
+### Desc-line templates (prefer relational over descriptive)
+
+The fastest way to lift a Related block from coverage `{1, 4}` to `{1, 2/3/4/5}` is to rewrite at least one desc line using one of these explicit relational forms:
+
+| Axis | Desc-line template | In-library models |
+|------|--------------------|-------------------|
+| Axis 2 (outcome contrast) | "When this didn't work — ..." / "The cautionary version: ..." / "What happens without [structure] — ..." / "Another broken flywheel — ..." | donald-glover (chance-the-rapper card) |
+| Axis 3 (stage progression) | "Earlier in the same arc — ..." / "Stage-3 endpoint of the same playbook — ..." / "Before [milestone] they ..." | (added in Phase 4 auto-updates: emma-chamberlain → charli-marie) |
+| Axis 5 (counterfactual) | "Counter-case: ..." / "Instead of X, this person did Y" / "The alternative path — ..." / "The opposite choice — ..." | taylor-swift ("Counter-case:" twice), chase-jarvis ("the alternative") |
+
+Descriptive desc lines ("another X case — Y") aren't wrong, but they make the relationship invisible to the reader and to any tooling that classifies cards by axis. Prefer relational framing.
+
+### Authoring expectation
+
+A new case's `<CbRelated>` block should contain:
+
+1. **2–3 structure cards** for the structures the case applies (axis 1 by definition)
+2. **2–3 case cards** linking to peer cases, with at least one desc line written in a relational form (axis 2/3/5)
+
+Avoid Related blocks that are **structure-only** (no case cards) — these are discoverability gaps. The Phase 4 auto-update pass landed on 14 cases that had this pattern; fill it from the start.
+
+### Recency cap (paused as of May 2026)
+
+The original convention included a 50%-recency cap on case-card links — no more than half of a case's case-card cross-references should point to cases published within the last 90 days. This cap is **paused** until the library has a wider age distribution. Every existing case has `publishedAt >= 2026-02-25` (Phase 0 backfilled `publishedAt = updatedAt`), so the 90-day cutoff lands at zero pre-cutoff cases — the cap is structurally unsatisfiable. Revisit when the library matures or when a Phase 0 follow-up uses git first-touch dates instead of `updatedAt` for `publishedAt`.
+
+### Canonical references
+
+- `content/case-studies/taylor-swift.mdx` — model for axis-5 "Counter-case:" framings
+- `content/case-studies/donald-glover.mdx` — model for axis-2 "Another broken flywheel" framing + axis-5 "the contrast"
+- `content/case-studies/chase-jarvis.mdx` — model for axis-5 "the alternative"
+- `content/case-studies/emma-chamberlain.mdx` (post-Phase-4) — model for axis-3 "Earlier in the same arc"
+
+---
+
 ## Authoring checklist for new case studies
 
 When writing or substantially editing a case study, walk through this checklist:
@@ -461,6 +511,7 @@ When writing or substantially editing a case study, walk through this checklist:
 9. **Structure mapping** — Are the structures attributed actually the right structures for what the case body describes? Re-read §9 for the four systemic mismapping patterns to avoid.
 10. **Anti-hedge** — Have you avoided every banned phrase from §10? Either name evidence or name gap.
 11. **"What Wouldn't Transfer" lesson** — Is the case's Transferable Lessons section closed by a "What Wouldn't Transfer" item per the §13 convention?
+12. **Related cases** — Does the `<CbRelated>` block include 2–3 case cards (not just structure cards) with at least one desc line written in a relational form (axis 2 / 3 / 5) per §14?
 
 When in doubt about any of these, read the corresponding section of the calibration exemplar (`george-lucas` for high-disclosure; `temi-coker` for heavy-inference; `tyler-the-creator` for analytical-framing) and pattern-match.
 
@@ -468,7 +519,7 @@ When in doubt about any of these, read the corresponding section of the calibrat
 
 ## Provenance
 
-This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), and Phase 5 (the "What Wouldn't Transfer" lesson, §13). Sections 11 and 12 remain placeholders to be populated by Phases 6.1 and 6.3 respectively. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
+This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), Phase 5 (the "What Wouldn't Transfer" lesson, §13), and Phase 4 (Related-cases conventions, §14). Sections 11 and 12 remain placeholders to be populated by Phases 6.3 and 6.1 respectively. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
 
 Five gold-standard exemplars are referenced throughout. Read them in full before writing or auditing a case:
 
