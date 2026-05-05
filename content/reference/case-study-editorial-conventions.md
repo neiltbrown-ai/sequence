@@ -478,13 +478,19 @@ Every case study ends with a `<CbSources>` block that wraps a "Sources & Verific
 - **`high`** — multiple independent secondary sources agree, or one strong primary source. Industry-standard reporting context.
 - **`medium`** — single source, self-reported, or inferred from comparables. Use this when the claim is plausible but not independently confirmed.
 
-The Phase 6.1.b approval gate calibrates confidence assignments against Neil's editorial judgment before the bulk pass.
+### Library state (post-audit)
 
-### Phase 6.1.a status
+All 98 case studies have populated `<CbVerifiedDataPoints>` blocks with confidence-rated `<CbDataPoint>` items. Library total: ~1,094 data points across the corpus. The format-restructure pass (Phase 6.1.a) and the editorial generation pass (Phase 6.1.b, with calibration gate against Neil's judgment) shipped together in May 2026.
 
-The format restructure (this section's structure) shipped May 2026. Every case has either populated Verified Data Points (57 cases at the time of the sweep) or a placeholder `<CbVerifiedDataPoints>{/* TODO: Phase 6.1.b — generate confidence-rated claims */}</CbVerifiedDataPoints>` (41 cases). Phase 6.1.b will populate the placeholders.
+**Known structural drift (carry-forward for future polish):**
+- 4 cases use `<CbSourceGroup title="Verification Notes">` instead of "Verification Info" — emma-chamberlain, jason-fried, mark-rober, sahil-lavingia
+- 9 cases use multiple themed Primary Sources groups instead of a Primary / Secondary split — aries-moross, ava-duvernay, coralie-fargeat, liz-lambert, mikkel-eriksen-stargate, ryan-coogler, sean-baker, steph-smith, tina-roth-eisenberg
+- 6 cases drift to Primary → Verification Info → Gaps ordering (no Secondary subsection) — bjarke-ingels, emily-cohen, jeremy-o-harris, loveis-wise, rich-tu, timothy-goodman
+- 4 cases have Verification Info + Primary + Gaps but no Secondary — paul-trillo, tash-sultana, temi-coker, virgil-abloh
+- ohneis-andries-ohneisser uses non-canonical title "Gaps to Verify (Outreach Recommended)"
+- sahil-lavingia has no Gaps to Verify subsection at all
 
-**Drift not yet normalized** (deferred to Phase 7b): some cases use "Verification Notes" instead of "Verification Info"; some use multiple themed Primary Sources groups instead of separate Primary / Secondary; ordering occasionally drifts. The component structure is in place across all 98 cases — title and order normalization is a polish pass.
+These are title and ordering issues, not structural — the component is in place across all 98 cases. Worth a focused polish pass when the audit's other carry-forward items are cleaned up.
 
 ---
 
@@ -624,6 +630,7 @@ When writing or substantially editing a case study, walk through this checklist:
 10. **Anti-hedge** — Have you avoided every banned phrase from §10? Either name evidence or name gap.
 11. **"What Wouldn't Transfer" lesson** — Is the case's Transferable Lessons section closed by a "What Wouldn't Transfer" item per the §13 convention?
 12. **Related cases** — Does the `<CbRelated>` block include 2–3 case cards (not just structure cards) with at least one desc line written in a relational form (axis 2 / 3 / 5) per §14?
+13. **Stat header chips** — Have you added `estimated: true` (frontmatter `stats:`) and `estimated` (in-body `<CbMetric>`) to metrics whose values are estimates rather than disclosed/verified figures (per §11)? And set the case-level `confidence:` frontmatter field (per §12)?
 
 When in doubt about any of these, read the corresponding section of the calibration exemplar (`george-lucas` for high-disclosure; `temi-coker` for heavy-inference; `tyler-the-creator` for analytical-framing) and pattern-match.
 
@@ -631,7 +638,7 @@ When in doubt about any of these, read the corresponding section of the calibrat
 
 ## Provenance
 
-This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), Phase 5 (the "What Wouldn't Transfer" lesson, §13), Phase 4 (Related-cases conventions, §14), Phase 6.1.a (Verification block structure, §12), and Phase 6.3 (Stat header chip conventions, §11). All numbered sections (1–14) are now populated. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
+This document was created during the May 2026 case study audit and reflects calibration learnings from every phase: structure-mapping (Phase 1), language patterns (Phase 2), era audit (Phase 3), Related-cases conventions (Phase 4 → §14), the "What Wouldn't Transfer" lesson (Phase 5 → §13), Verification block structure (Phase 6.1.a → §12), Verified Data Points generation (Phase 6.1.b — pressure-tested the verification conventions), Confidence Badge component (Phase 6.2), Stat header chip conventions (Phase 6.3 → §11), and the closing polish (Phase 7a + 7b). All 14 numbered sections are populated. Component documentation lives in the sister doc `case-study-components.md`.
 
 Five gold-standard exemplars are referenced throughout. Read them in full before writing or auditing a case:
 

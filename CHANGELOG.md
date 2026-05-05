@@ -10,6 +10,66 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 (continued) — Phase 7b case study audit closing polish + audit complete
+
+**Goal:** Close the May 2026 case study audit. Polish the editorial conventions doc to reflect the now-complete state, ensure cross-references between the two reference docs, and update the project-level CLAUDE.md descriptor.
+
+### Polish edits to `case-study-editorial-conventions.md`
+
+- **§12 (Verification block) status block** — replaced the in-progress text ("Phase 6.1.b will populate the placeholders" / "Drift not yet normalized — deferred to Phase 7b") with the closing-state report: "Library state (post-audit)" with the ~1,094 data point total + an enumerated list of known structural drift carry-forward (4 cases use Verification Notes vs Verification Info, 9 cases with multiple themed Primary groups, 6 with no Secondary, ohneis non-canonical title, sahil-lavingia missing Gaps). These drift items are documented in audit-handoff memory; Phase 7b explicitly chose not to mass-edit 98 files for ordering / title normalization.
+- **Authoring checklist** — added item 13 covering §11 (stat header chips + case-level confidence frontmatter)
+- **Provenance** — rewritten as a closing summary noting all 14 sections are populated, all phases done, and pointing at the sister components doc
+
+### Polish edits to `CLAUDE.md`
+
+- **`case-study-editorial-conventions.md` descriptor** — updated from a partial list (4 systemic patterns) to the full TOC sketch covering §11–14 plus the authoring checklist. Future Claude sessions reading CLAUDE.md will know the full scope of the conventions doc.
+
+### Audit complete
+
+After 7b, the audit is closed. Summary:
+
+**14 phases shipped over 2 working days (May 4–5, 2026):**
+
+1. **Phase 0** — `publishedAt` backfill (98 cases)
+2. **Phase 1** — Structure-mapping audit + approval gate (30 items, all approved)
+3. **Phase 1.5** — Structure-mapping corrections applied (21 cases)
+4. **Phase 2** — Language pattern application (calibration + 6 batches, ~500 edits across 98 cases)
+5. **Phase 3** — Era audit (10 cases restructured, 340→331 era markers)
+6. **Phase 4** — Related-cases audit (14 case-card additions; recency cap paused; conventions §14)
+7. **Phase 5** — "What Wouldn't Transfer" lesson (5 calibration + 36 bulk + 13 drift fixes; 98/98 cases now have the lesson)
+8. **Phase 6.1.a** — Verification block format restructure (`<CbVerifiedDataPoints>` + `<CbDataPoint>` components; 56 cases converted + 41 placeholder)
+9. **Phase 6.1.b** — Verified Data Points generation (8 calibration approved + 33 bulk; ~1,094 data points across the corpus)
+10. **Phase 6.1.c** — Section nav + frontmatter mass update (98 cases canonicalized)
+11. **Phase 6.2** — Confidence Badge component + per-case assignment (46 disclosed / 43 mixed / 9 inferred)
+12. **Phase 6.3** — Stat header `estimated` prop (component extension + 181 flags applied across 98 cases)
+13. **Phase 7a** — Components reference doc updated for new components + conventions
+14. **Phase 7b** — Editorial conventions doc closing polish + cross-link
+
+**Bookkeeping:**
+- ~80 commits during the audit, all direct-to-main per the audit-handoff convention
+- ~98 case study files materially improved (some restructured 5+ times across phases)
+- 4 new MDX components shipped (`<CbVerifiedDataPoints>`, `<CbDataPoint>`, `<CbConfidenceBadge>`, plus `estimated` extension on `<CbMetric>`)
+- 2 new reference docs persisted to repo (`case-study-editorial-conventions.md`, `library-expansion-candidates.md`)
+- `case-study-components.md` updated with new components + the canonical 5-subsection verification block + extended frontmatter template
+
+**Deferred items** (logged in `~/.claude/projects/.../memory/audit-handoff.md`):
+- jeremy-kirkland: case file self-flags as "draft pending direct interview" — full retro after the interview lands
+- 11 default-to-medium cases from Phase 6.1.a need re-rating in a future polish pass
+- ~24 cases with structural drift in verification block (title / order normalization)
+- viktoria-harrison case-body "co-founder" framing may need a body-level correction
+- Phase 0 `publishedAt = updatedAt` issue blocks recency-cap re-enablement; future Phase 0 follow-up using git first-touch dates would fix
+- flag-bulk-A from Phase 4 (61 cases at axis coverage `{1, 4}` due to descriptive desc lines) — sweep deferred indefinitely; future cases get §14 guidance from the start
+
+**Workflow change post-audit:** Per the operating learning from the audit-handoff memory, the direct-to-main convention was specific to audit phases. Post-audit, the project shifts to a PR-based feature-branch workflow with Vercel preview URLs for safer phase-by-phase review.
+
+### Files touched in 7b
+
+`content/reference/case-study-editorial-conventions.md` (3 edits — §12 status, checklist item 13, Provenance), `CLAUDE.md` (1 edit — descriptor update), `CHANGELOG.md` (this entry).
+
+1 commit this phase.
+
+---
+
 ## 2026-05-05 (continued) — Phase 7a `case-study-components.md` updated for new components + conventions
 
 **Goal:** Bring the components reference doc up to date with the new components shipped in Phases 6.1.a, 6.2, and 6.3, plus the new frontmatter fields and the canonical 5-subsection verification block structure.
