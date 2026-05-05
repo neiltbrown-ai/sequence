@@ -378,7 +378,71 @@ Either name the actual evidence OR name the gap directly.
 
 ## 13. The "What Wouldn't Transfer" lesson
 
-> *Placeholder — to be populated by Phase 5 of the audit. The substance: every case study must include a "What Wouldn't Transfer" lesson in the Transferable Lessons section. Pattern: bold lead phrases naming what's specific to the creator's circumstances, specific reasons each item won't transfer, then a closing turn that names what does transfer (the structural pattern itself). The `tyler-the-creator` case is the canonical reference for the voice register. See the Phase 5 work when complete for the full convention.*
+Every case study must close its Transferable Lessons accordion with a card titled **"What Wouldn't Transfer"** (or the equivalent "What Would Not Transfer" — the contraction is preferred but pre-existing label variants are tolerated). The lesson is required across all 98 cases regardless of data confidence level. It is a quality marker, not a disclosure mechanism for inferred cases.
+
+Why it's load-bearing: the case's other lessons name the moves that worked. Without a "What Wouldn't Transfer" close, the reader walks away thinking the moves are universally applicable. They aren't. The honest case names what was singular about the creator's position AND what's still actionable for the reader anyway.
+
+### Card position and structure
+
+Insert the card as the **final** card in the existing `<CbAccordion>` inside `<CbSection id="lessons">`. The card's `num=` is one greater than the last existing card (most cases land at `num="06"` after 5 prior lessons). Two paragraphs total, both wrapped in `<p className="cb-card-text">`:
+
+```mdx
+  <CbAccordionCard num="06" label="What Wouldn't Transfer">
+    <p className="cb-card-text">[Para 1 — wouldn't-transfer factors]</p>
+    <p className="cb-card-text">[Para 2 — closing transferable-pattern turn]</p>
+  </CbAccordionCard>
+</CbAccordion>
+```
+
+### Paragraph 1 — Wouldn't-transfer factors
+
+3–4 factors, each opening with a **bold lead phrase** followed by a one-sentence reason. Each factor must be specific to the creator's circumstances. Generic factors ("hard work pays off", "talent matters", "right place right time") are wrong — they're not specific enough to be useful.
+
+Pull factors from these five source categories:
+
+1. **Scale** — institutional capital, audience size, headcount, multi-property catalogs that take decades to build
+2. **Timing** — specific industry moment, generational catalyst, founding-era window, technology inflection
+3. **Network** — institutional door-openers, mentor relationships, tier-1 access, capital networks
+4. **Identity** — constitutive identity factors, geographic-cultural authority, lineage credentials
+5. **Discipline accident** — genre economics, specific industry mechanics that don't generalize across disciplines
+
+For **heavy-inference cases** (Verification Info notes "estimated" / "industry-comparable"), include a financial-data caveat as the closing factor: `**Financial data is estimated.** Specific deal terms are not public; figures are based on industry comparables for [the relevant tier].`
+
+3 factors + caveat for inferred cases. 4 factors (no caveat) for institutional/well-disclosed cases.
+
+### Paragraph 2 — Closing transferable-pattern turn
+
+This is the most important part of the lesson. **Do not omit it.** A WWT card without a closing turn is a disclaimer, not a lesson — it tells the reader what was singular without telling them what's still actionable. Required structure:
+
+1. **Opens with `**But [the structural pattern] is universal.**`** (or close variant: "But the X transfers completely" / "But the Y is universal" — the bold-lead with **But** is required).
+2. **Names 3–5 transferable moves in concrete, actionable language** a Creative Majority practitioner could apply tomorrow. The moves should come from the case's existing lessons (cards num=01 through num=05) restated in transfer-mode, not invented.
+3. **Closes with a sentence anchoring to the case's specific scale**, not generic boilerplate. Required form: "These principles work whether [scale extreme A] or [scale extreme B]." Examples: "whether the firm is 700 people or 7" / "whether the operating budget is $80M or $80K" / "whether the catalog is one boutique hotel or twelve" / "whether the licensee is Apple or a regional brand."
+
+### Length targets
+
+- Paragraph 1: ~95–120 words (3 factors), or ~120–145 words (4 factors with caveat)
+- Paragraph 2: ~60–90 words
+
+If you go much longer, edit down. If much shorter, you may be missing factors or missing the close.
+
+### Anti-patterns
+
+- **Missing closing turn.** A WWT card with only the wouldn't-transfer paragraph is voice-register drift. Phase 5 Stream B fixed 13 cases with this pattern; the canonical drift case was `brett-williams` before its fix.
+- **Generic factors.** "Talent." / "Hard work." / "Right place, right time." Not specific to the case.
+- **Closing turn boilerplate.** "These principles work at any scale" alone is not enough. Always close with case-specific scale extremes.
+- **Closing turn that invents new moves.** The transferable moves must come from the case's actual lessons (cards num=01 through num=05) restated in transfer-mode — not new principles introduced for the first time in the WWT.
+- **Hedging without source** (the §10 anti-hedge rule applies). "Reportedly," "according to industry sources" without an actual source is banned.
+
+### Canonical references
+
+Read these to internalize the voice register:
+
+- `content/case-studies/tyler-the-creator.mdx` — original canonical reference, ecosystem-architecture register
+- `content/case-studies/temi-coker.mdx` — heavy-inference register (financial-data caveat as 4th factor)
+- `content/case-studies/a24.mdx` — institutional-mixed register, slate-economics framing
+- `content/case-studies/bjarke-ingels.mdx` — long-career platform-builder register
+- `content/case-studies/loveis-wise.mdx` — identity-aligned authorship register
+- `content/case-studies/liz-lambert.mdx` — long-career founder register, third-act framing
 
 ---
 
@@ -404,7 +468,7 @@ When in doubt about any of these, read the corresponding section of the calibrat
 
 ## Provenance
 
-This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit) and Phase 2 (language pattern application). Sections 11–13 will be populated as Phases 5, 6.1, and 6.3 complete. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
+This document was created during the May 2026 case study audit and reflects calibration learnings from Phase 1 (structure-mapping audit), Phase 2 (language pattern application), and Phase 5 (the "What Wouldn't Transfer" lesson, §13). Sections 11 and 12 remain placeholders to be populated by Phases 6.1 and 6.3 respectively. Phase 7b will polish and cross-link with `case-study-components.md` at audit end.
 
 Five gold-standard exemplars are referenced throughout. Read them in full before writing or auditing a case:
 

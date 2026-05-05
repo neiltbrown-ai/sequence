@@ -10,6 +10,63 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-05 — Case study audit Phases 3 and 5: era restructure (10 cases) + WWT lesson (98/98)
+
+**Goal:** Continue the multi-phase case study audit. This session covered Phase 3 (era validity audit) and Phase 5 ("What Wouldn't Transfer" lesson — required across all 98 cases).
+
+### Phase 3 — Era audit
+
+Inventoried 340 era markers across 98 cases. Deep-audited 31 cases (all 4+ era cases + 5 three-era cases with 1-year-span eras + 1 two-era outlier); light-passed 67 standard 3-era cases via duration scan.
+
+Surfaced 6 auto-merge proposals + 33 flag-for-reviews + 2 8+ era acks for Neil's annotation. Approved annotations applied across 5 batches:
+
+- **Batch 1** (`1b643f1`) aries-moross (Era 3+4 merged), sean-baker (Era 5 merged into 4), timothy-goodman (Era 5+6 merged)
+- **Batch 2** (`f873634`) mikkel-eriksen-stargate (Era 4+5 merged), bjarke-ingels (Era 9 relabeled "Critique, Accountability, and Structural Evolution"), jason-fried (Era 3 split into "Product Expansion" + "Strategic Focus" — 4→5 eras)
+- **Batch 3** (`41971bd`) emily-cohen (Era 1+2 merged, Era 5+6 merged into "Succession & Industry Advocacy" — 6→4 eras)
+- **Batch 4** (`b869118`) rich-tu (Era 4 removed, bullets redistributed), jeremy-o-harris (Era 2+3 merged, Era 5+6 merged — 7→5 eras)
+- **Batch 5** (`32b5d30`) loveis-wise (5→3 eras, complex restructure per Neil's instruction)
+
+Net: −9 era markers across 10 cases (340→331 total). One ambiguous annotation (F24 liz-lambert Era 8) defaulted to keep; logged as carry-forward in audit-handoff memory.
+
+### Phase 5 — "What Wouldn't Transfer" lesson
+
+Library is now **98/98 cases** with a canonical "What Wouldn't Transfer" lesson at the Tyler/Lucas voice register.
+
+**Stream A — Backfill the missing.** Initial inventory showed 41 cases without the lesson (after correcting an inventory error: original grep `"What Wouldn"` missed cases using "What Would Not Transfer" without the contraction; corrected regex enumerates all label variants).
+
+- **Calibration batch** (`3781cc0`) — 5 drafts approved by Neil before bulk: temi-coker (heavy-inference), a24 (institutional-mixed), bjarke-ingels (long-career platform), loveis-wise (identity-aligned authorship), liz-lambert (long-career founder).
+- **Bulk pass via 3 parallel subagent batches** — 36 remaining cases. Per-batch commits: A (`b45d131`), B (`3d73fba`), C (`518f922`). 12 cases each.
+
+**Stream B — Voice-register fix on existing.** Audit of the 57 pre-existing lessons surfaced 13 drift cases with the wouldn't-transfer paragraph but no closing transferable-pattern turn. Fixed in a single batch (`b55a519`):
+
+- 12 cases: appended a closing-turn paragraph (~60–90 words) inside the existing `<CbAccordionCard>`, preserving wouldn't-transfer content unchanged.
+- 1 case (ohneis-andries-ohneisser): structural migration. WWT lesson was rendered as raw markdown under a `<CbSubheading>` outside the accordion. Migrated into the accordion as `<CbAccordionCard num="06">` with closing turn appended; old subheading + raw markdown removed to avoid duplication.
+
+### Editorial conventions doc — §13 populated
+
+`content/reference/case-study-editorial-conventions.md` §13 ("The 'What Wouldn't Transfer' lesson") was a placeholder pointing at Phase 5; now populated with the full convention. Covers: card position and structure (two paragraphs, append as final card in lessons accordion); five source categories for wouldn't-transfer factors (scale, timing, network, identity, discipline accident); financial-data caveat as 4th factor for inferred cases; closing turn requirements (`**But X is universal**` + named transferable moves + scale-anchored close); length targets; anti-patterns (missing closing turn, generic factors, boilerplate close, invented moves, hedging); canonical references (Tyler + the 5 calibration exemplars).
+
+### Operational learnings (for future bulk-style work)
+
+- **Inventory grep needs all label variants.** Phase 5 inventory missed 5 cases because the initial grep `"What Wouldn"` excluded "What Would Not Transfer" without the apostrophe contraction. Use `grep -lE "What (Would|Wouldn'?t|Doesn'?t|Won'?t) (Not )?Transfer"` going forward. Apply this generally — when inventorying lessons / sections / patterns by phrase match, enumerate variant forms upfront.
+- **Bash CWD is unreliable across calls.** The system claims it persists, but in practice it sometimes reverts to session-start CWD. Symptom: `git status` returns the wrong worktree's state, files appear missing, etc. Always prefix git/build commands with explicit `cd <worktree-path> &&`. Got bit twice during Phase 5 calibration — a rogue commit accidentally captured pre-existing main-checkout image-frontmatter changes under a misleading message; had to `git reset HEAD~1` and redo from the worktree.
+- **Calibration gates pay off again.** Same pattern as Phase 2 calibration: 5 drafts to Neil before unleashing 3 parallel subagent batches on the remaining 36 cases. The voice register established by the calibration carried through cleanly to the bulk pass.
+- **Voice-register audit on existing as a separate stream.** Phase 5 had two streams: backfill missing lessons (Stream A) AND audit existing lessons for register drift (Stream B). The drift audit surfaced 13 cases that needed the closing turn added — easy to miss without an explicit pass. Worth replicating for any future "every case must have X" sweep.
+
+### Files touched
+
+10 case studies for Phase 3 (`content/case-studies/*.mdx`). 54 case studies for Phase 5 (5 calibration + 36 bulk + 13 drift fix). `content/reference/case-study-editorial-conventions.md` (§13 populated, provenance updated). `audit-handoff` memory (status table + carry-forward + operational learnings).
+
+10 commits this session. Build clean throughout (~395 static pages every commit).
+
+### Phases remaining (next session)
+
+4 (Related-cases audit), 6.1.a (Verification block standardization → populates §12), 6.1.b (Verified Data Points + **APPROVAL GATE on calibration batch**), 6.1.c (Section nav + frontmatter mass update), 6.2 (Confidence badge component), 6.3 (Stat header `estimated` prop → populates §11), 7a (`case-study-components.md` updates for new components), 7b (polish editorial-conventions doc + cross-link).
+
+Phase 4 is now the lightest remaining lift (mostly `<CbRelatedCard>` swaps); Phase 6.1.b is the next heavy editorial lift.
+
+---
+
 ## 2026-05-04/05 — Case study audit (Phases 0, 1, 1.5, 2, retro): 98 cases recalibrated
 
 **Goal:** Run a comprehensive editorial audit of the case study library — calibrate language honesty about evidence type, fix structure-mapping drift, normalize case numbers, soften the public CTA on `/the-library`, and create a persistent in-repo home for the editorial conventions that emerged. Multi-day work; this entry covers the first session.
