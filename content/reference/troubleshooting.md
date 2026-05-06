@@ -4,6 +4,107 @@ Symptom → root cause → fix for recurring bugs we've hit. Consult this before
 
 ---
 
+## Build / Deploy
+
+### Symptom: Vercel build fails with `Missing API key. Pass it to the constructor 'new SDK("re_123")'` during "Collecting page data"
+
+**Reports as:** Vercel deploy fails. Build log shows the SDK error during the `Collecting page data using N workers` step, often pointing at an API route file (`/api/book/download`, `/api/newsletter/subscribe`, etc.). Compile step succeeds; failure is at page-data collection.
+
+**Root cause:** A `lib/` module instantiates an SDK at module level — e.g. `const resend = new Resend(process.env.RESEND_API_KEY)` at the top of `src/lib/email/send.ts`. Next.js evaluates route modules during page-data collection. Any module-level constructor that throws when its env var is missing crashes the **entire build**, even for routes that never call the SDK. Most commonly hits Vercel Preview deploys when env vars aren't scoped to all environments.
+
+**Fix:** Convert to lazy instantiation — construct the client on first use, not at import time.
+
+```ts
+// BEFORE — throws during build if env is missing
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// AFTER — build is env-independent; constructor runs at first call
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
+  return _resend;
+}
+
+export async function sendEmail(...) {
+  const resend = getResend();
+  // ...
+}
+```
+
+**Pattern to remember:** `lib/` modules should never do `const x = new SDK(process.env.X)` at the top. Always lazy. The two existing Resend callsites in routes (`/api/book/download`, `/api/newsletter/subscribe`) already construct inside the request handler — same idea, request-time instantiation.
+
+To grep for this antipattern across the codebase:
+```bash
+grep -rn "^const .* = new \|^export const .* = new " src/lib/ --include="*.ts"
+```
+Filter the results — `new Set([...])` and `new Map(...)` are fine; SDK constructors that take env vars are the danger.
+
+---
+
+### Symptom: Vercel build fails with `Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY` during "Generating static pages"
+
+**Reports as:** Build log shows `Error occurred prerendering page "/admin/<route>"` followed by the missing-env-var error. Compile + page-data collection succeed; failure is during static-page generation.
+
+**Root cause:** A server component page (no `"use client"` at top) calls `createAdminClient()` at render time, and Next.js tries to statically generate it during build. Without `dynamic = "force-dynamic"`, Next.js evaluates the page in the build environment, which doesn't always have Supabase env vars set (e.g. Vercel Preview on Hobby).
+
+**Fix:** Add the dynamic directive to the page module:
+
+```tsx
+// src/app/(admin)/admin/<route>/page.tsx
+import { createAdminClient } from "@/lib/supabase/admin";
+
+export const dynamic = "force-dynamic";  // ← add this
+
+export default async function AdminPage() {
+  const admin = createAdminClient();
+  // ...
+}
+```
+
+Auth-gated stateful pages should never be statically generated anyway — `force-dynamic` is the correct semantics, not just a build-fix workaround.
+
+**Existing examples:**
+- `src/app/(portal)/settings/page.tsx` — declares `dynamic = "force-dynamic"`
+- `src/app/(admin)/admin/assessments/page.tsx` — declares `dynamic = "force-dynamic"` (added May 2026)
+
+`/roadmap/page.tsx` doesn't need an explicit declaration because it accesses cookies via `await supabase.auth.getUser()`, which Next.js auto-detects as dynamic.
+
+**To audit:** find all server components that call admin/server clients without the directive:
+```bash
+# Server components calling createAdminClient (no "use client" at top)
+for f in $(grep -rL "use client" src/app --include="*.tsx"); do
+  if grep -q "createAdminClient\b" "$f" 2>/dev/null; then
+    if ! grep -q 'dynamic = "force-dynamic"' "$f"; then
+      echo "Missing force-dynamic: $f"
+    fi
+  fi
+done
+```
+
+---
+
+### Symptom: Vercel preview deploys fail on env vars that production builds had no problem with
+
+**Reports as:** Production deploys (push to main) succeed. Preview deploys (push to feature branch) fail on missing env var errors — Resend, Supabase, anything that needs a key at build time.
+
+**Root cause:** On Vercel Hobby plan, env vars are scoped per-environment-tick (Production / Preview / Development). When you add or rotate a variable, Vercel doesn't automatically propagate it to all environments. The "Production" tick is often the only one set, so Preview builds run without the var.
+
+**Fix:** In Vercel → Project Settings → Environment Variables, ensure each env var has **all relevant environment ticks** set:
+- Production
+- Preview
+- Development (for `vercel dev` local runs)
+
+For SDK keys with sender domains (Resend, SendGrid, etc.) the convention:
+- Production env → Production key
+- Preview env → Development key (separate sender, doesn't pollute production metrics)
+- Development env → Development key
+
+If you can't expand the environments dropdown for a particular variable, the value field may be empty — Vercel locks the dropdown until a value is provided. Paste the key first, then the env-tick checkboxes become interactive.
+
+**Better long-term:** apply the lazy-instantiation pattern (above) to ALL SDK clients in `lib/`. Then build never depends on env vars; only runtime does. This reduces blast radius — a missing key fails the route that uses it, not the entire build.
+
+---
+
 ## Schema / Vocab
 
 ### Symptom: Recommendations engine produces low-quality matches even though the user has a fully filled-in profile

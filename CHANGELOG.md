@@ -43,11 +43,29 @@ Adding "Other" to the Income Range field exposed that `profiles.income_range` ha
 
 - `src/app/(auth)/onboarding/page.tsx` — orphaned route, pre-Batch-E leftover
 
-### Lessons / patterns worth remembering
+### Build hygiene (mid-session fix)
 
+Pushing the portal branch surfaced a Vercel build failure: `Missing API key. Pass it to the constructor 'new Resend("re_123")'` during `Collecting page data`, then a follow-on `Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY` during `Generating static pages` for `/admin/assessments`. Both pre-existing — neither caused by the portal commits — but blocking the deploy. Fixed in a separate small commit (`fix/lazy-sdks-and-dynamic-admin` → main as `92325ec`).
+
+- **Lazy-instantiate Resend** (`src/lib/email/send.ts`) — the module-level `const resend = new Resend(process.env.RESEND_API_KEY)` was throwing during build's page-data collection any time the env var was missing in the build environment (e.g. Vercel Preview on Hobby plan). Replaced with a `getResend()` helper that constructs on first use. Build is now env-independent; runtime behavior unchanged. Matches the lazy pattern already used in `/api/book/download` and `/api/newsletter/subscribe`.
+- **`force-dynamic` on `/admin/assessments`** — the page is a server component that calls `createAdminClient()` at render time. Without the `dynamic` directive, Next.js tried to prerender it during build; missing Supabase env vars then crashed the whole build. Added `export const dynamic = "force-dynamic"` (mirrors the existing directive in `/settings/page.tsx`). Auth-gated stateful pages should never be prerendered anyway.
+
+### More lessons worth remembering
+
+- **Module-level `new SDK(process.env.X)` is a build-time landmine.** Next.js evaluates route modules during the page-data collection step. Any constructor that throws on missing env crashes the build, even for routes that never actually call the SDK. Always lazy-instantiate at first use.
+- **Server components calling `createAdminClient()` need `export const dynamic = "force-dynamic"`.** Otherwise Next.js tries to statically generate them and crashes when env vars aren't set in the build environment. Auth-gated pages don't benefit from prerendering anyway.
+- **Vercel Hobby plan scopes env vars per-variable, not "all environments by default."** When adding a new env var or rotating one, double-check it's available in Production AND Preview AND Development. Preview deploys silently fail otherwise. Convention: Preview should use the Development key (separate sender domain, doesn't pollute production metrics).
 - **Adding an option to a field is a good moment to grep all writers of that column.** The "Other" addition was a 30-second change that surfaced a multi-month-old vocab drift bug. Worth doing this every time the option list gets touched.
 - **Same column name across features ≠ same vocabulary.** When a feature gets built in isolation, its options drift from the canonical set. The fix is a shared module + a TypeScript `as const` array so future drift is loud.
 - **Dead config is worse than no config.** The `prefill_if_assessment` declarations on select-type evaluator questions were cosmetic — never actually read — but would have silently mistranslated values the moment someone implemented prefill plumbing for selects. Removing them is cheap insurance.
+
+### Workflow note: parallel worktrees
+
+This was the first session where two Claude sessions worked simultaneously in separate worktrees (this portal session + a public-site session). Notes:
+
+- **No file overlap → no conflicts.** Confirmed by `git diff --name-only HEAD..origin/main` before rebasing. Public session touched 11 files in `(public)/`, `(auth)/{signup,auth.css}`, `contact-form`, `faq-accordion`. Portal session touched portal-side files. Zero overlap → clean rebase.
+- **CHANGELOG.md is the highest-conflict doc** when both sessions update it (both insert at the top). Mitigation: whoever ships first lands a clean entry; second session inserts above with a `(continued)` heading or new dated heading. Mechanical to resolve, not creative.
+- **Doc updates belong in the same commit as the code that motivated them.** Deferring docs to "later" loses context. The end-of-session protocol (top of this file) exists for a reason.
 
 ---
 
