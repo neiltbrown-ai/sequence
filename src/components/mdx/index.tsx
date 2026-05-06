@@ -57,5 +57,20 @@ export const mdxComponents: MDXComponents = {
       <h3 className="ab-h3 rv vis" {...props} />
     </div>
   ),
+  ol: (props) => (
+    <div className="ab-grid is-list">
+      <ol className="ab-list ab-ol" {...props} />
+    </div>
+  ),
+  ul: (props) => (
+    <div className="ab-grid is-list">
+      <ul className="ab-list ab-ul" {...props} />
+    </div>
+  ),
+  hr: (props) => (
+    <div className="ab-grid is-hr">
+      <hr className="ab-hr" {...props} />
+    </div>
+  ),
   strong: (props) => <strong {...props} />,
 };
