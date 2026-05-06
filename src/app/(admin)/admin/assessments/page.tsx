@@ -2,6 +2,13 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { StageNumber, PlanStatus } from "@/types/assessment";
 
+// Admin queue is auth-gated and stateful — never prerender. Without this,
+// Next.js's "Generating static pages" build step calls createAdminClient()
+// in environments that may not have NEXT_PUBLIC_SUPABASE_URL or
+// SUPABASE_SERVICE_ROLE_KEY set (e.g. Vercel Preview), which throws and
+// kills the entire build. Mirrors the pattern in /settings/page.tsx.
+export const dynamic = "force-dynamic";
+
 const STAGE_NAMES: Record<StageNumber, string> = {
   1: "Stage 1",
   2: "Stage 2",
