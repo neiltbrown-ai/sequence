@@ -10,6 +10,47 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-06 — Portal refinements + vocab cleanup
+
+**Goal:** Apply a batch of portal UX refinements (Portfolio Overview restructure, Roadmap auto-refresh, Settings social links). What started as scoped UX work surfaced — via the income_range "Other" addition — three different writers writing three different vocabularies to the same column name. Audit + cleanup pass followed.
+
+### Portal refinements
+
+- **Dashboard `Portfolio State` → `Portfolio Overview`** — section title rename + asset count added as the leftmost column in the valuation hero. Hero is now 3 columns (Assets cataloged | Estimated value | Leverage score) instead of 2. New `.dash-val-hero--three` 5-column grid + matching mobile collapse.
+- **Roadmap "All three steps complete" banner** — previously required a page refresh to appear after marking the third action complete. Now appears the instant the third action flips, and auto-scrolls into view. Status state lifted from `ActionCard` (was local) into `RoadmapDisplay` so the parent re-renders on every status change. `ActionCard` is now a controlled component (takes `status` + `onStatusChange`).
+- **Settings → Profile — Links subgroup** — added website / instagram / tiktok / X-Twitter / linkedin fields. Save handler strips leading `@` on handles and converts empty strings to null. Migration `00016_profile_social_links.sql` adds the five columns. Kept Settings as a 2-tab layout (Profile + Creative Identity) — preferences subgroup stays nested in Profile.
+
+### Vocab cleanup (audit-driven)
+
+Adding "Other" to the Income Range field exposed that `profiles.income_range` had three writers with three vocabularies (Settings hyphenated, deleted-Onboarding display labels, Assessment canonical underscore-delimited). One audit later:
+
+- **`profiles.income_range` unification** — created `src/lib/profile/income-ranges.ts` as the single source of truth for the canonical vocabulary (matches the assessment's `Q6_INCOME` options). Settings imports from it. "Other" became `prefer_not` (matches the assessment's existing opt-out value). Migration `00017_normalize_profile_income_range.sql` backfills any legacy values to canonical.
+- **`/onboarding` route deleted** — the page existed at `src/app/(auth)/onboarding/page.tsx` but was unreachable: no callers in the codebase, auth callback redirects to `/dashboard`, no middleware gate. A leftover from the pre-Batch-E "onboarding paths" model. Deleting prevents anyone from manually navigating to it and writing legacy-vocab data into `profiles`.
+- **Evaluator dead `prefill_if_assessment` cleanup** — five questions (F5 income_range, F10 risk_tolerance, L1/L2/L7 business_structure) declared `prefill_if_assessment` but the state machine never reads that directive for non-percentage questions, AND the source/target vocabularies don't align. Replaced with `always_ask` (the existing valid alternative) + comments explaining each mismatch. Prevents a future footgun where someone wires up select-input prefill without writing translation maps first.
+
+### Schema
+
+- New columns on `profiles`: `website`, `instagram`, `tiktok`, `twitter`, `linkedin` (all nullable text).
+- `profiles.income_range` legacy values backfilled to canonical (`under_50k`, `50k_75k`, …, `1m_plus`, `prefer_not`). Lossy where legacy brackets spanned multiple canonical brackets — mapped to lower bound (conservative, won't over-state stated income).
+
+### Files added
+
+- `src/lib/profile/income-ranges.ts` — canonical income-range vocabulary module (`INCOME_RANGE_OPTIONS` + `IncomeRangeValue` type)
+- `supabase/migrations/00016_profile_social_links.sql`
+- `supabase/migrations/00017_normalize_profile_income_range.sql`
+
+### Files deleted
+
+- `src/app/(auth)/onboarding/page.tsx` — orphaned route, pre-Batch-E leftover
+
+### Lessons / patterns worth remembering
+
+- **Adding an option to a field is a good moment to grep all writers of that column.** The "Other" addition was a 30-second change that surfaced a multi-month-old vocab drift bug. Worth doing this every time the option list gets touched.
+- **Same column name across features ≠ same vocabulary.** When a feature gets built in isolation, its options drift from the canonical set. The fix is a shared module + a TypeScript `as const` array so future drift is loud.
+- **Dead config is worse than no config.** The `prefill_if_assessment` declarations on select-type evaluator questions were cosmetic — never actually read — but would have silently mistranslated values the moment someone implemented prefill plumbing for selects. Removing them is cheap insurance.
+
+---
+
 ## 2026-05-05 (continued) — Phase 7b case study audit closing polish + audit complete
 
 **Goal:** Close the May 2026 case study audit. Polish the editorial conventions doc to reflect the now-complete state, ensure cross-references between the two reference docs, and update the project-level CLAUDE.md descriptor.

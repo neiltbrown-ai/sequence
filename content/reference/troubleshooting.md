@@ -4,6 +4,56 @@ Symptom → root cause → fix for recurring bugs we've hit. Consult this before
 
 ---
 
+## Schema / Vocab
+
+### Symptom: Recommendations engine produces low-quality matches even though the user has a fully filled-in profile
+
+**Root cause:** Two (or more) features write to the same `profiles` column with different vocabulary sets. Most common offender historically: `profiles.income_range` was written by Settings (hyphen-delimited: `under-50k`), Onboarding (display labels: `"Under $50K"`), and Assessment (canonical: `under_50k`). The recommendation maps in `src/lib/recommendations.ts` are keyed off ONE vocabulary; rows written by the other features silently fail to match and contribute nothing to the score.
+
+This is the silent-corruption class of bug — no error, no exception, just degraded output that's hard to attribute back to the cause.
+
+**Fix:**
+
+1. **Grep every writer of the column** before adding or changing options:
+   ```bash
+   grep -rn "<column_name>" src --include="*.ts" --include="*.tsx"
+   ```
+2. **Pick a canonical vocabulary** — usually the assessment's, since it's tied to scoring logic that can't move.
+3. **Put the option list in a shared module** (`src/lib/profile/<field>.ts` or `src/lib/assessment/<field>.ts`) and `export const X = [...] as const` so TypeScript catches drift. Pattern: `src/lib/profile/income-ranges.ts`.
+4. **Backfill legacy data** in a migration. Lossy where legacy brackets span multiple canonical brackets — map to lower bound (conservative).
+5. **Update all writers** to import from the shared module. Settings + Onboarding + assessment Q-config all reference the same array.
+
+**Pattern for new enum-like fields:**
+```ts
+// src/lib/profile/<field>.ts
+export const X_OPTIONS = [
+  { value: "canonical_slug", label: "User-facing label" },
+  ...
+] as const;
+
+export type XValue = (typeof X_OPTIONS)[number]["value"];
+```
+
+This catches any new code path that uses a non-canonical value at compile time.
+
+**Suspect fields worth auditing periodically:** `disciplines`, `interests`, `career_stage`, `business_structure`, asset types, deal types — anywhere the option list lives in multiple form components.
+
+### Symptom: A page (e.g. `/onboarding`) renders if you URL-type to it, but no UI flow ever sends users there
+
+**Root cause:** Orphan route — page file exists at `src/app/<group>/<route>/page.tsx` but no `redirect()`, `router.push()`, sidebar link, or middleware rule references it.
+
+**Fix:** First confirm it's truly orphaned:
+```bash
+grep -rn "/<route-name>\|push.*<route>\|redirect.*<route>" src --include="*.ts" --include="*.tsx"
+```
+If grep returns only the page file itself, the route is dead. Two options:
+1. **Delete the route** (`rm -r src/app/<group>/<route-name>`). Safe when you've confirmed grep is clean — no callers means no broken links.
+2. **Wire it up properly** if it's supposed to be reachable — typically by adding a `redirect("/<route>")` in the auth callback, or by linking from a dashboard CTA.
+
+Don't leave orphan routes in place. They're a footgun: anyone who URL-types to them can write data the rest of the app doesn't expect (the original 2026-05 case: orphan `/onboarding` would have written legacy-vocab values into `profiles.income_range`).
+
+---
+
 ## AI / Roadmap
 
 ### Symptom: "Refresh Roadmap" button creates the regeneration screen, then reloads with the same 3 actions still marked complete (banner stays up)
