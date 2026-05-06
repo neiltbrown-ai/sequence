@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   StrategicPlan,
   StrategicRoadmap,
   AssessmentAction,
+  ActionStatus,
   StageNumber,
 } from "@/types/assessment";
 import ActionCard from "./action-card";
@@ -135,11 +136,37 @@ export default function RoadmapDisplay({
     return actions.find((a) => a.action_order === order) || null;
   }
 
+  // Live status map keyed by action.order. Lifted out of ActionCard so the
+  // "All three steps complete" banner can react the instant the user flips
+  // the third action — without it, the banner only appeared on next page load.
+  const [statuses, setStatuses] = useState<Record<1 | 2 | 3, ActionStatus>>(
+    () => ({
+      1: getTracking(1)?.status || "pending",
+      2: getTracking(2)?.status || "pending",
+      3: getTracking(3)?.status || "pending",
+    }),
+  );
+
+  function handleStatusChange(order: 1 | 2 | 3, next: ActionStatus) {
+    setStatuses((prev) => ({ ...prev, [order]: next }));
+  }
+
   const allActionsComplete =
     roadmap.actions.length > 0 &&
     roadmap.actions.every(
-      (a) => getTracking(a.order as 1 | 2 | 3)?.status === "completed",
+      (a) => statuses[a.order as 1 | 2 | 3] === "completed",
     );
+
+  // When the third action just flipped to complete, scroll the refresh
+  // banner into view so it doesn't get missed below the fold.
+  const bannerRef = useRef<HTMLDivElement | null>(null);
+  const wasAllCompleteRef = useRef(allActionsComplete);
+  useEffect(() => {
+    if (allActionsComplete && !wasAllCompleteRef.current) {
+      bannerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    wasAllCompleteRef.current = allActionsComplete;
+  }, [allActionsComplete]);
 
   // Fallback: some regenerated roadmaps put misalignments in position.misalignments only
   const misalignments = roadmap.misalignment_detail?.length
@@ -442,13 +469,15 @@ export default function RoadmapDisplay({
               key={action.order}
               action={action}
               tracking={getTracking(action.order)}
+              status={statuses[action.order as 1 | 2 | 3]}
               userId={userId}
               planId={plan.id}
+              onStatusChange={handleStatusChange}
             />
           ))}
         </div>
         {allActionsComplete && (
-          <div className="rdmp-refresh-banner rv vis rv-d2" role="status">
+          <div className="rdmp-refresh-banner rv vis rv-d2" role="status" ref={bannerRef}>
             <div className="rdmp-refresh-banner-icon" aria-hidden>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={22} height={22}>
                 <circle cx="12" cy="12" r="10" />

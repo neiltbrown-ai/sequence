@@ -226,9 +226,10 @@ async function FullAccessDashboard() {
           coherent layout. */}
       {(inventoryAnalysis || recentDeals.length > 0) && (
         <div className="dash-section rv rv-d1">
-          <SectionHeader title="Portfolio State" />
+          <SectionHeader title="Portfolio Overview" />
           {inventoryAnalysis && (
             <DashValuationCard
+              assetCount={inventoryCount}
               valuationRange={inventoryAnalysis.summary.estimated_total_value_range}
               leverageScore={inventoryAnalysis.summary.leverage_score}
               leverageRationale={inventoryAnalysis.summary.leverage_rationale}

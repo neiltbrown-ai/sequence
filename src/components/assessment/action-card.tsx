@@ -21,17 +21,18 @@ const STATUS_CYCLE: ActionStatus[] = ["pending", "in_progress", "completed"];
 export default function ActionCard({
   action,
   tracking,
+  status,
   userId,
   planId,
+  onStatusChange,
 }: {
   action: RoadmapAction;
   tracking: AssessmentAction | null;
+  status: ActionStatus;
   userId: string;
   planId: string;
+  onStatusChange: (order: 1 | 2 | 3, next: ActionStatus) => void;
 }) {
-  const [status, setStatus] = useState<ActionStatus>(
-    tracking?.status || "pending"
-  );
   const [trackingId, setTrackingId] = useState<string | null>(
     tracking?.id || null
   );
@@ -41,7 +42,9 @@ export default function ActionCard({
   async function cycleStatus() {
     const currentIdx = STATUS_CYCLE.indexOf(status);
     const nextStatus = STATUS_CYCLE[(currentIdx + 1) % STATUS_CYCLE.length];
-    setStatus(nextStatus);
+    // Optimistic: update parent state first so the all-complete banner can
+    // appear the instant the third action flips, before the DB round-trip.
+    onStatusChange(action.order as 1 | 2 | 3, nextStatus);
 
     if (trackingId) {
       await supabase

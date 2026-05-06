@@ -24,6 +24,7 @@ import type { SignalColor } from "@/types/evaluator";
 /* ── Valuation + Drivers of Value ───────────────────────────────── */
 
 type ValuationProps = {
+  assetCount: number;
   valuationRange: string;
   leverageScore: string;
   leverageRationale?: string;
@@ -64,6 +65,7 @@ function extractLegacyRationale(raw: string): string | null {
 }
 
 export function DashValuationCard({
+  assetCount,
   valuationRange,
   leverageScore,
   leverageRationale,
@@ -87,14 +89,23 @@ export function DashValuationCard({
       </div>
 
       <Link href="/inventory?tab=analysis" className="dash-card-body-link">
-        {/* Hero — valuation range left, leverage score right, divider between */}
-        <div className="dash-val-hero">
-          <div className="dash-val-hero-left">
+        {/* Hero — three columns: asset count | valuation range | leverage score,
+            with thin dividers between each. Asset count anchors the row at left
+            so members see the size of the portfolio before the derived metrics. */}
+        <div className="dash-val-hero dash-val-hero--three">
+          <div className="dash-val-hero-cell">
+            <div className="dash-val-range">{assetCount}</div>
+            <div className="dash-val-range-sub">
+              {assetCount === 1 ? "Asset cataloged" : "Assets cataloged"}
+            </div>
+          </div>
+          <div className="dash-val-hero-divider" aria-hidden />
+          <div className="dash-val-hero-cell">
             <div className="dash-val-range">{valuationRange}</div>
             <div className="dash-val-range-sub">Estimated value</div>
           </div>
           <div className="dash-val-hero-divider" aria-hidden />
-          <div className="dash-val-hero-right">
+          <div className="dash-val-hero-cell">
             <span className={`dash-leverage-val ${leverageClass}`}>
               {leverageLabel}
             </span>
