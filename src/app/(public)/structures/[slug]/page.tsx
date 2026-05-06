@@ -80,7 +80,7 @@ export default async function PublicStructurePage({
           </h2>
           <p className="pub-str-gate-desc">
             35 deal structures with negotiation scripts, decision checklists,
-            and real-world case studies. Plus 70+ case studies across creative
+            and real-world case studies. Plus 100+ case studies across creative
             industries.
           </p>
           <Link href="/pricing" className="btn btn--white">

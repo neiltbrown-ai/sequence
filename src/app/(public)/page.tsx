@@ -39,7 +39,7 @@ export default function HomePage() {
             <p className="hero-desc">
               Understand the economic value of your creativity &mdash; value
               your assets, score any deal, map your progression, and get
-              personalized strategic guidance built on 35 structures and 70+
+              personalized strategic guidance built on 35 structures and 100+
               case studies.
             </p>
             <div className="hero-subscribe">
@@ -243,7 +243,7 @@ export default function HomePage() {
             <div className="access-feature">
               <span className="access-feature-num">[05]</span>
               <span className="access-feature-text">
-                <strong>35+ deal structures</strong> and 70+ case studies
+                <strong>35+ deal structures</strong> and 100+ case studies
               </span>
             </div>
             <div className="access-feature">

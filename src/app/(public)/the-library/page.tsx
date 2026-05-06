@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "The Library",
   description:
-    "35 deal structures, 70+ case studies, and strategic frameworks for creative professionals navigating the restructuring of the creative economy.",
+    "35 deal structures, 100+ case studies, and strategic frameworks for creative professionals navigating the restructuring of the creative economy.",
 };
 
 export default function LibraryPage() {

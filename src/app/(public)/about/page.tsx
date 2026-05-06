@@ -34,7 +34,7 @@ export default function AboutPage() {
             <p className="ph-meta-desc">
               <strong>In Sequence is a research-backed framework</strong> for
               creative professionals navigating the restructuring of the creative
-              economy. 35 deal structures, 70+ case studies, a four-stage
+              economy. 35 deal structures, 100+ case studies, a four-stage
               progression from execution to ownership — and growing.
             </p>
           </div>
@@ -67,7 +67,7 @@ export default function AboutPage() {
             <span className="num-lbl">DEAL STRUCTURES</span>
           </div>
           <div className="num rv rv-d1">
-            <span className="num-val">70+</span>
+            <span className="num-val">100+</span>
             <span className="num-lbl">CASE STUDIES</span>
           </div>
           <div className="num rv rv-d2">

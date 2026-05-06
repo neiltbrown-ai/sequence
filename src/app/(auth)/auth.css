@@ -101,7 +101,11 @@
 .auth-step.active { display: block; }
 .auth-state { display: none; }
 .auth-state.active { display: block; }
-.auth-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 8px; }
+.auth-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin-top: 28px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
 .auth-actions .auth-btn { width: auto; flex: 1; }
 
 /* AUTH SUCCESS STATE */
@@ -117,10 +121,22 @@
   padding: 24px; border: 1px solid var(--border); border-radius: 6px;
   background: var(--bg); margin-bottom: 0; cursor: pointer; text-align: left;
   flex: 1; min-width: 0;
+  position: relative;
   transition: border-color .15s;
 }
 .auth-plan-card:hover { border-color: var(--mid); }
 .auth-plan-card--selected { border-color: var(--black); background: var(--white); }
+.auth-plan-card--selected::before {
+  content: ''; position: absolute; top: -1px; left: -1px; right: -1px;
+  height: 3px; background: var(--black);
+  border-top-left-radius: 6px; border-top-right-radius: 6px;
+}
+/* Mute text on the un-selected plan card so the active choice clearly leads */
+.auth-plan-card:not(.auth-plan-card--selected) .auth-plan-price { color: var(--light); }
+.auth-plan-card:not(.auth-plan-card--selected) .auth-plan-features li { color: var(--light); }
+.auth-plan-card:not(.auth-plan-card--selected) .auth-plan-features li::before {
+  border-left-color: var(--light); border-bottom-color: var(--light);
+}
 .auth-billing-btn {
   font-family: var(--mono); font-size: 10px; letter-spacing: .06em;
   padding: 6px 14px; border: 1px solid var(--border); border-radius: 4px;

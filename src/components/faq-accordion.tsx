@@ -11,12 +11,12 @@ const faqItems: FaqItem[] = [
   {
     question: "What\u2019s the difference between Library and Full Access?",
     answer:
-      "Library ($12/year) gives you full access to every deal structure, case study, framework, and guide in the content library. Full Access ($19/month or $190/year) includes everything in Library plus AI-powered tools: the Strategic Advisor, Deal Evaluator, Career Assessment, and Asset Inventory.",
+      "Library ($12/year) gives you full access to every deal structure, case study, framework, and guide in the content library. Full Access ($19/month) includes everything in Library plus AI-powered tools: the Strategic Advisor, Deal Evaluator, Career Assessment, and Asset Inventory.",
   },
   {
     question: "What\u2019s included in the Library?",
     answer:
-      "35+ deal structures with negotiation scripts and templates, 70+ case studies across creative industries, decision frameworks, strategic roadmaps, and all new content added weekly.",
+      "35+ deal structures with negotiation scripts and templates, 100+ case studies across creative industries, decision frameworks, strategic roadmaps, and all new content added weekly.",
   },
   {
     question: "What are the AI tools in Full Access?",

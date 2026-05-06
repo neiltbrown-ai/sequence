@@ -43,7 +43,7 @@ export default function PricingPage() {
             </p>
             <ul className="pr-plan-features">
               <li>35+ deal structures with negotiation scripts</li>
-              <li>70+ case studies across creative industries</li>
+              <li>100+ case studies across creative industries</li>
               <li>Decision frameworks and strategic roadmaps</li>
               <li>Weekly new content and library updates</li>
               <li>Save and organize content in your library</li>
@@ -67,7 +67,7 @@ export default function PricingPage() {
               <span className="pr-plan-price-term">/ month</span>
             </div>
             <p className="pr-plan-desc">
-              or <strong>$190/year</strong> (save $38). Everything in Library plus AI-powered tools.
+              Everything in Library plus AI-powered tools.
             </p>
             <ul className="pr-plan-features">
               <li>Everything in Library</li>
@@ -143,7 +143,7 @@ export default function PricingPage() {
                 <td>&#10003;</td>
               </tr>
               <tr>
-                <td>Case Studies (70+)</td>
+                <td>Case Studies (100+)</td>
                 <td>&#10003;</td>
                 <td>&#10003;</td>
                 <td>&#10003;</td>
@@ -228,7 +228,7 @@ export default function PricingPage() {
             </p>
           </div>
           <div className="pr-item rv rv-d1">
-            <span className="pr-item-num">70+</span>
+            <span className="pr-item-num">100+</span>
             <span className="pr-item-title">Case Studies</span>
             <p className="pr-item-desc">
               Real deals across creative industries — actual terms, financial
@@ -389,7 +389,7 @@ export default function PricingPage() {
             <div className="pr-cta-feature">
               <span className="pr-cta-feature-num">[02]</span>
               <span className="pr-cta-feature-text">
-                <strong>70+ case studies</strong> across creative industries
+                <strong>100+ case studies</strong> across creative industries
               </span>
             </div>
             <div className="pr-cta-feature">

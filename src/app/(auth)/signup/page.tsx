@@ -12,14 +12,13 @@ import ProgressDots from "@/components/auth/progress-dots";
 const STEP_LABELS = ["Create Account", "Select Plan", "Payment", "Confirmation"];
 
 type SelectedPlan = "library" | "full_access";
-type Billing = "monthly" | "annual";
 
 const PLAN_DETAILS: Record<SelectedPlan, { label: string; features: string[] }> = {
   library: {
     label: "Library",
     features: [
       "35+ deal structures with negotiation scripts",
-      "70+ case studies across creative industries",
+      "100+ case studies across creative industries",
       "Decision frameworks and strategic roadmaps",
       "Weekly new content and library updates",
       "Save and organize content in your library",
@@ -37,14 +36,12 @@ const PLAN_DETAILS: Record<SelectedPlan, { label: string; features: string[] }> 
   },
 };
 
-function getPriceDisplay(plan: SelectedPlan, billing: Billing): string {
-  if (plan === "library") return "$12.00";
-  return billing === "monthly" ? "$19.00" : "$190.00";
+function getPriceDisplay(plan: SelectedPlan): string {
+  return plan === "library" ? "$12.00" : "$19.00";
 }
 
-function getPriceLabel(plan: SelectedPlan, billing: Billing): string {
-  if (plan === "library") return "$12 / year";
-  return billing === "monthly" ? "$19 / month" : "$190 / year";
+function getPriceLabel(plan: SelectedPlan): string {
+  return plan === "library" ? "$12 / year" : "$19 / month";
 }
 
 export default function SignupPage() {
@@ -67,6 +64,7 @@ function SignupForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -74,7 +72,6 @@ function SignupForm() {
 
   // Plan selection state
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan>("full_access");
-  const [billing, setBilling] = useState<Billing>("monthly");
 
   // Pre-select plan from URL param — skip plan step if already chosen
   const planFromUrl = searchParams.get("plan");
@@ -138,6 +135,7 @@ function SignupForm() {
           first_name: firstName,
           last_name: lastName,
           full_name: `${firstName} ${lastName}`,
+          website: website.trim() || null,
         },
         emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
@@ -232,7 +230,7 @@ function SignupForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan: selectedPlan,
-          billing: selectedPlan === "library" ? "annual" : billing,
+          billing: selectedPlan === "library" ? "annual" : "monthly",
           // Pass signup context for unauthenticated checkout (email confirmation pending)
           signupUserId: signupUserId || undefined,
           signupEmail: email || undefined,
@@ -299,6 +297,15 @@ function SignupForm() {
                   autoComplete="family-name"
                 />
               </div>
+              <AuthInput
+                label="Website (optional)"
+                name="website"
+                type="text"
+                placeholder="yoursite.com"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                autoComplete="url"
+              />
               <AuthInput
                 label="Email"
                 name="email"
@@ -385,28 +392,10 @@ function SignupForm() {
                     </span>
                   </div>
                   <div style={{ marginTop: "4px" }}>
-                    <span className="auth-plan-price">{billing === "monthly" ? "$19" : "$190"}</span>
-                    <span className="auth-plan-period"> / {billing === "monthly" ? "month" : "year"}</span>
+                    <span className="auth-plan-price">$19</span>
+                    <span className="auth-plan-period"> / month</span>
                   </div>
                 </div>
-                {selectedPlan === "full_access" && (
-                  <div style={{ display: "flex", gap: "8px", margin: "8px 0 4px" }}>
-                    <button
-                      type="button"
-                      className={`auth-billing-btn${billing === "monthly" ? " auth-billing-btn--active" : ""}`}
-                      onClick={(e) => { e.stopPropagation(); setBilling("monthly"); }}
-                    >
-                      Monthly — $19/mo
-                    </button>
-                    <button
-                      type="button"
-                      className={`auth-billing-btn${billing === "annual" ? " auth-billing-btn--active" : ""}`}
-                      onClick={(e) => { e.stopPropagation(); setBilling("annual"); }}
-                    >
-                      Annual — $190/yr (save $38)
-                    </button>
-                  </div>
-                )}
                 <ul className="auth-plan-features">
                   {PLAN_DETAILS.full_access.features.map((f) => (
                     <li key={f}>{f}</li>
@@ -555,10 +544,10 @@ function SignupForm() {
               <span>
                 {codeApplied && codeResult?.is_full_discount
                   ? "Full Access — Free"
-                  : `${PLAN_DETAILS[selectedPlan].label} — ${getPriceLabel(selectedPlan, billing)}`}
+                  : `${PLAN_DETAILS[selectedPlan].label} — ${getPriceLabel(selectedPlan)}`}
               </span>
               <span className="auth-order-total">
-                {codeApplied && codeResult?.is_full_discount ? "$0.00" : getPriceDisplay(selectedPlan, billing)}
+                {codeApplied && codeResult?.is_full_discount ? "$0.00" : getPriceDisplay(selectedPlan)}
               </span>
             </div>
 

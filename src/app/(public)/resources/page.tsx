@@ -45,7 +45,7 @@ export default function ResourcesPage() {
             <span className="lib-metric-lbl">DEAL STRUCTURES</span>
           </div>
           <div className="lib-metric rv rv-d1">
-            <span className="lib-metric-val">70+</span>
+            <span className="lib-metric-val">100+</span>
             <span className="lib-metric-lbl">CASE STUDIES</span>
           </div>
           <div className="lib-metric rv rv-d2">
@@ -86,7 +86,7 @@ export default function ResourcesPage() {
             </h2>
             <p className="platform-desc rv rv-d1">
               <strong>
-                35 deal structures. 70+ case studies. Decision checklists.
+                35 deal structures. 100+ case studies. Decision checklists.
                 Negotiation scripts.
               </strong>{" "}
               A research-backed library built for creative professionals who are
@@ -231,7 +231,7 @@ export default function ResourcesPage() {
         <div className="cases-intro">
           <div className="cases-intro-grid">
             <p className="cases-intro-text rv">
-              <strong>70+ case studies</strong> mapping how creative
+              <strong>100+ case studies</strong> mapping how creative
               professionals structured deals, captured value, and built
               ownership &mdash; from independent musicians to billion-dollar
               holding companies. Each study documents the specific terms, the
@@ -280,7 +280,7 @@ export default function ResourcesPage() {
               Real outcomes.
             </span>
             <p className="cases-gate-desc">
-              <strong>70+ case studies &mdash; and growing.</strong> Each one
+              <strong>100+ case studies &mdash; and growing.</strong> Each one
               documents the actual deal structure, the strategic reasoning
               behind it, and the financial outcomes. Not theory. Not
               inspiration. The specific mechanics of how creative professionals
@@ -483,7 +483,7 @@ export default function ResourcesPage() {
             <div className="access-feature">
               <span className="access-feature-num">[02]</span>
               <span className="access-feature-text">
-                <strong>70+ case studies</strong> across disciplines
+                <strong>100+ case studies</strong> across disciplines
               </span>
             </div>
             <div className="access-feature">

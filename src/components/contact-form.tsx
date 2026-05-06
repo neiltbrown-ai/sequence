@@ -16,7 +16,14 @@ export default function ContactForm() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !message.trim()) return;
+    if (
+      !name.trim() ||
+      !email.trim() ||
+      !inquiryType ||
+      !subject.trim() ||
+      !message.trim()
+    )
+      return;
 
     setSending(true);
     setError("");
@@ -75,6 +82,7 @@ export default function ContactForm() {
             placeholder="Your full name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            required
           />
         </div>
         <div className="ct-field">
@@ -88,6 +96,7 @@ export default function ContactForm() {
             placeholder="you@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
         <div className="ct-field">
@@ -99,6 +108,7 @@ export default function ContactForm() {
             className="ct-input ct-select"
             value={inquiryType}
             onChange={(e) => setInquiryType(e.target.value)}
+            required
           >
             <option value="" disabled>
               Select an inquiry type
@@ -107,7 +117,7 @@ export default function ContactForm() {
             <option value="press">Press &amp; Media</option>
             <option value="advisory">Advisory Interest</option>
             <option value="partnership">Partnership</option>
-            <option value="support">Support</option>
+            <option value="support">Platform Support</option>
           </select>
         </div>
         <div className="ct-field">
@@ -121,6 +131,7 @@ export default function ContactForm() {
             placeholder="What is this regarding?"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
+            required
           />
         </div>
         <div className="ct-field">
@@ -133,6 +144,7 @@ export default function ContactForm() {
             placeholder="Tell us more..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            required
           />
         </div>
         {error && (

@@ -103,7 +103,7 @@ export default function PlatformPage() {
               </strong>{" "}
               Understand the economic value of your creativity &mdash; value
               your assets, score any deal, map your progression, and get
-              personalized strategic guidance built on 35 structures and 70+
+              personalized strategic guidance built on 35 structures and 100+
               case studies.
             </p>
           </div>
@@ -221,7 +221,7 @@ export default function PlatformPage() {
             </h3>
             <p className="tool-card-desc">
               A strategic advisor trained on your portfolio, 35 deal structures,
-              and 70+ case studies. Ask about specific deal terms, negotiation
+              and 100+ case studies. Ask about specific deal terms, negotiation
               strategies, or ownership transitions &mdash; and get answers
               specific to your creative work, your stage, and your assets. Not
               generic business advice.
@@ -550,7 +550,7 @@ export default function PlatformPage() {
             <div className="access-feature">
               <span className="access-feature-num">[05]</span>
               <span className="access-feature-text">
-                <strong>35+ deal structures</strong> and 70+ case studies
+                <strong>35+ deal structures</strong> and 100+ case studies
               </span>
             </div>
             <div className="access-feature">
