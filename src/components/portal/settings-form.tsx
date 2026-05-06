@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTheme } from "@/components/theme-provider";
 import type { Profile } from "@/types/database";
+import { INCOME_RANGE_OPTIONS } from "@/lib/profile/income-ranges";
 
 const DISCIPLINES = [
   "Film", "Music", "Design", "Fashion", "Technology", "Publishing",
@@ -25,14 +26,9 @@ const CAREER_STAGES = [
   { value: "investor", label: "Investor" },
 ];
 
-const INCOME_RANGES = [
-  { value: "under-50k", label: "<$50K" },
-  { value: "50-75k", label: "$50–75K" },
-  { value: "75-150k", label: "$75–150K" },
-  { value: "150-300k", label: "$150–300K" },
-  { value: "300-500k", label: "$300–500K" },
-  { value: "500k-plus", label: "$500K+" },
-];
+// Canonical income-range vocabulary lives in src/lib/profile/income-ranges.ts —
+// shared with Onboarding and the Assessment Q6 question. Don't redefine locally.
+const INCOME_RANGES = INCOME_RANGE_OPTIONS;
 
 export default function SettingsForm() {
   const supabase = createClient();
@@ -46,6 +42,13 @@ export default function SettingsForm() {
   const [incomeRange, setIncomeRange] = useState("");
   const [selectedDisciplines, setSelectedDisciplines] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+
+  // Social links — all optional; stored as raw strings (handles or URLs).
+  const [website, setWebsite] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [linkedin, setLinkedin] = useState("");
 
   // Subscription state
   const [subPlan, setSubPlan] = useState("—");
@@ -89,6 +92,11 @@ export default function SettingsForm() {
         setIncomeRange(p.income_range || "");
         setSelectedDisciplines(p.disciplines || []);
         setSelectedInterests(p.interests || []);
+        setWebsite(p.website || "");
+        setInstagram(p.instagram || "");
+        setTiktok(p.tiktok || "");
+        setTwitter(p.twitter || "");
+        setLinkedin(p.linkedin || "");
       }
 
       // Load subscription
@@ -155,6 +163,17 @@ export default function SettingsForm() {
     } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Normalize: empty strings → null so we don't persist whitespace.
+    // Strip a leading @ on handle fields so links built from these stay clean.
+    const cleanHandle = (v: string) => {
+      const t = v.trim().replace(/^@+/, "");
+      return t === "" ? null : t;
+    };
+    const cleanText = (v: string) => {
+      const t = v.trim();
+      return t === "" ? null : t;
+    };
+
     await supabase
       .from("profiles")
       .update({
@@ -162,6 +181,11 @@ export default function SettingsForm() {
         bio,
         career_stage: careerStage || null,
         income_range: incomeRange || null,
+        website: cleanText(website),
+        instagram: cleanHandle(instagram),
+        tiktok: cleanHandle(tiktok),
+        twitter: cleanHandle(twitter),
+        linkedin: cleanText(linkedin),
       })
       .eq("id", user.id);
 
@@ -344,6 +368,66 @@ export default function SettingsForm() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Links — optional public presence. Handles strip a leading @
+            on save (cleanHandle) so the stored value is always bare. */}
+        <div className="set-subhead">Links</div>
+
+        <div className="set-field">
+          <label className="set-label">Website</label>
+          <input
+            type="url"
+            className="set-input"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            placeholder="https://yoursite.com"
+            autoComplete="url"
+          />
+        </div>
+
+        <div className="set-field">
+          <label className="set-label">Instagram</label>
+          <input
+            type="text"
+            className="set-input"
+            value={instagram}
+            onChange={(e) => setInstagram(e.target.value)}
+            placeholder="username"
+          />
+        </div>
+
+        <div className="set-field">
+          <label className="set-label">TikTok</label>
+          <input
+            type="text"
+            className="set-input"
+            value={tiktok}
+            onChange={(e) => setTiktok(e.target.value)}
+            placeholder="username"
+          />
+        </div>
+
+        <div className="set-field">
+          <label className="set-label">X / Twitter</label>
+          <input
+            type="text"
+            className="set-input"
+            value={twitter}
+            onChange={(e) => setTwitter(e.target.value)}
+            placeholder="username"
+          />
+        </div>
+
+        <div className="set-field">
+          <label className="set-label">LinkedIn</label>
+          <input
+            type="text"
+            className="set-input"
+            value={linkedin}
+            onChange={(e) => setLinkedin(e.target.value)}
+            placeholder="username or full profile URL"
+          />
         </div>
 
         <button

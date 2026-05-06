@@ -17,6 +17,12 @@ export type Profile = {
   career_stage: string | null;
   income_range: string | null;
   interests: string[];
+  // Social links (from 00016 migration)
+  website: string | null;
+  instagram: string | null;
+  tiktok: string | null;
+  twitter: string | null;
+  linkedin: string | null;
   // Assessment-ready (populated by Phase 2)
   creative_mode: string | null;
   detected_stage: 1 | 2 | 3 | 4 | null;

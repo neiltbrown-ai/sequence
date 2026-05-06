@@ -105,7 +105,11 @@ const FINANCIAL_QUESTIONS: EvalQuestion[] = [
     dealTypes: 'all',
     scoringWeight: 0.15,
     scoringLogic: { _range: 0 },
-    assessmentBehavior: { type: 'prefill_if_assessment', assessmentField: 'income_range' },
+    // F5 asks for a percentage; the assessment stores income as a bracket
+    // string (under_50k, 50k_75k, …). Vocab + answerType don't align, so
+    // there's no clean way to prefill. State machine ignores
+    // prefill_if_assessment for non-percentage_input questions anyway.
+    assessmentBehavior: { type: 'always_ask' },
     displayOrder: 5,
   },
 
@@ -171,7 +175,10 @@ const FINANCIAL_QUESTIONS: EvalQuestion[] = [
       condition: 'no',
       message: "Equity deals require patience. If you can't wait for liquidity, this may not be the right structure.",
     },
-    assessmentBehavior: { type: 'prefill_if_assessment', assessmentField: 'risk_tolerance' },
+    // F10 options: yes/probably/no. Assessment risk_tolerance vocab:
+    // conservative/moderate/aggressive/desperate. No clean mapping;
+    // state machine never reads prefill_if_assessment for selects.
+    assessmentBehavior: { type: 'always_ask' },
     displayOrder: 10,
   },
 
@@ -1339,7 +1346,11 @@ const LEGAL_QUESTIONS: EvalQuestion[] = [
     dealTypes: 'all',
     scoringWeight: 0.30,
     scoringLogic: { ip_attorney: 10, general: 7, plan_to: 5, no: 1 },
-    assessmentBehavior: { type: 'prefill_if_assessment', assessmentField: 'business_structure' },
+    // L1 options describe attorney engagement, not entity structure.
+    // The prefill source (business_structure) is the wrong vocabulary
+    // and the state machine never reads prefill_if_assessment for
+    // select inputs.
+    assessmentBehavior: { type: 'always_ask' },
     displayOrder: 1,
   },
   {
@@ -1355,7 +1366,10 @@ const LEGAL_QUESTIONS: EvalQuestion[] = [
     dealTypes: 'all',
     scoringWeight: 0.25,
     scoringLogic: { confirmed: 10, think_so: 5, no: 1 },
-    assessmentBehavior: { type: 'prefill_if_assessment', assessmentField: 'business_structure' },
+    // L2 options describe accountant confirmation, not entity structure.
+    // Prefill source vocabulary doesn't match and the state machine
+    // never reads prefill_if_assessment for selects anyway.
+    assessmentBehavior: { type: 'always_ask' },
     displayOrder: 2,
   },
   {
@@ -1448,7 +1462,13 @@ const LEGAL_QUESTIONS: EvalQuestion[] = [
     dealTypes: ['equity'],
     scoringWeight: 0.15,
     scoringLogic: { llc: 8, c_corp: 9, s_corp: 7, sole_prop: 3, dont_know: 2 },
-    assessmentBehavior: { type: 'prefill_if_assessment', assessmentField: 'business_structure' },
+    // L7 options: llc/c_corp/s_corp/sole_prop/dont_know. Assessment
+    // business_structure vocab: none/sole_prop/llc/llc_scorp/multi_entity/
+    // corp/w2/unknown. Partial overlap (llc, sole_prop) but c_corp/s_corp
+    // can't be reliably derived. State machine never reads
+    // prefill_if_assessment for selects regardless. Future: if a real
+    // mapping is wanted, build it explicitly with a translation helper.
+    assessmentBehavior: { type: 'always_ask' },
     displayOrder: 7,
   },
 ];
