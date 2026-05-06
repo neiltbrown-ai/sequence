@@ -100,12 +100,69 @@ Entity/org hierarchy diagram.
 ```
 
 ### CbFlywheel
-SVG diagram wrapper for flywheel/cycle graphics. Raw SVG goes inside.
+Wrapper for the case's "Compounding Effect" diagram. The component name is historical — the diagram inside doesn't have to be a flywheel. Raw SVG goes inside.
+
 ```mdx
 <CbFlywheel title="Value Flywheel">
   <svg viewBox="0 0 580 400" ...>...</svg>
 </CbFlywheel>
 ```
+
+#### Diagram type taxonomy
+
+Pick the diagram from the case's actual structural argument, not by template. There are five recognized types — the first three are well-established in the library (~100 cases between them); the last two are newer and have a single canonical exemplar each.
+
+**1. Hub-and-spoke compounding wheel** (the dominant pattern, ~95 cases)
+
+Use when the case argues a genuine self-reinforcing loop — every spoke feeds the next, and the cycle is the whole point. Central black circle with a 2-line thesis (`TASTE` / `COMPOUNDS`), 6 outer cards in hex pattern, **solid arrows around the perimeter** (the cycle), **dashed lines from each spoke to the hub** (every spoke ladders back to the central concept).
+
+Canonical reference: `content/case-studies/jeremy-kirkland.mdx` — `KIRKLAND — TASTE COMPOUNDS`.
+
+**2. Broken-flywheel variant** (1 case)
+
+Same hub-and-spoke layout, but half the spokes are rendered in a muted red with **dashed arrows** showing where the cycle breaks down. Hub usually names what's missing (`FULL OWNERSHIP` for Chance). Use when the case is genuinely cautionary — the structures the creator *would* have needed are absent or broken.
+
+Canonical reference: `content/case-studies/chance-the-rapper.mdx` — `CHANCE — THE BROKEN FLYWHEEL`.
+
+**3. Triangle / triadic flow** (1 case)
+
+Three structure boxes in an inverted triangle (one top, two bottom) with **solid arrows showing the directional flow** between them and short flow-text labels (e.g. "Capital funds production", "Diversified revenue builds catalog"). Use when the case has a small number of structures (typically 3) that compound on each other directionally rather than cyclically.
+
+Canonical reference: `content/case-studies/a24.mdx` — `A24 Value Flywheel`.
+
+**4. Linear sequence** (1 case)
+
+Three large cards left-to-right with **bold horizontal arrows** between them. Each card carries a year/era header, structure number, descriptive name, and a 2–3 line mono-small-caps outcome detail. Italic flow labels above each arrow ("acquires", "spawns") and an italic closing line below the row tying the sequence together. Use when the structures are deployed in a deliberate **chronological chain** — each one a precondition for the next — not a loop.
+
+Canonical reference: `content/case-studies/ira-glass.mdx` — `The Glass Sequence — One Move in Three Acts`.
+
+**5. Independent grid** (1 case)
+
+N×M grid of independent entity cards with **no arrows between them**. Each card carries an asset-class header (mono-small-caps), entity name (sans bold), era, and fate. A center note (italic, muted) names the structural argument: "Four asset classes. Four entities. No arrows between them — that is the structural argument." Use when the case argues **separation** — multiple entities or asset classes with no cross-dependencies, where the visual absence of connections is the point.
+
+Canonical reference: `content/case-studies/erik-spiekermann.mdx` — `Four Entities, Four Asset Classes, No Cross-Dependencies`.
+
+#### Selection rule
+
+Match the diagram to the case's argument:
+
+| The case argues… | Use |
+|---|---|
+| Self-reinforcing cycle | Hub-and-spoke (1) |
+| Broken / missing cycle | Broken-flywheel variant (2) |
+| Three structures with directional flow | Triangle (3) |
+| Sequence of structures over time | Linear sequence (4) |
+| Separation / no cross-dependencies | Independent grid (5) |
+
+When uncertain, default to hub-and-spoke (1) — it's the library's anchor and works for most "compounding" cases.
+
+#### Mandatory hygiene
+
+- **Use `var(--diag-*)` CSS vars, never hardcoded hex.** The portal flips to dark mode via `[data-theme="dark"]`; hardcoded colors break dark mode. The 100 pre-2026-05 hub-and-spoke cases use hardcoded hex (`#1a1a1a`, `#f5f5f0`, etc.) — that's a known carry-forward gap. New diagrams must use the vars.
+- **Confirmed var names:** `--diag-parent-bg`, `--diag-parent-border`, `--diag-parent-text`, `--diag-child-bg`, `--diag-child-border`, `--diag-child-text`, `--diag-muted-text`, `--diag-line`, `--diag-center-bg`, `--diag-center-border`, `--diag-center-text`, `--diag-label-bg`. Anything else (e.g. `--diag-text`, `--mid`) is undefined and renders transparent.
+- **Card text hierarchy:** lead with the **descriptive name** (sans-serif, fontWeight 600, fontSize 11–14), supporting detail in **mono-small-caps** below (`'PT Mono', monospace`, fontSize 8, `var(--diag-muted-text)`, letterSpacing 0.05em). Never lead with a bare structure number.
+- **Standard viewBox:** `0 0 580 400` for hub-and-spoke (1, 2) and grid (5). Sequence (4) typically wider — `0 0 700 320`. Triangle (3) follows A24's existing geometry.
+- **Title prop:** descriptive and case-specific (`KIRKLAND — TASTE COMPOUNDS`, `Eno — Opal Holds the Stack`), not generic (`Value Flywheel`). The title appears as a small label above the SVG.
 
 ## Interactive Components
 
