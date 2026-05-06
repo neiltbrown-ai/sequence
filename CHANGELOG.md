@@ -10,6 +10,53 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-06 (continued) — Public refinements + signup polish
+
+**Goal:** Five small public-site refinements requested in a single batch — bump the case-study count headline (the corpus is now ~100 cases post-audit), simplify Full Access pricing to monthly-only, tighten the contact form, add a website field to signup, and polish the plan-selection step's visual hierarchy.
+
+### Case study count bump (70+ → 100+)
+
+- Updated everywhere the count appears as headline copy: home (`/`), `/platform`, `/pricing`, `/about`, `/the-library`, `/resources`, structures gate, signup plan features, FAQ accordion. 11 files / ~15 occurrences.
+- Did NOT touch in-content "70+" mentions inside individual case studies (Spotify users on tobias-van-schneider, cities on refik-anadol, employees on artists-equity) — those are factual claims about case subjects, not corpus metrics.
+- Why now: post-Phase-7b audit the library sits at 98 published cases, so "70+" was both stale and undersold the catalog.
+
+### Pricing: drop Full Access annual
+
+- Removed the $190/yr option — Full Access is now monthly-only ($19/mo).
+- Files touched:
+  - `src/app/(public)/pricing/page.tsx` — stripped the "or $190/year (save $38)" line from the Full Access card description
+  - `src/components/faq-accordion.tsx` — FAQ copy "$19/month or $190/year" → "$19/month"
+  - `src/app/(auth)/signup/page.tsx` — removed the `Billing` type, `billing` state, monthly/annual toggle UI, and conditional price/period rendering; `getPriceDisplay` / `getPriceLabel` simplified to one arg; Stripe checkout call now always sends `monthly` for full_access
+- The Stripe checkout route (`/api/stripe/checkout`) still defensively accepts `billing: "annual"` but the signup flow no longer triggers that branch. Stripe price IDs unchanged — `STRIPE_PRICES.full_access_annual` remains exported for any direct/admin callers.
+- Why: simpler decision for the buyer (one number, one cadence). Annual was only saving $38 — small enough that the cognitive load of the toggle wasn't worth it.
+
+### Contact form
+
+- All five fields now `required` (name, email, inquiry type, subject, message) — added the HTML attribute on each input/select/textarea AND added an early-return guard in `handleSubmit` that checks all five before fetching `/api/contact`.
+- Renamed "Support" inquiry type → "Platform Support" (option `value="support"` unchanged so the API + email routing stay identical; only the visible label changed).
+- File: `src/components/contact-form.tsx`.
+
+### Signup polish
+
+- **New optional Website field above Email** — kept email + password adjacent so they read as the portal credentials. Field uses `type="text"` (not `type="url"`) so `yoursite.com` without a scheme passes the browser validator; `autoComplete="url"` retained for browser autocomplete hint. Persisted to Supabase `auth.users.user_metadata.website` (`null` if blank).
+- **Plan-step visual hierarchy** — the Library / Full Access cards previously column-aligned perfectly with the Back / Continue actions below them, which read as a single grid and was visually confusing. Fix:
+  - Added 1px top rule + 28px / 20px breathing room to `.auth-actions` (sits between cards and buttons; also picks up the same treatment on the Payment step's Back / Complete Purchase pair, which has an inline `marginTop: 20px` so its rule sits a bit tighter)
+  - Selected card now shows a 3px black bar across the top via `::before` pseudo-element with matching corner radii — mimics the pricing page's "Most Popular" `.pr-plan-card--featured::before` pattern
+  - Unselected card mutes price + feature-list text + checkmarks to `var(--light)` so the active choice clearly leads
+- Files: `src/app/(auth)/signup/page.tsx`, `src/app/(auth)/auth.css`.
+
+### Schema
+
+- New writer to `auth.users.user_metadata`: `website` (string | null) from `/signup`. No migration needed — Supabase `user_metadata` is schemaless JSONB. Distinct from the `profiles.website` column added by the portal session's migration `00016_profile_social_links.sql`. Both are valid; the signup write could be promoted to `profiles.website` later via a sync trigger if we want a single canonical store.
+
+### Lessons / patterns worth remembering
+
+- **`type="url"` is too strict for friendly UX.** The browser validator requires a scheme (`http://` / `https://`); users typing `www.example.com` get rejected with "Please enter a URL." For optional informational URL fields, prefer `type="text"` + `autoComplete="url"`. If you need scheme validation downstream, do it server-side with a parser (and normalize while you're there).
+- **Two parallel sessions on a single day → use the `(continued)` convention even if your code shipped first.** The convention is about doc-write order, not commit order. Whoever writes their CHANGELOG entry second adds `(continued)` and inserts above the first entry.
+- **Direct-to-main is fine when worktrees don't overlap.** This batch + the portal batch had zero file overlap; both sessions pushed direct without rebase pain. The portal session captured the broader workflow notes in its 2026-05-06 entry below.
+
+---
+
 ## 2026-05-06 — Portal refinements + vocab cleanup
 
 **Goal:** Apply a batch of portal UX refinements (Portfolio Overview restructure, Roadmap auto-refresh, Settings social links). What started as scoped UX work surfaced — via the income_range "Other" addition — three different writers writing three different vocabularies to the same column name. Audit + cleanup pass followed.

@@ -548,6 +548,33 @@ img.lib-card-cover-img {
 
 ---
 
+## Forms / inputs
+
+### Symptom: Optional URL field rejects valid-looking input ("Please enter a URL.")
+
+**Reports as:** A user pastes or types `www.example.com` (no scheme) into a website / homepage / portfolio URL field. On form submit, the browser's native validator pops a "Please enter a URL." tooltip pinned to the field. The string looks fine to a human — most users have muscle memory for typing URLs without `https://`.
+
+**Root cause:** `<input type="url">` per the HTML spec requires an *absolute* URL with a scheme. `www.example.com`, `example.com`, `@handle`, even `mailto:foo@bar.com` (the validator wants `http(s)://`) — all rejected. Marking the field optional (`required={false}`) doesn't help: the validator still runs on any non-empty value at submit time.
+
+**Fix:** For optional, informational URL fields where downstream code doesn't need a strict URL (you're just saving the string and maybe linking it later), switch to `type="text"` + `autoComplete="url"`. Browsers still surface URL-style autocomplete suggestions; downstream storage accepts whatever string you save.
+
+```tsx
+// BEFORE — rejects "yoursite.com"
+<input type="url" placeholder="https://yoursite.com" autoComplete="url" />
+
+// AFTER — accepts any text; autoComplete still triggers URL suggestions
+<input type="text" placeholder="yoursite.com" autoComplete="url" />
+```
+
+If you DO need scheme validation (e.g. you'll fetch the URL server-side), do it in your own handler with a URL parser — that lets you give a clearer error message AND normalize before storage (`example.com` → `https://example.com`). Don't rely on the input type as your validation layer.
+
+**Pattern to remember:** `type="url"` is appropriate for *strict* URL inputs (admin tools, embed-source fields, link-shortener targets — anywhere the form's job is "submit a real URL"). For *human-typed website fields* on signup / profile / contact forms, use `type="text"`. Same logic applies to `type="email"` if you ever build a form where you specifically don't want validation, though there's much less reason to skip email validation.
+
+**Existing examples:**
+- `src/app/(auth)/signup/page.tsx` — Website field uses `type="text"` + `autoComplete="url"` (added May 2026 after a tester typed `www.neiltbrown.com` and got blocked)
+
+---
+
 ## Content
 
 ### Symptom: Case study title shows concatenated words (e.g., "DJto", "$350,000Trade")

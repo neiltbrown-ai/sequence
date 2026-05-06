@@ -321,6 +321,7 @@ Any `::before` pseudo-element overlay on a themed card (e.g., `.lib-card--cover:
 - **`/api/assessment/regenerate` is deprecated for member-facing use** — it mutates the existing strategic_plans row in place rather than creating a new one, which leaves `assessment_actions` orphaned at "completed" status across the regen. Use `/api/roadmap/refresh` instead (calls `createStrategicPlan()` to create a fresh row + plan_id). The old endpoint still exists because the admin `/regenerate-all` references it; consider it pending removal.
 - **`profiles.income_range` uses the canonical assessment vocabulary** (`under_50k`, `50k_75k`, …, `1m_plus`, `prefer_not`) — same values as `assessments.income_range` and the `Q6_SCORES` map in `src/lib/assessment/scoring.ts`. Single source: `src/lib/profile/income-ranges.ts`. **Don't redefine the option list locally in any new feature** — import `INCOME_RANGE_OPTIONS`. Pre-2026-05 history: Settings, Onboarding (now deleted), and the assessment all wrote different vocabularies; migration `00017_normalize_profile_income_range.sql` backfilled to canonical.
 - **`profiles` social links** (migration `00016_profile_social_links.sql`): `website`, `instagram`, `tiktok`, `twitter`, `linkedin` (all nullable text). Settings save handler strips leading `@` on handle fields and stores empty strings as null — replicate that in any new writer.
+- **`auth.users.user_metadata.website`** is also written by the `/signup` flow (added May 2026) — distinct from the `profiles.website` column. Both stores are valid today; if you need a single canonical source, sync via trigger or in the auth callback. Don't assume one is authoritative without checking. The signup form uses `type="text"` (not `type="url"`) on this field so scheme-less URLs like `yoursite.com` are accepted — replicate that for any other user-facing optional URL input.
 - **Adding an option to a controlled-vocabulary field?** Grep every writer of the column first. Three different vocab sets writing to `profiles.income_range` was the original symptom — fixed in May 2026 but the pattern can recur on any enum-like field (`disciplines`, `interests`, `career_stage`, `business_structure`, etc.). When in doubt, put the option list in a shared module under `src/lib/profile/` or `src/lib/assessment/`.
 - **Module-level SDK instantiation is a build-time landmine.** Never write `const x = new SDK(process.env.X)` at the top of a `lib/` module — Next.js evaluates these during the build's "Collecting page data" step, and any constructor that throws on missing env crashes the entire build (even for routes that never use the SDK). Lazy-instantiate at first use. Pattern: `let _x: SDK | null = null; function getX() { if (!_x) _x = new SDK(process.env.X); return _x; }`. See `src/lib/email/send.ts` for the canonical example.
 - **Server components calling `createAdminClient()` need `export const dynamic = "force-dynamic"`.** Otherwise Next.js tries to statically generate them at build time and crashes when Supabase env vars aren't set in the build environment (e.g. Vercel Preview on Hobby). Auth-gated pages don't benefit from prerendering anyway. Examples: `/admin/assessments/page.tsx`, `/settings/page.tsx`. The `/roadmap/page.tsx` is implicitly dynamic via cookie/auth usage.
@@ -417,7 +418,9 @@ Plus: unified `GenerationProgress` component, Creative Identity portrait view, p
 
 ## What this session built (May 2026)
 
-Portal refinements + vocab cleanup pass:
+Two batches shipped on 2026-05-06 from parallel worktrees.
+
+**Portal refinements + vocab cleanup pass:**
 
 - **Dashboard** — `Portfolio State` renamed to `Portfolio Overview`; valuation hero now 3 columns (Assets cataloged | Estimated value | Leverage score)
 - **Roadmap** — "All three steps complete" refresh banner appears instantly when the third action flips (lifted status state from `ActionCard` → `RoadmapDisplay`); auto-scrolls into view
@@ -425,4 +428,11 @@ Portal refinements + vocab cleanup pass:
 - **Vocab cleanup** — `profiles.income_range` unified on canonical assessment vocabulary via new shared module `src/lib/profile/income-ranges.ts`; orphaned `/onboarding` route deleted (was unreachable but writing legacy vocab); 5 dead `prefill_if_assessment` declarations stripped from evaluator questions; migration `00017_normalize_profile_income_range.sql` backfills legacy values
 - **Build hygiene** — surfaced two pre-existing Vercel build failures during the deploy: module-level Resend instantiation in `src/lib/email/send.ts` (now lazy via `getResend()`) and missing `force-dynamic` on `/admin/assessments/page.tsx` (auth-gated server component that calls `createAdminClient()`). Both fixed in commit `92325ec` ("Build hygiene: lazy-instantiate Resend + force-dynamic on admin queue"). Build is now env-independent.
 
-See `CHANGELOG.md` 2026-05-06 entry for the full lessons-learned section.
+**Public refinements + signup polish:**
+
+- **Case study count** — bumped 70+ → 100+ across home / `/platform` / `/pricing` / `/about` / `/the-library` / `/resources` / structures gate / signup features / FAQ (the corpus headline is now in line with the post-audit catalog of 98 cases)
+- **Pricing** — dropped Full Access annual ($190/yr); plan is monthly-only ($19/mo). Removed the `Billing` type, billing state, billing toggle UI, and conditional price/period rendering from `/signup`; pricing card and FAQ copy match
+- **Contact form** — all five fields required (name, email, inquiry type, subject, message); "Support" inquiry → "Platform Support" (label only — option value unchanged)
+- **Signup polish** — optional Website field above Email (saves to `auth.users.user_metadata.website`; uses `type="text"` to allow scheme-less URLs like `yoursite.com`); plan-step visual hierarchy upgraded with a 1px rule above Back/Continue actions, 3px top bar on the selected card (matching the pricing page's `.pr-plan-card--featured::before` pattern), and muted text on the unselected card
+
+See `CHANGELOG.md` 2026-05-06 entries for the full lessons-learned sections.
