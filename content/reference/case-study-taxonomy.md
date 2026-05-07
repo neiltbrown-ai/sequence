@@ -268,7 +268,9 @@ Real cases from the corpus, hand-tagged as authoritative examples. Use these as 
 | Brian Eno | `["music", "visual_art"]` | `["production", "direction", "writing"]` |
 | Ira Glass | `["media"]` | `["production", "direction"]` |
 | Erik Spiekermann | `["design"]` | `["design", "education", "leadership"]` |
-| Sahil Lavingia | `["writing", "technology"]` | `["writing", "leadership"]` |
+| Sahil Lavingia | `["design", "technology"]` | `["leadership", "design"]` |
+| Brandon Stanton | `["photography", "media"]` | `["writing", "leadership"]` |
+| Mimi Chao | `["comics", "writing"]` | `["writing", "design", "education", "leadership"]` |
 
 ---
 
@@ -293,7 +295,8 @@ Real cases from the corpus, hand-tagged as authoritative examples. Use these as 
 ## Provenance
 
 Defined: 2026-05-06 (during the portal refinements + vocab cleanup session).
-Replaces: ad-hoc freeform `discipline: string` (~103 unique values across 104 cases) and a 9-value `industry: string` enum that had collapsing categories like Writing / Media / Publishing / Audio.
+Backfilled into the corpus: 2026-05-07 (Phase 1 of the rollout — 104 cases tagged via Claude API, with human review of calibration + final proposals).
+Replaces: ad-hoc freeform `discipline: string` (~104 unique values across 104 cases) and a 9-value `industry: string` enum that had collapsing categories like Writing / Media / Publishing / Audio.
 Aligned with: assessment Q1 industry vocabulary (extended to match these 16 in the same May 2026 work).
 Companion docs:
 - `case-study-components.md` — MDX component toolkit

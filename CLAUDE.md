@@ -326,6 +326,8 @@ Any `::before` pseudo-element overlay on a themed card (e.g., `.lib-card--cover:
 - **Module-level SDK instantiation is a build-time landmine.** Never write `const x = new SDK(process.env.X)` at the top of a `lib/` module — Next.js evaluates these during the build's "Collecting page data" step, and any constructor that throws on missing env crashes the entire build (even for routes that never use the SDK). Lazy-instantiate at first use. Pattern: `let _x: SDK | null = null; function getX() { if (!_x) _x = new SDK(process.env.X); return _x; }`. See `src/lib/email/send.ts` for the canonical example.
 - **Server components calling `createAdminClient()` need `export const dynamic = "force-dynamic"`.** Otherwise Next.js tries to statically generate them at build time and crashes when Supabase env vars aren't set in the build environment (e.g. Vercel Preview on Hobby). Auth-gated pages don't benefit from prerendering anyway. Examples: `/admin/assessments/page.tsx`, `/settings/page.tsx`. The `/roadmap/page.tsx` is implicitly dynamic via cookie/auth usage.
 - **Vercel env vars on Hobby plan are scoped per-variable.** They don't auto-propagate across Production / Preview / Development. When rotating or adding an env var, verify it's set in **all three** environments. Preview deploys for feature branches will silently fail otherwise. Convention: Preview should use the Development variant of any sender/SDK key (e.g. Resend dev key) so test sends don't pollute production metrics.
+- **Case study `industries[]` + `disciplines[]` are canonical slug arrays.** Each MDX has `industries: IndustrySlug[]` (1-2 typical, max 3) + `disciplines: DisciplineSlug[]` (1-3 typical, max 4) from `src/lib/case-studies/taxonomy.ts`. The first item is the primary, used for default sorting/rollup. The freeform `discipline: string` (singular) is kept as a human-readable display string for the case-study detail page header (e.g. "Music Production / Strategic Direction") — distinct from the typed `disciplines[]` array. The legacy `industry: string` field was removed 2026-05-07. `validateCaseStudyTaxonomy()` runs on every case-study read and throws in dev / warns in production if frontmatter contains a slug that's not in the canonical lists — so authoring drift fails loud locally.
+- **Anthropic SDK in Node scripts: do NOT pass `baseURL`.** The repo's `SEQ_ANTHROPIC_BASE_URL` env var includes a trailing `/v1`, but the official `@anthropic-ai/sdk` already appends `/v1/messages` itself — passing the env var produces a `/v1/v1/messages` 404. Production routes correctly use `new Anthropic({ apiKey })` with no baseURL; new scripts should match. The env var is for tooling that expects a fully-formed base URL; the SDK isn't in that camp. See `scripts/backfill-case-study-taxonomy.ts` for the canonical script-side init pattern.
 
 ---
 
@@ -388,6 +390,7 @@ Current mode: direct-to-main. Every push triggers a Vercel deploy in ~60–90s. 
 
 **Shared vocab modules** (single source of truth — don't redefine option lists locally):
 - `src/lib/profile/income-ranges.ts` — `INCOME_RANGE_OPTIONS` (matches `Q6_INCOME` + `Q6_SCORES`)
+- `src/lib/case-studies/taxonomy.ts` — canonical case-study `INDUSTRIES` (16, 5 groups) + `DISCIPLINES` (10) with `IndustrySlug` / `DisciplineSlug` types. Imported by case-study filters / search / recommendations; will become the assessment Q1 source in Phase 3.
 
 **Core portal UI**:
 - `src/app/(portal)/dashboard/page.tsx`
@@ -436,3 +439,16 @@ Two batches shipped on 2026-05-06 from parallel worktrees.
 - **Signup polish** — optional Website field above Email (saves to `auth.users.user_metadata.website`; uses `type="text"` to allow scheme-less URLs like `yoursite.com`); plan-step visual hierarchy upgraded with a 1px rule above Back/Continue actions, 3px top bar on the selected card (matching the pricing page's `.pr-plan-card--featured::before` pattern), and muted text on the unselected card
 
 See `CHANGELOG.md` 2026-05-06 entries for the full lessons-learned sections.
+
+**Case study taxonomy rollout — Phase 1 (2026-05-07):**
+
+- New canonical taxonomy module `src/lib/case-studies/taxonomy.ts` (16 industries × 10 disciplines, 5 industry groups) with `IndustrySlug` / `DisciplineSlug` types
+- All 104 case study MDX files migrated: `industries: IndustrySlug[]` + `disciplines: DisciplineSlug[]` added; legacy `industry: string` removed; freeform `discipline: string` (display string) preserved
+- Backfill via `scripts/backfill-case-study-taxonomy.ts` (Claude API, two-pass: propose → apply, with calibration gate before mass run). Proposals JSON gitignored, regeneratable
+- Build-time validator (`validateCaseStudyTaxonomy()`) in `src/lib/content.ts` — fails loud in dev when MDX contains an invalid slug
+- Phase 1 consumer shims (filters / search / recommendations / library page) point at `industries[0]` for primary-industry semantics; the proper sidebar two-axis filter UI ships in Phase 2
+- Worked-examples table in `case-study-taxonomy.md` extended with Brandon Stanton + Mimi Chao; Sahil Lavingia tagging updated per editor's call
+
+Phases 2 (sidebar filter UI), 3 (assessment Q1 vocab alignment + 6 new pools), and 4 (cross-cutting docs) ship from their own worktrees later — see `content/reference/case-study-taxonomy-rollout-plan.md`.
+
+See `CHANGELOG.md` 2026-05-07 entry for the full lessons-learned section.

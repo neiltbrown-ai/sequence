@@ -10,6 +10,87 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-07 — Case study taxonomy rollout, Phase 1 (schema + backfill)
+
+**Goal:** Get the new 16 industries × 10 disciplines taxonomy from doc into the codebase. Migrate all 104 existing case studies. Build doesn't break, filtering keeps working. Filter UI redesign is Phase 2.
+
+This is Phase 1 of the multi-phase rollout planned in `content/reference/case-study-taxonomy-rollout-plan.md`. Phases 2 (sidebar filter UI), 3 (assessment Q1 alignment + 6 new industry pools), and 4 (cross-cutting docs) ship from their own worktrees later.
+
+### What shipped
+
+- **`src/lib/case-studies/taxonomy.ts`** — single source of truth: `INDUSTRIES` (16, 5 groups) + `DISCIPLINES` (10) + `INDUSTRY_GROUPS` (5) const arrays with `IndustrySlug` / `DisciplineSlug` types via `as const`. Includes `isIndustrySlug` / `isDisciplineSlug` predicates and `industriesByGroup()` for grouped UI rendering. Mirrors the `src/lib/profile/income-ranges.ts` pattern.
+- **`CaseStudyMeta` schema** — added `industries: IndustrySlug[]` + `disciplines: DisciplineSlug[]`. Removed the legacy `industry: string` (singular). Kept `discipline: string` (the prose display string per the taxonomy doc).
+- **104 case studies migrated** — every `.mdx` in `content/case-studies/` now has `industries[]` and `disciplines[]` in frontmatter, and the legacy `industry:` line is gone. Backfill done via Claude API.
+- **Build-time validator** in `src/lib/content.ts` — `validateCaseStudyTaxonomy()` runs on every case-study read; throws in dev (`NODE_ENV !== "production"`), warns in production. Catches bad slugs the moment they land in frontmatter, so future authoring drift is fail-loud locally.
+- **Consumers updated** to the new shape (Phase 1 minimum-shim, no UI redesign):
+  - `src/app/(portal)/library/case-studies/page.tsx` — derives tab-list from `INDUSTRIES` filtered to those present in the corpus, passes `{slug,label}` pairs to the filter component
+  - `src/components/portal/case-studies-filters.tsx` — switched to `s.industries[0]` (primary industry) for tab filtering, displays canonical labels
+  - `src/app/api/search/route.ts` — replaced `cs.industry` with `cs.industries` + `cs.disciplines` (the existing `matches()` helper already supports `string[]`)
+  - `src/lib/recommendations.ts` — primary-industry substring match against `cs.industries[0]`. The slugs (`film_tv`, `music`, `design`) still contain the legacy keyword tokens, so `DISCIPLINE_KEYWORDS` keeps matching without rewriting.
+
+### Backfill workflow (one-off)
+
+`scripts/backfill-case-study-taxonomy.ts` ships with the phase. Two passes:
+
+1. **Propose pass** — feeds each MDX (frontmatter + first 1500 chars of body) to Claude with the full taxonomy doc as system prompt, gets back JSON `{industries, disciplines, confidence, rationale, flagged}`. Output is validated against the canonical slug lists; unknown slugs are dropped + flagged. Runs incrementally, writes a checkpoint every 5 cases.
+2. **Apply pass** — reads the proposals JSON and rewrites each MDX frontmatter, inserting `industries:` and `disciplines:` lines (idempotent — safe to re-run).
+
+The proposals JSON files (`content/case-study-taxonomy-proposals*.json`) are gitignored; regeneratable from the script. The script reads `SEQ_ANTHROPIC_API_KEY` from `.env.local` (matching the rest of the codebase). Model: `claude-sonnet-4-20250514` (matches production routes).
+
+### Calibration → mass-run iteration
+
+First calibration on 10 hand-picked diverse cases hit only 5/11 worked-example fidelity, with three hard misses (Sahil Lavingia missed `writing`; Brandon Stanton missed `photography` AND tried to put `photography` as a discipline; Loveis Wise tagged `design` instead of `comics` per the editorial-illustration scope rule). Tightened the prompt with four fixes:
+
+1. Explicitly enumerate the 16 industry + 10 discipline slugs as TS-style enums in the JSON output schema (no more cross-axis confusion).
+2. Promote the worked-examples table to "GROUND TRUTH — copy verbatim if listed."
+3. Mark the `prior_industry` / `prior_discipline` legacy fields as data points, NOT authoritative — explicitly call out the illustration → comics gotcha.
+4. Require the rationale to cite a scope rule or worked example.
+
+Re-run: 9/11 worked-example exact, 2 minor variations (Sagmeister `writing → leadership`, Red Antler added `investing` — both defensible). Mass run on the other 94 came back clean with 4 manual edits before `--apply` (sahil-lavingia, mrbeast, rich-tu, loveis-wise — all editor's calls reflecting reading of the case beyond what the prompt could see).
+
+### Distribution check (post-backfill)
+
+```
+design  34   |  film_tv 18  |  music 17  |  media 25  |  technology 15  |  writing 10
+visual_art 8 |  photography 6 | fashion 5 | theater 4 | advertising 3 | comics 2
+hospitality 2 | architecture 1 | comedy 0 | gaming 0
+```
+
+`comedy` and `gaming` empty as expected — the slugs exist for the assessment vocabulary + future cases, not the current corpus. `leadership` discipline appears on 78% of cases — high but accurate; most Sequence cases are about owner-operators.
+
+### Worked-examples table — added Brandon Stanton + Mimi Chao
+
+Added to `case-study-taxonomy.md` to lock in two non-obvious calls the prompt iteration surfaced:
+- **Brandon Stanton** as `[photography, media]` — anchors the photo-led-media-business pattern
+- **Mimi Chao** as `[comics, writing]` — anchors illustrator-author-of-illustrated-books → `comics` (Loveis was originally added but was overruled to `[design]`, so swapped to Mimi as the canonical illustration→comics example)
+
+Sahil Lavingia worked example updated from `[writing, technology]` / `[writing, leadership]` → `[design, technology]` / `[leadership, design]` per editorial call (his case is structurally about Gumroad-the-platform regression and design-roots, not writing).
+
+### Lessons / patterns worth remembering
+
+- **`SEQ_ANTHROPIC_BASE_URL` includes `/v1` and the SDK appends `/v1/messages` — passing it produces 404.** Production routes correctly construct `new Anthropic({ apiKey })` with no `baseURL`, letting the SDK use its default. Any new Node script using the SDK should match — never read `SEQ_ANTHROPIC_BASE_URL`. The env var exists for tooling that expects a fully-formed base URL; the official SDK is not in that camp. Cost ~10 minutes of "why is every call returning 404" before checking how production initializes.
+- **Tagging at scale needs enum-typed schemas in the prompt.** First-pass prompt said `industries: string[]`. Model returned `photography` as a discipline (not a discipline) because nothing in the prompt forced the cross-axis distinction. Fix: literally `industries: ("visual_art" | "design" | ...)[]`. Zero unknown slugs in the second run.
+- **Worked-examples tables only work as ground truth if the prompt says so.** With the same taxonomy doc as system prompt, calibration v1 ignored the Sahil Lavingia row and re-derived (wrong). Calibration v2 with "if the case is in this table, copy its tagging exactly. Do not re-derive." returned the table value verbatim. Lesson: putting facts in the prompt isn't enough; you have to tell the model how to *use* them.
+- **Prior values inherit silently if not flagged.** The legacy `industry: Design` field on Sahil's MDX kept appearing in the model's output as `design` discipline even when the case body talked about books. Adding "DO NOT INHERIT FROM LEGACY: prior_industry / prior_discipline are deprecated data points, not authoritative" stopped that.
+- **Run small calibration before mass-tagging, ALWAYS.** 10 cases caught three classes of error that would have polluted 100+ cases. Cost: ~$0.03 in tokens + 30 seconds of runtime + 5 minutes of editorial review. Cheap.
+- **Worktree path discipline matters.** All edits in this session initially landed on parent `main` because absolute paths used `/sequence/src/...` instead of `/sequence/.claude/worktrees/<name>/src/...`. Recovery: `git stash push -u` in parent, `git stash pop` in worktree (worktrees share the stash list — useful trick). This phase shipped from a worktree per the rollout plan; the next 3 phases will too. Discipline check: when CWD is a worktree, every absolute path must include the worktree segment.
+
+### Files added
+
+- `src/lib/case-studies/taxonomy.ts` — canonical industry + discipline vocab module
+- `scripts/backfill-case-study-taxonomy.ts` — one-off migration script (gitignored proposals JSON)
+- 2 new entries in `case-study-taxonomy.md` worked-examples table
+
+### Files updated
+
+- `src/lib/content.ts` — `CaseStudyMeta` schema + validator
+- `src/components/portal/case-studies-filters.tsx`, `src/app/(portal)/library/case-studies/page.tsx`, `src/app/api/search/route.ts`, `src/lib/recommendations.ts` — consumer shims
+- 104 × `content/case-studies/*.mdx` — frontmatter migration
+- `.gitignore` — added proposals JSON pattern
+- `content/reference/case-study-taxonomy.md` — provenance line + 2 worked-example rows
+
+---
+
 ## 2026-05-06 (continued) — Public refinements + signup polish
 
 **Goal:** Five small public-site refinements requested in a single batch — bump the case-study count headline (the corpus is now ~100 cases post-audit), simplify Full Access pricing to monthly-only, tighten the contact form, add a website field to signup, and polish the plan-selection step's visual hierarchy.

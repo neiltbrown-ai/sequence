@@ -105,6 +105,31 @@ If you can't expand the environments dropdown for a particular variable, the val
 
 ---
 
+### Symptom: Anthropic SDK calls from a Node script return `404 Not Found` even though the API key is valid
+
+**Reports as:** Every `anthropic.messages.create(...)` call returns:
+```
+404 {"type":"error","error":{"type":"not_found_error","message":"Not found"},"request_id":"req_..."}
+```
+Same script with no other changes works against curl. API key is correct (logs show `sk-ant-api03...`).
+
+**Root cause:** The script is reading `SEQ_ANTHROPIC_BASE_URL` from `.env.local` and passing it to `new Anthropic({ apiKey, baseURL })`. That env var contains `https://api.anthropic.com/v1`, but the official `@anthropic-ai/sdk` already appends `/v1/messages` to the base URL itself — so the request goes to `https://api.anthropic.com/v1/v1/messages`, which 404s.
+
+The env var exists for tooling that expects a fully-formed base URL (curl wrappers, custom HTTP clients). The Anthropic SDK is not in that camp.
+
+**Fix:** Drop the `baseURL` parameter. Match what production routes do:
+```ts
+const apiKey = process.env.SEQ_ANTHROPIC_API_KEY;
+if (!apiKey) throw new Error("SEQ_ANTHROPIC_API_KEY missing");
+const client = new Anthropic({ apiKey });   // no baseURL — SDK uses its default
+```
+
+Reference impls already in the repo: `src/app/api/inventory/analyze/route.ts:222`, `src/app/api/evaluator/complete/route.ts:218`, `src/lib/roadmap/generate-plan.ts:386`. None pass baseURL — and none should.
+
+**Pattern to remember:** if you're starting a new Node script that uses the Anthropic SDK, just read `SEQ_ANTHROPIC_API_KEY` and do nothing with `SEQ_ANTHROPIC_BASE_URL`. If your script genuinely needs a custom endpoint (e.g. routing through a proxy), strip the trailing `/v1` before passing to the SDK.
+
+---
+
 ## Schema / Vocab
 
 ### Symptom: Recommendations engine produces low-quality matches even though the user has a fully filled-in profile
