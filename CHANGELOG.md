@@ -10,6 +10,12 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-07 — Vercel Preview env var coverage
+
+Audited which env vars were ticked for the Preview environment. 12 were Production/Development-only and silently failed any Preview portal/AI/Stripe flow. Added all 12 to Preview via `vercel env add NAME preview "" --value V --yes` (the empty third positional means "all preview branches"; the documented `--value/--yes` form alone errors with `git_branch_required`). For 11 vars (Stripe is test-mode, Anthropic + flags are environment-neutral) the Production value matches Development; `NEXT_PUBLIC_APP_URL` uses the Dev value (`https://sequence-weld.vercel.app`) per CLAUDE.md convention. Updated `CLAUDE.md` "Schema gotchas" with the explicit Preview-required var list and the CLI workaround. Also flagged Vercel's "Needs Attention" badges on `SEQ_ANTHROPIC_API_KEY` / `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `SUPABASE_SERVICE_ROLE_KEY` — recommendation to mark those as Sensitive for stricter access control. The originally reported "MIDDLEWARE_INVOCATION_FAILED" symptom was actually the Resend build-time crash already fixed in commit `92325ec`; today's most recent Preview was already returning correct redirects, so this work hardens AI / Stripe / book-download flows on future Preview deploys rather than fixing a live middleware bug.
+
+---
+
 ## 2026-05-07 — Case study taxonomy rollout, Phase 1 (schema + backfill)
 
 **Goal:** Get the new 16 industries × 10 disciplines taxonomy from doc into the codebase. Migrate all 104 existing case studies. Build doesn't break, filtering keeps working. Filter UI redesign is Phase 2.
