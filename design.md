@@ -523,6 +523,47 @@ const [tab, setTab] = useState<"assets" | "valuation">(initialTab);
 
 **Live example:** `src/components/portal/portfolio-tabs.tsx`. The dashboard's Valuation + Risk Flags cards link to `/inventory?tab=analysis`; "+ Add Assets" pill stays on default `/inventory` because that's where you'd actually go to add assets.
 
+### Faceted-search sidebar (multi-axis filter)
+
+Pattern for filtering a content collection by two or more independent taxonomies (e.g. case studies by `industries[]` and `disciplines[]`). The shipped reference is `src/components/portal/case-studies-filters-sidebar.tsx` driving `/library/case-studies`.
+
+**Layout:**
+- Outer `.csf-shell` is `display: grid; grid-template-columns: 240px 1fr; gap: 32px` on desktop. Sidebar is `position: sticky; top: calc(var(--topbar-h) + 16px)` so it stays in view while the results scroll.
+- Below 900px the shell collapses to a single column; the sidebar hides and a sticky `Filters` button appears, opening a bottom-sheet drawer (`.csf-drawer-overlay` with slide-up animation, `body.style.overflow = "hidden"` while open).
+
+**Facet group structure:**
+- Each facet (`Industries`, `Disciplines`) is one `.csf-facet` block. Optional sub-headings (`.csf-facet-group-label`) under a facet for grouping a long option list — Industries uses the 5 `INDUSTRY_GROUPS` domains; Disciplines is flat.
+- Options are `<label>` checkbox rows (`.csf-facet-opt`) — `<input>` left, label center, count right. Native checkboxes with `accent-color: var(--black)`.
+
+**Selection semantics:**
+- Multi-select **within** a facet behaves as **OR** (a study matches if any of its `industries[]` is in the selected industries set).
+- Selections **across** facets are **AND** (industry AND discipline must both match).
+- Empty selection in a facet = no constraint from that facet.
+
+**Per-option counts (constraint-aware):**
+Each option's count must reflect "how many studies would match if I toggled this option, given my CURRENT selections in other facets." Compute by building a probe state for each option: `{ thisFacet: new Set([option]), otherFacets: currentSelection }` and running the full match against it. Options whose probe yields zero are visually disabled but **must remain toggleable when already checked** — otherwise URL hydration of an impossible-but-shareable combination silently drops state. Rule:
+
+```ts
+const disabled = count === 0 && !checked;
+```
+
+**URL state:**
+- Persist in search params: `?industries=music,film_tv&disciplines=production`. Use `router.replace(url, { scroll: false })` so toggling doesn't push history.
+- Hydrate via `parseUrlState(searchParams)` — round-trip the exact selection so a shared link always reproduces the user's view, even when the combination has zero results (the empty state is intentional).
+
+**Active-filter chips above the grid:**
+One chip per active option with axis prefix (`Industry · Music`) and an X-to-remove. Plus a dashed `+ Clear all` chip. Chips give the user a fast removal path without scrolling back into the sidebar.
+
+**Empty state:**
+When the filtered set is empty, render a centered "No case studies match these filters." block with a `Clear all filters` CTA. The featured-hero pattern is suppressed in this case.
+
+**Featured layout under filtering:**
+The case-studies page preserves its 1-hero + 2-sub + grid treatment even when filters are active — first match becomes the hero of the filtered set. With ≤3 results, the grid is empty and just the featured cards show; this still reads as "here's your match" rather than "here's a curated selection."
+
+**When to use:** content collections with two or more independent taxonomies where users want to combine constraints (case studies, articles by topic + format, structures by stage + risk). Works best with ≥50 items and at least one facet with 6+ options.
+
+**When NOT to use:** single-axis filtering (use the `<FilterBar>` tab pattern instead — `src/components/portal/filter-bar.tsx`); fewer than ~30 items (a flat grid is easier); search-driven discovery (combine with a search input above the chips).
+
 ### Mouse-position-driven horizontal scroller
 
 `src/components/platform/archetype-scroller.tsx` is the canonical pattern when a row of cards exceeds viewport width and you want a richer-feeling interaction than a plain scrollbar. Use it for showcase rows where every card matters and the user shouldn't have to commit to scrolling — they just sweep their cursor.

@@ -10,6 +10,58 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-07 — Case study taxonomy rollout, Phase 2 (sidebar filter UI)
+
+**Goal:** Replace the single-axis tab bar on `/library/case-studies` with a two-axis sidebar facet filter — Industries (16, grouped by domain) + Disciplines (10) — backed by the canonical taxonomy from Phase 1. URL-persistent filter state, dynamic counts, mobile bottom-sheet drawer.
+
+This is Phase 2 of the rollout planned in `content/reference/case-study-taxonomy-rollout-plan.md`. Phases 3 (assessment Q1 alignment + 6 new industry pools) and 4 (cross-cutting docs) still pending.
+
+### What shipped
+
+- **`src/components/portal/case-studies-filters-sidebar.tsx`** — new client component replacing `case-studies-filters.tsx` (deleted). Two facet groups: Industries with sub-headings for the 5 `INDUSTRY_GROUPS` domains, and Disciplines as a flat list. Multi-select within facet (OR), AND across facets. Selection lives in URL search params (`?industries=music,film_tv&disciplines=production`) so links are sharable + refreshable.
+- **Dynamic per-option counts.** Each option's count reflects the filtered set if THIS facet's selection were just `{option}` while OTHER facets stayed constrained — i.e. it tells you "if you toggle this, here's how many results you'd get given your current other filters." Options that would yield zero are visually disabled (50% opacity, no pointer events) but still toggleable to keep the URL hydration round-trip valid.
+- **Active-filter chips** above the grid: one chip per active option with axis prefix (`Industry · Music`) and an X-to-remove. A `+ Clear all` chip when ≥1 filter active.
+- **Empty state** when zero studies match — renders inside `.csf-empty` with a "Clear all filters" CTA.
+- **Mobile (≤900px)**: sidebar collapses; a sticky `Filters` button appears at the top with a count pill. Tapping it opens a bottom-sheet drawer (`.csf-drawer-overlay` + slide-up animation, body-scroll locked while open). Drawer footer has Clear all + a `View N results` apply button that just closes the drawer (filtering happens live as boxes are checked).
+- **Featured-1 + featured-2 hero treatment preserved** even when filters are active (matches the prior tab-bar's "first match becomes the hero" behavior). Filtered set ≥3 → 1 hero + 2 sub + flat grid; smaller → just hero or hero+sub.
+- **`/library/case-studies` page** now mounts `<CaseStudiesFiltersSidebar />` — old hand-rolled `industries: Array<{slug,label}>` derivation removed (the sidebar derives everything from the canonical taxonomy module).
+- **Old tab-bar component deleted.** `case-studies-filters.tsx` had no remaining callers after the page swap.
+
+### CSS
+
+Added a new `csf-*` style block at the end of `portal.css` (~280 lines). Classes: `.csf-shell` (outer 240px-sidebar grid), `.csf-sidebar` (sticky), `.csf-facet`, `.csf-facet-group`, `.csf-facet-opt`, `.csf-facet-opt-count`, `.csf-chip`, `.csf-chip-axis`, `.csf-empty`, `.csf-mobile-bar`, `.csf-mobile-btn`, `.csf-drawer-overlay`, `.csf-drawer`, `.csf-drawer-apply`. Dark-mode overrides for the buttons that would invert when `--white` flips (csf-empty-btn:hover, csf-drawer-apply, csf-facet-count-active) — hardcoded `#e8e6e3` / `#1a1a1a` per the established pattern (see CLAUDE.md "Dark mode gotchas").
+
+### Verification (browser preview, demo-sales user)
+
+- Desktop 1280×800: sidebar 240px + content 728px (`grid-template-columns: 240px 1fr`), sticky under topbar, scrollable on its own. 16 industry checkboxes, 10 discipline checkboxes, 5 group sub-headings.
+- Filter `Music` → 17 results (matches Phase 1 distribution). `Music + Production` → 11 (AND). URL: `?industries=music&disciplines=production`.
+- Reload `?industries=architecture&disciplines=performance` → 0 results, empty state renders, 11 facet options now disabled (correctly: with `architecture` industry constraint, all disciplines except `direction`/`design`/`leadership` go to 0).
+- Mobile 375×812: sidebar hidden, `Filters` button + `104 of 104` count visible at top. Tapping opens bottom-sheet drawer with all 26 options + apply CTA showing live count.
+- Pre-existing hydration warning on `PageHeader` (`page-header rv vis` server vs `page-header rv` client) is from the global `RevealProvider` mutating className post-mount — not introduced by Phase 2.
+
+### Lessons / patterns worth remembering
+
+- **Worktrees need their own `.env.local` and `node_modules` symlinks for `next dev` to work via the launch.json preset.** The default `dev` config in `.claude/launch.json` uses relative `./node_modules/.bin/next`, which doesn't resolve when the worktree is missing those. Solution: `ln -s ../../../.env.local .env.local && ln -s ../../../node_modules node_modules` from the worktree root. Without `.env.local` the auth POST hangs silently — Supabase URL / anon key are missing in the client bundle, so the form submission goes nowhere and there's no error log on the server side. Cost ~10 minutes of "why is sign-in spinning forever." Probably worth a `scripts/setup-worktree.sh` one-liner if we keep doing per-phase worktrees.
+- **Don't pick a port already used by another worktree's preview.** The pre-existing port-3000 server was serving a different worktree (`frosty-johnson-2d6a65`); my code edits weren't visible until I stopped that and started a fresh one. `lsof -i :3000` + `ps -ef | grep "next dev"` shows you which cwd the running dev server lives in.
+- **Per-option facet counts should constrain on OTHER facets, not on the option itself.** First draft showed each industry's count as "studies tagged with this industry, regardless of discipline." That makes "Music" still say 17 even if you've also selected Photography (where Music+Photography = 0), which is misleading. The fix: when computing an option's count, build a probe-state with `{thisFacet: {option}, otherFacets: currentSelection}` and run the full match against it. Now toggling that option would actually yield the displayed number. The 0-counted options become a discoverability cue: "this combination would empty your set."
+- **Disabled checkboxes still need to be hydratable from URL.** If a user shares the link `?industries=architecture&disciplines=performance` (which yields 0 results), both checkboxes must visibly remain checked even though their counts are 0 — otherwise the user's URL state silently drops on hydration. Solution: `disabled = count === 0 && !checked` (i.e. only disable when this option ISN'T currently in the selection). That keeps the URL round-trip lossless.
+- **Featured-hero pattern survives filtering even with very small result sets.** Filtering to 3 results → 1 hero + 2 sub + 0 grid is fine. Filtering to 1 → hero only is fine. The hero treatment doesn't read as "editorially curated" when the user has clearly just narrowed to a single result; it reads as "here's your match, and it's the one that matters." Kept the existing behavior for consistency with the prior tab-bar.
+
+### Files added
+
+- `src/components/portal/case-studies-filters-sidebar.tsx` — sidebar + drawer + URL state component
+
+### Files updated
+
+- `src/app/(portal)/library/case-studies/page.tsx` — swapped to the sidebar component, dropped per-page industry derivation
+- `src/app/(portal)/portal.css` — new `csf-*` style block + dark-mode overrides
+
+### Files removed
+
+- `src/components/portal/case-studies-filters.tsx` — old single-axis tab-bar component
+
+---
+
 ## 2026-05-07 — Vercel Preview env var coverage
 
 Audited which env vars were ticked for the Preview environment. 12 were Production/Development-only and silently failed any Preview portal/AI/Stripe flow. Added all 12 to Preview via `vercel env add NAME preview "" --value V --yes` (the empty third positional means "all preview branches"; the documented `--value/--yes` form alone errors with `git_branch_required`). For 11 vars (Stripe is test-mode, Anthropic + flags are environment-neutral) the Production value matches Development; `NEXT_PUBLIC_APP_URL` uses the Dev value (`https://sequence-weld.vercel.app`) per CLAUDE.md convention. Updated `CLAUDE.md` "Schema gotchas" with the explicit Preview-required var list and the CLI workaround. Also flagged Vercel's "Needs Attention" badges on `SEQ_ANTHROPIC_API_KEY` / `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` / `SUPABASE_SERVICE_ROLE_KEY` — recommendation to mark those as Sensitive for stricter access control. The originally reported "MIDDLEWARE_INVOCATION_FAILED" symptom was actually the Resend build-time crash already fixed in commit `92325ec`; today's most recent Preview was already returning correct redirects, so this work hardens AI / Stripe / book-download flows on future Preview deploys rather than fixing a live middleware bug.

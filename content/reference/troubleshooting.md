@@ -105,6 +105,35 @@ If you can't expand the environments dropdown for a particular variable, the val
 
 ---
 
+### Symptom: `next dev` won't start in a worktree (Cannot find module './node_modules/.bin/next'), or starts but the login form hangs forever at "Signing in…"
+
+**Reports as:** Two distinct failure modes from the same root cause.
+1. The preview launcher (or `npm run dev`) errors with `Cannot find module '/sequence/.claude/worktrees/<name>/node_modules/.bin/next'`.
+2. The dev server starts fine, the page loads, but submitting the login form just sits at "Signing in…" indefinitely — no error in the browser console, no request logged on the server. Network tab shows zero requests to `*.supabase.co`.
+
+**Root cause:** Worktrees created via `git worktree add` do **not** copy `node_modules` or `.env.local` from the parent repo. The launch.json `dev` config uses a relative `./node_modules/.bin/next` path that fails in the worktree, AND Next.js loads `.env.local` from the worktree's cwd (which is empty), so the client bundle ships without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`. The Supabase JS client silently no-ops when those are missing — no error, no request, just a hung form.
+
+**Fix:** Symlink both from the parent repo. Both targets are gitignored, so the symlinks themselves don't get committed.
+
+```bash
+# from inside the worktree root
+ln -s ../../../node_modules node_modules
+ln -s ../../../.env.local .env.local
+```
+
+If a port-3000 dev server is already running but serving a *different* worktree, you'll think your code changes "aren't taking" — they're being compiled from elsewhere. Identify the active server and its cwd:
+
+```bash
+lsof -i :3000              # which process owns the port
+ps -ef | grep "next dev"   # cwd of each next dev process — look for absolute paths in args
+```
+
+Stop the wrong-worktree server first; start a fresh one inside your worktree.
+
+**Quality-of-life:** consider a `scripts/setup-worktree.sh` that runs both symlinks + verifies the `next` binary resolves. Adds ~2 seconds to worktree setup; saves the next person from this pothole.
+
+---
+
 ### Symptom: Anthropic SDK calls from a Node script return `404 Not Found` even though the API key is valid
 
 **Reports as:** Every `anthropic.messages.create(...)` call returns:
