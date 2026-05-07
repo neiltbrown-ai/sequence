@@ -1,6 +1,12 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import {
+  isIndustrySlug,
+  isDisciplineSlug,
+  type IndustrySlug,
+  type DisciplineSlug,
+} from "./case-studies/taxonomy";
 
 /* ─────────────────────────────────────────────
    Content utility layer — reads MDX files from
@@ -41,8 +47,16 @@ export interface CaseStudyMeta {
   slug: string;
   type: "case-study";
   number: number;
+  /** Human-readable display string for the case-study detail page header.
+   *  Freeform; describes the practitioner's specific configuration
+   *  (e.g. "Music Production / Strategic Direction"). */
   discipline: string;
-  industry: string;
+  /** Canonical industry slugs from `case-studies/taxonomy.ts`.
+   *  1-2 typically (max 3); first item is the primary. */
+  industries: IndustrySlug[];
+  /** Canonical discipline slugs from `case-studies/taxonomy.ts`.
+   *  1-3 typically (max 4); most-prominent first. */
+  disciplines: DisciplineSlug[];
   excerpt: string;
   structures: number[];
   tags: string[];
@@ -121,6 +135,45 @@ function readDir(subdir: string) {
     });
 }
 
+// ── Case-study taxonomy validator ────────────
+// Invalid slugs are loud in dev (throw), log-only in production.
+// Missing arrays are tolerated during the Phase 1 migration window;
+// once backfill lands, every case will have both populated.
+
+const STRICT_TAXONOMY = process.env.NODE_ENV !== "production";
+
+function validateCaseStudyTaxonomy(meta: {
+  slug?: string;
+  industries?: unknown;
+  disciplines?: unknown;
+}) {
+  const errors: string[] = [];
+  const slug = meta.slug ?? "<unknown>";
+
+  if (Array.isArray(meta.industries)) {
+    for (const v of meta.industries) {
+      if (typeof v !== "string" || !isIndustrySlug(v)) {
+        errors.push(`unknown industry slug "${v}"`);
+      }
+    }
+  }
+  if (Array.isArray(meta.disciplines)) {
+    for (const v of meta.disciplines) {
+      if (typeof v !== "string" || !isDisciplineSlug(v)) {
+        errors.push(`unknown discipline slug "${v}"`);
+      }
+    }
+  }
+
+  if (!errors.length) return;
+  const msg = `[case-study taxonomy] ${slug}: ${errors.join("; ")}`;
+  if (STRICT_TAXONOMY) {
+    throw new Error(msg);
+  }
+  // eslint-disable-next-line no-console
+  console.warn(msg);
+}
+
 // ── Structures ───────────────────────────────
 
 export function getAllStructures(filter?: {
@@ -178,7 +231,10 @@ export function getStructuresTableData() {
 export function getAllCaseStudies(): CaseStudyMeta[] {
   return readDir("case-studies")
     .filter((i) => i.frontmatter.published !== false)
-    .map((i) => i.frontmatter as CaseStudyMeta)
+    .map((i) => {
+      validateCaseStudyTaxonomy(i.frontmatter);
+      return i.frontmatter as CaseStudyMeta;
+    })
     .sort((a, b) => a.number - b.number);
 }
 
@@ -197,6 +253,7 @@ export function getCaseStudyBySlug(slug: string) {
   const items = readDir("case-studies");
   const item = items.find((i) => i.frontmatter.slug === slug);
   if (!item) return null;
+  validateCaseStudyTaxonomy(item.frontmatter);
   return {
     frontmatter: item.frontmatter as CaseStudyMeta,
     content: item.content,
