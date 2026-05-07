@@ -9,7 +9,7 @@ const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
 
 interface CaseStudiesFiltersProps {
   studies: CaseStudyMeta[];
-  industries: string[];
+  industries: Array<{ slug: string; label: string }>;
 }
 
 export default function CaseStudiesFilters({
@@ -20,16 +20,16 @@ export default function CaseStudiesFilters({
 
   const tabs = [
     { label: `All (${studies.length})`, value: "all" },
-    ...industries.map((d) => ({
-      label: `${d} (${studies.filter((s) => s.industry === d).length})`,
-      value: d,
+    ...industries.map((i) => ({
+      label: `${i.label} (${studies.filter((s) => s.industries[0] === i.slug).length})`,
+      value: i.slug,
     })),
   ];
 
   const filtered =
     activeTab === "all"
       ? studies
-      : studies.filter((s) => s.industry === activeTab);
+      : studies.filter((s) => s.industries[0] === activeTab);
 
   // 3 featured: first is large hero, next 2 are medium cards
   const featuredMain = filtered[0];

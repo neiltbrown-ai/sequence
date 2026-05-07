@@ -1,12 +1,20 @@
 import { getAllCaseStudies } from "@/lib/content";
 import PageHeader from "@/components/portal/page-header";
 import CaseStudiesFilters from "@/components/portal/case-studies-filters";
+import { INDUSTRIES, type IndustrySlug } from "@/lib/case-studies/taxonomy";
 
 export default function PortalCaseStudiesPage() {
   const studies = getAllCaseStudies();
 
-  // Extract unique industries for filter tabs
-  const industries = Array.from(new Set(studies.map((s) => s.industry)));
+  // Tab values are primary-industry slugs from the canonical taxonomy.
+  // Phase 1 shim: keeps the existing tab-bar working until the Phase 2 sidebar lands.
+  const present = new Set<IndustrySlug>(
+    studies.map((s) => s.industries[0]).filter((v): v is IndustrySlug => Boolean(v))
+  );
+  const industries = INDUSTRIES.filter((i) => present.has(i.slug)).map((i) => ({
+    slug: i.slug,
+    label: i.label,
+  }));
 
   return (
     <>

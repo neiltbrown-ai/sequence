@@ -104,7 +104,10 @@ function scoreCaseStudy(
   let score = 0;
   const reasons: string[] = [];
   const discLower = cs.discipline?.toLowerCase() ?? "";
-  const industryLower = cs.industry?.toLowerCase() ?? "";
+  // Phase 1: substring-match the primary industry slug. The slugs (`film_tv`, `music`,
+  // `design`, etc.) still contain the keyword tokens used in DISCIPLINE_KEYWORDS, so
+  // existing matches keep working without rewriting the keyword map.
+  const industryLower = cs.industries[0]?.toLowerCase() ?? "";
 
   // Discipline matching
   for (const disc of input.disciplines) {

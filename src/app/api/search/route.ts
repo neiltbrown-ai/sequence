@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     .map((s) => ({ title: s.title, slug: s.slug, excerpt: s.excerpt, type: "structure" as const }));
 
   const caseStudies = getAllCaseStudies()
-    .filter((cs) => matches(q, cs.title, cs.excerpt, cs.tags, cs.discipline, cs.industry))
+    .filter((cs) => matches(q, cs.title, cs.excerpt, cs.tags, cs.discipline, cs.industries, cs.disciplines))
     .slice(0, MAX_PER_CATEGORY)
     .map((cs) => ({ title: strip(cs.title), slug: cs.slug, excerpt: cs.excerpt, type: "case-study" as const }));
 
