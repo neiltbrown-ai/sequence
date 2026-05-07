@@ -24,6 +24,102 @@ We just landed `content/reference/case-study-taxonomy.md` (canonical 16 industri
 - **Archetype impact**: `matchArchetype()` in `src/lib/assessment/archetype-matching.ts` does NOT use industry/discipline — it scores on stage + creative_mode + misalignment_flags only. Industry expansion is safe; archetypes don't change
 - **Existing similar pattern**: see `src/lib/profile/income-ranges.ts` (single source of truth for income vocab) — replicate that pattern
 
+## Workflow — one worktree per phase
+
+Each phase ships from its own git worktree on its own feature branch. **Do not work on `main` directly.** Each phase is substantial enough that you'll want a Vercel preview deploy to verify before merging — and isolation so you can pause mid-phase if something urgent comes up.
+
+### Pattern (run from the parent repo, NOT inside an existing worktree)
+
+```bash
+cd /Users/neilbrown/Documents/00-Neil/01-In-Sequence/sequence
+git fetch origin && git checkout main && git pull --ff-only origin main
+
+# Pick a phase suffix that's descriptive (e.g. taxonomy-schema, taxonomy-filter-ui,
+# taxonomy-assessment) — the worktree dir + branch name share it
+PHASE=taxonomy-schema-$(openssl rand -hex 3)
+
+git worktree add .claude/worktrees/$PHASE -b claude/$PHASE
+cd .claude/worktrees/$PHASE
+```
+
+Open a fresh Claude Code session **inside the worktree directory** and start coding the phase.
+
+### Per-phase shipping
+
+When the phase is done and the Vercel preview is green:
+
+```bash
+# from inside the worktree
+git push -u origin claude/$PHASE                  # pushes feature branch + creates Vercel preview
+# verify preview is green at sequence-git-claude-...vercel.app
+git push origin claude/$PHASE:main                # fast-forward push to main
+git push origin --delete claude/$PHASE            # clean up the remote feature branch
+```
+
+Then tear down the worktree from the parent repo:
+
+```bash
+cd /Users/neilbrown/Documents/00-Neil/01-In-Sequence/sequence
+git worktree remove .claude/worktrees/$PHASE
+git branch -D claude/$PHASE
+```
+
+### If main moves while you're in the middle of a phase
+
+(Possible if a parallel session — case study publishing, urgent fix — pushes during your phase work.)
+
+```bash
+git fetch origin
+git pull --rebase origin main      # rebase your feature branch on the new main
+git push --force-with-lease         # update remote feature branch
+```
+
+`--force-with-lease` is safer than `--force` — it refuses to overwrite if someone else pushed to your feature branch in the meantime. (For a single-author feature branch this is just paranoia, but it's free paranoia.)
+
+### Why per-phase, not one worktree for the whole rollout
+
+- **Each phase ships independently to main** — a clean, atomic, well-tested PR per phase. Easier to review, easier to roll back if needed.
+- **Phase 2 needs Phase 1 already on main** (the sidebar UI consumes `industries[]` / `disciplines[]` fields that Phase 1 introduces). New worktree off the latest main = always starts from a known-good state.
+- **No context bleed.** Switching branches inside a single worktree resets the working tree — easy to lose half-finished edits or auxiliary scripts you wrote during a phase.
+
+## End-of-phase protocol — must complete before pushing to main
+
+Every phase ships **code + docs in the same fast-forward push**. Don't defer docs to "later" — context decays and the next session won't know what you did. This is the four-question protocol from the top of `CHANGELOG.md` applied to every phase:
+
+| # | Question | Action if yes |
+|---|----------|---------------|
+| 1 | Did we change architecture? (new patterns, schema columns, conventions, file paths) | Update `CLAUDE.md` — likely Schema gotchas, Key file paths, or "What this session built" |
+| 2 | Did we hit a bug worth remembering? (something that took >15 min to debug, or has a misleading symptom) | Add a Symptom → Root cause → Fix entry to `content/reference/troubleshooting.md` |
+| 3 | Did we ship a new pattern or reusable component? | Update `design.md` (root) — only if the pattern is reusable across the platform, not one-off |
+| 4 | Did anything material happen at all? | One dated entry in `CHANGELOG.md` (newest at top; use `(continued)` if a same-day entry already exists) |
+
+Each phase will hit at least #1 and #4. Phases 1 and 3 will likely hit #2 (migration gotchas, scoring edge cases). Phase 2 might hit #3 (sidebar facet pattern is reusable for filters elsewhere).
+
+### What "in the same push" looks like
+
+A phase's final commit graph should look like this (multiple code commits + a single docs commit, all pushed together):
+
+```
+docs: <phase> — CHANGELOG + CLAUDE + troubleshooting + (design.md if applicable)
+<phase>: <last code commit>
+<phase>: <middle code commit>
+<phase>: <first code commit>
+<commit on main when phase started>
+```
+
+Don't push the code commits, then later push the docs commit. Push everything together so production never sees code without its corresponding docs entry.
+
+### Pre-merge checklist (run through before fast-forwarding to main)
+
+- [ ] All four protocol questions answered (CLAUDE.md / troubleshooting.md / design.md / CHANGELOG.md updated as needed)
+- [ ] CHANGELOG entry includes a "Lessons / patterns worth remembering" section (≥1 bullet) — even small ones are valuable for future sessions
+- [ ] Vercel preview deploy is **green** for the feature branch
+- [ ] `npx tsc --noEmit` passes locally
+- [ ] If the phase included a Supabase migration: it's been applied to Supabase BEFORE the code lands on main (otherwise main is broken until you apply it)
+- [ ] Spot-checked the actual UX on the Vercel preview URL (don't trust "the build is green" alone — eyes on the rendered output)
+
+Only after all six are checked: fast-forward push to main.
+
 ## Phase 1 — Schema foundation + content backfill
 
 **Goal**: get the taxonomy into TypeScript types and migrate the 103 existing case studies to use the new fields. Build doesn't break, filtering doesn't yet exist.
@@ -157,15 +253,24 @@ We just landed `content/reference/case-study-taxonomy.md` (canonical 16 industri
 - Existing test-user assessments all still pass through scoring without throwing
 - A user completing the assessment with one of the 6 new industries gets relevant Section 4 questions, not a generic fallback
 
-## Phase 4 — Cleanup + docs
+## Phase 4 — Cross-cutting reconciliation
 
-- Update `CHANGELOG.md` with a 2026-05-?? entry covering all three phases
-- Update `CLAUDE.md`:
-  - Schema gotchas: note that `assessments.discipline` and case study `industries[]` share the same canonical 16-slug vocab
-  - Key file paths: add `src/lib/case-studies/taxonomy.ts` and `src/lib/profile/disciplines.ts` to "Shared vocab modules"
-  - "What this session built" section update
-- Update `content/reference/seq-assessment-build-spec-v2.md` Q1 section to reflect the new 16-industry vocab + new question pools
-- The taxonomy doc itself (`case-study-taxonomy.md`) needs no further changes — it was authored against the final state
+Per-phase CHANGELOG / CLAUDE / troubleshooting entries should already be in place (they shipped with each phase per the protocol). Phase 4 handles the cross-cutting docs that DON'T cleanly belong to a single phase, plus a final coherence check.
+
+### Cross-cutting docs
+
+- Update `content/reference/seq-assessment-build-spec-v2.md` Q1 section to reflect the new 16-industry vocab + the 6 new question pools written in Phase 3. This spec spans all three earlier phases, which is why it's not in any of them.
+- (Optional) Add a roll-up entry to `CHANGELOG.md` that links the three earlier phase entries — useful for someone reading the history later. Format: a short "## 2026-05-?? — Case study taxonomy rollout complete" entry that points at the three phase entries with one-line summaries each.
+
+### Final coherence pass
+
+- Re-read `CLAUDE.md` Schema gotchas + Key file paths sections — make sure the per-phase additions read as a coherent whole, not three disconnected bullets. Edit prose if needed.
+- Verify `content/reference/case-study-taxonomy.md` still describes the as-shipped state (it should, since it was authored against the final design — but if anything drifted during implementation, fix it).
+- Verify the "Shared vocab modules" subsection in `CLAUDE.md` Key file paths includes `src/lib/case-studies/taxonomy.ts` and `src/lib/profile/disciplines.ts` (added in Phases 1 and 3 respectively).
+
+### What you should NOT need to do in Phase 4
+
+Don't write per-phase CHANGELOG / CLAUDE / troubleshooting entries here. Those should have already shipped with each phase. If they didn't — go back and add them to a follow-up commit on the relevant phase's branch (or on main, since they're already merged) before doing Phase 4. The point of the per-phase protocol is that this final phase is small.
 
 ## Risks / things to watch
 
@@ -177,7 +282,7 @@ We just landed `content/reference/case-study-taxonomy.md` (canonical 16 industri
 ## Constraints
 
 - This is a multi-day implementation. Each phase can ship independently. Phase 1 unblocks new case study authoring (so the user can write the next 100 with proper tags). Phase 2 unblocks UX improvement. Phase 3 unblocks personalization. They don't have to ship at the same time.
-- Direct-to-main with feature branches per phase, fast-forward merges. See `CLAUDE.md` "Git / deploy workflow" section.
+- **One git worktree per phase, fast-forward to main when phase is verified green on Vercel preview.** See the "Workflow — one worktree per phase" section above for the exact commands. Don't work on `main` directly — main is for the verified output, not work in progress.
 - Each phase should commit docs in the SAME push as the code (per the End-of-session protocol at the top of `CHANGELOG.md`)
 - Apply migrations to Supabase manually (SQL Editor) before merging the code that depends on them.
 
@@ -192,7 +297,9 @@ Each phase = 1 session, ~3-5 hours. Phase 3 is the heaviest because of editorial
 
 When you start, confirm:
 1. You've read `content/reference/case-study-taxonomy.md` end to end
-2. Which phase you're starting with (default: Phase 1)
-3. Any decisions you want from the human before coding (e.g., naming conventions, edge cases not covered in the taxonomy doc)
+2. You've read the "Workflow — one worktree per phase" section above and you're working in the correct worktree (NOT on `main` directly)
+3. You've internalized the "End-of-phase protocol" section above — every phase ships code + docs in the same fast-forward push
+4. Which phase you're starting with (default: Phase 1)
+5. Any decisions you want from the human before coding (e.g., naming conventions, edge cases not covered in the taxonomy doc)
 
 Then proceed.
