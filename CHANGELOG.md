@@ -10,6 +10,69 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-07 (continued) — Case study taxonomy rollout, Phase 3 (assessment Q1 alignment + 6 new industry pools)
+
+**Goal:** Align the assessment's Q1 industry vocabulary with the canonical case-study taxonomy. Rename 8 existing slugs, add 6 new industries (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`), and write 6 new Section 4B question pools. Bring the spec doc back in sync with the live code.
+
+This is Phase 3 of the rollout planned in `content/reference/case-study-taxonomy-rollout-plan.md`. After Phase 3, Phase 4 (final cross-cutting cleanup) is significantly smaller because the spec update happened here while the code was being touched.
+
+### What shipped
+
+- **Q1 vocabulary expanded 10 → 16 industries.** The 8 legacy slugs were renamed to align with the case-study taxonomy (`visual_arts` → `visual_art`, `film_video` → `film_tv`, `music_audio` → `music`, `performing_arts` → `theater`, `architecture_interiors` → `architecture`, `fashion_apparel` → `fashion`, `advertising_marketing` → `advertising`, `technology_creative_tech` → `technology`); 6 new industries added (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`). `design` and `writing` were already aligned and kept their slugs.
+- **`src/lib/assessment/questions.ts` now imports `INDUSTRY` from `src/lib/case-studies/taxonomy.ts`.** Q1 options are built from the canonical 16-industry list — labels and order mirror that module exactly. Q1 needs human-readable description hints listing typical sub-disciplines; those live locally in `Q1_DESCRIPTIONS: Record<IndustrySlug, string>` since the canonical taxonomy module doesn't carry them. This means `case-studies/taxonomy.ts` is now the **single source of truth for the 16-industry vocabulary, shared between case studies AND the assessment** — no separate `src/lib/profile/disciplines.ts` module was created (the rollout plan suggested one but it would have been a redundant layer; documented in CLAUDE.md "Shared vocab modules").
+- **`SUB_DISCIPLINES` typed strictly internally for build-time exhaustiveness.** Internal `SUB_DISCIPLINES_TYPED: Record<IndustrySlug, AssessmentQuestion>` forces TypeScript to fail at build time if any industry is missing or has an unknown key. Exported as `Record<string, AssessmentQuestion>` for consumer indexing with DB string values (`assessments.discipline`). This pattern is reusable when you want exhaustiveness on the producer side and permissive lookup on the consumer side.
+- **6 new question pools authored.** Each pool is 2 questions following spec §4B's canonical pattern (one ownership/rights norm, one deal/structure norm). New question IDs: `Q-IND-PHOTO-1/2`, `Q-IND-COMICS-1/2`, `Q-IND-COMEDY-1/2`, `Q-IND-MEDIA-1/2`, `Q-IND-HOSP-1/2`, `Q-IND-GAMING-1/2`. Stage indicator ladders (Stage 1 work-for-hire → Stage 4 portfolio / holding-co) modeled on the existing `industry_music` and `industry_design` pools. Editorial drafts shared and approved before writing into the file.
+- **Pool keys renamed to mechanical `industry_${slug}` form** in `INDUSTRY_POOLS`. `industry_art` → `industry_visual_art`, `industry_film` → `industry_film_tv`, `industry_performing` → `industry_theater`. Other 7 keys (which already used canonical short forms) stay put. **Question IDs intentionally NOT renamed** — they're stable persistent identifiers in `assessments.industry_questions` JSONB; renaming them would orphan historical answers.
+- **Type-level updates.** `src/types/assessment.ts` — `DisciplineGroup` union expanded to 16 slugs; `QuestionPool` union expanded with the new `industry_*` keys; `DISCIPLINE_GROUP_MAP` rebuilt for all 16 industries; `DISCIPLINE_TO_GROUP` extended with sub-discipline → industry mappings for the 6 new industries (~26 new sub-discipline keys total). Reorganized: visual_art now excludes illustration + photography sub-options (they moved to `comics` and `photography` per the case-study taxonomy's IN/OUT rules); theater excludes comedy_spoken_word (moved to `comedy`); technology excludes game_design (moved to `gaming`).
+- **Advisor reactions updated.** `getReaction()` in `src/lib/advisor/assessment-state-machine.ts` — Q1 label map renamed/extended to 16 industries.
+- **Migration `00018_normalize_assessment_industry.sql`.** Idempotent UPDATE statements for the 8 renamed slugs. The 6 new slugs require no backfill since no existing rows hold those values. Must be applied to Supabase **before** code lands on main.
+- **Seed update.** `scripts/seed-test-users.ts` — Jordan Rivera's `discipline: "directing"` (a sub-slug used at the top level — non-canonical even pre-Phase-3) → `discipline: "film_tv", sub_discipline: "directing"`. Other 4 seeded users were already on canonical slugs (`design` × 3, `music` × 1).
+- **Spec rename: `seq-assessment-build-spec-v2.md` → `seq-assessment-build-spec-v3.md`.** v3 freshness note + Q1 table (§3) + Section 4B pools rewritten to reflect the live 16-industry vocab. References updated in `CLAUDE.md` (3 places), `case-study-taxonomy-rollout-plan.md`, `seq-ai-advisor-experience-v1.md`, and `deal-evaluator-spec-v2.md`.
+
+### Verification
+
+- `npx tsc --noEmit` — clean.
+- `npm run build` — full Next.js build passed (95 pages, no errors).
+- (Browser preview verification documented separately at end of session.)
+
+### Lessons / patterns worth remembering
+
+- **Strict-internal-loose-export pattern for vocabulary maps.** When a Record is keyed by a typed slug union but consumed via DB string values, declare the strict version internally for exhaustiveness checking, then re-export as the loose `Record<string, ...>`. Prevents the consumer from having to either (a) loosen the definition (losing build-time guarantees) or (b) thread type-narrowing predicates through every call site:
+
+  ```ts
+  const FOO_TYPED: Record<IndustrySlug, X> = { /* exhaustive */ };
+  export const FOO: Record<string, X> = FOO_TYPED;
+  ```
+
+  The internal map fails at build if any IndustrySlug is missing; the exported map indexes happily by `assessments.discipline` (a `string | null` from Supabase). Same pattern that already exists implicitly with `INCOME_RANGE_OPTIONS` — making it explicit here.
+
+- **Question IDs are persistent identifiers; don't rename them when their grouping changes.** I renamed pool keys (`industry_art` → `industry_visual_art`) but kept question IDs (`Q-IND-ART-1`) — the IDs are stored as JSONB keys in `assessments.industry_questions`, so renaming them would orphan past answers without a JSON-key migration. The naming mismatch (Q-IND-ART inside `industry_visual_art`) is mild cognitive dissonance vs. data loss; chose the dissonance. Documented in the `INDUSTRY_POOLS` JSDoc.
+
+- **Don't create a redundant "single source of truth" module if one already exists.** The rollout plan called for `src/lib/profile/disciplines.ts` as the canonical industry vocab. But `src/lib/case-studies/taxonomy.ts` was already that module (created in Phase 1) — adding another layer would have created two places to update. Skipped the new module; the assessment imports `INDUSTRIES` directly. The CLAUDE.md "Shared vocab modules" note now documents that taxonomy.ts is shared between case studies AND assessment Q1.
+
+- **The legacy-singular-display-string-vs-typed-array-of-slugs pattern recurs.** Case studies have a singular freeform `discipline: string` for human display + a typed `disciplines: DisciplineSlug[]` for filtering. Assessments have a typed `discipline` (single industry slug, IndustrySlug) + a `sub_discipline` (string, more granular). Different shapes, same naming, kept distinct intentionally — when working on either side, pay attention to which `discipline` you're holding.
+
+- **Phase 4's Q1 spec update was easier to fold into Phase 3 than to defer.** The rollout plan parked the spec rewrite in Phase 4 to keep Phase 3 scoped to code. But the code touched the question pools so heavily that re-walking the spec while the context was hot was strictly cheaper than coming back to it. Folded in: spec v2 → v3 rename + content rewrite. Phase 4 is now smaller; recommend collapsing it into a single docs-cleanup commit.
+
+- **Sub-discipline reorganization isn't free.** Moving illustration from `visual_art` → `comics` and photography_fine_art from `visual_art` → `photography` means any user who had selected those sub-options pre-Phase-3 now has an orphaned sub_discipline value relative to the new parent. Live migration handles parent slug; sub_discipline values are NOT migrated (no existing rows hold them since the seed users don't use those particular sub-options). If real users ever held `illustration` with parent `visual_arts`, their sub_discipline would now point at a non-existent option for the renamed `visual_art` parent. Acceptable given the no-real-users-pre-launch state, but worth noting if we ever do a full-corpus retag of sub-disciplines.
+
+### Files added
+
+- `supabase/migrations/00018_normalize_assessment_industry.sql` — slug-rename migration
+
+### Files updated
+
+- `src/lib/assessment/questions.ts` — Q1 imports + 16-industry options + 16 sub-discipline configs + 12 new questions + renamed pool keys
+- `src/types/assessment.ts` — `DisciplineGroup`, `QuestionPool`, `DISCIPLINE_GROUP_MAP`, `DISCIPLINE_TO_GROUP` (all 4 expanded to 16 industries)
+- `src/lib/advisor/assessment-state-machine.ts` — `getReaction()` Q1 labels
+- `scripts/seed-test-users.ts` — Jordan Rivera discipline correction
+- `CLAUDE.md` — Source-of-truth specs, Spec freshness, Scoring engine constraints, Shared vocab modules note, Phase 3 block in "What this session built"
+- `content/reference/seq-assessment-build-spec-v3.md` (renamed from v2) — freshness note + Q1 table + §4B pools rewritten
+- `content/reference/case-study-taxonomy-rollout-plan.md` — Phase 4 task note: spec update folded into Phase 3
+- `content/reference/seq-ai-advisor-experience-v1.md`, `content/reference/deal-evaluator-spec-v2.md` — spec name reference updated v2 → v3
+
+---
+
 ## 2026-05-07 — Case study taxonomy rollout, Phase 2 (sidebar filter UI)
 
 **Goal:** Replace the single-axis tab bar on `/library/case-studies` with a two-axis sidebar facet filter — Industries (16, grouped by domain) + Disciplines (10) — backed by the canonical taxonomy from Phase 1. URL-persistent filter state, dynamic counts, mobile bottom-sheet drawer.

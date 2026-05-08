@@ -1,8 +1,8 @@
 > **⚠️ SPEC FRESHNESS NOTE — read first**
 >
-> This spec was the original design intent. The question bank, stage scoring weights, and misalignment flag patterns in this doc are **still authoritative** and should not be deviated from.
+> Stage scoring weights and misalignment flag patterns in this doc are **authoritative**. The question bank, Q1 industry vocabulary, and Section 4B industry pools were updated in v3 (2026-05-07) to reflect the case-study taxonomy rollout — they are now in sync with `src/lib/case-studies/taxonomy.ts` and the live `src/lib/assessment/questions.ts`.
 >
-> **Outdated in this spec:**
+> **Still outdated in this spec (will be addressed in dedicated work later):**
 > - UI naming — "Assessment" is now "Creative Identity" everywhere user-facing (DB table name `assessments` unchanged)
 > - Roadmap data flow — assumed assessment was the only input. Portfolio + last 90 days of deal evaluations now also feed `src/lib/roadmap/generate-plan.ts`
 > - Roadmap trigger — `strategic_plans.assessment_id` is now nullable (migration `00015_roadmap_decoupling.sql`); plans can also originate from Portfolio Analysis
@@ -15,10 +15,12 @@
 # In Sequence — Assessment + Strategic Roadmap
 ## Build Specification for Claude Code
 
-**Version:** 2.0  
-**Date:** February 27, 2026  
-**Status:** Ready for Build  
+**Version:** 3.0
+**Date:** May 7, 2026 (v3); originally February 27, 2026 (v2.0)
+**Status:** Live
 **Phase:** PRD Phase 2 (depends on Phase 1: Auth + Library + Payments)
+
+**v3 changes vs v2.0:** Q1 industry vocabulary expanded from 10 → 16 to align with the canonical case-study taxonomy in `src/lib/case-studies/taxonomy.ts` (Phase 3 of the case-study taxonomy rollout). Eight existing slugs renamed for consistency; six new industries added (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`); each new industry has its own Section 4B question pool. Slug renames migrated via `00018_normalize_assessment_industry.sql`.
 
 ---
 
@@ -94,22 +96,28 @@ A multi-step assessment that maps a creative professional's current position, in
 
 **Q1: What's your primary creative discipline?**
 
-*UI: Card grid with icons. Select one. "Other" option with free text.*
+*UI: Card grid with icons. Select one. Vocabulary mirrors the canonical case-study taxonomy at `src/lib/case-studies/taxonomy.ts` — keep these in sync. 16 industries, grouped by domain for cognitive structure. Slugs are the values stored in `assessments.discipline`.*
 
-| Group | Options Shown |
-|-------|---------------|
-| **Visual Arts** | Painting, Sculpture, Illustration, Mixed Media, Digital Art, Photography (Fine Art) |
-| **Design** | Brand / Identity, Product / UX, Graphic, Motion, Environmental / Spatial, Web / Digital |
-| **Film & Video** | Directing, Screenwriting, Cinematography, Editing / Post, Producing, Animation |
-| **Music & Audio** | Artist / Performer, Songwriter, Producer, Composer / Scoring, Sound Design, DJ / Electronic |
-| **Writing** | Fiction / Literary, Nonfiction / Journalism, Screenwriting, Copywriting, Content / Editorial |
-| **Performing Arts** | Acting, Dance / Choreography, Theater (Directing / Producing), Comedy / Spoken Word |
-| **Architecture & Interiors** | Residential, Commercial, Landscape, Interior Design |
-| **Fashion & Apparel** | Design, Styling, Creative Direction, Manufacturing / Production |
-| **Advertising & Marketing** | Creative Direction, Strategy, Media / Content, Brand Consulting |
-| **Technology & Creative Tech** | Creative Coding, Game Design, XR / Immersive, AI-Augmented Creative |
+| Group | Industry (slug) | Sub-discipline options |
+|-------|-----------------|------------------------|
+| **Visual / craft** | Visual Art (`visual_art`) | Painting, Sculpture, Conceptual Art, Printmaking, Mixed Media, Digital Art |
+| | Design (`design`) | Brand / Identity, Product / UX, Graphic, Motion, Environmental / Spatial, Web / Digital |
+| | Photography (`photography`) | Editorial, Commercial, Fine Art, Documentary, Portrait, Fashion Photography |
+| | Comics & Illustration (`comics`) | Comic Books, Graphic Novels, Editorial Illustration, Commercial Illustration, Cartooning |
+| | Architecture (`architecture`) | Residential, Commercial, Landscape, Interior Design |
+| | Fashion (`fashion`) | Design, Styling, Creative Direction, Manufacturing / Production |
+| **Time-based / performing** | Film & TV (`film_tv`) | Directing, Screenwriting, Cinematography, Editing / Post, Producing, Animation |
+| | Music (`music`) | Artist / Performer, Songwriter, Producer, Composer / Scoring, Sound Design, DJ / Electronic |
+| | Theater & Performing Arts (`theater`) | Acting, Dance / Choreography, Theater Directing, Performance Art |
+| | Comedy (`comedy`) | Stand-up, Sketch, Comedy Writing, Comedy Podcast, Late Night |
+| **Word / editorial** | Writing & Publishing (`writing`) | Fiction / Literary, Nonfiction / Journalism, Screenwriting, Copywriting, Content / Editorial |
+| | Media & Editorial (`media`) | Podcast / Network, Magazine / Publication, Newsletter, Video Creator, Content Business / Network |
+| **Commercial / experiential** | Advertising (`advertising`) | Creative Direction, Strategy, Media / Content, Brand Consulting |
+| | Hospitality (`hospitality`) | Restaurants, Bars, Hotels, F&B Brand, Experiential Venue |
+| **Tech** | Technology (`technology`) | Creative Coding, Software Product, XR / Immersive, AI-Augmented Creative |
+| | Gaming (`gaming`) | Game Design, Game Development, Publishing, Esports, Interactive Narrative |
 
-*After selection, if a group contains sub-disciplines, show them as a secondary select. If user selects "Other," free text input.*
+*After Q1, the matching sub-discipline question is shown as Q1-sub. The 8 legacy slugs (`visual_arts`, `film_video`, `music_audio`, `performing_arts`, `architecture_interiors`, `fashion_apparel`, `advertising_marketing`, `technology_creative_tech`) were renamed in Phase 3 (May 2026) and migrated via `supabase/migrations/00018_normalize_assessment_industry.sql`.*
 
 **Q2: How does your creative work reach the world?**
 
@@ -430,9 +438,9 @@ Each Q6-Q11 answer carries a weighted score toward Stages 1-4. The composite det
 
 #### 4B: Industry-Specific Questions
 
-*Drawn from the user's Q1 discipline selection. 2-3 questions per discipline group. These surface industry-specific ownership patterns and deal norms.*
+*Drawn from the user's Q1 discipline selection. Each pool is **2 questions** following the canonical pattern: one about ownership/rights norms, one about deal structure norms. Pools are keyed `industry_${slug}` and live in `INDUSTRY_POOLS` in `src/lib/assessment/questions.ts`. Question IDs (e.g. `Q-IND-ART-1`) are stable persistent identifiers stored in `assessments.industry_questions` JSONB — they pre-date the slug rename and intentionally weren't renamed.*
 
-**Visual Arts (Painting, Sculpture, Illustration, Mixed Media, Fine Art Photography):**
+**Visual Art (`industry_visual_art`):**
 
 **Q-IND-ART-1: How do you currently sell or monetize your work?**
 - Direct sales (studio, shows, online)
@@ -450,7 +458,91 @@ Each Q6-Q11 answer carries a weighted score toward Stages 1-4. The composite det
 
 ---
 
-**Film & Video (Directing, Screenwriting, Cinematography, Editing, Producing, Animation):**
+**Design (`industry_design`):**
+
+**Q-IND-DESIGN-1: Who typically owns the creative work you produce?**
+- The client owns everything (work-for-hire standard)
+- Mixed — some work-for-hire, some where I retain rights
+- I retain IP and license usage to clients
+- I've never really thought about this
+
+**Q-IND-DESIGN-2: Have you ever shared in the commercial outcome of something you designed?**
+- No — I get paid a fee and that's it
+- I've been offered revenue share or equity but didn't take it
+- Yes — once or twice
+- Yes — multiple times, it's becoming part of my practice
+
+---
+
+**Photography (`industry_photography`):** *(new in Phase 3)*
+
+**Q-IND-PHOTO-1: Who owns the rights to the photographs you create?**
+- My clients / buyers own usage and originals (work-for-hire standard)
+- I license usage but retain copyright and originals
+- I retain all rights and license specific use cases (editorial vs. commercial vs. archival)
+- I have a body of work generating ongoing licensing or print-sale revenue from the archive
+
+**Q-IND-PHOTO-2: How is your photography work typically compensated?**
+- Day rates or per-shoot flat fees (work-for-hire)
+- Day rate + usage fees (rights granted by use case)
+- Commercial fees + ongoing stock / print / editorial licensing
+- Gallery representation, fine-art editions, or print-sale revenue is meaningful
+- I run a studio / agency or hold equity in distribution platforms
+
+---
+
+**Comics & Illustration (`industry_comics`):** *(new in Phase 3)*
+
+**Q-IND-COMICS-1: Who owns the IP of the comics or illustration work you create?**
+- All work-for-hire — publishers / clients own everything
+- Mixed — some work-for-hire, some I retain (often personal projects)
+- I own most of my published work and have ongoing royalty rights
+- I own the full IP and have negotiated reversion, foreign, and adaptation rights
+- I self-publish or run a publishing entity that owns a catalog
+
+**Q-IND-COMICS-2: What does your back-end income from published work look like?**
+- None — I'm paid flat fees or page rates
+- Standard royalties on sales (typical author royalty, no secondary rights)
+- Royalties + secondary rights revenue (foreign editions, adaptation options, merch)
+- Full IP ownership generating recurring income across formats and territories
+
+---
+
+**Architecture (`industry_architecture`):**
+
+**Q-IND-ARCH-1: How is your practice structured financially?**
+- Hourly or fixed-fee projects
+- Percentage of construction/project cost
+- Fee + ongoing royalties or licensing (e.g., for designs, furniture, products)
+- Development equity or profit participation in projects
+- Employed at a firm (salary)
+
+**Q-IND-ARCH-2: Do you own any IP from your design work?**
+- No — designs belong to clients once delivered
+- I retain some design rights but rarely monetize them
+- Yes — I have product designs, furniture, or systems I license
+- Yes — my design approach itself is a licensable brand/methodology
+
+---
+
+**Fashion (`industry_fashion`):**
+
+**Q-IND-FASHION-1: How does your creative work generate income?**
+- Freelance fees for client projects
+- Salary at a brand or house
+- Revenue from my own label or brand
+- Licensing my designs to other brands or manufacturers
+- Mix of personal brand + client/freelance work
+
+**Q-IND-FASHION-2: What do you own from your fashion work?**
+- Designs belong to employers/clients
+- I own my personal collection/portfolio work
+- I own a brand with growing market presence
+- I have designs, patterns, or a brand generating licensing revenue
+
+---
+
+**Film & TV (`industry_film_tv`):**
 
 **Q-IND-FILM-1: What's your typical compensation structure?**
 - Day rate or flat fee (work-for-hire)
@@ -468,7 +560,7 @@ Each Q6-Q11 answer carries a weighted score toward Stages 1-4. The composite det
 
 ---
 
-**Music & Audio (Artist, Songwriter, Producer, Composer, Sound Design, DJ):**
+**Music (`industry_music`):**
 
 **Q-IND-MUSIC-1: What's your current ownership situation with masters and publishing?**
 - I don't own my masters and publishing is assigned to a label/publisher
@@ -485,24 +577,7 @@ Each Q6-Q11 answer carries a weighted score toward Stages 1-4. The composite det
 
 ---
 
-**Writing (Fiction, Nonfiction, Screenwriting, Copywriting, Content):**
-
-**Q-IND-WRITING-1: How is your writing typically compensated?**
-- Per-word, per-piece, or flat project fees
-- Salary / staff position
-- Advance + royalties (book deals)
-- Revenue share, licensing, or equity in publications/platforms
-- Mix of fee + ongoing participation
-
-**Q-IND-WRITING-2: What do you own from what you've written?**
-- Most of my work is owned by employers or clients (work-for-hire)
-- I own some of my published work but not all
-- I own most of my published work and have ongoing royalty streams
-- I have a body of IP (books, scripts, etc.) that generates recurring income
-
----
-
-**Performing Arts (Acting, Dance, Choreography, Theater, Comedy):**
+**Theater & Performing Arts (`industry_theater`):**
 
 **Q-IND-PERF-1: How is your performance work typically structured?**
 - Per-gig fees or day rates
@@ -519,25 +594,126 @@ Each Q6-Q11 answer carries a weighted score toward Stages 1-4. The composite det
 
 ---
 
-**Design (Brand, Product/UX, Graphic, Motion, Environmental, Web):**
+**Comedy (`industry_comedy`):** *(new in Phase 3)*
 
-**Q-IND-DESIGN-1: Who typically owns the creative work you produce?**
-- The client owns everything (work-for-hire standard)
-- Mixed — some work-for-hire, some where I retain rights
-- I retain IP and license usage to clients
-- I've never really thought about this
+**Q-IND-COMEDY-1: How do you primarily monetize your comedy work?**
+- Stand-up gig fees, club / open mic bookings, festival fees
+- Touring revenue + merch (I control routing and economics)
+- Streamer or network special fees + back-end participation
+- I own my specials, podcasts, or shows and license to platforms
+- I run a comedy production entity with multiple owned IPs
 
-**Q-IND-DESIGN-2: Have you ever shared in the commercial outcome of something you designed?**
-- No — I get paid a fee and that's it
-- I've been offered revenue share or equity but didn't take it
-- Yes — once or twice
-- Yes — multiple times, it's becoming part of my practice
+**Q-IND-COMEDY-2: On streamer / network specials, what have you retained?**
+- I haven't taped a special / not applicable
+- Flat license fee — no back-end, no rights retention
+- Flat fee + back-end performance points or downstream rights
+- Self-financed / self-released — I retain ownership and license platform-by-platform
+- I have a portfolio of owned specials across multiple platforms
 
 ---
 
-**Architecture & Interiors, Fashion & Apparel, Advertising & Marketing, Technology & Creative Tech:**
+**Writing & Publishing (`industry_writing`):**
 
-*(Each gets 2 discipline-specific questions following the same pattern: one about ownership/rights norms, one about deal structure norms. Questions stored in the question bank and selected by Q1 discipline.)*
+**Q-IND-WRITING-1: How is your writing typically compensated?**
+- Per-word, per-piece, or flat project fees
+- Salary / staff position
+- Advance + royalties (book deals)
+- Revenue share, licensing, or equity in publications/platforms
+- Mix of fee + ongoing participation
+
+**Q-IND-WRITING-2: What do you own from what you've written?**
+- Most of my work is owned by employers or clients (work-for-hire)
+- I own some of my published work but not all
+- I own most of my published work and have ongoing royalty streams
+- I have a body of IP (books, scripts, etc.) that generates recurring income
+
+---
+
+**Media & Editorial (`industry_media`):** *(new in Phase 3)*
+
+**Q-IND-MEDIA-1: How is your media work structured for revenue?**
+- Salary / staff at a media company or publication
+- Freelance / contract work across outlets
+- Subscription or membership revenue (paid newsletter, paid podcast)
+- Multiple streams: subs + ads / sponsorships + licensing + events
+- Equity in a media business or network beyond my direct production
+
+**Q-IND-MEDIA-2: What do you own in your media work?**
+- The work belongs to publishers / employers
+- I own my output but distribute through platforms that take significant economics
+- I own my channel, audience, and content directly — platforms are distribution
+- I own a media brand with repeatable shows / products / downstream IP
+- I'm the founder or hold equity in the parent media entity
+
+---
+
+**Advertising (`industry_advertising`):**
+
+**Q-IND-AD-1: How are you compensated for your creative/strategic work?**
+- Salary / retainer at an agency or brand
+- Project-based fees (freelance/consulting)
+- Fee + performance bonus or media commission
+- Equity or revenue share in client businesses
+- I run my own agency/consultancy
+
+**Q-IND-AD-2: Do you own any strategic or creative IP from your work?**
+- No — all work belongs to clients or employers
+- I have proprietary frameworks or methodologies I use with clients
+- I've productized my expertise (courses, tools, templates)
+- My personal brand/reputation generates significant independent revenue
+
+---
+
+**Hospitality (`industry_hospitality`):** *(new in Phase 3)*
+
+**Q-IND-HOSP-1: What's your relationship to the venues or brands operating under your name or direction?**
+- Salary / employment role (no ownership)
+- Consulting fees or naming / licensing deal — no equity
+- Equity stake in one venue or brand (founder or small)
+- Equity in multiple venues or brands I've launched
+- Holding company or investor role across a portfolio
+
+**Q-IND-HOSP-2: How do you participate in upside beyond your operating role?**
+- Salary / fees only — no participation in profits or exit
+- Profit share at the location level
+- Founder / operator equity that vests with role
+- Royalty or licensing income on the brand / IP, plus equity in operating entities
+- GP / investor role across a hospitality portfolio or fund
+
+---
+
+**Technology (`industry_technology`):**
+
+**Q-IND-TECH-1: How does your creative technology work generate income?**
+- Freelance/contract work for clients
+- Salary at a company or studio
+- Products I've built (tools, games, apps)
+- Licensing technology or creative assets
+- Mix of client work + own products
+
+**Q-IND-TECH-2: What IP do you own from your creative tech work?**
+- Everything belongs to employers/clients
+- I have side projects but nothing generating revenue
+- I own tools, games, or creative assets generating revenue
+- I'm building a platform or company with significant IP
+
+---
+
+**Gaming (`industry_gaming`):** *(new in Phase 3)*
+
+**Q-IND-GAMING-1: For games or interactive work you've shipped, who owns the IP?**
+- Publisher / employer owns everything (salary or work-for-hire)
+- I have personal projects but nothing commercial
+- I own IP on at least one shipped title (sole or with co-founders)
+- My studio owns the IP and the franchise rights (sequels, adaptations, merch)
+- I have a catalog of owned IP across multiple titles
+
+**Q-IND-GAMING-2: How do you participate in revenue from shipped games?**
+- Salary / fees only — no royalty or revenue share
+- Royalties on sales but the publisher controls distribution and pricing
+- Self-published — I keep most of the revenue minus platform cut
+- Mix — I license to publishers AND self-publish my own lines
+- I invest equity into other studios as part of my work
 
 ---
 

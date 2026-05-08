@@ -90,7 +90,7 @@ content/
 Read these before building advisor / assessment / evaluator / roadmap features. They define data models, scoring logic, question flows, and archetype definitions. Do not deviate without explicit approval.
 
 - `content/reference/seq-ai-advisor-experience-v1.md` — conversational UX layer
-- `content/reference/seq-assessment-build-spec-v2.md` — question bank, scoring, archetypes, roadmap schema
+- `content/reference/seq-assessment-build-spec-v3.md` — question bank, scoring, archetypes, roadmap schema (v3 from Phase 3 of the case-study taxonomy rollout: Q1 expanded to 16 industries + 6 new Section 4B pools, May 2026)
 - `content/reference/deal-evaluator-spec-v2.md` — evaluation dimensions, scoring weights, verdict structure
 - `content/reference/deal-evaluator-assessment-integration.md` — evaluator × assessment integration
 - `content/reference/case-study-components.md` — MDX component toolkit
@@ -108,7 +108,7 @@ Read these before building advisor / assessment / evaluator / roadmap features. 
 
 Several specs were written before architectural changes shipped. Where a spec disagrees with the current code or with this CLAUDE.md, **the code + this doc win**. Specifically:
 
-- **`seq-assessment-build-spec-v2.md`** — The question bank, stage scoring weights, and misalignment flag patterns are STILL authoritative. **Outdated:** UI references "Assessment" everywhere — the user-facing brand is now "Creative Identity." Data flow assumed assessment was the only roadmap input — Portfolio + recent deal evaluations also feed `generate-plan.ts` now. **Archetypes:** the spec defines 6; the code now defines 8 (added Capital Allocator + Creative Principal for Stage 4). Treat `src/lib/assessment/archetypes.ts` as the source of truth.
+- **`seq-assessment-build-spec-v3.md`** — Stage scoring weights and misalignment flag patterns are authoritative. The Q1 industry vocabulary + Section 4B industry pools were updated in v3 (Phase 3 of the case-study taxonomy rollout, May 2026) — they now match the live `src/lib/assessment/questions.ts` and the canonical `src/lib/case-studies/taxonomy.ts`. **Still outdated:** UI references "Assessment" everywhere — the user-facing brand is now "Creative Identity." Data flow assumed assessment was the only roadmap input — Portfolio + recent deal evaluations also feed `generate-plan.ts` now. **Archetypes:** the spec defines 6; the code now defines 8 (added Capital Allocator + Creative Principal for Stage 4). Treat `src/lib/assessment/archetypes.ts` as the source of truth.
 - **`seq-ai-advisor-experience-v1.md`** — Architectural intent (layered prompts, structured chat components) is still right. Specifics about the pre- vs. post-assessment chat may be outdated. Doesn't mention `buildMemberContext()` injection pattern or the shared roadmap generator.
 - **`deal-evaluator-spec-v2.md`** — Scoring weights, dimensions, and verdict JSON structure are current. **Update past spec:** `max_tokens = 4096`, robust JSON parse with code-fence fallback, "Refresh Roadmap" CTA on the verdict, deal-history aggregation in the roadmap generator prompt.
 - **`deal-evaluator-assessment-integration.md`** — Integration logic (evaluator skipping / pre-filling questions from assessment) is current. **Doesn't reflect:** deal verdict `recommended_actions` now feed BACK INTO roadmap regeneration via `/api/roadmap/refresh` and the shared `generate-plan.ts`.
@@ -212,7 +212,7 @@ try {
 
 ### Scoring engine constraints
 
-- Stage detection weights (Q6–Q11) defined in `seq-assessment-build-spec-v2.md` Section 5. Do not change.
+- Stage detection weights (Q6–Q11) defined in `seq-assessment-build-spec-v3.md` Section 5. Do not change.
 - Six misalignment flag patterns defined in the spec. Implement all six.
 - Eight archetypes defined in `src/lib/assessment/archetypes.ts` — six for Stages 1–3 and two for Stage 4 (Capital Allocator, Creative Principal). Stage 4 matching is split by creative_mode: builder/service/transition → Capital Allocator; maker/performer/hybrid → Creative Principal. Do not invent new archetypes beyond these eight.
 - Creative mode (`maker` / `service` / `hybrid` / `performer` / `builder` / `transition`) adapts question language across every surface.
@@ -392,7 +392,7 @@ Current mode: direct-to-main. Every push triggers a Vercel deploy in ~60–90s. 
 
 **Shared vocab modules** (single source of truth — don't redefine option lists locally):
 - `src/lib/profile/income-ranges.ts` — `INCOME_RANGE_OPTIONS` (matches `Q6_INCOME` + `Q6_SCORES`)
-- `src/lib/case-studies/taxonomy.ts` — canonical case-study `INDUSTRIES` (16, 5 groups) + `DISCIPLINES` (10) with `IndustrySlug` / `DisciplineSlug` types. Imported by case-study filters / search / recommendations; will become the assessment Q1 source in Phase 3.
+- `src/lib/case-studies/taxonomy.ts` — canonical case-study `INDUSTRIES` (16, 5 groups) + `DISCIPLINES` (10) with `IndustrySlug` / `DisciplineSlug` types. **Shared between case studies and the assessment Q1 vocabulary** as of Phase 3 (2026-05-07): `src/lib/assessment/questions.ts` imports `INDUSTRIES` to build Q1 options, and `assessments.discipline` stores `IndustrySlug` values. Q1 needs human-readable descriptions per industry; those live locally in `Q1_DESCRIPTIONS` inside `questions.ts` (the canonical module doesn't carry them).
 
 **Core portal UI**:
 - `src/app/(portal)/dashboard/page.tsx`
@@ -468,3 +468,17 @@ See `CHANGELOG.md` 2026-05-07 entry for the full lessons-learned section.
 Phase 2 only touches the **portal** `/library/case-studies` page. The public `/case-studies` route is currently a 3-line stub and was not part of Phase 2 scope; building out a full public version is a future task.
 
 See `CHANGELOG.md` 2026-05-07 (Phase 2) entry for the full lessons-learned section.
+
+**Case study taxonomy rollout — Phase 3 (2026-05-07):**
+
+- Assessment Q1 vocabulary aligned with the canonical case-study taxonomy. 8 legacy slugs renamed (`visual_arts` → `visual_art`, `film_video` → `film_tv`, `music_audio` → `music`, `performing_arts` → `theater`, `architecture_interiors` → `architecture`, `fashion_apparel` → `fashion`, `advertising_marketing` → `advertising`, `technology_creative_tech` → `technology`). 6 new industries added (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`).
+- `src/lib/assessment/questions.ts` Q1 now imports `INDUSTRIES` from `src/lib/case-studies/taxonomy.ts` — single source of truth for the 16-industry vocabulary. Industry-specific Q1 descriptions (sub-discipline hints) live in a local `Record<IndustrySlug, string>` in `questions.ts`.
+- `SUB_DISCIPLINES` typed strictly internally (`Record<IndustrySlug, AssessmentQuestion>`) for build-time exhaustiveness; exported as `Record<string, AssessmentQuestion>` for consumer indexing with DB string values.
+- 12 new questions across the 6 new pools — 2 per pool (one ownership/rights norm, one deal/structure norm) per spec §4B. IDs: `Q-IND-PHOTO-1/2`, `Q-IND-COMICS-1/2`, `Q-IND-COMEDY-1/2`, `Q-IND-MEDIA-1/2`, `Q-IND-HOSP-1/2`, `Q-IND-GAMING-1/2`.
+- Pool keys in `INDUSTRY_POOLS` renamed to mechanical `industry_${slug}` form (e.g. `industry_art` → `industry_visual_art`, `industry_film` → `industry_film_tv`, `industry_performing` → `industry_theater`). Existing question IDs (`Q-IND-ART-1`, etc.) intentionally left unchanged — they're persistent identifiers in `assessments.industry_questions` JSONB.
+- `DISCIPLINE_GROUP_MAP` + `DISCIPLINE_TO_GROUP` in `src/types/assessment.ts` + `getReaction()` Q1 labels in `src/lib/advisor/assessment-state-machine.ts` updated to the 16-slug vocabulary.
+- Migration `00018_normalize_assessment_industry.sql` backfills the 8 renamed slug values; the 6 new slugs require no backfill (no existing rows hold them).
+- Spec doc renamed `seq-assessment-build-spec-v2.md` → `seq-assessment-build-spec-v3.md`. v3 changes the freshness note + Q1 table (§3) + Section 4B pools to reflect the 16-industry vocab — bringing it in sync with the live code. References updated across CLAUDE.md, the rollout plan, the advisor spec, and the deal-evaluator spec.
+- `scripts/seed-test-users.ts` updated: Jordan Rivera's `discipline: "directing"` (a sub-slug at the top level — non-canonical even pre-Phase-3) → `discipline: "film_tv", sub_discipline: "directing"`. Other 4 seeded users were already on canonical slugs.
+
+See `CHANGELOG.md` 2026-05-07 (Phase 3) entry for the full lessons-learned section.

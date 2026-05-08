@@ -259,7 +259,7 @@ Per-phase CHANGELOG / CLAUDE / troubleshooting entries should already be in plac
 
 ### Cross-cutting docs
 
-- Update `content/reference/seq-assessment-build-spec-v2.md` Q1 section to reflect the new 16-industry vocab + the 6 new question pools written in Phase 3. This spec spans all three earlier phases, which is why it's not in any of them.
+- Update `content/reference/seq-assessment-build-spec-v3.md` Q1 section to reflect the new 16-industry vocab + the 6 new question pools written in Phase 3. This spec spans all three earlier phases, which is why it's not in any of them. *(Update 2026-05-07: this was actually folded into Phase 3 since the worktree was already touching the spec — file was renamed v2 → v3 and the Q1 / §4B sections updated. Phase 4 is now smaller.)*
 - (Optional) Add a roll-up entry to `CHANGELOG.md` that links the three earlier phase entries — useful for someone reading the history later. Format: a short "## 2026-05-?? — Case study taxonomy rollout complete" entry that points at the three phase entries with one-line summaries each.
 
 ### Final coherence pass

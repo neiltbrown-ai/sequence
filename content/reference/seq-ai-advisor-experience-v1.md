@@ -1117,7 +1117,7 @@ This spec does NOT replace the assessment spec or deal evaluator spec. It uses t
 
 | Existing Spec | What This Spec Uses From It |
 |--------------|----------------------------|
-| `seq-assessment-build-spec-v2.md` | Question bank, scoring weights, archetype definitions, misalignment flags, stage detection logic, roadmap output schema, action playbooks |
+| `seq-assessment-build-spec-v3.md` | Question bank, scoring weights, archetype definitions, misalignment flags, stage detection logic, roadmap output schema, action playbooks |
 | `deal-evaluator-spec-v2.md` | Six evaluation dimensions, all question sets (by deal type), scoring weights, red flag overrides, verdict structure, assessment integration logic |
 | `deal-evaluator-assessment-integration.md` | Misalignment warning matrix, roadmap alignment logic, creative mode adaptation map, question skip/pre-fill rules |
 | `InSequence-PRD-v1.md` | Tech stack, data model, auth system, library content schema, RAG pipeline, admin dashboard |

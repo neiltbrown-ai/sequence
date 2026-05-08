@@ -1006,4 +1006,4 @@ Persistent but unobtrusive footer on all evaluation screens: "The Deal Evaluator
 ---
 
 *Deal Evaluator Spec v2.0 — February 2026*
-*Companion to: SEQ Guides Development (guides-development.md), Assessment + Roadmap Spec (seq-assessment-build-spec-v2.md)*
+*Companion to: SEQ Guides Development (guides-development.md), Assessment + Roadmap Spec (seq-assessment-build-spec-v3.md)*
