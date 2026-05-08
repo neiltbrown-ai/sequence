@@ -2890,6 +2890,20 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
   font-weight: 500;
   color: var(--black);
 }
+/* Embedded Creative Identity portrait inside the wizard's completion screen.
+   The portrait component (.ci-complete) carries its own internal spacing
+   (gap: 28px between hero / stage band / facets / friction); this wrapper
+   just gives the block breathing room from the header above and the
+   "What happens next" block below. */
+.asmt-complete-portrait {
+  margin-bottom: 36px;
+}
+.asmt-complete-portrait .ci-complete {
+  /* Let the portrait fill the wizard's content width — the wizard already
+     constrains max-width via .asmt-complete; the panel-internal 720px cap
+     is unnecessary here. */
+  max-width: none;
+}
 .asmt-complete-next {
   padding-top: 4px;
 }

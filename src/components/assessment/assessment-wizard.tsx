@@ -26,6 +26,8 @@ import QuestionRenderer from "./question-renderer";
 import WizardNav from "./wizard-nav";
 import { useAssessmentAutosave } from "@/hooks/use-assessment-autosave";
 import GenerationProgress from "@/components/shared/generation-progress";
+import CreativeIdentityPortrait from "@/components/portal/creative-identity-portrait";
+import type { CreativeIdentitySnapshot } from "@/types/creative-identity";
 
 // ── Initial state ──────────────────────────────────────────────
 
@@ -431,6 +433,7 @@ export default function AssessmentWizard({
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [snapshot, setSnapshot] = useState<CreativeIdentitySnapshot | null>(null);
   const hasSubmitted = useRef(false);
 
   useEffect(() => {
@@ -446,6 +449,12 @@ export default function AssessmentWizard({
       .then((res) => res.json())
       .then((data) => {
         if (data.planId) {
+          // Capture the snapshot so the completion screen can render the
+          // archetype portrait. Falls back gracefully (the legacy summary
+          // strip) if the response omits it.
+          if (data.snapshot) {
+            setSnapshot(data.snapshot as CreativeIdentitySnapshot);
+          }
           // Stay on completion screen — user clicks through to roadmap
           setSubmitting(false);
         } else {
@@ -519,24 +528,35 @@ export default function AssessmentWizard({
                 </div>
               </div>
 
-              <div className="asmt-complete-summary">
-                {state.detectedStage && (
-                  <div className="asmt-complete-summary-item">
-                    <span className="asmt-complete-summary-label">Stage</span>
-                    <span className="asmt-complete-summary-value">Stage {state.detectedStage}</span>
-                  </div>
-                )}
-                {state.misalignmentFlags.length > 0 && (
-                  <div className="asmt-complete-summary-item">
-                    <span className="asmt-complete-summary-label">Misalignments</span>
-                    <span className="asmt-complete-summary-value">{state.misalignmentFlags.length} detected</span>
-                  </div>
-                )}
-                <div className="asmt-complete-summary-item">
-                  <span className="asmt-complete-summary-label">Sections</span>
-                  <span className="asmt-complete-summary-value">5 of 5</span>
+              {snapshot ? (
+                <div className="asmt-complete-portrait">
+                  <CreativeIdentityPortrait
+                    snapshot={snapshot}
+                    ctaVariant="none"
+                  />
                 </div>
-              </div>
+              ) : (
+                /* Fallback summary if the API didn't return a snapshot for
+                   some reason — keeps the screen useful instead of empty. */
+                <div className="asmt-complete-summary">
+                  {state.detectedStage && (
+                    <div className="asmt-complete-summary-item">
+                      <span className="asmt-complete-summary-label">Stage</span>
+                      <span className="asmt-complete-summary-value">Stage {state.detectedStage}</span>
+                    </div>
+                  )}
+                  {state.misalignmentFlags.length > 0 && (
+                    <div className="asmt-complete-summary-item">
+                      <span className="asmt-complete-summary-label">Misalignments</span>
+                      <span className="asmt-complete-summary-value">{state.misalignmentFlags.length} detected</span>
+                    </div>
+                  )}
+                  <div className="asmt-complete-summary-item">
+                    <span className="asmt-complete-summary-label">Sections</span>
+                    <span className="asmt-complete-summary-value">5 of 5</span>
+                  </div>
+                </div>
+              )}
 
               <div className="asmt-complete-next">
                 <div className="asmt-complete-next-label">What happens next</div>

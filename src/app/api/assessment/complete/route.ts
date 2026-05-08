@@ -6,6 +6,8 @@ import { matchArchetype } from "@/lib/assessment/archetype-matching";
 import { getArchetypeById } from "@/lib/assessment/archetypes";
 import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
 import type { AssessmentAnswers, CreativeMode } from "@/types/assessment";
+import type { CreativeIdentitySnapshot } from "@/types/creative-identity";
+import { CREATIVE_IDENTITY_TOTAL_SECTIONS } from "@/types/creative-identity";
 
 // Claude Sonnet 4 generating a ~4k-token structured roadmap can take
 // 30–60s. Without this, Vercel kills the function before after() finishes
@@ -72,7 +74,23 @@ export async function POST(request: Request) {
       .single();
 
     if (existingPlan) {
-      return NextResponse.json({ planId: existingPlan.id });
+      // Build a snapshot from the persisted row so the wizard can render the
+      // portrait even on this idempotent return path.
+      const snapshot: CreativeIdentitySnapshot = {
+        id: assessment.id,
+        status: "completed",
+        currentSection: CREATIVE_IDENTITY_TOTAL_SECTIONS,
+        currentQuestion: assessment.current_question ?? 0,
+        detectedStage: assessment.detected_stage ?? null,
+        archetypePrimary: assessment.archetype_primary ?? null,
+        creativeMode: assessment.creative_mode ?? null,
+        discipline: assessment.discipline ?? null,
+        subDiscipline: assessment.sub_discipline ?? null,
+        misalignmentFlags: assessment.misalignment_flags ?? [],
+        completedAt: assessment.completed_at ?? null,
+        updatedAt: null,
+      };
+      return NextResponse.json({ planId: existingPlan.id, snapshot });
     }
   }
 
@@ -142,12 +160,15 @@ export async function POST(request: Request) {
     ? getArchetypeById(archetypeResult.secondary.id)
     : null;
 
+  // Capture timestamp once so the DB row + wizard response agree.
+  const completedAt = new Date().toISOString();
+
   // Update assessment with canonical server scores
   await admin
     .from("assessments")
     .update({
       status: "completed",
-      completed_at: new Date().toISOString(),
+      completed_at: completedAt,
       detected_stage: stageResult.detectedStage,
       stage_score: stageResult.stageScore,
       transition_readiness: stageResult.transitionReadiness,
@@ -156,6 +177,24 @@ export async function POST(request: Request) {
       archetype_secondary: secondaryArchetype?.id || null,
     })
     .eq("id", assessmentId);
+
+  // Build the snapshot the wizard's completion screen renders. Shape matches
+  // CreativeIdentitySnapshot so the same portrait component works in both
+  // Settings → Creative Identity and the wizard payoff view.
+  const snapshot: CreativeIdentitySnapshot = {
+    id: assessmentId,
+    status: "completed",
+    currentSection: CREATIVE_IDENTITY_TOTAL_SECTIONS,
+    currentQuestion: assessment.current_question ?? 0,
+    detectedStage: stageResult.detectedStage,
+    archetypePrimary: primaryArchetype.id,
+    creativeMode: (answers.creative_mode as string) ?? null,
+    discipline: answers.discipline ?? null,
+    subDiscipline: answers.sub_discipline ?? null,
+    misalignmentFlags: stageResult.misalignmentFlags,
+    completedAt,
+    updatedAt: null,
+  };
 
   // Delegate plan creation + generation to the shared lib.
   // createStrategicPlan does the fast synchronous work (inserts the row);
@@ -201,7 +240,7 @@ export async function POST(request: Request) {
     // after() keeps the function alive (up to maxDuration) so the plan
     // actually reaches the 'published' state before the container dies.
     after(runGeneration);
-    return NextResponse.json({ planId });
+    return NextResponse.json({ planId, snapshot });
   } catch (err) {
     console.error("Failed to kick off roadmap generation:", err);
     return NextResponse.json(
