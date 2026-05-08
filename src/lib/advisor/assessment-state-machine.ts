@@ -158,16 +158,22 @@ function getReaction(questionId: string, value: unknown): string {
   // Section 1
   if (questionId === "Q1") {
     const labels: Record<string, string> = {
-      visual_arts: "Visual arts.",
+      visual_art: "Visual art.",
       design: "Design.",
-      film_video: "Film and video.",
-      music_audio: "Music.",
+      photography: "Photography.",
+      comics: "Comics and illustration.",
+      architecture: "Architecture.",
+      fashion: "Fashion.",
+      film_tv: "Film and TV.",
+      music: "Music.",
+      theater: "Theater and performing arts.",
+      comedy: "Comedy.",
       writing: "Writing.",
-      performing_arts: "Performing arts.",
-      architecture_interiors: "Architecture.",
-      fashion_apparel: "Fashion.",
-      advertising_marketing: "Advertising.",
-      technology_creative_tech: "Creative tech.",
+      media: "Media and editorial.",
+      advertising: "Advertising.",
+      hospitality: "Hospitality.",
+      technology: "Technology.",
+      gaming: "Gaming.",
     };
     return labels[value as string] || "Got it.";
   }

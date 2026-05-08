@@ -1,42 +1,72 @@
 import type { AssessmentQuestion } from '@/types/assessment';
+import {
+  INDUSTRIES,
+  type IndustrySlug,
+} from '@/lib/case-studies/taxonomy';
 
 // ── Section 1: Creative Identity ──────────────────────────────────
+//
+// Q1 industry options derive from the canonical taxonomy in
+// src/lib/case-studies/taxonomy.ts. Labels and order mirror that
+// module (one source of truth for the 16-industry vocabulary, shared
+// with case-study tagging). Descriptions live here because Q1 needs
+// human-readable hints listing typical sub-disciplines, which the
+// taxonomy module doesn't carry.
+
+const Q1_DESCRIPTIONS: Record<IndustrySlug, string> = {
+  visual_art: 'Painting, Sculpture, Conceptual, Printmaking, Mixed Media, Digital Art',
+  design: 'Brand / Identity, Product / UX, Graphic, Motion, Environmental, Web / Digital',
+  photography: 'Editorial, Commercial, Fine Art, Documentary, Portrait, Fashion Photography',
+  comics: 'Comic Books, Graphic Novels, Editorial Illustration, Commercial Illustration, Cartooning',
+  architecture: 'Residential, Commercial, Landscape, Interior Design',
+  fashion: 'Design, Styling, Creative Direction, Manufacturing',
+  film_tv: 'Directing, Screenwriting, Cinematography, Editing, Producing, Animation',
+  music: 'Artist, Songwriter, Producer, Composer, Sound Design, DJ / Electronic',
+  theater: 'Acting, Dance / Choreography, Theater Directing, Performance Art',
+  comedy: 'Stand-up, Sketch, Comedy Writing, Comedy Podcast, Late Night',
+  writing: 'Fiction, Nonfiction, Screenwriting, Copywriting, Content / Editorial',
+  media: 'Podcasts, Publications, Newsletters, Video Creators, Content Businesses',
+  advertising: 'Creative Direction, Strategy, Media / Content, Brand Consulting',
+  hospitality: 'Restaurants, Bars, Hotels, F&B Brands, Experiential Venues',
+  technology: 'Creative Coding, Software Products, XR / Immersive, AI-Augmented Creative',
+  gaming: 'Game Design, Game Development, Publishing, Esports, Interactive Narrative',
+};
 
 export const DISCIPLINE_GROUPS: AssessmentQuestion = {
   id: 'Q1',
   section: 'identity',
   questionText: "What's your primary creative discipline?",
   answerType: 'single_select',
-  options: [
-    { value: 'visual_arts', label: 'Visual Arts', description: 'Painting, Sculpture, Illustration, Mixed Media, Digital Art, Photography' },
-    { value: 'design', label: 'Design', description: 'Brand / Identity, Product / UX, Graphic, Motion, Environmental, Web / Digital' },
-    { value: 'film_video', label: 'Film & Video', description: 'Directing, Screenwriting, Cinematography, Editing, Producing, Animation' },
-    { value: 'music_audio', label: 'Music & Audio', description: 'Artist, Songwriter, Producer, Composer, Sound Design, DJ / Electronic' },
-    { value: 'writing', label: 'Writing', description: 'Fiction, Nonfiction, Screenwriting, Copywriting, Content / Editorial' },
-    { value: 'performing_arts', label: 'Performing Arts', description: 'Acting, Dance, Theater, Comedy / Spoken Word' },
-    { value: 'architecture_interiors', label: 'Architecture & Interiors', description: 'Residential, Commercial, Landscape, Interior Design' },
-    { value: 'fashion_apparel', label: 'Fashion & Apparel', description: 'Design, Styling, Creative Direction, Manufacturing' },
-    { value: 'advertising_marketing', label: 'Advertising & Marketing', description: 'Creative Direction, Strategy, Media / Content, Brand Consulting' },
-    { value: 'technology_creative_tech', label: 'Technology & Creative Tech', description: 'Creative Coding, Game Design, XR / Immersive, AI-Augmented Creative' },
-  ],
+  options: INDUSTRIES.map(({ slug, label }) => ({
+    value: slug,
+    label,
+    description: Q1_DESCRIPTIONS[slug],
+  })),
   displayOrder: 1,
 };
 
-export const SUB_DISCIPLINES: Record<string, AssessmentQuestion> = {
-  visual_arts: {
-    id: 'Q1-sub-visual_arts',
+// Sub-discipline question per industry. The internal `_TYPED` constant
+// is keyed strictly by IndustrySlug so any missing/unknown entry fails
+// at build time. The exported value is loosened to `Record<string, ...>`
+// because consumers index it with a runtime string from the DB
+// (`assessments.discipline`) and already guard with truthiness checks.
+// Sub-discipline option values must stay in sync with DISCIPLINE_TO_GROUP
+// in src/types/assessment.ts (each option value there is a key here).
+const SUB_DISCIPLINES_TYPED: Record<IndustrySlug, AssessmentQuestion> = {
+  visual_art: {
+    id: 'Q1-sub-visual_art',
     section: 'identity',
-    questionText: 'Which area of visual arts?',
+    questionText: 'Which area of visual art?',
     answerType: 'single_select',
     isSubQuestion: true,
     parentQuestionId: 'Q1',
     options: [
       { value: 'painting', label: 'Painting' },
       { value: 'sculpture', label: 'Sculpture' },
-      { value: 'illustration', label: 'Illustration' },
+      { value: 'conceptual_art', label: 'Conceptual Art' },
+      { value: 'printmaking', label: 'Printmaking' },
       { value: 'mixed_media', label: 'Mixed Media' },
       { value: 'digital_art', label: 'Digital Art' },
-      { value: 'photography_fine_art', label: 'Photography (Fine Art)' },
     ],
     displayOrder: 2,
   },
@@ -57,10 +87,73 @@ export const SUB_DISCIPLINES: Record<string, AssessmentQuestion> = {
     ],
     displayOrder: 2,
   },
-  film_video: {
-    id: 'Q1-sub-film_video',
+  photography: {
+    id: 'Q1-sub-photography',
     section: 'identity',
-    questionText: 'Which area of film & video?',
+    questionText: 'Which area of photography?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'editorial_photo', label: 'Editorial' },
+      { value: 'commercial_photo', label: 'Commercial' },
+      { value: 'fine_art_photo', label: 'Fine Art' },
+      { value: 'documentary_photo', label: 'Documentary' },
+      { value: 'portrait_photo', label: 'Portrait' },
+      { value: 'fashion_photo', label: 'Fashion' },
+    ],
+    displayOrder: 2,
+  },
+  comics: {
+    id: 'Q1-sub-comics',
+    section: 'identity',
+    questionText: 'Which area of comics & illustration?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'comic_book', label: 'Comic Books' },
+      { value: 'graphic_novel', label: 'Graphic Novels' },
+      { value: 'editorial_illustration', label: 'Editorial Illustration' },
+      { value: 'commercial_illustration', label: 'Commercial Illustration' },
+      { value: 'cartooning', label: 'Cartooning' },
+    ],
+    displayOrder: 2,
+  },
+  architecture: {
+    id: 'Q1-sub-architecture',
+    section: 'identity',
+    questionText: 'Which area of architecture?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'residential', label: 'Residential' },
+      { value: 'commercial', label: 'Commercial' },
+      { value: 'landscape', label: 'Landscape' },
+      { value: 'interior_design', label: 'Interior Design' },
+    ],
+    displayOrder: 2,
+  },
+  fashion: {
+    id: 'Q1-sub-fashion',
+    section: 'identity',
+    questionText: 'Which area of fashion?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'fashion_design', label: 'Design' },
+      { value: 'styling', label: 'Styling' },
+      { value: 'fashion_creative_direction', label: 'Creative Direction' },
+      { value: 'manufacturing_production', label: 'Manufacturing / Production' },
+    ],
+    displayOrder: 2,
+  },
+  film_tv: {
+    id: 'Q1-sub-film_tv',
+    section: 'identity',
+    questionText: 'Which area of film & TV?',
     answerType: 'single_select',
     isSubQuestion: true,
     parentQuestionId: 'Q1',
@@ -74,10 +167,10 @@ export const SUB_DISCIPLINES: Record<string, AssessmentQuestion> = {
     ],
     displayOrder: 2,
   },
-  music_audio: {
-    id: 'Q1-sub-music_audio',
+  music: {
+    id: 'Q1-sub-music',
     section: 'identity',
-    questionText: 'Which area of music & audio?',
+    questionText: 'Which area of music?',
     answerType: 'single_select',
     isSubQuestion: true,
     parentQuestionId: 'Q1',
@@ -88,6 +181,37 @@ export const SUB_DISCIPLINES: Record<string, AssessmentQuestion> = {
       { value: 'composer_scoring', label: 'Composer / Scoring' },
       { value: 'sound_design', label: 'Sound Design' },
       { value: 'dj_electronic', label: 'DJ / Electronic' },
+    ],
+    displayOrder: 2,
+  },
+  theater: {
+    id: 'Q1-sub-theater',
+    section: 'identity',
+    questionText: 'Which area of theater & performing arts?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'acting', label: 'Acting' },
+      { value: 'dance_choreography', label: 'Dance / Choreography' },
+      { value: 'theater_directing_producing', label: 'Theater (Directing / Producing)' },
+      { value: 'performance_art', label: 'Performance Art' },
+    ],
+    displayOrder: 2,
+  },
+  comedy: {
+    id: 'Q1-sub-comedy',
+    section: 'identity',
+    questionText: 'Which area of comedy?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'standup', label: 'Stand-up' },
+      { value: 'sketch', label: 'Sketch' },
+      { value: 'comedy_writing', label: 'Comedy Writing' },
+      { value: 'comedy_podcast', label: 'Comedy Podcast' },
+      { value: 'late_night', label: 'Late Night' },
     ],
     displayOrder: 2,
   },
@@ -107,55 +231,26 @@ export const SUB_DISCIPLINES: Record<string, AssessmentQuestion> = {
     ],
     displayOrder: 2,
   },
-  performing_arts: {
-    id: 'Q1-sub-performing_arts',
+  media: {
+    id: 'Q1-sub-media',
     section: 'identity',
-    questionText: 'Which area of performing arts?',
+    questionText: 'Which area of media & editorial?',
     answerType: 'single_select',
     isSubQuestion: true,
     parentQuestionId: 'Q1',
     options: [
-      { value: 'acting', label: 'Acting' },
-      { value: 'dance_choreography', label: 'Dance / Choreography' },
-      { value: 'theater_directing_producing', label: 'Theater (Directing / Producing)' },
-      { value: 'comedy_spoken_word', label: 'Comedy / Spoken Word' },
+      { value: 'podcast_media', label: 'Podcast / Podcast Network' },
+      { value: 'publication', label: 'Magazine / Publication' },
+      { value: 'newsletter_media', label: 'Newsletter (publication-led)' },
+      { value: 'video_creator', label: 'Video Creator' },
+      { value: 'content_business', label: 'Content Business / Network' },
     ],
     displayOrder: 2,
   },
-  architecture_interiors: {
-    id: 'Q1-sub-architecture_interiors',
+  advertising: {
+    id: 'Q1-sub-advertising',
     section: 'identity',
-    questionText: 'Which area?',
-    answerType: 'single_select',
-    isSubQuestion: true,
-    parentQuestionId: 'Q1',
-    options: [
-      { value: 'residential', label: 'Residential' },
-      { value: 'commercial', label: 'Commercial' },
-      { value: 'landscape', label: 'Landscape' },
-      { value: 'interior_design', label: 'Interior Design' },
-    ],
-    displayOrder: 2,
-  },
-  fashion_apparel: {
-    id: 'Q1-sub-fashion_apparel',
-    section: 'identity',
-    questionText: 'Which area of fashion & apparel?',
-    answerType: 'single_select',
-    isSubQuestion: true,
-    parentQuestionId: 'Q1',
-    options: [
-      { value: 'fashion_design', label: 'Design' },
-      { value: 'styling', label: 'Styling' },
-      { value: 'fashion_creative_direction', label: 'Creative Direction' },
-      { value: 'manufacturing_production', label: 'Manufacturing / Production' },
-    ],
-    displayOrder: 2,
-  },
-  advertising_marketing: {
-    id: 'Q1-sub-advertising_marketing',
-    section: 'identity',
-    questionText: 'Which area of advertising & marketing?',
+    questionText: 'Which area of advertising?',
     answerType: 'single_select',
     isSubQuestion: true,
     parentQuestionId: 'Q1',
@@ -167,22 +262,57 @@ export const SUB_DISCIPLINES: Record<string, AssessmentQuestion> = {
     ],
     displayOrder: 2,
   },
-  technology_creative_tech: {
-    id: 'Q1-sub-technology_creative_tech',
+  hospitality: {
+    id: 'Q1-sub-hospitality',
     section: 'identity',
-    questionText: 'Which area of creative tech?',
+    questionText: 'Which area of hospitality?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'restaurants', label: 'Restaurants' },
+      { value: 'bars', label: 'Bars' },
+      { value: 'hotels', label: 'Hotels' },
+      { value: 'fb_brand', label: 'F&B Brand' },
+      { value: 'experiential_venue', label: 'Experiential Venue' },
+    ],
+    displayOrder: 2,
+  },
+  technology: {
+    id: 'Q1-sub-technology',
+    section: 'identity',
+    questionText: 'Which area of technology?',
     answerType: 'single_select',
     isSubQuestion: true,
     parentQuestionId: 'Q1',
     options: [
       { value: 'creative_coding', label: 'Creative Coding' },
-      { value: 'game_design', label: 'Game Design' },
+      { value: 'software_product', label: 'Software Product' },
       { value: 'xr_immersive', label: 'XR / Immersive' },
       { value: 'ai_augmented_creative', label: 'AI-Augmented Creative' },
     ],
     displayOrder: 2,
   },
+  gaming: {
+    id: 'Q1-sub-gaming',
+    section: 'identity',
+    questionText: 'Which area of gaming?',
+    answerType: 'single_select',
+    isSubQuestion: true,
+    parentQuestionId: 'Q1',
+    options: [
+      { value: 'game_design', label: 'Game Design' },
+      { value: 'game_dev', label: 'Game Development' },
+      { value: 'game_publishing', label: 'Publishing' },
+      { value: 'esports', label: 'Esports' },
+      { value: 'interactive_narrative', label: 'Interactive Narrative' },
+    ],
+    displayOrder: 2,
+  },
 };
+
+export const SUB_DISCIPLINES: Record<string, AssessmentQuestion> =
+  SUB_DISCIPLINES_TYPED;
 
 const Q2_CREATIVE_MODE: AssessmentQuestion = {
   id: 'Q2',
@@ -765,7 +895,7 @@ const Q_S3_STRUCTURE: AssessmentQuestion = {
 const Q_IND_ART_1: AssessmentQuestion = {
   id: 'Q-IND-ART-1',
   section: 'deep_dive',
-  pool: 'industry_art',
+  pool: 'industry_visual_art',
   questionText: 'How do you currently sell or monetize your work?',
   answerType: 'single_select',
   options: [
@@ -782,7 +912,7 @@ const Q_IND_ART_1: AssessmentQuestion = {
 const Q_IND_ART_2: AssessmentQuestion = {
   id: 'Q-IND-ART-2',
   section: 'deep_dive',
-  pool: 'industry_art',
+  pool: 'industry_visual_art',
   questionText: 'What happens to your work after it\'s sold?',
   answerType: 'single_select',
   options: [
@@ -798,7 +928,7 @@ const Q_IND_ART_2: AssessmentQuestion = {
 const Q_IND_FILM_1: AssessmentQuestion = {
   id: 'Q-IND-FILM-1',
   section: 'deep_dive',
-  pool: 'industry_film',
+  pool: 'industry_film_tv',
   questionText: "What's your typical compensation structure?",
   answerType: 'single_select',
   options: [
@@ -814,7 +944,7 @@ const Q_IND_FILM_1: AssessmentQuestion = {
 const Q_IND_FILM_2: AssessmentQuestion = {
   id: 'Q-IND-FILM-2',
   section: 'deep_dive',
-  pool: 'industry_film',
+  pool: 'industry_film_tv',
   questionText: 'Do you own any completed projects or IP?',
   answerType: 'single_select',
   options: [
@@ -895,7 +1025,7 @@ const Q_IND_WRITING_2: AssessmentQuestion = {
 const Q_IND_PERF_1: AssessmentQuestion = {
   id: 'Q-IND-PERF-1',
   section: 'deep_dive',
-  pool: 'industry_performing',
+  pool: 'industry_theater',
   questionText: 'How is your performance work typically structured?',
   answerType: 'single_select',
   options: [
@@ -911,7 +1041,7 @@ const Q_IND_PERF_1: AssessmentQuestion = {
 const Q_IND_PERF_2: AssessmentQuestion = {
   id: 'Q-IND-PERF-2',
   section: 'deep_dive',
-  pool: 'industry_performing',
+  pool: 'industry_theater',
   questionText: 'Beyond performing, do you create or own any IP?',
   answerType: 'single_select',
   options: [
@@ -1082,6 +1212,202 @@ const Q_IND_TECH_2: AssessmentQuestion = {
   displayOrder: 2,
 };
 
+// Photography
+const Q_IND_PHOTO_1: AssessmentQuestion = {
+  id: 'Q-IND-PHOTO-1',
+  section: 'deep_dive',
+  pool: 'industry_photography',
+  questionText: 'Who owns the rights to the photographs you create?',
+  answerType: 'single_select',
+  options: [
+    { value: 'clients_own', label: 'My clients / buyers own usage and originals (work-for-hire standard)' },
+    { value: 'license_retain', label: 'I license usage but retain copyright and originals' },
+    { value: 'specific_use_cases', label: 'I retain all rights and license specific use cases (editorial vs. commercial vs. archival)' },
+    { value: 'archive_revenue', label: 'I have a body of work generating ongoing licensing or print-sale revenue from the archive' },
+  ],
+  displayOrder: 1,
+};
+
+const Q_IND_PHOTO_2: AssessmentQuestion = {
+  id: 'Q-IND-PHOTO-2',
+  section: 'deep_dive',
+  pool: 'industry_photography',
+  questionText: 'How is your photography work typically compensated?',
+  answerType: 'single_select',
+  options: [
+    { value: 'day_rate', label: 'Day rates or per-shoot flat fees (work-for-hire)' },
+    { value: 'day_rate_usage', label: 'Day rate + usage fees (rights granted by use case)' },
+    { value: 'commercial_plus_licensing', label: 'Commercial fees + ongoing stock / print / editorial licensing' },
+    { value: 'gallery_editions', label: 'Gallery representation, fine-art editions, or print-sale revenue is meaningful' },
+    { value: 'studio_or_platform', label: 'I run a studio / agency or hold equity in distribution platforms' },
+  ],
+  displayOrder: 2,
+};
+
+// Comics & Illustration
+const Q_IND_COMICS_1: AssessmentQuestion = {
+  id: 'Q-IND-COMICS-1',
+  section: 'deep_dive',
+  pool: 'industry_comics',
+  questionText: 'Who owns the IP of the comics or illustration work you create?',
+  answerType: 'single_select',
+  options: [
+    { value: 'wfh', label: 'All work-for-hire — publishers / clients own everything' },
+    { value: 'mixed', label: 'Mixed — some work-for-hire, some I retain (often personal projects)' },
+    { value: 'retain_royalties', label: 'I own most of my published work and have ongoing royalty rights' },
+    { value: 'full_rights', label: 'I own the full IP and have negotiated reversion, foreign, and adaptation rights' },
+    { value: 'self_publish', label: 'I self-publish or run a publishing entity that owns a catalog' },
+  ],
+  displayOrder: 1,
+};
+
+const Q_IND_COMICS_2: AssessmentQuestion = {
+  id: 'Q-IND-COMICS-2',
+  section: 'deep_dive',
+  pool: 'industry_comics',
+  questionText: 'What does your back-end income from published work look like?',
+  answerType: 'single_select',
+  options: [
+    { value: 'none', label: "None — I'm paid flat fees or page rates" },
+    { value: 'royalties_basic', label: 'Standard royalties on sales (typical author royalty, no secondary rights)' },
+    { value: 'royalties_plus_secondary', label: 'Royalties + secondary rights revenue (foreign editions, adaptation options, merch)' },
+    { value: 'full_ownership', label: 'Full IP ownership generating recurring income across formats and territories' },
+  ],
+  displayOrder: 2,
+};
+
+// Comedy
+const Q_IND_COMEDY_1: AssessmentQuestion = {
+  id: 'Q-IND-COMEDY-1',
+  section: 'deep_dive',
+  pool: 'industry_comedy',
+  questionText: 'How do you primarily monetize your comedy work?',
+  answerType: 'single_select',
+  options: [
+    { value: 'gig_fees', label: 'Stand-up gig fees, club / open mic bookings, festival fees' },
+    { value: 'tour_merch', label: 'Touring revenue + merch (I control routing and economics)' },
+    { value: 'streamer_special', label: 'Streamer or network special fees + back-end participation' },
+    { value: 'own_specials', label: 'I own my specials, podcasts, or shows and license to platforms' },
+    { value: 'production_entity', label: 'I run a comedy production entity with multiple owned IPs' },
+  ],
+  displayOrder: 1,
+};
+
+const Q_IND_COMEDY_2: AssessmentQuestion = {
+  id: 'Q-IND-COMEDY-2',
+  section: 'deep_dive',
+  pool: 'industry_comedy',
+  questionText: 'On streamer / network specials, what have you retained?',
+  answerType: 'single_select',
+  options: [
+    { value: 'na', label: "I haven't taped a special / not applicable" },
+    { value: 'flat_license', label: 'Flat license fee — no back-end, no rights retention' },
+    { value: 'fee_plus_backend', label: 'Flat fee + back-end performance points or downstream rights' },
+    { value: 'self_released', label: 'Self-financed / self-released — I retain ownership and license platform-by-platform' },
+    { value: 'portfolio', label: 'I have a portfolio of owned specials across multiple platforms' },
+  ],
+  displayOrder: 2,
+};
+
+// Media & Editorial
+const Q_IND_MEDIA_1: AssessmentQuestion = {
+  id: 'Q-IND-MEDIA-1',
+  section: 'deep_dive',
+  pool: 'industry_media',
+  questionText: 'How is your media work structured for revenue?',
+  answerType: 'single_select',
+  options: [
+    { value: 'salary', label: 'Salary / staff at a media company or publication' },
+    { value: 'freelance', label: 'Freelance / contract work across outlets' },
+    { value: 'subscriptions', label: 'Subscription or membership revenue (paid newsletter, paid podcast)' },
+    { value: 'multi_stream', label: 'Multiple streams: subs + ads / sponsorships + licensing + events' },
+    { value: 'media_equity', label: 'Equity in a media business or network beyond my direct production' },
+  ],
+  displayOrder: 1,
+};
+
+const Q_IND_MEDIA_2: AssessmentQuestion = {
+  id: 'Q-IND-MEDIA-2',
+  section: 'deep_dive',
+  pool: 'industry_media',
+  questionText: 'What do you own in your media work?',
+  answerType: 'single_select',
+  options: [
+    { value: 'publisher_owns', label: 'The work belongs to publishers / employers' },
+    { value: 'output_via_platform', label: 'I own my output but distribute through platforms that take significant economics' },
+    { value: 'channel_audience', label: 'I own my channel, audience, and content directly — platforms are distribution' },
+    { value: 'media_brand', label: 'I own a media brand with repeatable shows / products / downstream IP' },
+    { value: 'parent_entity', label: "I'm the founder or hold equity in the parent media entity" },
+  ],
+  displayOrder: 2,
+};
+
+// Hospitality
+const Q_IND_HOSP_1: AssessmentQuestion = {
+  id: 'Q-IND-HOSP-1',
+  section: 'deep_dive',
+  pool: 'industry_hospitality',
+  questionText: "What's your relationship to the venues or brands operating under your name or direction?",
+  answerType: 'single_select',
+  options: [
+    { value: 'employed', label: 'Salary / employment role (no ownership)' },
+    { value: 'consulting', label: 'Consulting fees or naming / licensing deal — no equity' },
+    { value: 'one_equity', label: 'Equity stake in one venue or brand (founder or small)' },
+    { value: 'multi_equity', label: "Equity in multiple venues or brands I've launched" },
+    { value: 'holding_co', label: 'Holding company or investor role across a portfolio' },
+  ],
+  displayOrder: 1,
+};
+
+const Q_IND_HOSP_2: AssessmentQuestion = {
+  id: 'Q-IND-HOSP-2',
+  section: 'deep_dive',
+  pool: 'industry_hospitality',
+  questionText: 'How do you participate in upside beyond your operating role?',
+  answerType: 'single_select',
+  options: [
+    { value: 'fees_only', label: 'Salary / fees only — no participation in profits or exit' },
+    { value: 'profit_share', label: 'Profit share at the location level' },
+    { value: 'founder_equity', label: 'Founder / operator equity that vests with role' },
+    { value: 'royalty_plus_equity', label: 'Royalty or licensing income on the brand / IP, plus equity in operating entities' },
+    { value: 'gp_role', label: 'GP / investor role across a hospitality portfolio or fund' },
+  ],
+  displayOrder: 2,
+};
+
+// Gaming
+const Q_IND_GAMING_1: AssessmentQuestion = {
+  id: 'Q-IND-GAMING-1',
+  section: 'deep_dive',
+  pool: 'industry_gaming',
+  questionText: "For games or interactive work you've shipped, who owns the IP?",
+  answerType: 'single_select',
+  options: [
+    { value: 'publisher_owns', label: 'Publisher / employer owns everything (salary or work-for-hire)' },
+    { value: 'personal_only', label: 'I have personal projects but nothing commercial' },
+    { value: 'one_title', label: 'I own IP on at least one shipped title (sole or with co-founders)' },
+    { value: 'studio_franchise', label: 'My studio owns the IP and the franchise rights (sequels, adaptations, merch)' },
+    { value: 'catalog', label: 'I have a catalog of owned IP across multiple titles' },
+  ],
+  displayOrder: 1,
+};
+
+const Q_IND_GAMING_2: AssessmentQuestion = {
+  id: 'Q-IND-GAMING-2',
+  section: 'deep_dive',
+  pool: 'industry_gaming',
+  questionText: 'How do you participate in revenue from shipped games?',
+  answerType: 'single_select',
+  options: [
+    { value: 'fees_only', label: 'Salary / fees only — no royalty or revenue share' },
+    { value: 'royalties_only', label: 'Royalties on sales but the publisher controls distribution and pricing' },
+    { value: 'self_publish', label: 'Self-published — I keep most of the revenue minus platform cut' },
+    { value: 'mixed_publish', label: 'Mix — I license to publishers AND self-publish my own lines' },
+    { value: 'investor', label: 'I invest equity into other studios as part of my work' },
+  ],
+  displayOrder: 2,
+};
+
 // ── Section 4: Discernment Probe (All users) ──────────────────────
 
 const Q_DISC_1: AssessmentQuestion = {
@@ -1200,18 +1526,39 @@ export const STAGE_2_POOL: AssessmentQuestion[] = [Q_S2_VALUE, Q_S2_LEVERAGE, Q_
 // Q_S3_STREAMS removed — income diversity already captured by Q7 (income_structure allocation)
 export const STAGE_3_POOL: AssessmentQuestion[] = [Q_S3_NONEXEC, Q_S3_ADVISORS, Q_S3_STRUCTURE];
 
-/** Industry-specific question pools */
+/**
+ * Industry-specific question pools, keyed by `industry_${IndustrySlug}`
+ * to mirror the canonical 16-industry vocabulary in
+ * src/lib/case-studies/taxonomy.ts. Pool keys map mechanically to Q1
+ * slugs via DISCIPLINE_GROUP_MAP in src/types/assessment.ts.
+ *
+ * Question IDs (e.g. Q-IND-ART-1) are stable persistent identifiers
+ * stored in `assessments.industry_questions` JSONB — they do not match
+ * pool key naming and intentionally weren't renamed to keep historical
+ * answers readable.
+ */
 export const INDUSTRY_POOLS: Record<string, AssessmentQuestion[]> = {
-  industry_art: [Q_IND_ART_1, Q_IND_ART_2],
+  // Visual / craft
+  industry_visual_art: [Q_IND_ART_1, Q_IND_ART_2],
   industry_design: [Q_IND_DESIGN_1, Q_IND_DESIGN_2],
-  industry_film: [Q_IND_FILM_1, Q_IND_FILM_2],
-  industry_music: [Q_IND_MUSIC_1, Q_IND_MUSIC_2],
-  industry_writing: [Q_IND_WRITING_1, Q_IND_WRITING_2],
-  industry_performing: [Q_IND_PERF_1, Q_IND_PERF_2],
+  industry_photography: [Q_IND_PHOTO_1, Q_IND_PHOTO_2],
+  industry_comics: [Q_IND_COMICS_1, Q_IND_COMICS_2],
   industry_architecture: [Q_IND_ARCH_1, Q_IND_ARCH_2],
   industry_fashion: [Q_IND_FASHION_1, Q_IND_FASHION_2],
+  // Time-based / performing
+  industry_film_tv: [Q_IND_FILM_1, Q_IND_FILM_2],
+  industry_music: [Q_IND_MUSIC_1, Q_IND_MUSIC_2],
+  industry_theater: [Q_IND_PERF_1, Q_IND_PERF_2],
+  industry_comedy: [Q_IND_COMEDY_1, Q_IND_COMEDY_2],
+  // Word / editorial
+  industry_writing: [Q_IND_WRITING_1, Q_IND_WRITING_2],
+  industry_media: [Q_IND_MEDIA_1, Q_IND_MEDIA_2],
+  // Commercial / experiential
   industry_advertising: [Q_IND_AD_1, Q_IND_AD_2],
+  industry_hospitality: [Q_IND_HOSP_1, Q_IND_HOSP_2],
+  // Tech
   industry_technology: [Q_IND_TECH_1, Q_IND_TECH_2],
+  industry_gaming: [Q_IND_GAMING_1, Q_IND_GAMING_2],
 };
 
 /** Discernment questions (all users) */

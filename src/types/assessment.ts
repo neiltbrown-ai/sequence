@@ -14,9 +14,14 @@ export type AnswerType = 'single_select' | 'multi_select' | 'rank' | 'slider' | 
 export type QuestionSection = 'identity' | 'feeling' | 'reality' | 'deep_dive' | 'ambition';
 export type QuestionPool =
   | 'stage_1' | 'stage_2' | 'stage_3'
-  | 'industry_art' | 'industry_design' | 'industry_film' | 'industry_music'
-  | 'industry_writing' | 'industry_performing' | 'industry_architecture'
-  | 'industry_fashion' | 'industry_advertising' | 'industry_technology'
+  // Industry pool keys mirror the canonical Q1 industry slugs (see
+  // src/lib/case-studies/taxonomy.ts) prefixed with `industry_`.
+  | 'industry_visual_art' | 'industry_design' | 'industry_photography'
+  | 'industry_comics' | 'industry_architecture' | 'industry_fashion'
+  | 'industry_film_tv' | 'industry_music' | 'industry_theater' | 'industry_comedy'
+  | 'industry_writing' | 'industry_media'
+  | 'industry_advertising' | 'industry_hospitality'
+  | 'industry_technology' | 'industry_gaming'
   | 'discernment';
 
 export type MisalignmentFlag =
@@ -55,34 +60,57 @@ export type AssessmentQuestion = {
 };
 
 // ── Discipline Groups ──────────────────────────────────────────────
+//
+// `DisciplineGroup` slugs are the assessment Q1 industry vocabulary —
+// kept in sync with the canonical 16-industry list at
+// src/lib/case-studies/taxonomy.ts (Phase 3 of the case-study taxonomy
+// rollout, May 2026). The naming carries some legacy: the column is
+// `assessments.discipline` (singular) and the type here is named
+// `DisciplineGroup`, but the values are industry slugs.
 
 export type DisciplineGroup =
-  | 'visual_arts' | 'design' | 'film_video' | 'music_audio'
-  | 'writing' | 'performing_arts' | 'architecture_interiors'
-  | 'fashion_apparel' | 'advertising_marketing' | 'technology_creative_tech';
+  // Visual / craft
+  | 'visual_art' | 'design' | 'photography' | 'comics' | 'architecture' | 'fashion'
+  // Time-based / performing
+  | 'film_tv' | 'music' | 'theater' | 'comedy'
+  // Word / editorial
+  | 'writing' | 'media'
+  // Commercial / experiential
+  | 'advertising' | 'hospitality'
+  // Tech
+  | 'technology' | 'gaming';
 
 export const DISCIPLINE_GROUP_MAP: Record<DisciplineGroup, QuestionPool> = {
-  visual_arts: 'industry_art',
+  visual_art: 'industry_visual_art',
   design: 'industry_design',
-  film_video: 'industry_film',
-  music_audio: 'industry_music',
+  photography: 'industry_photography',
+  comics: 'industry_comics',
+  architecture: 'industry_architecture',
+  fashion: 'industry_fashion',
+  film_tv: 'industry_film_tv',
+  music: 'industry_music',
+  theater: 'industry_theater',
+  comedy: 'industry_comedy',
   writing: 'industry_writing',
-  performing_arts: 'industry_performing',
-  architecture_interiors: 'industry_architecture',
-  fashion_apparel: 'industry_fashion',
-  advertising_marketing: 'industry_advertising',
-  technology_creative_tech: 'industry_technology',
+  media: 'industry_media',
+  advertising: 'industry_advertising',
+  hospitality: 'industry_hospitality',
+  technology: 'industry_technology',
+  gaming: 'industry_gaming',
 };
 
-// Maps a discipline value to its group
+// Maps a sub-discipline value (Q1-sub) to its parent industry group.
+// Keys are sub-discipline slugs from src/lib/assessment/questions.ts
+// (SUB_DISCIPLINES). Used by question-selection.ts to route sub-slug
+// answers back to their industry pool.
 export const DISCIPLINE_TO_GROUP: Record<string, DisciplineGroup> = {
-  // Visual Arts
-  painting: 'visual_arts',
-  sculpture: 'visual_arts',
-  illustration: 'visual_arts',
-  mixed_media: 'visual_arts',
-  digital_art: 'visual_arts',
-  photography_fine_art: 'visual_arts',
+  // Visual Art
+  painting: 'visual_art',
+  sculpture: 'visual_art',
+  conceptual_art: 'visual_art',
+  printmaking: 'visual_art',
+  mixed_media: 'visual_art',
+  digital_art: 'visual_art',
   // Design
   brand_identity: 'design',
   product_ux: 'design',
@@ -90,51 +118,88 @@ export const DISCIPLINE_TO_GROUP: Record<string, DisciplineGroup> = {
   motion: 'design',
   environmental_spatial: 'design',
   web_digital: 'design',
-  // Film & Video
-  directing: 'film_video',
-  screenwriting: 'film_video',
-  cinematography: 'film_video',
-  editing_post: 'film_video',
-  producing: 'film_video',
-  animation: 'film_video',
-  // Music & Audio
-  artist_performer: 'music_audio',
-  songwriter: 'music_audio',
-  music_producer: 'music_audio',
-  composer_scoring: 'music_audio',
-  sound_design: 'music_audio',
-  dj_electronic: 'music_audio',
-  // Writing
+  // Photography
+  editorial_photo: 'photography',
+  commercial_photo: 'photography',
+  fine_art_photo: 'photography',
+  documentary_photo: 'photography',
+  portrait_photo: 'photography',
+  fashion_photo: 'photography',
+  // Comics & Illustration
+  comic_book: 'comics',
+  graphic_novel: 'comics',
+  editorial_illustration: 'comics',
+  commercial_illustration: 'comics',
+  cartooning: 'comics',
+  // Architecture
+  residential: 'architecture',
+  commercial: 'architecture',
+  landscape: 'architecture',
+  interior_design: 'architecture',
+  // Fashion
+  fashion_design: 'fashion',
+  styling: 'fashion',
+  fashion_creative_direction: 'fashion',
+  manufacturing_production: 'fashion',
+  // Film & TV
+  directing: 'film_tv',
+  screenwriting: 'film_tv',
+  cinematography: 'film_tv',
+  editing_post: 'film_tv',
+  producing: 'film_tv',
+  animation: 'film_tv',
+  // Music
+  artist_performer: 'music',
+  songwriter: 'music',
+  music_producer: 'music',
+  composer_scoring: 'music',
+  sound_design: 'music',
+  dj_electronic: 'music',
+  // Theater & Performing Arts
+  acting: 'theater',
+  dance_choreography: 'theater',
+  theater_directing_producing: 'theater',
+  performance_art: 'theater',
+  // Comedy
+  standup: 'comedy',
+  sketch: 'comedy',
+  comedy_writing: 'comedy',
+  comedy_podcast: 'comedy',
+  late_night: 'comedy',
+  // Writing & Publishing
   fiction_literary: 'writing',
   nonfiction_journalism: 'writing',
   screenwriting_writing: 'writing',
   copywriting: 'writing',
   content_editorial: 'writing',
-  // Performing Arts
-  acting: 'performing_arts',
-  dance_choreography: 'performing_arts',
-  theater_directing_producing: 'performing_arts',
-  comedy_spoken_word: 'performing_arts',
-  // Architecture & Interiors
-  residential: 'architecture_interiors',
-  commercial: 'architecture_interiors',
-  landscape: 'architecture_interiors',
-  interior_design: 'architecture_interiors',
-  // Fashion & Apparel
-  fashion_design: 'fashion_apparel',
-  styling: 'fashion_apparel',
-  fashion_creative_direction: 'fashion_apparel',
-  manufacturing_production: 'fashion_apparel',
-  // Advertising & Marketing
-  ad_creative_direction: 'advertising_marketing',
-  strategy: 'advertising_marketing',
-  media_content: 'advertising_marketing',
-  brand_consulting: 'advertising_marketing',
-  // Technology & Creative Tech
-  creative_coding: 'technology_creative_tech',
-  game_design: 'technology_creative_tech',
-  xr_immersive: 'technology_creative_tech',
-  ai_augmented_creative: 'technology_creative_tech',
+  // Media & Editorial
+  podcast_media: 'media',
+  publication: 'media',
+  newsletter_media: 'media',
+  video_creator: 'media',
+  content_business: 'media',
+  // Advertising
+  ad_creative_direction: 'advertising',
+  strategy: 'advertising',
+  media_content: 'advertising',
+  brand_consulting: 'advertising',
+  // Hospitality
+  restaurants: 'hospitality',
+  bars: 'hospitality',
+  hotels: 'hospitality',
+  fb_brand: 'hospitality',
+  experiential_venue: 'hospitality',
+  // Technology
+  creative_coding: 'technology',
+  software_product: 'technology',
+  xr_immersive: 'technology',
+  ai_augmented_creative: 'technology',
+  // Gaming
+  game_design: 'gaming',
+  game_dev: 'gaming',
+  game_publishing: 'gaming',
+  esports: 'gaming',
+  interactive_narrative: 'gaming',
 };
 
 // ── Assessment Data (stored in Supabase) ──────────────────────────
