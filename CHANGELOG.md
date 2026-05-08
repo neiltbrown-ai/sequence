@@ -10,6 +10,41 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-07 (continued) — Case study taxonomy rollout, Phase 4 (cross-cutting cleanup + roll-up)
+
+**Goal:** Final coherence pass after Phases 1–3. Update `case-study-taxonomy.md`'s provenance line to reflect the as-shipped Phase 3 alignment, and add this roll-up entry as a single landing-pad for someone reading the history later.
+
+This is Phase 4 (and the closing entry) of the rollout planned in `content/reference/case-study-taxonomy-rollout-plan.md`. Smaller than originally scoped because the spec rewrite (`seq-assessment-build-spec-v2.md` → `v3.md`) was folded into Phase 3 while the code was being touched.
+
+### What shipped
+
+- **`case-study-taxonomy.md` Provenance section updated.** The "Aligned with: assessment Q1" line now specifies Phase 3 (2026-05-07), names the import-from pattern (`questions.ts` imports `INDUSTRIES` from `case-studies/taxonomy.ts`), enumerates the 8 renamed + 6 new slugs, and points at `seq-assessment-build-spec-v3.md` for the question pools + migration `00018_normalize_assessment_industry.sql`. Anyone reading the taxonomy doc cold now sees the as-shipped state without having to cross-reference CLAUDE.md.
+- **CLAUDE.md coherence pass.** Re-read Schema gotchas + Key file paths sections. Phase 1/2/3 additions already read coherently — line 395 (Shared vocab modules) was updated in Phase 3 to note `case-studies/taxonomy.ts` is dual-purpose (case studies + assessment Q1), the Phase 3 block in "What this session built" is comprehensive, and the case-studies-industries-disciplines bullet (line 331) plus assessments-column inventory (line 316) cover the schema-level facts. No prose edits needed.
+- **No code changes.** Pure docs polish.
+
+### Roll-up — case study taxonomy rollout (May 2026)
+
+Four phases, all shipped 2026-05-07 across separate worktrees per the rollout plan's per-phase protocol:
+
+- **Phase 1 — Schema foundation + content backfill.** Canonical `INDUSTRIES` (16, 5 groups) + `DISCIPLINES` (10) module at `src/lib/case-studies/taxonomy.ts`. All 104 case study MDX files migrated to typed `industries[]` + `disciplines[]` frontmatter (Claude-API-driven backfill via `scripts/backfill-case-study-taxonomy.ts`, calibrated against worked-examples). Build-time validator added. Legacy `industry: string` removed.
+- **Phase 2 — Sidebar two-axis filter UI.** Replaced the single-axis tab bar on `/library/case-studies` with a 240px sticky sidebar (Industries grouped by domain + Disciplines flat) + mobile bottom-sheet drawer. URL-persistent filter state (`?industries=music,film_tv&disciplines=production`), constraint-aware per-option counts, lossless URL hydration.
+- **Phase 3 — Assessment Q1 alignment + 6 new industry pools.** Q1 expanded 10 → 16 industries, importing from the canonical taxonomy module. 8 legacy slugs renamed; 6 new industries (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`) added with their own Section 4B question pools. Spec `v2` → `v3`. Migration `00018` applied.
+- **Phase 4 — Cross-cutting cleanup (this entry).** Provenance + roll-up.
+
+**Outcome:** the case study taxonomy is now the single shared vocabulary for case-study tagging, filter UX, and the assessment's industry question. Adding a 17th industry in the future means: edit `taxonomy.ts`, write a Section 4B pool in `questions.ts`, add the sub-discipline question, update CLAUDE.md "Adding an option" guidance — no schema or filter UI changes required.
+
+### Lessons / patterns worth remembering
+
+- **Per-phase protocol scaled well to 4 phases / 1 day.** Each phase had a worktree, a clean commit graph, an independent Vercel preview, and shipped to main with docs + code in the same fast-forward push. The forced isolation (worktree per phase) made it easy to interrupt and resume; the forced docs-with-code pairing meant context never went stale. Recommend keeping the protocol for any multi-phase rollout.
+- **"Should this be its own module?" is worth questioning each phase, not just at planning time.** The rollout plan called for a Phase 3 `src/lib/profile/disciplines.ts` module. By Phase 3 the canonical `case-studies/taxonomy.ts` already covered the same need — creating a new module would have introduced two-places-to-update for no benefit. Skipped it; documented the decision in Phase 3's CHANGELOG and the new shared-vocab-modules note in CLAUDE.md. Default-question every "create a new module" instruction in a multi-phase plan against what's already in place.
+- **Folding adjacent docs work into the phase that's already touching the code is strictly cheaper.** Phase 4 was supposed to do the spec rewrite; it was folded into Phase 3 because the same context was hot. Phase 4 ended up much smaller (this entry + a provenance line). The rollout plan's protocol was right that docs ship with code; the specific allocation of which-phase-does-what-doc was less important than landing it together with the code that motivated it.
+
+### Files updated
+
+- `content/reference/case-study-taxonomy.md` — Provenance section: assessment Q1 alignment line specifies Phase 3, import pattern, slug list, migration name, spec v3 reference
+
+---
+
 ## 2026-05-07 (continued) — Case study taxonomy rollout, Phase 3 (assessment Q1 alignment + 6 new industry pools)
 
 **Goal:** Align the assessment's Q1 industry vocabulary with the canonical case-study taxonomy. Rename 8 existing slugs, add 6 new industries (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`), and write 6 new Section 4B question pools. Bring the spec doc back in sync with the live code.

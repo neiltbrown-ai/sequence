@@ -297,7 +297,7 @@ Real cases from the corpus, hand-tagged as authoritative examples. Use these as 
 Defined: 2026-05-06 (during the portal refinements + vocab cleanup session).
 Backfilled into the corpus: 2026-05-07 (Phase 1 of the rollout — 104 cases tagged via Claude API, with human review of calibration + final proposals).
 Replaces: ad-hoc freeform `discipline: string` (~104 unique values across 104 cases) and a 9-value `industry: string` enum that had collapsing categories like Writing / Media / Publishing / Audio.
-Aligned with: assessment Q1 industry vocabulary (extended to match these 16 in the same May 2026 work).
+Aligned with assessment Q1 industry vocabulary: Phase 3 (2026-05-07) — `src/lib/assessment/questions.ts` now imports `INDUSTRIES` from `src/lib/case-studies/taxonomy.ts`, and `assessments.discipline` stores `IndustrySlug` values. 8 legacy assessment slugs renamed (`visual_arts` → `visual_art`, etc.) and 6 new industries added (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`) — each with its own Section 4B question pool. Migration `00018_normalize_assessment_industry.sql`. See `seq-assessment-build-spec-v3.md` for the question pools.
 Companion docs:
 - `case-study-components.md` — MDX component toolkit
 - `case-study-editorial-conventions.md` — voice register, evidence rules, structure conventions
