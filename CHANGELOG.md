@@ -10,6 +10,47 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-08 — Creative Identity portrait at the assessment-completion screen
+
+**Goal:** Show the same archetype portrait that lives in Settings → Creative Identity at the moment the user finishes the assessment — so the payoff for completing all 25 questions is the visual identity, not just a "you're done" summary.
+
+### What shipped
+
+- **New `src/components/portal/creative-identity-portrait.tsx`** — extracted the entire `CompleteState` rendering (archetype hero with sigil, stage band with rail, facet grid, friction points list) from `creative-identity-panel.tsx` into a standalone reusable component. Single new prop `ctaVariant: "default" | "none"`:
+  - `"default"` (Settings): renders the View Roadmap + Refine Identity CTAs and the "Last updated {date}" footer.
+  - `"none"` (Wizard completion): renders the portrait only; the wizard owns the surrounding "Your roadmap is being prepared" header and "What happens next" copy so the celebratory framing stays intact.
+- **`creative-identity-panel.tsx` reduced from 261 → 94 lines.** Now it's just the empty/in-progress states + the panel chrome; the completed state delegates to `<CreativeIdentityPortrait ctaVariant="default" />`. Zero behavior change at Settings → Creative Identity tab.
+- **`/api/assessment/complete` returns `snapshot` in the response** alongside `planId`. Two construction sites: the idempotent return path (existing plan) and the main success path (fresh plan). Snapshot shape matches `CreativeIdentitySnapshot` so the same portrait component works in both contexts. `completedAt` captured into a const so the DB row + response payload agree to the millisecond.
+- **`assessment-wizard.tsx` renders the portrait at completion** when `data.snapshot` is in the response. Falls back to the legacy 3-cell summary strip (Stage / Misalignments / Sections) if snapshot is missing — keeps the screen useful instead of empty if the API ever changes shape.
+- **CSS**: `.asmt-complete-portrait` wrapper sets bottom margin (36px) for breathing room above "What happens next"; unsets the panel's internal max-width cap so the portrait fills the wizard's content column.
+
+### Verification
+
+- `npx tsc --noEmit` clean.
+- `npm run build` clean (95 pages, no errors).
+- **Settings tab**: rendered in browser (demo-sales user) — archetype hero + stage band + facets all show correctly. `Discipline / Brand Strategy` confirms `formatDiscipline()` correctly handles the `string[]` sub-discipline shape (joins with ` + ` for multiple, just shows the single label for one).
+- **API response**: hit `/api/assessment/complete` for demo-sales' existing completed assessment (idempotent path). Response: `200 { planId, snapshot }` with all 12 `CreativeIdentitySnapshot` fields populated, `subDiscipline: ["brand_strategy"]` (array shape correct).
+- Wizard completion path verified by inspection — same component as Settings, `data.snapshot` flows directly into the rendering — no separate code path to test independently.
+
+### Lessons / patterns worth remembering
+
+- **Worktrees branched from older commits silently ship outdated assumptions.** The companion session that authored the portrait extraction was working in a worktree branched from `1890843` (Phase 4 docs), three commits before the multi-select rollout. From their tree: `assessments.sub_discipline` is `text` and the question is `single_select` — so when they observed write/read errors against the live `text[]` column (post-migration `00019`), they correctly identified the mismatch but mis-attributed the cause to "an unmigrated alter." They landed defensive `asSingletonArray()` / `unwrapSubDiscipline()` / `readSubDiscipline()` / `writeSubDiscipline()` helpers in 5 files to bridge scalar code with array DB. None of those helpers are needed on main — main already handles arrays end-to-end. **Pattern:** when a worktree starts going around in circles on a "live DB doesn't match the code" diagnosis, first thing to check is whether main has moved ahead with a relevant migration. `git log main..HEAD` from the worktree surfaces the gap immediately.
+- **Layered features ship cleaner than pre-rebased features.** The portrait extraction itself is independent of the multi-select work — different files, different concerns, different motivations. By rebasing the worktree onto current main BEFORE applying the feature changes, we got a clean 4-file diff (~93 net additions) instead of a 7-file mess full of workaround helpers fighting the existing array handling. The "rebase first, apply second" pattern is the right default whenever a worktree has been alive long enough that main has shifted underneath it.
+- **API response shape matters for UI seam consistency.** The payoff screen needed snapshot data, but the `/api/assessment/complete` endpoint historically only returned `{ planId }` — the wizard had to render fallback summary fields (`state.detectedStage`, `state.misalignmentFlags.length`) because the full snapshot wasn't available client-side. Now the endpoint returns both the persisted plan ID AND a freshly-built snapshot, the wizard renders the same portrait Settings does, and there's only one component to maintain for "completed Creative Identity." If a feature needs server-derived state on the client, return it in the response that triggered the work — don't make the client re-fetch.
+
+### Files added
+
+- `src/components/portal/creative-identity-portrait.tsx` (235 lines) — extracted reusable portrait component with `ctaVariant` prop
+
+### Files updated
+
+- `src/components/portal/creative-identity-panel.tsx` — slimmed to 94 lines; delegates completed state to the portrait
+- `src/app/api/assessment/complete/route.ts` — returns `{ planId, snapshot }`; `completedAt` const so DB + response agree
+- `src/components/assessment/assessment-wizard.tsx` — captures `data.snapshot`, renders portrait at completion (fallback to legacy summary strip if missing)
+- `src/app/(portal)/portal.css` — `.asmt-complete-portrait` wrapper styles
+
+---
+
 ## 2026-05-07 (continued) — Multi-select on sub-disciplines + 6 stackable industry-pool Q1s
 
 **Goal:** Let assessment-takers pick up to 3 sub-disciplines per industry, plus up to 3 answers on industry-pool Q1s where the option ladder is stackable (revenue streams, monetization paths) rather than mutually exclusive. Single-select was forcing creatives with genuine multi-disciplinary practice (a designer doing brand identity + product UX, a media-business operator running a podcast + a newsletter) into reductive picks.
