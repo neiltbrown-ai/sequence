@@ -56,11 +56,21 @@ function getStagePool(stage: StageNumber): AssessmentQuestion[] {
 }
 
 function getIndustryQuestions(discipline: string): AssessmentQuestion[] {
-  // Map discipline to group
-  const group: DisciplineGroup | undefined = DISCIPLINE_TO_GROUP[discipline];
+  // `discipline` may arrive as either:
+  //   - a top-level industry slug (DisciplineGroup, stored in
+  //     assessments.discipline) — the value the wizard sends
+  //   - a sub-discipline slug (stored in assessments.sub_discipline)
+  // Resolve both. Pre-Phase-3 the function only handled the sub-level
+  // case via DISCIPLINE_TO_GROUP, so callers passing a top-level slug
+  // (the wizard, the advisor flow's fallback) silently got an empty
+  // pool. Fixed 2026-05-07.
+  const isTopLevel = (discipline as DisciplineGroup) in DISCIPLINE_GROUP_MAP;
+  const group: DisciplineGroup | undefined = isTopLevel
+    ? (discipline as DisciplineGroup)
+    : DISCIPLINE_TO_GROUP[discipline];
+
   if (!group) return [];
 
-  // Map group to industry pool key
   const poolKey = DISCIPLINE_GROUP_MAP[group];
   if (!poolKey) return [];
 

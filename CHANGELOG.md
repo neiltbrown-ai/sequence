@@ -10,6 +10,34 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-07 (continued) — Hotfix: assessment Section 4 industry pool was empty for everyone
+
+**Symptom:** Neil walked through the assessment as `media` and got the stage pool + discernment questions in Section 4 but no industry-specific questions — the new Q-IND-MEDIA-1/2 didn't appear. Same for any other industry.
+
+**Root cause:** `getIndustryQuestions(discipline)` in `src/lib/assessment/question-selection.ts` resolved `discipline` against `DISCIPLINE_TO_GROUP` only — but that map's keys are SUB-discipline slugs (`podcast_media`, `painting`, etc.). The assessment wizard at `src/components/assessment/assessment-wizard.tsx:275` passes `state.answers.discipline` (a TOP-level industry slug like `media`). `DISCIPLINE_TO_GROUP["media"]` returned undefined → empty industry pool → silent fail.
+
+**Pre-existing bug, not Phase 3.** Same chain failed pre-Phase-3 too (`DISCIPLINE_TO_GROUP["music_audio"]` would have been undefined too — only sub-disciplines like `music_producer` were keys). The seeded test users have `industry_questions: {}` in the seed precisely because the seed authors never bothered populating them — likely because they discovered the same empty-pool symptom and worked around it. Phase 3 made the bug user-visible by introducing six new pools (photography, comics, comedy, media, hospitality, gaming) that everyone could see *should* fire but didn't.
+
+**Fix.** `getIndustryQuestions` now accepts either form: it checks `DISCIPLINE_GROUP_MAP` first (top-level → group is the same value), then falls back to `DISCIPLINE_TO_GROUP` (sub-level → parent group). Both call sites in the wizard + the advisor flow continue to work without changes.
+
+### Verification
+
+- `npx tsc --noEmit` — clean.
+- One-shot verification script (since deleted) confirmed: all 16 top-level industry slugs now resolve to their expected `industry_*` pool with 2 questions each (`media` → `Q-IND-MEDIA-1, Q-IND-MEDIA-2`). The sub-discipline path (`podcast_media` → `industry_media`) still works for the advisor-flow caller that prefers `sub_discipline`.
+
+### Lessons / patterns worth remembering
+
+- **Silent empty-collection returns are the hardest bugs to discover.** This function was returning `[]` for years; nobody noticed because (a) seeded users had `industry_questions: {}` so it looked correct in screenshots, and (b) Section 4 still rendered other questions so users didn't see a gap. Phase 3 unblocked it by tripling the surface area (10 → 16 pools) and shipping content that the team explicitly went looking for. **When a routing function returns the empty type when the input is "wrong shape," consider whether to `throw` in dev (fail loud) instead of returning empty (fail silent).** I considered adding a dev-mode warn here but didn't ship one — flagging for next session if the pattern recurs.
+- **Two related vocabulary maps with overlapping but distinct key sets is a footgun.** `DISCIPLINE_GROUP_MAP` keys = top-level industry slugs (`media`); `DISCIPLINE_TO_GROUP` keys = sub-discipline slugs (`podcast_media`). The naming hint that they were both "discipline → group" maps obscured the difference. The fix accepts both forms because the API can't easily force a caller to disambiguate; the new comment on the function documents the dual semantics. If we ever rename, consider `INDUSTRY_TO_POOL` + `SUB_DISCIPLINE_TO_INDUSTRY` to make the asymmetry obvious from the name.
+- **The seed file masked the bug.** Marcus, Maya, et al. have `industry_questions: {}` hardcoded. If the seed had populated those (e.g. matching what a real run would produce), the empty-pool bug would have been visible at every demo for over a year. Worth a follow-up: re-seed all 5 completed test users with realistic `industry_questions` based on the now-working pool routing, so future demos surface the full Section 4 experience.
+
+### Files updated
+
+- `src/lib/assessment/question-selection.ts` — `getIndustryQuestions` accepts either top-level or sub-level slug; comment documents the dual semantics
+- `content/reference/troubleshooting.md` — symptom → cause → fix entry for "Section 4 industry questions don't appear"
+
+---
+
 ## 2026-05-07 (continued) — Case study taxonomy rollout, Phase 4 (cross-cutting cleanup + roll-up)
 
 **Goal:** Final coherence pass after Phases 1–3. Update `case-study-taxonomy.md`'s provenance line to reflect the as-shipped Phase 3 alignment, and add this roll-up entry as a single landing-pad for someone reading the history later.

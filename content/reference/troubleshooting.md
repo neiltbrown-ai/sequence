@@ -193,6 +193,22 @@ This catches any new code path that uses a non-canonical value at compile time.
 
 **Suspect fields worth auditing periodically:** `disciplines`, `interests`, `career_stage`, `business_structure`, asset types, deal types — anywhere the option list lives in multiple form components.
 
+### Symptom: Section 4 of the assessment shows stage + discernment questions, but no industry-specific questions appear
+
+**Root cause:** `getIndustryQuestions(discipline)` in `src/lib/assessment/question-selection.ts` looks up `discipline` against `DISCIPLINE_TO_GROUP` — a map keyed by **sub-discipline** slugs (`podcast_media`, `painting`, etc.). The assessment wizard at `src/components/assessment/assessment-wizard.tsx` passes `state.answers.discipline`, which holds the **top-level** industry slug (`media`, `painting`'s parent `visual_art`, etc.). Lookup misses, function returns `[]`, Section 4 silently omits the industry pool.
+
+This is a long-standing bug (pre-Phase-3) — masked because:
+- Seeded test users have `industry_questions: {}` hardcoded in `scripts/seed-test-users.ts`, so demos never showed the gap.
+- Section 4 still rendered other questions (stage + discernment), so users didn't see a hole — they just didn't see the *right* questions.
+
+Phase 3 (May 2026) made the bug user-visible by tripling the surface area (10 → 16 industries) and shipping new pools (`photography`, `comics`, `comedy`, `media`, `hospitality`, `gaming`) — Neil noticed Q-IND-MEDIA-1/2 weren't appearing in his walk-through.
+
+**Fix:** `getIndustryQuestions` now accepts either form — if `discipline` is a key in `DISCIPLINE_GROUP_MAP` (top-level industry slug) it's used directly; otherwise it falls back to `DISCIPLINE_TO_GROUP` (sub-discipline → parent industry). See `src/lib/assessment/question-selection.ts` (the comment on the function documents the dual semantics).
+
+**Pattern to remember:**
+- **Two related vocabulary maps with overlapping but distinct key sets is a footgun.** `DISCIPLINE_GROUP_MAP` and `DISCIPLINE_TO_GROUP` both look like "discipline → group" maps, but their key spaces are different (top-level industry slugs vs sub-discipline slugs). When you see a function indexing into one of them with an externally-sourced string, ask "is this string GUARANTEED to be a key here?"
+- **Silent empty-collection returns are the hardest bugs to find.** `return []` for an unrecognized input feels safe but hides routing failures. Consider `throw` in dev / `console.warn` to surface them, especially in functions that select content for the user.
+
 ### Symptom: A page (e.g. `/onboarding`) renders if you URL-type to it, but no UI flow ever sends users there
 
 **Root cause:** Orphan route — page file exists at `src/app/<group>/<route>/page.tsx` but no `redirect()`, `router.push()`, sidebar link, or middleware rule references it.
