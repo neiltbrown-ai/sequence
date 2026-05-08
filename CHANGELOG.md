@@ -10,6 +10,56 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-05-07 (continued) — Multi-select on sub-disciplines + 6 stackable industry-pool Q1s
+
+**Goal:** Let assessment-takers pick up to 3 sub-disciplines per industry, plus up to 3 answers on industry-pool Q1s where the option ladder is stackable (revenue streams, monetization paths) rather than mutually exclusive. Single-select was forcing creatives with genuine multi-disciplinary practice (a designer doing brand identity + product UX, a media-business operator running a podcast + a newsletter) into reductive picks.
+
+### What shipped
+
+- **All 16 Q1-sub questions are now `multi_select` with `maxSelections: 3`.** Single source-of-truth: `SUB_DISCIPLINES_TYPED` in `src/lib/assessment/questions.ts`. Question text gets a "(select up to 3)" hint via the existing label flow.
+- **6 industry-pool Q1s flipped to `multi_select`** based on the stackable-vs-ladder character of each option list:
+  - `Q-IND-PHOTO-1` (rights ownership) + `Q-IND-PHOTO-2` (compensation structure) — photographers commonly stack rights regimes and comp structures
+  - `Q-IND-COMEDY-1` (monetization paths) — gig fees + tour + special often coexist
+  - `Q-IND-MEDIA-1` (revenue structure) — the case Neil flagged: subs + ads + licensing + events stack
+  - `Q-IND-HOSP-2` (upside participation) — royalty + equity + GP role can coexist
+  - `Q-IND-GAMING-2` (revenue participation) — royalties + self-publish often coexist
+
+  The other 26 industry-pool questions remain `single_select` because they're *ladder* questions where multi-select would dilute the signal (e.g., Q-IND-COMICS-2 back-end income, Q-IND-GAMING-1 IP ownership — you're at one rung).
+- **Schema: `assessments.sub_discipline` widened from `TEXT` to `TEXT[]`** via migration `00019_assessments_sub_discipline_multi.sql`. Existing single string values become 1-element arrays. NULL stays NULL.
+- **`assessments.industry_questions` JSONB widened** at the type level: `Record<string, string>` → `Record<string, string | string[]>`. JSONB doesn't need a SQL migration; the type widening is purely TypeScript.
+- **New helper `src/lib/assessment/answer-utils.ts`** — `toAnswerArray(value)`, `firstAnswer(value)`, `joinAnswers(value)` for normalizing single/multi values at read sites.
+- **All sub_discipline readers updated** to handle `string[]` shape: `CreativeIdentitySnapshot.subDiscipline`, the panel's `formatDiscipline()`, both admin pages (assessments review + members detail), and the AI prompt strings in `regenerate`, `regenerate-all`, and `generate-plan` routes.
+- **Advisor flow's sub_discipline-first-then-discipline preference removed.** Post-Phase-3 hotfix (commit `12aef66`), top-level discipline routes correctly via `DISCIPLINE_GROUP_MAP` — sub_discipline preference was a workaround for the now-fixed routing bug. Plus, multi-select sub_discipline (a `string[]`) can't be passed as a single string anyway. Now passes `state.answers.discipline` directly.
+- **Test seed updated** — all 5 completed seeded users had string `sub_discipline` values; wrapped to 1-element arrays. Live DB rows are backfilled by the migration; re-seed isn't required for live data, just for any future `npx tsx scripts/seed-test-users.ts` runs.
+
+### Verification
+
+- `npx tsc --noEmit` — clean.
+- `npm run build` — full Next.js build passed (95 pages, no errors).
+- Browser verification deferred until migration is applied — the wizard's autosave path writes a `string[]` to a column that's still `TEXT` pre-migration, which would fail.
+
+### Lessons / patterns worth remembering
+
+- **Strict-internal-loose-export pattern paid off again.** `SUB_DISCIPLINES_TYPED: Record<IndustrySlug, AssessmentQuestion>` (Phase 3) made flipping all 16 a single `Edit replace_all` with a unique 3-line context (`isSubQuestion: true` + `parentQuestionId: 'Q1'` is unique to sub-discipline questions). Worth defaulting to this pattern for any "list of N entries that share structure" — the type ensures every entry has the change applied.
+- **Stackable-vs-ladder is a useful editorial lens for option lists.** Some Section 4B questions are *ladders* (single-select right; you're at one rung — Stage 1 → Stage 4) and others are *stackable* (multi-select right; you legitimately have multiple of these — revenue streams, rights regimes, monetization paths). When designing or auditing an option list, ask: would a respondent who picks two genuinely have two true things, or are the options mutually exclusive by construction? The answer dictates `single_select` vs `multi_select`.
+- **AI-prompt strings are a hidden coupling site.** Three different routes had narrative system prompts referencing "sub_discipline is in the sub_discipline field." When the field shape changes (string → string[]), these prompts also need updating — the model can't infer new shape from old text. **Pattern:** when widening a column type, grep for the column name in `**/*.ts` AND in any inlined system-prompt strings, not just code paths.
+
+### Files added
+
+- `supabase/migrations/00019_assessments_sub_discipline_multi.sql` — column type widening
+- `src/lib/assessment/answer-utils.ts` — single/multi normalizer helpers
+
+### Files updated
+
+- `src/types/assessment.ts`, `src/types/advisor.ts`, `src/types/creative-identity.ts` — type widening for sub_discipline + industry_questions
+- `src/lib/assessment/questions.ts` — 16 sub-discipline questions + 6 industry Q1s flipped to multi_select
+- `src/components/portal/creative-identity-panel.tsx`, both admin pages — display joins multiple subs with " + " or ", "
+- `src/components/advisor/chat/assessment-flow.tsx` — drop sub_discipline-first preference
+- `src/app/api/assessment/regenerate/route.ts`, `regenerate-all/route.ts`, `src/lib/roadmap/generate-plan.ts` — AI prompt strings reflect array shape + 16-industry vocab
+- `scripts/seed-test-users.ts` — sub_discipline values wrapped in arrays
+
+---
+
 ## 2026-05-07 (continued) — Hotfix: assessment Section 4 industry pool was empty for everyone
 
 **Symptom:** Neil walked through the assessment as `media` and got the stage pool + discernment questions in Section 4 but no industry-specific questions — the new Q-IND-MEDIA-1/2 didn't appear. Same for any other industry.
