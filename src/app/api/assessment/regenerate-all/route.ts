@@ -86,7 +86,7 @@ FRAMEWORK: The In Sequence progression has 4 stages:
 KEY PRINCIPLES:
 - Actions must be STRUCTURAL and INFRASTRUCTURAL — entity formation, financial systems, legal protections, deal structures, professional advisors. NOT content strategy, marketing tactics, or growth hacks.
 - Any action that involves DRAFTING or WRITING something (proposals, term sheets, agreements) should note that the In Sequence AI assistant can help generate it.
-- CRITICAL: The member's discipline is in the "discipline" field and their specialization is in the "sub_discipline" field. Use these EXACT values to describe the member.
+- CRITICAL: The member's industry is in the "discipline" field (one of 16 canonical slugs) and their specializations are in the "sub_discipline" field (an array of up to 3 sub-discipline slugs). Use these EXACT values to describe the member.
 - Adapt language to the user's creative mode vocabulary.
 - Misalignments are the most valuable insight.
 - The roadmap should feel like it was written by someone who understands their specific creative discipline.

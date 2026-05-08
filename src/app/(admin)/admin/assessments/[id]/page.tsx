@@ -24,7 +24,7 @@ type PlanDetail = {
   published_at: string | null;
   assessment: {
     discipline: string;
-    sub_discipline: string | null;
+    sub_discipline: string[] | null;
     creative_mode: string;
     detected_stage: number;
     stage_score: number;
@@ -157,7 +157,7 @@ export default function AdminAssessmentReviewPage() {
               <dt>Discipline</dt>
               <dd>
                 {assessment.discipline}
-                {assessment.sub_discipline && ` → ${assessment.sub_discipline}`}
+                {assessment.sub_discipline && assessment.sub_discipline.length > 0 && ` → ${assessment.sub_discipline.join(", ")}`}
               </dd>
               <dt>Creative Mode</dt>
               <dd>{assessment.creative_mode}</dd>

@@ -66,7 +66,7 @@ export type PartialAssessment = {
   user_id: string;
   conversation_id: string | null;
   discipline: string | null;
-  sub_discipline: string | null;
+  sub_discipline: string[] | null;
   creative_mode: string | null;
   income_range: string | null;
   business_structure: string | null;

@@ -21,7 +21,7 @@ export interface CreativeIdentitySnapshot {
   archetypePrimary: string | null;
   creativeMode: string | null;
   discipline: string | null;
-  subDiscipline: string | null;
+  subDiscipline: string[] | null;
   misalignmentFlags: string[];
   completedAt: string | null;
   /** Kept for backwards compatibility — the assessments table has no

@@ -277,8 +277,9 @@ function Facet({ label, value }: { label: string; value: string }) {
 
 function formatDiscipline(snapshot: CreativeIdentitySnapshot): string | null {
   if (!snapshot.discipline) return null;
-  if (snapshot.subDiscipline) {
-    return `${humanize(snapshot.discipline)} / ${humanize(snapshot.subDiscipline)}`;
+  const subs = snapshot.subDiscipline;
+  if (subs && subs.length > 0) {
+    return `${humanize(snapshot.discipline)} / ${subs.map(humanize).join(" + ")}`;
   }
   return humanize(snapshot.discipline);
 }

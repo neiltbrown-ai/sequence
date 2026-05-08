@@ -41,7 +41,7 @@ FRAMEWORK: The In Sequence progression has 4 stages:
 KEY PRINCIPLES:
 - Actions must be STRUCTURAL and INFRASTRUCTURAL — entity formation, financial systems, legal protections, deal structures, professional advisors. NOT content strategy, marketing tactics, or growth hacks.
 - Any action that involves DRAFTING or WRITING something (proposals, term sheets, agreements) should note that the In Sequence AI assistant can help generate it.
-- CRITICAL: The member's discipline is in the "discipline" field and their specialization is in the "sub_discipline" field. Use these EXACT values to describe the member. Never infer the discipline from creative_mode alone.
+- CRITICAL: The member's industry is in the "discipline" field (one of 16 canonical slugs) and their specializations are in the "sub_discipline" field (an array of up to 3 sub-discipline slugs). Use these EXACT values to describe the member. Never infer the discipline from creative_mode alone.
 - Adapt language to the user's creative mode vocabulary. A maker creates work; a service provider delivers for clients. Use the right vocabulary for their world.
 - Misalignments are the most valuable insight. The "misalignment_flags" in the Creative Identity data are detected by our scoring engine and MUST all appear in your output. Also identify any additional gaps you see. Almost every creative professional has structural misalignments — err on the side of surfacing them.
 - If Portfolio Analysis is provided, ground at least one of the three actions in a specific asset or leverage scenario from it (e.g., "License your identity-system catalog — Structure #11 — because the Portfolio analysis flagged it as high-leverage unmonetized IP.")

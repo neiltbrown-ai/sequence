@@ -75,7 +75,10 @@ export default function AssessmentFlow({
     const adaptiveQs = selectAdaptiveQuestions(
       stageResult.detectedStage,
       (state.answers.creative_mode as CreativeMode) || "hybrid",
-      state.answers.sub_discipline || state.answers.discipline || ""
+      // Top-level discipline routes correctly post-Phase-3 hotfix
+      // (commit 12aef66). sub_discipline is now a string[] (multi-select)
+      // so it can't be passed as a single string anyway.
+      state.answers.discipline || ""
     );
 
     // Small delay so the "computing" message is visible

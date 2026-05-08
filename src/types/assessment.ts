@@ -211,7 +211,10 @@ export type Assessment = {
   status: AssessmentStatus;
   // Section 1
   discipline: string | null;
-  sub_discipline: string | null;
+  // Sub-discipline became multi-select (up to 3) on 2026-05-07. Existing
+  // single-string DB rows were converted to 1-element arrays via migration
+  // 00019. Always read as an array; falsy → null.
+  sub_discipline: string[] | null;
   creative_mode: CreativeMode | null;
   // Section 2
   energy_ranking: string[] | null;
@@ -225,8 +228,12 @@ export type Assessment = {
   demand_level: string | null;
   business_structure: string | null;
   // Section 4
+  // Multi-select industry-pool questions (e.g. Q-IND-MEDIA-1) store
+  // string[] values; single-select still store string. Single-shape
+  // union here; readers should normalize via the helper at
+  // src/lib/assessment/answer-utils.ts (toAnswerArray).
   stage_questions: Record<string, string> | null;
-  industry_questions: Record<string, string> | null;
+  industry_questions: Record<string, string | string[]> | null;
   discernment_questions: Record<string, string> | null;
   // Section 5
   three_year_goal: string | null;
@@ -408,7 +415,9 @@ export type WizardSection = 1 | 2 | 3 | 4 | 5;
 export type AssessmentAnswers = {
   // Section 1
   discipline?: string;
-  sub_discipline?: string;
+  // Multi-select up to 3 (2026-05-07). Wizard always dispatches an array;
+  // legacy code paths that wrote a single string are gone after Phase 3.
+  sub_discipline?: string[];
   creative_mode?: CreativeMode;
   // Section 2
   energy_ranking?: string[];
@@ -423,7 +432,7 @@ export type AssessmentAnswers = {
   business_structure?: string;
   // Section 4 (dynamic)
   stage_questions?: Record<string, string>;
-  industry_questions?: Record<string, string>;
+  industry_questions?: Record<string, string | string[]>;
   discernment_questions?: Record<string, string>;
   // Section 5
   three_year_goal?: string;
@@ -451,7 +460,7 @@ export type WizardState = {
 export type WizardAction =
   | { type: 'SET_ASSESSMENT_ID'; id: string }
   | { type: 'SET_ANSWER'; key: string; value: unknown }
-  | { type: 'SET_SECTION_4_ANSWER'; pool: 'stage_questions' | 'industry_questions' | 'discernment_questions'; questionId: string; value: string }
+  | { type: 'SET_SECTION_4_ANSWER'; pool: 'stage_questions' | 'industry_questions' | 'discernment_questions'; questionId: string; value: string | string[] }
   | { type: 'NEXT_QUESTION' }
   | { type: 'PREV_QUESTION' }
   | { type: 'SET_SECTION'; section: WizardSection }

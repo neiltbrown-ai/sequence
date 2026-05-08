@@ -38,7 +38,7 @@ interface Assessment {
   status: string;
   version: number;
   discipline: string | null;
-  sub_discipline: string | null;
+  sub_discipline: string[] | null;
   creative_mode: string | null;
   energy_ranking: Record<string, number> | null;
   drains: string[] | null;
@@ -851,7 +851,9 @@ export default function AdminMemberDetailPage({
                   <div className="adm-stat">
                     <div className="adm-stat-label">Sub-Discipline</div>
                     <div className="adm-stat-value" style={{ fontSize: "20px" }}>
-                      {assessment.sub_discipline ? formatKey(assessment.sub_discipline) : "—"}
+                      {assessment.sub_discipline && assessment.sub_discipline.length > 0
+                        ? assessment.sub_discipline.map(formatKey).join(", ")
+                        : "—"}
                     </div>
                   </div>
                   <div className="adm-stat">
