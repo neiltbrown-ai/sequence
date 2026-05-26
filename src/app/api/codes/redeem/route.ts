@@ -152,16 +152,17 @@ export async function POST(request: Request) {
   // Send welcome email
   const { data: profile } = await admin
     .from("profiles")
-    .select("email, first_name")
+    .select("email, full_name")
     .eq("id", userId)
     .single();
 
   if (profile?.email) {
     const subject = "Welcome to In Sequence";
+    const firstName = profile.full_name?.split(" ")[0] || undefined;
     const result = await sendEmail({
       to: profile.email,
       subject,
-      html: welcomeEmailHtml(profile.first_name),
+      html: welcomeEmailHtml(firstName),
     });
     await logEmail(admin, {
       userId,
