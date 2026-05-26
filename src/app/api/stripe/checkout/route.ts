@@ -90,8 +90,19 @@ export async function POST(request: Request) {
     let customerId = existingSub?.stripe_customer_id;
 
     if (!customerId) {
+      // Look up the user's name for the Stripe customer record.
+      // Profile is created synchronously by the handle_new_user() trigger
+      // when auth.signUp() resolves, so this is available even when the
+      // signup-pending flow (no live session) routes through here.
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userId)
+        .maybeSingle();
+
       const customer = await stripe.customers.create({
         email: userEmail,
+        ...(profile?.full_name && { name: profile.full_name }),
         metadata: {
           supabase_user_id: userId,
         },
