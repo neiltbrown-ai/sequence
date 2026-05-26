@@ -69,11 +69,6 @@ export async function POST(request: Request) {
     priceId = STRIPE_PRICES.full_access_annual;
   }
 
-  // Fallback to legacy single price ID
-  if (!priceId) {
-    priceId = process.env.STRIPE_PRICE_ID;
-  }
-
   if (!priceId) {
     return NextResponse.json(
       { error: "No Stripe price configured for this plan" },

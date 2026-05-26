@@ -106,7 +106,5 @@ export function priceIdToPlan(priceId: string | null): PlanId {
   if (priceId === STRIPE_PRICES.library_annual) return "library";
   if (priceId === STRIPE_PRICES.full_access_monthly) return "full_access";
   if (priceId === STRIPE_PRICES.full_access_annual) return "full_access";
-  // Legacy single price ID fallback
-  if (priceId === process.env.STRIPE_PRICE_ID) return "full_access";
   return "library";
 }
