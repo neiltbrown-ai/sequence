@@ -110,6 +110,8 @@ Wrapper for the case's "Compounding Effect" diagram. The component name is histo
 
 #### Diagram type taxonomy
 
+> For the full visual standard — literal color tokens (light + dark), exact per-type geometry/coordinates, and typography — see the dedicated, self-contained spec `diagram-system.md`. The summary below is the authoring view (which type to pick, in MDX); `diagram-system.md` is the reproduction view (every value needed to build one, including outside the repo).
+
 Pick the diagram from the case's actual structural argument, not by template. There are five recognized types — the first three are well-established in the library (~100 cases between them); the last two are newer and have a single canonical exemplar each.
 
 **1. Hub-and-spoke compounding wheel** (the dominant pattern, ~95 cases)

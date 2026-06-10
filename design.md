@@ -301,6 +301,8 @@ Timeout variant: alert-styled icon + apology title + return-to-dashboard CTA.
 
 ### Diagrams
 
+> The case-study "Compounding Effect" diagrams (hub-and-spoke, broken-flywheel, triangle, linear sequence, independent grid) have a dedicated, self-contained spec: `content/reference/diagram-system.md` — literal tokens, per-type geometry, typography, selection rule. Read that before authoring or animating one. The note below covers the shared `--diag-*` token system at the design-system level.
+
 Entity Structure and Value Flywheel. Use **theme-aware CSS custom properties**:
 
 ```css
