@@ -98,7 +98,7 @@ export default function ResourcesPage() {
               <span className="platform-price-term">/ YEAR</span>
             </div>
             <div className="platform-buttons rv rv-d3">
-              <Link href="/signup" className="btn btn--white">
+              <Link href="/signup?plan=library" className="btn btn--white">
                 SIGN UP &mdash; $12/YEAR
                 <ButtonArrow />
               </Link>
@@ -146,7 +146,7 @@ export default function ResourcesPage() {
               className="structures-gate-cta"
               style={{ display: "flex", alignItems: "center", gap: "16px" }}
             >
-              <Link href="/signup" className="btn btn--white">
+              <Link href="/signup?plan=library" className="btn btn--white">
                 SIGN UP &mdash; $12/YEAR
                 <ButtonArrow />
               </Link>
@@ -467,7 +467,7 @@ export default function ResourcesPage() {
               grows. You grow with it.
             </p>
             <div className="access-buttons rv rv-d2">
-              <Link href="/signup" className="btn btn--white">
+              <Link href="/signup?plan=library" className="btn btn--white">
                 SIGN UP &mdash; $12/YEAR
                 <ButtonArrow />
               </Link>

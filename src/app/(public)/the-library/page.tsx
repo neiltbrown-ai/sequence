@@ -110,7 +110,7 @@ export default function LibraryPage() {
               className="structures-gate-cta"
               style={{ display: "flex", alignItems: "center", gap: "16px" }}
             >
-              <Link href="/signup" className="btn btn--white">
+              <Link href="/signup?plan=library" className="btn btn--white">
                 SIGN UP &mdash; $12/YEAR
                 <ButtonArrow />
               </Link>

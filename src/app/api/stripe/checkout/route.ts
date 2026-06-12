@@ -124,7 +124,7 @@ export async function POST(request: Request) {
         },
       ],
       success_url: `${appUrl}${successBase}?step=confirmation&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}${cancelBase}?step=payment&canceled=true`,
+      cancel_url: `${appUrl}${cancelBase}?step=payment&canceled=true&plan=${plan}`,
       subscription_data: {
         metadata: {
           supabase_user_id: userId,
