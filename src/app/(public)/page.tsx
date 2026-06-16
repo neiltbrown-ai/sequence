@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import ButtonArrow from "@/components/ui/button-arrow";
 import NewsletterForm from "@/components/newsletter-form";
+import HeroVideo from "@/components/hero-video";
 
 export const metadata: Metadata = {
   title: { absolute: "Sequence — Own What You Create" },
@@ -44,7 +45,7 @@ const TOOLS = [
 // "What You Get" table — aligned to the page's 8-col grid (table spans cols 1-6)
 const wygRow = {
   display: "grid",
-  gridTemplateColumns: "repeat(6, 1fr)",
+  gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
   gap: "var(--gutter)",
   alignItems: "start",
   padding: "22px 0",
@@ -69,7 +70,7 @@ const wygTitle = {
   lineHeight: 1.3,
 } as const;
 const wygDesc = {
-  gridColumn: "3 / 6",
+  gridColumn: "3 / 5",
   fontFamily: "var(--sans)",
   fontSize: "14px",
   lineHeight: 1.6,
@@ -78,7 +79,7 @@ const wygDesc = {
   margin: 0,
 } as const;
 const wygTag = {
-  gridColumn: "6",
+  gridColumn: "5",
   fontFamily: "var(--mono)",
   fontSize: "9px",
   letterSpacing: ".1em",
@@ -103,14 +104,9 @@ export default function HomePage() {
             </p>
           </div>
           <div className="hero-portrait-cell">
-            <div className="hero-year-tag rv">/26</div>
+            <div className="hero-year-tag rv">DESIGN STYLE = ASSET</div>
             <div className="anim-reveal-down">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="hero-portrait"
-                src="/images/hero-portrait.png"
-                alt="Abstract circles"
-              />
+              <HeroVideo />
             </div>
           </div>
           <div className="hero-meta-cell rv rv-d2">
@@ -163,9 +159,10 @@ export default function HomePage() {
           </div>
         </div>
         <div className="g8">
+          {/* Feature table — columns 1-5 */}
           <div
             className="rv"
-            style={{ gridColumn: "1 / 7", borderTop: "1px solid var(--border)" }}
+            style={{ gridColumn: "1 / 6", borderTop: "1px solid var(--border)" }}
           >
             {TOOLS.map((t) => (
               <div style={wygRow} key={t.num}>
@@ -176,7 +173,31 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <div className="rv" style={{ gridColumn: "1 / 7", paddingTop: "32px" }}>
+          {/* Platform preview — columns 6-8, stretches to the table's height */}
+          <div
+            className="rv"
+            style={{
+              gridColumn: "6 / 9",
+              position: "relative",
+              border: "1px solid var(--border)",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/home-intro-platform.jpg"
+              alt="The Sequence platform"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "top center",
+                display: "block",
+              }}
+            />
+          </div>
+          <div className="rv" style={{ gridColumn: "1 / 6", paddingTop: "32px" }}>
             <Link href="/platform" className="btn">
               PLATFORM OVERVIEW
               <ButtonArrow />
