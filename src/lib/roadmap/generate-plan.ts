@@ -393,7 +393,10 @@ Return ONLY valid JSON.`);
       .stream({
         model: "claude-sonnet-4-6",
         thinking: { type: "adaptive" },
-        max_tokens: 4096,
+        // 16000 (not 4096): adaptive thinking tokens share the max_tokens
+        // budget with the visible JSON answer. 4096 risks the thinking eating
+        // the whole budget → no text block → "No text response".
+        max_tokens: 16000,
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: userPrompt }],
       })

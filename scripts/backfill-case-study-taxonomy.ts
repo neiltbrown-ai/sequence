@@ -190,9 +190,10 @@ async function tagOne(
     model: MODEL,
     // Adaptive thinking sharpens the hard crossover cases (e.g. hospitality +
     // design + architecture). Offline script — no serverless timeout risk.
-    // max_tokens raised from 1024 so thinking has room before the JSON answer.
+    // 8192 (not 1024): thinking tokens SHARE the max_tokens budget with the
+    // JSON answer, so the cap must leave room for both.
     thinking: { type: "adaptive" },
-    max_tokens: 4096,
+    max_tokens: 8192,
     system: systemPrompt,
     messages: [
       {

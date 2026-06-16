@@ -224,12 +224,11 @@ export async function POST(request: Request) {
       .stream({
         model: 'claude-sonnet-4-6',
         thinking: { type: 'adaptive' },
-        // Previously 2000 — too tight: 6 dimension summaries + up to 7
-        // recommended_actions (action + detail + structure_ref) + 5 structures
-        // and 5 case studies (each with "why") easily overruns 2000, causing
-        // truncation → malformed JSON → fallback empty verdict. 4096 gives
-        // comfortable headroom without impacting latency much.
-        max_tokens: 4096,
+        // 16000: the verdict JSON (6 dimension summaries + up to 7
+        // recommended_actions + 5 structures + 5 case studies) already needs
+        // ~4k, and adaptive thinking tokens SHARE this budget. 4096 caused the
+        // thinking to consume it all → no text block → "No text response".
+        max_tokens: 16000,
         system: systemWithContext,
         messages: [{ role: 'user', content: userPrompt }],
       })

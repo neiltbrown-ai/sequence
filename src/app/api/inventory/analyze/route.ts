@@ -230,7 +230,10 @@ Rules:
       .stream({
         model: "claude-sonnet-4-6",
         thinking: { type: "adaptive" },
-        max_tokens: 4096,
+        // 16000 (not 4096): adaptive thinking tokens share the max_tokens
+        // budget with the visible answer. At 4096 the thinking ate the whole
+        // budget and no JSON text block was emitted → "No text response".
+        max_tokens: 16000,
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: userPrompt }],
       })
