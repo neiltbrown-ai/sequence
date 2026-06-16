@@ -23,7 +23,7 @@ export async function generateMetadata({
   const cleanTitle = cs.frontmatter.title.replace(/<br\s*\/?>/gi, " ");
   const title = `${cleanTitle}`;
   const description = cs.frontmatter.excerpt || "";
-  const image = cs.frontmatter.heroImage || cs.frontmatter.coverImage || "/images/hero-portrait.png";
+  const image = cs.frontmatter.heroImage || cs.frontmatter.coverImage || "/images/og-default.jpg";
   return {
     title,
     description,
@@ -31,7 +31,7 @@ export async function generateMetadata({
       title,
       description,
       type: "article",
-      images: [{ url: image, width: 1200, height: 630, alt: cleanTitle }],
+      images: [{ url: image, alt: cleanTitle }],
     },
     twitter: {
       card: "summary_large_image",

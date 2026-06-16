@@ -21,7 +21,7 @@ export async function generateMetadata({
   if (!article) return { title: "Article" };
   const title = `${article.frontmatter.title}`;
   const description = article.frontmatter.excerpt || "";
-  const image = article.frontmatter.heroImage || "/images/hero-portrait.png";
+  const image = article.frontmatter.heroImage || "/images/og-default.jpg";
   return {
     title,
     description,
@@ -29,7 +29,7 @@ export async function generateMetadata({
       title,
       description,
       type: "article",
-      images: [{ url: image, width: 1200, height: 630, alt: article.frontmatter.title }],
+      images: [{ url: image, alt: article.frontmatter.title }],
     },
     twitter: {
       card: "summary_large_image",
