@@ -33,7 +33,7 @@ export const metadata: Metadata = {
       "Transform your portfolio of projects into a portfolio of assets.",
     images: [
       {
-        url: "/images/hero-portrait.png",
+        url: "/images/og-default.jpg",
         width: 1200,
         height: 630,
         alt: "Sequence",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: "Sequence — Own Your Future",
     description:
       "Transform your portfolio of projects into a portfolio of assets.",
-    images: ["/images/hero-portrait.png"],
+    images: ["/images/og-default.jpg"],
   },
 };
 
