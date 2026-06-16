@@ -715,7 +715,9 @@ h3.sec-label {
   grid-column: 1 / 6;
   grid-row: 2;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  /* minmax(0,1fr) keeps tracks equal so a long desc/button can't push
+     the intro tag + description off the page's 8-col background grid */
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: var(--gutter);
   align-items: start;
   padding-top: 24px;
@@ -2159,6 +2161,7 @@ h3.sec-label {
 .pr-hero-desc strong { color: var(--black); font-weight: 500; }
 .pr-plan { position: relative; z-index: 1; padding: 80px 0 0; }
 .pr-plan-grid { padding: 0 var(--margin); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gutter); }
+.pr-plan-grid--two { grid-template-columns: repeat(2, 1fr); }
 .pr-plan-card { padding: 40px; border: 1px solid var(--border); background: var(--white); display: flex; flex-direction: column; gap: 20px; }
 .pr-plan-title-row { display: flex; align-items: center; gap: 10px; }
 .pr-plan-badge { font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--mid); background: var(--bg); border-radius: 100px; padding: 6px 14px; display: inline-flex; }

@@ -1,0 +1,322 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import ButtonArrow from "@/components/ui/button-arrow";
+import NewsletterForm from "@/components/newsletter-form";
+
+export const metadata: Metadata = {
+  title: { absolute: "Sequence — Home (Archive 1)" },
+  description: "Transform your portfolio of projects into a portfolio of assets.",
+  robots: { index: false, follow: false },
+};
+
+export default function HomeArchive1Page() {
+  return (
+    <>
+      {/* ===== HERO ===== */}
+      <section className="hero">
+        <div className="g8 hero-grid">
+          <div className="hero-title-cell">
+            <h1 className="hero-title anim-text-up">
+              Sequence<sup>&copy;</sup>
+            </h1>
+            <p className="hero-subtitle rv">
+              <strong>Own your future.</strong> Transform your portfolio of
+              projects into a portfolio of assets.
+            </p>
+          </div>
+          <div className="hero-portrait-cell">
+            <div className="hero-year-tag rv">/26</div>
+            <div className="anim-reveal-down">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="hero-portrait"
+                src="/images/hero-portrait.png"
+                alt="Abstract circles"
+              />
+            </div>
+          </div>
+          <div className="hero-meta-cell rv rv-d2">
+            <span className="hero-intro-tag">[INTRO]</span>
+            <p className="hero-desc">
+              Understand the economic value of your creativity &mdash; value
+              your assets, score any deal, map your progression, and get
+              personalized strategic guidance built on 35 structures and 100+
+              case studies.
+            </p>
+            <div className="hero-subscribe">
+              <Link href="/platform" className="btn">
+                PLATFORM OVERVIEW
+                <ButtonArrow />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== THESIS CALLOUT — 50X ===== */}
+      <section className="callout">
+        <div className="callout-grid">
+          <span className="callout-label rv">
+            THESIS / VALUE OF CREATIVE VISION
+          </span>
+          <div className="callout-number anim-text-up">50X</div>
+          <p className="callout-text rv rv-d1">
+            The difference between a{" "}
+            <strong>portfolio of projects vs a portfolio of assets</strong> is
+            simply the deal structure. Not talent. Not effort. Not your network.
+            It is the deal structure — one that is not a work-for-hire agreement.
+          </p>
+        </div>
+      </section>
+
+      {/* ===== INTRODUCTION ===== */}
+      <section className="intro">
+        <div className="intro-head">
+          <h2 className="anim-text-up">Introduction</h2>
+        </div>
+        <div className="intro-body-grid">
+          <span className="intro-lbl rv">[ABOUT]</span>
+          <div className="intro-txt rv rv-d1">
+            <h3 className="intro-subtitle">
+              The creative economy is restructuring. Do you feel the compression?
+            </h3>
+            <p>
+              AI commoditizes execution, revealing that the real value was never
+              in production. Value is the vision, imagination, taste, and
+              judgment. It&apos;s the scarce resource today in the age of AI.
+              Creativity is an investable asset class and capital
+              always follows scarcity. Most creatives are on the wrong side
+              &mdash; generating massive value and capturing almost none of it.
+            </p>
+          </div>
+          <div className="intro-image rv rv-d2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/home-intro-platform.jpg"
+              alt="In Sequence platform preview"
+            />
+          </div>
+          <div className="intro-txt intro-txt--two rv rv-d3">
+            <p>
+              <strong>Sequence maps the restructuring</strong> and provides the
+              tools to navigate it. Analyze the potential value of your portfolio
+              of assets (not just a collection of projects). Evaluate new deals
+              and opportunities &mdash; know the terms, red flags, negotiation
+              tactics, and get personalized strategic guidance. Get in sequence.
+            </p>
+          </div>
+          <div className="intro-btn rv rv-d4">
+            <Link href="/platform" className="btn">
+              LEARN MORE
+              <ButtonArrow />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== THE THREE FORCES ===== */}
+      <section className="forces">
+        <div className="forces-visual rv">
+          <svg className="forces-icon" viewBox="0 0 400 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Outer triangle — base spans full width with padding for dots */}
+            <polygon points="200,30 10,270 390,270" fill="var(--bg)" stroke="none" />
+            <polygon points="200,30 10,270 390,270" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.15" />
+            {/* Inner triangles — concentric */}
+            <polygon points="200,75 70,240 330,240" stroke="currentColor" strokeWidth="0.75" fill="none" opacity="0.1" />
+            <polygon points="200,120 130,210 270,210" stroke="currentColor" strokeWidth="0.5" fill="none" opacity="0.08" />
+            {/* Nodes at vertices */}
+            <circle cx="200" cy="30" r="5" fill="currentColor" opacity="0.4" />
+            <circle cx="10" cy="270" r="5" fill="currentColor" opacity="0.4" />
+            <circle cx="390" cy="270" r="5" fill="currentColor" opacity="0.4" />
+            {/* Center point */}
+            <circle cx="200" cy="190" r="6" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.5" />
+            <circle cx="200" cy="190" r="2.5" fill="currentColor" opacity="0.4" />
+            {/* Lines from center to vertices */}
+            <line x1="200" y1="190" x2="200" y2="30" stroke="currentColor" strokeWidth="0.5" opacity="0.1" strokeDasharray="4 4" />
+            <line x1="200" y1="190" x2="10" y2="270" stroke="currentColor" strokeWidth="0.5" opacity="0.1" strokeDasharray="4 4" />
+            <line x1="200" y1="190" x2="390" y2="270" stroke="currentColor" strokeWidth="0.5" opacity="0.1" strokeDasharray="4 4" />
+            {/* Labels */}
+            <text x="200" y="20" textAnchor="middle" fill="currentColor" opacity="0.3" fontSize="8" fontFamily="var(--mono)" letterSpacing="0.1em">01</text>
+            <text x="10" y="284" textAnchor="middle" fill="currentColor" opacity="0.3" fontSize="8" fontFamily="var(--mono)" letterSpacing="0.1em">02</text>
+            <text x="390" y="284" textAnchor="middle" fill="currentColor" opacity="0.3" fontSize="8" fontFamily="var(--mono)" letterSpacing="0.1em">03</text>
+          </svg>
+        </div>
+        <div className="forces-head">
+          <h2 className="anim-text-up">The Three Forces</h2>
+        </div>
+        <div className="forces-intro">
+          <div className="forces-intro-grid">
+            <p className="forces-intro-text rv">
+              <strong>Asymmetric advantage emerges</strong> when all three
+              forces align: vision plus creative capacity plus ownership
+              structure. Remove any element and returns collapse to linear.
+              Combine all three and exponential becomes possible.
+            </p>
+          </div>
+        </div>
+        <div className="forces-grid">
+          <div className="force rv">
+            <span className="force-num">[01]</span>
+            <span className="force-title">Creativity Financializes</span>
+            <p className="force-desc">
+              Creative output transforms from an expense line into an investable
+              asset class. Music catalogs generate securities. Creators build
+              billion-dollar holding companies. Private equity deploys $1.2
+              trillion toward creative assets.
+            </p>
+          </div>
+          <div className="force rv rv-d1">
+            <span className="force-num">[02]</span>
+            <span className="force-title">Vision Becomes Scarce</span>
+            <p className="force-desc">
+              AI commoditizes execution, revealing what was always valuable:
+              judgment, taste, and the ability to see where culture moves before
+              data confirms it. The 40–70x gap between median and top-tier
+              creatives reflects vision, not skill.
+            </p>
+          </div>
+          <div className="force rv rv-d2">
+            <span className="force-num">[03]</span>
+            <span className="force-title">Capital Restructures</span>
+            <p className="force-desc">
+              Value capture shifts from time-based to outcome-based
+              compensation. Equity, profit participation, royalties, and
+              licensing agreements tie compensation to value created — not time
+              spent.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== PLATFORM CTA — mirrors the CTA on /platform ===== */}
+      <section className="access">
+        <div className="access-grid">
+          <div className="access-content">
+            <span className="access-lbl rv">FULL ACCESS &mdash; $19/MO</span>
+            <h2 className="access-title anim-text-up">
+              Get In
+              <br />
+              Sequence
+            </h2>
+            <p className="access-desc rv rv-d1">
+              <strong>
+                Transform your portfolio of projects into a portfolio of assets.
+              </strong>{" "}
+              Value your creative work, score any deal before you sign, map your
+              position in the progression, and get strategic guidance built on
+              real creative economy data.
+            </p>
+            <div className="access-buttons rv rv-d2">
+              <Link href="/signup?plan=full_access" className="btn btn--white">
+                GET FULL ACCESS &mdash; $19/MO
+                <ButtonArrow />
+              </Link>
+            </div>
+          </div>
+          <div className="access-right rv rv-d3">
+            <div className="access-feature">
+              <span className="access-feature-num">[01]</span>
+              <span className="access-feature-text">
+                <strong>Portfolio</strong> &mdash; value your creative assets
+              </span>
+            </div>
+            <div className="access-feature">
+              <span className="access-feature-num">[02]</span>
+              <span className="access-feature-text">
+                <strong>Deal Evaluator</strong> &mdash; analyze and score any
+                deal
+              </span>
+            </div>
+            <div className="access-feature">
+              <span className="access-feature-num">[03]</span>
+              <span className="access-feature-text">
+                <strong>Roadmap</strong> &mdash; map your position in the
+                progression
+              </span>
+            </div>
+            <div className="access-feature">
+              <span className="access-feature-num">[04]</span>
+              <span className="access-feature-text">
+                <strong>AI Advisor</strong> &mdash; personalized strategic
+                guidance
+              </span>
+            </div>
+            <div className="access-feature">
+              <span className="access-feature-num">[05]</span>
+              <span className="access-feature-text">
+                <strong>35+ deal structures</strong> and 100+ case studies
+              </span>
+            </div>
+            <div className="access-feature">
+              <span className="access-feature-num">[06]</span>
+              <span className="access-feature-text">
+                <strong>New content regularly</strong> &mdash; the platform
+                keeps growing
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== CONNECTION OPPORTUNITIES ===== */}
+      <section className="connections">
+        <div className="connections-head">
+          <h2 className="anim-text-up">
+            Connection
+            <br />
+            Opportunities
+          </h2>
+        </div>
+        <div className="conn-grid conn-grid--single">
+          <div className="conn rv rv-d1">
+            <span className="conn-num">[01]</span>
+            <h3 className="conn-name">Advisory &amp; Coaching</h3>
+            <p className="conn-desc">
+              Strategic advisory and structured coaching for creative
+              professionals navigating deal structures, ownership transitions,
+              and value capture — one-on-one, or small cohorts designed to move
+              you through the four-stage progression. Real deal analysis,
+              negotiation prep, and accountability grounded in the framework —
+              not generic business advice.
+            </p>
+            <Link href="/coaching" className="btn">
+              ADVISORY &amp; COACHING INFO
+              <ButtonArrow />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== GET IN SEQUENCE / NEWSLETTER ===== */}
+      <section className="newsletter">
+        <div className="newsletter-bg">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.pexels.com/photos/33578118/pexels-photo-33578118.jpeg"
+            alt=""
+          />
+        </div>
+        <div className="newsletter-grid">
+          <div className="newsletter-title-col anim-text-up">
+            <h2
+              style={{
+                color: "var(--white)",
+                fontSize: "clamp(44px, 7vw, 84px)",
+              }}
+            >
+              Insights in Your Inbox
+            </h2>
+          </div>
+          <div className="newsletter-text-col rv rv-d1">
+            <p className="newsletter-p">
+              Issues go out when there&apos;s something worth saying — no fixed cadence.
+              Expect deal structures, case studies, and patterns in how creative
+              value is shifting.
+            </p>
+            <NewsletterForm />
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
