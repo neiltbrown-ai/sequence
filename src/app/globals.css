@@ -4075,3 +4075,30 @@ h3.sec-label {
 .lg-text a:hover { color: var(--mid); }
 .lg-text strong { color: var(--black); font-weight: 500; }
 
+
+/* ============================================
+   HOMEPAGE — "What You Get" (responsive feature table + media)
+   ============================================ */
+.wyg { padding: 0 var(--margin); display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--gutter); align-items: stretch; }
+.wyg-intro { grid-column: 2 / 7; }
+.wyg-table-scroll { grid-column: 1 / 6; }
+.wyg-table { border-top: 1px solid var(--border); }
+.wyg-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gutter); align-items: start; padding: 22px 0; border-bottom: 1px solid var(--border); }
+.wyg-num { grid-column: 1; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--light); padding-top: 6px; }
+.wyg-title { grid-column: 2; font-family: var(--sans); font-size: 15px; font-weight: 500; letter-spacing: -.015em; color: var(--black); line-height: 1.3; }
+.wyg-desc { grid-column: 3 / 5; font-family: var(--sans); font-size: 14px; line-height: 1.6; color: var(--mid); padding-top: 3px; margin: 0; }
+.wyg-tag { grid-column: 5; font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--light); padding-top: 7px; text-align: right; }
+.wyg-media { grid-column: 6 / 9; position: relative; border: 1px solid var(--border); }
+.wyg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+.wyg-cta { grid-column: 1 / 6; padding-top: 32px; }
+
+@media (max-width: 860px) {
+  .wyg { grid-template-columns: 1fr; }
+  .wyg-intro { grid-column: 1; }
+  /* Table keeps its column widths and scrolls sideways instead of crushing */
+  .wyg-table-scroll { grid-column: 1; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .wyg-table { min-width: 560px; }
+  /* Image drops below the table, full width */
+  .wyg-media { grid-column: 1; aspect-ratio: 1132 / 725; }
+  .wyg-cta { grid-column: 1; padding-top: 24px; }
+}

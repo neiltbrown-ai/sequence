@@ -42,53 +42,6 @@ const TOOLS = [
   },
 ];
 
-// "What You Get" table — aligned to the page's 8-col grid (table spans cols 1-6)
-const wygRow = {
-  display: "grid",
-  gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-  gap: "var(--gutter)",
-  alignItems: "start",
-  padding: "22px 0",
-  borderBottom: "1px solid var(--border)",
-} as const;
-const wygNum = {
-  gridColumn: "1",
-  fontFamily: "var(--mono)",
-  fontSize: "10px",
-  letterSpacing: ".1em",
-  textTransform: "uppercase",
-  color: "var(--light)",
-  paddingTop: "6px",
-} as const;
-const wygTitle = {
-  gridColumn: "2",
-  fontFamily: "var(--sans)",
-  fontSize: "15px",
-  fontWeight: 500,
-  letterSpacing: "-.015em",
-  color: "var(--black)",
-  lineHeight: 1.3,
-} as const;
-const wygDesc = {
-  gridColumn: "3 / 5",
-  fontFamily: "var(--sans)",
-  fontSize: "14px",
-  lineHeight: 1.6,
-  color: "var(--mid)",
-  paddingTop: "3px",
-  margin: 0,
-} as const;
-const wygTag = {
-  gridColumn: "5",
-  fontFamily: "var(--mono)",
-  fontSize: "9px",
-  letterSpacing: ".1em",
-  textTransform: "uppercase",
-  color: "var(--light)",
-  paddingTop: "7px",
-  textAlign: "right",
-} as const;
-
 export default function HomePage() {
   return (
     <>
@@ -151,53 +104,37 @@ export default function HomePage() {
         </div>
         <div className="forces-intro">
           <div className="forces-intro-grid">
-            <p className="forces-intro-text rv" style={{ gridColumn: "2 / 7" }}>
+            <p className="forces-intro-text wyg-intro rv">
               Five tools for the long game &mdash; turning a portfolio of
               projects into a portfolio of assets,{" "}
               <strong>a year or a decade at a time.</strong>
             </p>
           </div>
         </div>
-        <div className="g8">
-          {/* Feature table — columns 1-5 */}
-          <div
-            className="rv"
-            style={{ gridColumn: "1 / 6", borderTop: "1px solid var(--border)" }}
-          >
-            {TOOLS.map((t) => (
-              <div style={wygRow} key={t.num}>
-                <span style={wygNum}>{t.num}</span>
-                <span style={wygTitle}>{t.name}</span>
-                <p style={wygDesc}>{t.desc}</p>
-                <span style={wygTag}>{t.tier}</span>
-              </div>
-            ))}
+        <div className="wyg">
+          {/* Feature table — columns 1-5 (scrolls horizontally on mobile) */}
+          <div className="wyg-table-scroll rv">
+            <div className="wyg-table">
+              {TOOLS.map((t) => (
+                <div className="wyg-row" key={t.num}>
+                  <span className="wyg-num">{t.num}</span>
+                  <span className="wyg-title">{t.name}</span>
+                  <p className="wyg-desc">{t.desc}</p>
+                  <span className="wyg-tag">{t.tier}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          {/* Platform preview — columns 6-8, stretches to the table's height */}
-          <div
-            className="rv"
-            style={{
-              gridColumn: "6 / 9",
-              position: "relative",
-              border: "1px solid var(--border)",
-            }}
-          >
+          {/* Platform preview — columns 6-8 (stacks below the table on mobile) */}
+          <div className="wyg-media rv">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              className="wyg-img"
               src="/images/home-intro-platform.jpg"
               alt="The Sequence platform"
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "top center",
-                display: "block",
-              }}
             />
           </div>
-          <div className="rv" style={{ gridColumn: "1 / 6", paddingTop: "32px" }}>
+          <div className="wyg-cta rv">
             <Link href="/platform" className="btn">
               PLATFORM OVERVIEW
               <ButtonArrow />
