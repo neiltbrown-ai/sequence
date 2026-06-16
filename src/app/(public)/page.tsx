@@ -7,6 +7,26 @@ import HeroVideo from "@/components/hero-video";
 export const metadata: Metadata = {
   title: { absolute: "Sequence — Own What You Create" },
   description: "Turn a portfolio of projects into a portfolio of assets.",
+  openGraph: {
+    type: "website",
+    siteName: "Sequence",
+    title: "Sequence — Own What You Create",
+    description: "Turn a portfolio of projects into a portfolio of assets.",
+    images: [
+      {
+        url: "/images/og-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Sequence — Own What You Create",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sequence — Own What You Create",
+    description: "Turn a portfolio of projects into a portfolio of assets.",
+    images: ["/images/og-home.jpg"],
+  },
 };
 
 const TOOLS = [
