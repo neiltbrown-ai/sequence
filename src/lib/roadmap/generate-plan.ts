@@ -393,6 +393,10 @@ Return ONLY valid JSON.`);
       .stream({
         model: "claude-sonnet-4-6",
         thinking: { type: "adaptive" },
+        // effort:low — bounds thinking latency under the 300s serverless
+        // ceiling (high effort timed out the analyze route). Tune up only if
+        // roadmap quality needs it and timing stays well under maxDuration.
+        output_config: { effort: "low" },
         // 16000 (not 4096): adaptive thinking tokens share the max_tokens
         // budget with the visible JSON answer. 4096 risks the thinking eating
         // the whole budget → no text block → "No text response".

@@ -230,6 +230,12 @@ Rules:
       .stream({
         model: "claude-sonnet-4-6",
         thinking: { type: "adaptive" },
+        // effort:low — at the default (high), a single analysis call's thinking
+        // ran past the 300s serverless ceiling (Vercel Runtime Timeout). low
+        // keeps the reasoning benefit on this structured-JSON task while
+        // bounding thinking latency. Tune up to medium only if quality needs it
+        // AND timing stays comfortably under maxDuration.
+        output_config: { effort: "low" },
         // 16000 (not 4096): adaptive thinking tokens share the max_tokens
         // budget with the visible answer. At 4096 the thinking ate the whole
         // budget and no JSON text block was emitted → "No text response".

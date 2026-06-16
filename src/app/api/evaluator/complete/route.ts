@@ -224,6 +224,10 @@ export async function POST(request: Request) {
       .stream({
         model: 'claude-sonnet-4-6',
         thinking: { type: 'adaptive' },
+        // effort:low — bounds thinking latency under the 300s serverless
+        // ceiling (high effort timed out the analyze route). Tune up only if
+        // verdict quality needs it and timing stays well under maxDuration.
+        output_config: { effort: 'low' },
         // 16000: the verdict JSON (6 dimension summaries + up to 7
         // recommended_actions + 5 structures + 5 case studies) already needs
         // ~4k, and adaptive thinking tokens SHARE this budget. 4096 caused the
