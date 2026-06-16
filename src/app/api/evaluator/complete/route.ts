@@ -10,7 +10,8 @@ import type { DealVerdict, EvaluationScores, DealType, CreativeMode } from '@/ty
 // Claude Sonnet 4 generating a verdict (headline + summary + 6 dimension
 // summaries + ~5 actions + ~5 structures + ~5 case studies) takes 20-40s.
 // Without this the function is killed before the response returns.
-export const maxDuration = 60;
+// 300 (Vercel Pro): adaptive thinking on the verdict call adds wall-clock latency.
+export const maxDuration = 300;
 
 const SYSTEM_PROMPT = `You are the In Sequence deal evaluator — an AI that helps creative professionals evaluate specific deals they're considering.
 
@@ -216,17 +217,23 @@ export async function POST(request: Request) {
       : SYSTEM_PROMPT;
 
     const anthropic = new Anthropic({ apiKey });
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      // Previously 2000 — too tight: 6 dimension summaries + up to 7
-      // recommended_actions (action + detail + structure_ref) + 5 structures
-      // and 5 case studies (each with "why") easily overruns 2000, causing
-      // truncation → malformed JSON → fallback empty verdict. 4096 gives
-      // comfortable headroom without impacting latency much.
-      max_tokens: 4096,
-      system: systemWithContext,
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+    // Stream + adaptive thinking: thinking improves the weighted-dimension
+    // reasoning; streaming avoids HTTP timeouts. The .find(type === 'text')
+    // below skips thinking blocks, so the JSON parse is unaffected.
+    const response = await anthropic.messages
+      .stream({
+        model: 'claude-sonnet-4-6',
+        thinking: { type: 'adaptive' },
+        // Previously 2000 — too tight: 6 dimension summaries + up to 7
+        // recommended_actions (action + detail + structure_ref) + 5 structures
+        // and 5 case studies (each with "why") easily overruns 2000, causing
+        // truncation → malformed JSON → fallback empty verdict. 4096 gives
+        // comfortable headroom without impacting latency much.
+        max_tokens: 4096,
+        system: systemWithContext,
+        messages: [{ role: 'user', content: userPrompt }],
+      })
+      .finalMessage();
 
     // Robustly locate the text block (could be preceded by tool use or
     // other content types in future model variants).

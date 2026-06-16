@@ -146,7 +146,7 @@ Generate 4-6 targeted search queries for EACH slot.${isCaseStudy ? ' For hero an
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 800,
         system: SLOT_QUERY_PROMPT,
         messages: [{ role: 'user', content: userMessage }]
@@ -211,7 +211,7 @@ app.post('/api/queries', async (req, res) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: isCaseStudy ? 350 : 250,
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }]

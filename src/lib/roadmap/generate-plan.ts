@@ -385,12 +385,19 @@ Return ONLY valid JSON.`);
   try {
     const anthropic = new Anthropic({ apiKey });
 
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: userPrompt }],
-    });
+    // Stream + adaptive thinking: thinking sharpens the multi-source synthesis;
+    // streaming avoids HTTP timeouts. The .find(type === "text") parse below
+    // skips thinking blocks. Requires Vercel Pro maxDuration (>=300) on every
+    // triggering route since thinking adds wall-clock latency.
+    const message = await anthropic.messages
+      .stream({
+        model: "claude-sonnet-4-6",
+        thinking: { type: "adaptive" },
+        max_tokens: 4096,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: "user", content: userPrompt }],
+      })
+      .finalMessage();
 
     const textBlock = message.content.find((b) => b.type === "text");
     if (!textBlock || textBlock.type !== "text") {

@@ -9,10 +9,10 @@ import type { AssessmentAnswers, CreativeMode } from "@/types/assessment";
 import type { CreativeIdentitySnapshot } from "@/types/creative-identity";
 import { CREATIVE_IDENTITY_TOTAL_SECTIONS } from "@/types/creative-identity";
 
-// Claude Sonnet 4 generating a ~4k-token structured roadmap can take
-// 30–60s. Without this, Vercel kills the function before after() finishes
-// and the plan stays in 'generating' forever.
-export const maxDuration = 60;
+// Claude Sonnet 4.6 generating a ~4k-token structured roadmap with adaptive
+// thinking can take 60s+. Without this, Vercel kills the function before
+// after() finishes and the plan stays in 'generating' forever. 300 (Vercel Pro).
+export const maxDuration = 300;
 
 /**
  * Creative Identity completion endpoint.

@@ -3,8 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
 
-// Claude generation 30-60s; give it runway.
-export const maxDuration = 60;
+// 300 (Vercel Pro): the roadmap generator now uses adaptive thinking, which
+// adds wall-clock latency to the after()-scheduled generation.
+export const maxDuration = 300;
 
 /**
  * POST /api/roadmap/refresh

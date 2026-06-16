@@ -75,7 +75,7 @@ const TAXONOMY_DOC = path.join(
   "reference",
   "case-study-taxonomy.md"
 );
-const MODEL = "claude-sonnet-4-20250514";
+const MODEL = "claude-sonnet-4-6";
 
 // 10 hand-picked calibration cases that span industries / crossovers.
 // Edit if the corpus changes; not load-bearing — just for the calibration pass.
@@ -188,7 +188,11 @@ async function tagOne(
 ): Promise<Proposal> {
   const res = await client.messages.create({
     model: MODEL,
-    max_tokens: 1024,
+    // Adaptive thinking sharpens the hard crossover cases (e.g. hospitality +
+    // design + architecture). Offline script — no serverless timeout risk.
+    // max_tokens raised from 1024 so thinking has room before the JSON answer.
+    thinking: { type: "adaptive" },
+    max_tokens: 4096,
     system: systemPrompt,
     messages: [
       {

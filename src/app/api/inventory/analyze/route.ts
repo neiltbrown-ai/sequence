@@ -9,7 +9,9 @@ import type { AssetInventoryItem, InventoryAnalysisContent } from "@/types/inven
 
 // Inventory analysis Claude call + subsequent roadmap regen both take
 // 30–60s each. Extended duration keeps the function alive through both.
-export const maxDuration = 120;
+// 300 (Vercel Pro): adaptive thinking on the analysis call + the roadmap regen
+// triggered via after() both add wall-clock latency.
+export const maxDuration = 300;
 
 const SYSTEM_PROMPT = `You are the In Sequence asset valuation advisor — an AI that helps creative professionals understand the structural value of their unmonetized IP, judgment, relationships, processes, audience, and brand equity.
 
@@ -221,12 +223,18 @@ Rules:
 
     const anthropic = new Anthropic({ apiKey });
 
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: userPrompt }],
-    });
+    // Stream + adaptive thinking: thinking sharpens valuation/risk synthesis;
+    // streaming avoids HTTP timeouts. The .find(type === "text") below skips
+    // thinking blocks, so the JSON parse is unaffected.
+    const message = await anthropic.messages
+      .stream({
+        model: "claude-sonnet-4-6",
+        thinking: { type: "adaptive" },
+        max_tokens: 4096,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: "user", content: userPrompt }],
+      })
+      .finalMessage();
 
     const textBlock = message.content.find((b) => b.type === "text");
     if (!textBlock || textBlock.type !== "text") {
