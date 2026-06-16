@@ -63,12 +63,6 @@ export default function HomePage() {
             </div>
           </div>
           <div className="hero-meta-cell rv rv-d2">
-            <span className="hero-intro-tag">[INTRO]</span>
-            <p className="hero-desc">
-              Value your work. Score a deal before you sign it. See your next
-              move toward ownership &mdash; built on 35 deal structures and 100+
-              real case studies. Not generic business advice.
-            </p>
             <div className="hero-subscribe">
               <Link href="/platform" className="btn">
                 PLATFORM OVERVIEW
