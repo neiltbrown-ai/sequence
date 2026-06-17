@@ -53,3 +53,9 @@ content/case-study-taxonomy-proposals*.json
 
 # case study audit working artifacts (proposal docs, calibration batches, scratch)
 /audit-output/
+
+# remotion video tooling (local-only; large node_modules + rendered mp4s, not part of the deployed app)
+/tools/remotion/
+
+# stray render export accidentally dropped into public/videos (the demo/hero mp4s here ARE committed on purpose)
+/public/videos/SEQ-TemiCoker-90sec-v1.mp4
