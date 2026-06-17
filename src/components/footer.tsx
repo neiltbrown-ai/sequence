@@ -23,7 +23,13 @@ export default function Footer() {
         <div className="ft-social">
           <span className="ft-label">[SOCIAL]</span>
           <div className="ft-links">
-            <a href="#">Instagram</a>
+            <a
+              href="https://www.instagram.com/sequence.so/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Instagram
+            </a>
             <a
               href="https://www.linkedin.com/company/in-sequence"
               target="_blank"
