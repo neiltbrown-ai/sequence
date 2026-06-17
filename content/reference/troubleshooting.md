@@ -767,3 +767,27 @@ Remove any `Screenshot*.png`, `.__capcut_export_temp_folder_*`, or `-1.mp4` dupl
 2. Check Vercel dashboard → Deployments → see if the latest commit actually built successfully
 3. Hard refresh (`Cmd+Shift+R`) on the live site to bypass CDN cache
 4. If needed, promote a previous deploy via Vercel Dashboard → Deployments → three-dot menu → "Promote to Production" (instant rollback)
+
+---
+
+## Metadata / Social previews
+
+### Symptom: link previews (iMessage, Slack, social) show no image, or a cropped/wrong one
+
+**Reports as:** sharing a page produces a blank, cropped, or stale preview image.
+
+**Root causes & fixes:**
+
+1. **No explicit OG image, and the page has no `<img>` for scrapers to fall back to.** When a hero `<img>` is replaced with a `<video>`/canvas/other non-image media, scrapers lose the fallback they'd been silently using. Set `openGraph.images` + `twitter.images` explicitly in the page's `metadata`/`generateMetadata`.
+2. **Declared dimensions don't match the file.** Declaring `width: 1200, height: 630` for an image that's actually e.g. 1920×1281 degrades or blocks previews on strict scrapers. Ship a real 1200×630 image, or omit `width/height` and let the scraper measure. Sitewide default: `public/images/og-default.jpg` (1200×630); home page: `og-home.jpg`; articles/case studies use their own `heroImage`/`coverImage` with no declared size.
+3. **Cached preview.** Platforms cache aggressively. Force a re-scrape via the Facebook Sharing Debugger or LinkedIn Post Inspector; iMessage/Slack refresh within ~a day or from an uncached device.
+
+## Dev environment
+
+### Symptom: `globals.css` edits don't apply in the worktree dev server until you save again
+
+**Reports as:** you edit `src/app/globals.css`, reload the preview, and the change isn't there (computed styles show the old value); a second trivial save makes it appear.
+
+**Root cause:** global-CSS HMR in the `.claude/worktrees/*` `next dev` server intermittently serves stale compiled CSS. JSX/TSX edits hot-reload reliably; global CSS sometimes needs a second write to trigger a recompile.
+
+**Fix:** make a no-op edit to `globals.css` (reorder a property, tweak a comment) to force the recompile, then hard-reload. Verify with `getComputedStyle` rather than trusting the first reload.

@@ -10,6 +10,30 @@ Session-level log of material architectural changes. One entry per substantive w
 
 ---
 
+## 2026-06-16 — Home page reimagined: concise value-prop page + hero voiceover video + sitewide OG cleanup
+
+**Goal:** Ship a more concise, value-prop-first public home page (in the existing Sequence design language and brand voice), anchor the hero with a creative's voiceover case-study video, and fix the social-share previews that broke when the hero image became a video.
+
+### What shipped
+
+- **New home page** (`src/app/(public)/page.tsx`) — 7 sections → ~5: hero ("Own what you create") → 50X thesis (two equal lines; folded out the old Introduction + Three Forces) → "What You Get" feature table → "Two Ways In" two-tier pricing → newsletter. Voice/tone follows `content/reference/voice-guide.md`. The previous home page is preserved verbatim at **`/home-archive-1`** (noindex).
+- **`src/components/hero-video.tsx`** — client component for a hero voiceover video. Browsers block autoplay-with-sound, so it loops **muted as ambient motion** with a **"Play with sound"** control that unmutes + restarts from the top; a mute button on the video returns it to the silent loop. Crop framing via `object-position` Y (`FOCUS_Y`, currently 70%); visit **`/?tune`** for a live framing slider (hidden without the query param). `.hero-video-wrap` uses **`aspect-ratio` (not a fixed height)** so the crop framing is identical at every viewport width.
+- **Video asset** — source `SEQ-TemiCoker-90sec-v1.mp4` (26 MB) compressed to `public/videos/hero-temi-coker.mp4` (4.1 MB, H.264 + AAC, audio intact) + poster. The 26 MB source was kept out of git.
+- **"What You Get" responsive table** — `.wyg-*` classes: desktop shows a feature table in columns 1–5 with the platform image height-matched in columns 6–8; at ≤860px the table keeps its column widths and **scrolls horizontally** while the image drops to full width below it.
+- **Two-tier pricing on the home page** — reuses `.pr-plan-card` + new `.pr-plan-grid--two` (2-up plan grid): Library $12/yr vs Full Access $19/mo, with the advisory/coaching waitlist line folded in.
+- **Sitewide social-preview (OG/Twitter) cleanup:** home page sets explicit `openGraph`/`twitter` with a purpose-built **1200×630** `public/images/og-home.jpg`; the layout default was repointed from `hero-portrait.png` (declared 1200×630 but actually 1920×1281) to a correct **1200×630** `public/images/og-default.jpg`; article + case-study routes (already using their own `heroImage`/`coverImage`) had their no-image fallback repointed to `og-default.jpg` and the **hardcoded `width:1200 height:630` dropped** so scrapers read each hero image's real size.
+
+### Lessons / notes
+
+- **Autoplay + sound:** a hero video with a required voiceover can't autoplay with sound — the only correct pattern is muted-ambient autoplay + a user gesture to unmute. Don't promise sound-on-load.
+- **OG image dimensions must match the file.** Declaring `1200×630` for a 1920×1281 file degraded/blocked social previews. Ship a real 1200×630 image, or omit `width/height` and let scrapers measure. See `troubleshooting.md`.
+- **`minmax(0,1fr)` for grid-aligned content:** `repeat(N, 1fr)` tracks stretch to fit content (a long paragraph/button), pushing items off the 8-col background grid; `repeat(N, minmax(0,1fr))` keeps tracks equal. Applied to `.hero-meta-cell` and the feature rows.
+- **Worktree dev-server stale CSS:** editing `globals.css` in the `.claude/worktrees/*` dev server frequently didn't hot-apply until a second (no-op) save forced a recompile; JSX/TSX edits hot-reloaded fine.
+
+### Verification
+
+- `npm run build` clean on each push. Hero/table layout, framing, and responsive behavior verified across 1280/1440/1920 + mobile (375px) in the preview; OG meta tags verified on `/`, `/pricing`, and `/articles/understanding-value`. Shipped direct-to-main across commits `0b833f2` → `b9383df`.
+
 ## 2026-05-08 — Creative Identity portrait at the assessment-completion screen
 
 **Goal:** Show the same archetype portrait that lives in Settings → Creative Identity at the moment the user finishes the assessment — so the payoff for completing all 25 questions is the visual identity, not just a "you're done" summary.

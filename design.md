@@ -720,3 +720,23 @@ Every piece of UI text should pass these filters:
 7. **Dark mode:** test every new surface in both themes before committing. If text contains `var(--white)` and sits on a dark bg → it's going to invert. Hardcode.
 8. **Icons:** line-art SVG with `stroke="currentColor"`, `fill="none"`, 1.5 stroke width
 9. **Copy:** write like a practitioner, not a marketer. Specific numbers. Systems language.
+
+## 13. Homepage patterns (June 2026)
+
+### Hero voiceover video — `src/components/hero-video.tsx`
+
+A client component for a hero video that needs its audio. Browsers block autoplay-with-sound, so:
+
+- Loops **muted** as ambient motion (`muted` set in an effect, `playsInline`, no `loop` attr — `onEnded` restarts so it loops muted).
+- A **"Play with sound"** control unmutes + restarts from 0; a mute button (on the video) returns it to the silent loop.
+- **Crop framing** comes from `object-position: center <FOCUS_Y>%` set inline from a constant (currently 70). Visit **`/?tune`** for a live slider that writes the value; read it off, bake it into `FOCUS_Y`. The slider only renders when `?tune` is in the URL.
+- The wrap uses **`aspect-ratio` (not a fixed height)** so the crop framing is pixel-identical at every viewport width. A fixed height crops tighter as the column widens.
+- All overlay controls hardcode `#fff` (dark surface — see §9).
+
+### Responsive feature table — `.wyg-*`
+
+The "What You Get" block. Desktop: a feature table (`.wyg-table`, columns 1–5: num · title · desc · tier tag) beside a height-matched image (`.wyg-media`, columns 6–8; image absolute-filled so it stretches to the table's row height). At **≤860px**: the table keeps its column widths inside `.wyg-table-scroll { overflow-x: auto }` (min-width 560px) so it **scrolls horizontally** instead of crushing, and the image drops to `grid-column: 1` (full width, `aspect-ratio` for height) below the table. Don't put responsive grid placement in inline styles — they can't hit the breakpoint; that was the original mobile bug.
+
+### Grid-aligned content — `minmax(0, 1fr)`
+
+To align content (eyebrow, description, button, table cells) to the 8-col background grid, use `repeat(N, minmax(0, 1fr))`, **not** `repeat(N, 1fr)`. Plain `1fr` tracks stretch to fit their content (a long paragraph, or a button with a min-width), which pushes everything off the background grid lines. Applied on `.hero-meta-cell` and `.wyg-row`.

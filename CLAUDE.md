@@ -2,7 +2,7 @@
 
 Membership platform teaching creative professionals how to structure deals and build long-term value capture. Next.js 16, React 19, App Router, Supabase, Stripe, Anthropic Claude API, MDX via `next-mdx-remote` v6.
 
-Public metadata: **"Sequence — Own Your Future"** / "Transform your portfolio of projects into a portfolio of assets."
+Public metadata: site default **"Sequence — Own Your Future"** / "Transform your portfolio of projects into a portfolio of assets." (The **home page** leads with **"Own what you create"** and sets its own title + OG image — see the June 2026 session note at the end of this file.)
 
 ## Current platform architecture
 
@@ -484,3 +484,14 @@ See `CHANGELOG.md` 2026-05-07 (Phase 2) entry for the full lessons-learned secti
 - `scripts/seed-test-users.ts` updated: Jordan Rivera's `discipline: "directing"` (a sub-slug at the top level — non-canonical even pre-Phase-3) → `discipline: "film_tv", sub_discipline: "directing"`. Other 4 seeded users were already on canonical slugs.
 
 See `CHANGELOG.md` 2026-05-07 (Phase 3) entry for the full lessons-learned section.
+
+## What this session built (June 2026)
+
+**Home page reimagined + sitewide social-preview cleanup (2026-06-16):**
+
+- **New concise public home page** (`src/app/(public)/page.tsx`): hero "Own what you create" → 50X thesis → "What You Get" feature table → "Two Ways In" two-tier pricing → newsletter. In the existing design language; voice per `content/reference/voice-guide.md`. The prior home page is preserved verbatim at **`/home-archive-1`** (noindex) — keep it for reference/rollback; don't link to it.
+- **Hero voiceover video** — `src/components/hero-video.tsx` (client component). Muted ambient autoplay loop + "Play with sound" (unmute + restart); mute button returns to the loop. Framing via `object-position` Y (`FOCUS_Y`); `/?tune` shows a live framing slider. `.hero-video-wrap` uses `aspect-ratio` so framing is consistent across widths. Asset: `public/videos/hero-temi-coker.mp4` (compressed, audio intact) + poster. See `design.md` §13.
+- **`.wyg-*` responsive feature table** — desktop table (cols 1–5) + height-matched image (cols 6–8); ≤860px the table scrolls horizontally and the image stacks below. See `design.md` §13.
+- **Social preview (OG) convention** — the home page sets its own `openGraph`/`twitter` with `public/images/og-home.jpg` (1200×630). The **layout default** is `public/images/og-default.jpg` (1200×630) — used by every page that doesn't set its own. **Articles + case studies** set their own image from `heroImage`/`coverImage` (no hardcoded dimensions). **Rule:** any new OG image must be a real 1200×630 file, or omit `width/height` and let scrapers measure — never declare a size the file isn't (it degrades/blocks previews). Replacing an on-page hero `<img>` with non-image media (video, canvas) removes the scraper's fallback, so set OG explicitly.
+
+See `CHANGELOG.md` 2026-06-16 entry for the full lessons-learned section.
