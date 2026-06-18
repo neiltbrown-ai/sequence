@@ -1039,10 +1039,13 @@ app.post('/api/media/search', async (req, res) => {
 app.post('/api/media/add', async (req, res) => {
   const { slug, url, action = 'image', query = '', source = '', sourceUrl = '', licenseGuess = '' } = req.body || {};
   if (!slug || !url) return res.status(400).json({ error: 'slug + url required' });
-  const key = sourceUrl || url;
-  if (new Set(media.readManifest(slug).map((e) => e.sourceUrl)).has(key)) {
-    return res.json({ success: true, duplicate: true });
-  }
+  const manifest = media.readManifest(slug);
+  // de-dupe: screenrec-video produces several clips per video (unique per-clip
+  // sourceUrls), so match on the original video URL; everything else by sourceUrl.
+  const dup = action === 'screenrec-video'
+    ? manifest.some((e) => e.videoUrl === url || (e.sourceUrl || '').startsWith(url + '#'))
+    : new Set(manifest.map((e) => e.sourceUrl)).has(sourceUrl || url);
+  if (dup) return res.json({ success: true, duplicate: true });
   try {
     let entries; // screenRecordVideo returns several clips; others one
     if (action === 'image') {
@@ -1171,6 +1174,20 @@ app.get('/api/media/manifest/:slug', (req, res) => {
 app.post('/api/media/approve', async (req, res) => {
   const { slug, id, role } = req.body || {};
   try {
+    // Single portrait: there's one featured/portrait.* slot, so a new portrait
+    // demotes any existing approved portrait to a still (keeps the image; avoids
+    // the filename collision that left stale entries pointing at an overwritten file).
+    if (role === 'portrait') {
+      for (const old of media.readManifest(slug).filter((x) => x.id !== id && x.status === 'approved' && x.role === 'portrait')) {
+        try {
+          const demoted = media.approve(slug, old.id, 'still'); // featured/portrait.* → images/<id>
+          media.upsertAsset(slug, await enrichAsset(slug, demoted));
+        } catch {
+          media.setStatus(slug, old.id, 'rejected'); // file already gone → drop it
+          media.removeAsset(slug, old.id);
+        }
+      }
+    }
     const entry = media.approve(slug, id, role);          // move file → work/
     const asset = await enrichAsset(slug, entry);          // Claude vision → contract fields
     media.upsertAsset(slug, asset);                        // write into work/assets.json

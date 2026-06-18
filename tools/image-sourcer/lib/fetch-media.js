@@ -501,7 +501,10 @@ async function _captureClip({ browser, embed, url, slug, startSec, captureSec, l
   const { width, height } = probeDims(file);
   const entry = {
     id, kind: "screenrec", file: path.relative(remotionPublicDir(), file),
-    query: `${label || url} @${Math.round(startSec)}s`, source: "video-screencap", sourceUrl: url,
+    // sourceUrl is per-clip-unique (encodes the offset) so multiple clips from the
+    // same video survive the manifest's de-dupe-by-sourceUrl.
+    query: `${label || url} @${Math.round(startSec)}s`, source: "video-screencap",
+    sourceUrl: `${url}#t=${Math.round(startSec)}`, videoUrl: url,
     licenseGuess: "screen capture of published video", rightsNote: "editorial use — verify rights to source footage",
     width, height, durationSec, status: "candidate", role: null,
   };
