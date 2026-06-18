@@ -6,12 +6,34 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
+const media = require('./lib/fetch-media');
+const prompts = require('./lib/prompts');
+
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3100;
+
+// Internal-tooling Claude key (SEQ_INTERNAL_ANTHROPIC_API_KEY, fallback
+// ANTHROPIC_API_KEY) — keeps internal spend separate from Sequence user spend.
+const CLAUDE_KEY = prompts.claudeKey();
+
+// Thin wrapper over the Anthropic messages API using the internal key.
+async function callClaude({ system, messages, tools, tool_choice, max_tokens = 1024, model = prompts.CLAUDE_MODEL }) {
+  if (!CLAUDE_KEY) throw new Error('No internal Anthropic key (set SEQ_INTERNAL_ANTHROPIC_API_KEY)');
+  const body = { model, max_tokens, system, messages };
+  if (tools) body.tools = tools;
+  if (tool_choice) body.tool_choice = tool_choice;
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': CLAUDE_KEY, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) throw new Error(`Anthropic API returned ${r.status}: ${await r.text()}`);
+  return r.json();
+}
 
 const SYSTEM_PROMPT = `You are an art director for In Sequence — an editorial brand about how the creative economy is restructuring. You source imagery that feels like it belongs in Bloomberg Businessweek, Monocle, or a Sagmeister monograph — never a stock photo library.
 
@@ -708,6 +730,537 @@ app.post('/api/content/update', (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MEDIA SOURCING — download real imagery / video / screen-recordings of a
+// case-study subject into the Remotion work/ pile, behind a human review gate.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Search adapters (normalized → { full, thumb, kind, source, sourceUrl, licenseGuess, width, height }) ──
+async function searchSerper(query, num = 6, minW = 800, minH = 500) {
+  if (!process.env.SERPER_API_KEY) return [];
+  try {
+    const r = await fetch('https://google.serper.dev/images', {
+      method: 'POST',
+      headers: { 'X-API-KEY': process.env.SERPER_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: query, num: Math.max(20, num) }),
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data.images || [])
+      .filter((img) => {
+        if (!img.imageUrl) return false;
+        const u = img.imageUrl.toLowerCase();
+        if (u.includes('thumbnail') || u.includes('_thumb') || u.includes('/thumb/')) return false;
+        const w = img.imageWidth || 0, h = img.imageHeight || 0;
+        if (w > 0 && w < minW) return false;
+        if (h > 0 && h < minH) return false;
+        return true;
+      })
+      .slice(0, num)
+      .map((img) => ({
+        full: img.imageUrl,
+        thumb: img.imageUrl,
+        kind: 'image',
+        source: img.source || 'Google',
+        sourceUrl: img.link || img.imageUrl,
+        licenseGuess: 'editorial / unverified',
+        width: img.imageWidth || 0,
+        height: img.imageHeight || 0,
+      }));
+  } catch { return []; }
+}
+
+async function searchCommons(query, num = 6) {
+  try {
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=${num}&prop=imageinfo&iiprop=url|size|mime|extmetadata&iiurlwidth=400`;
+    const r = await fetch(url, { headers: { 'User-Agent': 'SeqImageSourcer/1.0 (editorial research)' } });
+    if (!r.ok) return [];
+    const data = await r.json();
+    const pages = data.query?.pages ? Object.values(data.query.pages) : [];
+    return pages
+      .map((p) => p.imageinfo?.[0])
+      .filter(Boolean)
+      .map((ii) => ({
+        full: ii.url,
+        thumb: ii.thumburl || ii.url,
+        kind: (ii.mime || '').startsWith('video') ? 'video' : 'image',
+        source: 'Wikimedia Commons',
+        sourceUrl: ii.descriptionurl || ii.url,
+        licenseGuess: ii.extmetadata?.LicenseShortName?.value || 'Wikimedia Commons',
+        width: ii.width || 0,
+        height: ii.height || 0,
+      }));
+  } catch { return []; }
+}
+
+async function searchPexelsVideo(query, num = 24) {
+  if (!process.env.PEXELS_API_KEY) return [];
+  try {
+    const r = await fetch(`https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&per_page=${Math.min(80, num)}`, {
+      headers: { Authorization: process.env.PEXELS_API_KEY },
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data.videos || []).map((v) => {
+      // prefer an HD file that isn't oversized (≤1920w) for fast hover-preview
+      const files = (v.video_files || []).filter((f) => f.file_type === 'video/mp4').sort((a, b) => (a.width || 0) - (b.width || 0));
+      const pick = files.find((f) => (f.width || 0) >= 1280 && (f.width || 0) <= 1920) || files[files.length - 1] || files[0];
+      return pick && {
+        full: pick.link, thumb: v.image, kind: 'video', previewable: true,
+        source: 'Pexels', sourceUrl: v.url, licenseGuess: 'Pexels (free, no attribution required)',
+        width: pick.width || 0, height: pick.height || 0,
+      };
+    }).filter(Boolean);
+  } catch { return []; }
+}
+
+// Second free stock-video source (broadens b-roll beyond Pexels). Gated on
+// PIXABAY_API_KEY (free at https://pixabay.com/api/docs/). No key → returns [].
+async function searchPixabayVideo(query, num = 16) {
+  if (!process.env.PIXABAY_API_KEY) return [];
+  try {
+    const r = await fetch(`https://pixabay.com/api/videos/?key=${process.env.PIXABAY_API_KEY}&q=${encodeURIComponent(query)}&per_page=${Math.min(50, Math.max(3, num))}`);
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data.hits || []).map((h) => {
+      const f = h.videos?.medium || h.videos?.large || h.videos?.small;
+      return f && f.url && {
+        full: f.url,
+        thumb: `https://i.vimeocdn.com/video/${h.picture_id}_295x166.jpg`,
+        kind: 'video', previewable: true,
+        source: 'Pixabay', sourceUrl: h.pageURL || f.url, licenseGuess: 'Pixabay (free, no attribution required)',
+        width: f.width || 0, height: f.height || 0,
+      };
+    }).filter(Boolean);
+  } catch { return []; }
+}
+
+async function searchYouTube(query, num = 3) {
+  if (!process.env.YOUTUBE_API_KEY) return [];
+  try {
+    const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=${num}&q=${encodeURIComponent(query)}&key=${process.env.YOUTUBE_API_KEY}`);
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data.items || []).filter((it) => it.id?.videoId).map((it) => ({
+      full: `https://www.youtube.com/watch?v=${it.id.videoId}`,
+      thumb: it.snippet?.thumbnails?.medium?.url || '',
+      kind: 'video',
+      source: `YouTube · ${it.snippet?.channelTitle || ''}`.trim(),
+      sourceUrl: `https://www.youtube.com/watch?v=${it.id.videoId}`,
+      licenseGuess: 'YouTube — verify rights (TOS prohibits download)',
+      width: 0,
+      height: 0,
+    }));
+  } catch { return []; }
+}
+
+// Serper video search — finds video pages (YouTube/Vimeo/news) to SCREEN-RECORD
+// (no YouTube API needed). Used by the 'rec-video' kind.
+async function searchSerperVideos(query, num = 4) {
+  if (!process.env.SERPER_API_KEY) return [];
+  try {
+    const r = await fetch('https://google.serper.dev/videos', {
+      method: 'POST',
+      headers: { 'X-API-KEY': process.env.SERPER_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: query, num: 10 }),
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data.videos || []).filter((v) => v.link).slice(0, num).map((v) => ({
+      full: v.link,
+      thumb: v.imageUrl || '',
+      kind: 'video',
+      source: v.source || v.channel || 'video',
+      sourceUrl: v.link,
+      licenseGuess: 'screen capture of published video',
+    }));
+  } catch { return []; }
+}
+
+// thin pass-through endpoints (re-search from the UI / manual use)
+app.get('/api/commons', async (req, res) => res.json({ results: await searchCommons(req.query.q || '', 8) }));
+app.get('/api/pexels-video', async (req, res) => res.json({ results: await searchPexelsVideo(req.query.q || '', 6) }));
+app.get('/api/youtube', async (req, res) => res.json({ results: await searchYouTube(req.query.q || '', 6) }));
+app.get('/api/serper-video', async (req, res) => res.json({ results: await searchSerperVideos(req.query.q || '', 8) }));
+
+// Build a sourcing plan for a case-study subject (Claude, one forced tool call).
+async function buildMediaPlan(slug) {
+  const file = path.join(CONTENT_DIR, 'case-studies', `${slug}.mdx`);
+  if (!fs.existsSync(file)) throw new Error(`case study not found: ${slug}`);
+  const parsed = parseMdx(file);
+  const fm = parsed.fm;
+  const title = (fm.match(/^title:\s*"?(.+?)"?\s*$/m)?.[1] || slug).replace(/<br\s*\/?>(?=)/gi, ' ');
+  const excerpt = fm.match(/^excerpt:\s*"?(.+?)"?\s*$/m)?.[1] || '';
+  const discipline = fm.match(/^discipline:\s*"?(.+?)"?\s*$/m)?.[1] || '';
+  const data = await callClaude({
+    system: prompts.MEDIA_PLAN_SYSTEM,
+    tools: [prompts.MEDIA_PLAN_TOOL],
+    tool_choice: { type: 'tool', name: 'emit_media_plan' },
+    max_tokens: 1500,
+    messages: [{ role: 'user', content: `Title: ${title}\nDiscipline: ${discipline}\nDescription: ${excerpt}` }],
+  });
+  const plan = data.content?.find((b) => b.type === 'tool_use')?.input;
+  if (!plan) throw new Error('Claude returned no media plan');
+  media.writePlan(slug, plan); // persist for enrichment + coverage
+  return plan;
+}
+
+// ── Tier-B enrichment: describe one approved asset to the assets.json contract ──
+async function enrichAsset(slug, manifestEntry) {
+  const base = media.toAssetBase(slug, manifestEntry);
+  if (!CLAUDE_KEY) return base; // graceful: deterministic-only entry
+  const plan = media.readPlan(slug) || {};
+  const entities = plan.entities || [];
+  const isImg = manifestEntry.kind === 'image';
+  const content = [{
+    type: 'text',
+    text: [
+      `Subject: ${plan.subject_name || slug}.`,
+      entities.length ? `Known entities (use these keys for "entity"): ${entities.map((e) => `${e.key} (${e.label})`).join(', ')}.` : '',
+      `Asset hint — kind:${base.kind}, source:${manifestEntry.source || ''}, search query:"${manifestEntry.query || ''}".`,
+      isImg ? 'Image follows.' : 'This is a VIDEO/screen-recording asset (no frame provided) — infer from the query/source; focalPoint can stay {0.5,0.5}.',
+    ].filter(Boolean).join('\n'),
+  }];
+  if (isImg) {
+    try {
+      const abs = path.join(media.remotionPublicDir(), manifestEntry.workFile || manifestEntry.file);
+      const buf = fs.readFileSync(abs);
+      const ext = path.extname(abs).toLowerCase();
+      const mt = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+      content.push({ type: 'image', source: { type: 'base64', media_type: mt, data: buf.toString('base64') } });
+    } catch { /* fall through to text-only */ }
+  }
+  try {
+    const data = await callClaude({
+      system: prompts.ASSET_ENRICH_SYSTEM,
+      tools: [prompts.ASSET_ENRICH_TOOL],
+      tool_choice: { type: 'tool', name: 'emit_asset_meta' },
+      max_tokens: 600,
+      messages: [{ role: 'user', content }],
+    });
+    const m = data.content?.find((b) => b.type === 'tool_use')?.input;
+    if (m) {
+      if (m.kind) base.kind = m.kind;            // portrait role wins only if vision agrees; otherwise refine
+      if (manifestEntry.role === 'portrait') base.kind = 'portrait';
+      if (m.caption) base.caption = m.caption;
+      if (m.tags?.length) base.tags = m.tags;
+      if (m.entity) base.entity = m.entity;
+      if (m.era) base.era = m.era;
+      if (m.focalPoint && typeof m.focalPoint.x === 'number') base.focalPoint = { x: m.focalPoint.x, y: m.focalPoint.y };
+      if (typeof m.quality === 'number') base.quality = m.quality;
+    }
+  } catch (err) {
+    console.warn('  enrich skipped:', err.message);
+  }
+  return base;
+}
+
+// Recompute coverage.json from the current assets.json + plan entities.
+function recomputeCoverage(slug) {
+  const plan = media.readPlan(slug) || {};
+  const assets = media.readAssets(slug).assets || [];
+  const entities = {};
+  for (const e of (plan.entities || [])) {
+    const imgs = assets.filter((a) => a.entity === e.key && a.type === 'image').length;
+    const vids = assets.filter((a) => a.entity === e.key && a.type === 'video').length;
+    const total = imgs + vids;
+    entities[e.key] = { images: imgs, videos: vids, strength: total === 0 ? 'missing' : total === 1 ? 'thin' : 'good' };
+  }
+  const coverage = {
+    entities,
+    needsPortrait: !assets.some((a) => a.kind === 'portrait'),
+    needsBRoll: !assets.some((a) => a.kind === 'b-roll'),
+  };
+  media.writeCoverage(slug, coverage);
+  return coverage;
+}
+
+app.post('/api/media/plan', async (req, res) => {
+  try {
+    res.json({ plan: await buildMediaPlan(req.body.slug) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Read the persisted plan (entities + queries) WITHOUT a Claude call — for the
+// UI query chips. Returns { plan: null } if the case hasn't been planned yet.
+app.get('/api/media/plan/:slug', (req, res) => {
+  res.json({ plan: media.readPlan(req.params.slug) });
+});
+
+// Browse search — return MANY candidate results (thumbnails) WITHOUT downloading,
+// so you can pick like a Google Images grid. `query` searches that term; omit it
+// (with slug) to run the plan's queries. kind: 'image' | 'video'.
+app.post('/api/media/search', async (req, res) => {
+  const { query, kind = 'image', slug } = req.body || {};
+  try {
+    let queries = [];
+    if (query && query.trim()) queries = [query.trim()];
+    else if (slug) {
+      const p = media.readPlan(slug) || {};
+      queries = (kind === 'video' ? p.video_queries : kind === 'broll' ? p.broll_queries : p.image_queries) || [];
+    }
+    queries = queries.slice(0, 8);
+    const seen = new Set((slug ? media.readManifest(slug) : []).map((e) => e.sourceUrl).filter(Boolean));
+    const dedup = new Set();
+    const out = [];
+    for (const q of queries) {
+      let rows;
+      if (kind === 'broll') {
+        // stock-only: Pexels + Pixabay (both direct files, downloaded on click)
+        const px = (await searchPexelsVideo(q, 24)).map((r) => ({ ...r, addAction: 'video-file' }));
+        const pb = (await searchPixabayVideo(q, 16)).map((r) => ({ ...r, addAction: 'video-file' }));
+        rows = [...px, ...pb];
+      } else if (kind === 'video') {
+        // web videos of the subject → screen-record on click
+        rows = (await searchSerperVideos(q, 12)).map((r) => ({ ...r, addAction: 'screenrec-video' }));
+      } else {
+        rows = [...(await searchSerper(q, 20, 500, 350)), ...(await searchCommons(q, 4)).filter((r) => r.kind === 'image')]
+          .map((r) => ({ ...r, addAction: 'image' }));
+      }
+      for (const r of rows) {
+        if (!r.sourceUrl || dedup.has(r.sourceUrl)) continue;
+        dedup.add(r.sourceUrl);
+        out.push({ ...r, query: q, inManifest: seen.has(r.sourceUrl) });
+      }
+    }
+    res.json({ kind, count: out.length, results: out });
+  } catch (err) {
+    console.error('media/search error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Add ONE picked/pasted item: download or screen-record it into staging +
+// manifest. Covers grid picks AND manual URL paste. action:
+//   image · screenrec-video (capture a playing video) · screenrec-page (scroll a
+//   site) · video-file (direct download).
+app.post('/api/media/add', async (req, res) => {
+  const { slug, url, action = 'image', query = '', source = '', sourceUrl = '', licenseGuess = '' } = req.body || {};
+  if (!slug || !url) return res.status(400).json({ error: 'slug + url required' });
+  const key = sourceUrl || url;
+  if (new Set(media.readManifest(slug).map((e) => e.sourceUrl)).has(key)) {
+    return res.json({ success: true, duplicate: true });
+  }
+  try {
+    let entries; // screenRecordVideo returns several clips; others one
+    if (action === 'image') {
+      // deliberate pick → don't reject on size
+      const e = await media.downloadImage({ url, slug, query, source, sourceUrl, licenseGuess: licenseGuess || 'editorial / unverified', minW: 0, minH: 0 });
+      entries = e ? [e] : [];
+    } else if (action === 'screenrec-video') {
+      entries = await media.screenRecordVideo({ url, slug, label: query || url, captureSec: 20, startSec: 15 });
+    } else if (action === 'screenrec-page') {
+      const e = await media.screenRecord({ url, slug, label: query || url, scrollSec: 10 });
+      entries = e ? [e] : [];
+    } else if (action === 'video-file') {
+      const e = await media.downloadVideoFile({ url, slug, query, source, sourceUrl, licenseGuess: licenseGuess || 'unknown' });
+      entries = e ? [e] : [];
+    } else {
+      return res.status(400).json({ error: `unknown action: ${action}` });
+    }
+    if (!entries || !entries.length) return res.status(422).json({ error: 'could not fetch (unavailable, blocked, or failed to play)' });
+    const persisted = media.appendManifest(slug, entries);
+    res.json({ success: true, count: persisted.length, entries: persisted, entry: persisted[0], manifest: media.readManifest(slug) });
+  } catch (err) {
+    console.error('media/add error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Run the full sourcing pass: search → download into work/_staging/ → manifest.
+app.post('/api/media/source', async (req, res) => {
+  const { slug, kinds = ['stills', 'broll'], max = 8, allowVideoDownload = false } = req.body || {};
+  if (!slug) return res.status(400).json({ error: 'slug required' });
+  try {
+    const want = new Set(kinds);
+    const plan = req.body.plan || (await buildMediaPlan(slug));
+    const added = [];
+    // Skip sources already in the manifest BEFORE downloading — avoids re-fetching
+    // dupes that appendManifest would discard, leaving orphan files in _staging.
+    const seen = new Set(media.readManifest(slug).map((e) => e.sourceUrl).filter(Boolean));
+    const fresh = (url) => url && !seen.has(url) && (seen.add(url), true);
+
+    // STILLS — Google Images (Serper) + Wikimedia Commons (free)
+    if (want.has('stills')) {
+      const cands = [];
+      for (const q of (plan.image_queries || []).slice(0, 6)) {
+        for (const r of (await searchSerper(q, 2))) cands.push({ ...r, query: q });
+        for (const r of (await searchCommons(q, 1))) if (r.kind === 'image') cands.push({ ...r, query: q });
+        if (cands.length >= max * 2) break;
+      }
+      for (const c of cands.slice(0, max)) {
+        if (!fresh(c.sourceUrl)) continue;
+        const e = await media.downloadImage({ url: c.full, slug, query: c.query, source: c.source, sourceUrl: c.sourceUrl, licenseGuess: c.licenseGuess });
+        if (e) added.push(e);
+      }
+    }
+
+    // B-ROLL — Pexels video (free, licensed)
+    if (want.has('broll')) {
+      for (const q of (plan.broll_queries || []).slice(0, 3)) {
+        for (const r of (await searchPexelsVideo(q, 2))) {
+          if (!fresh(r.sourceUrl)) continue;
+          const e = await media.downloadVideoFile({ url: r.full, slug, query: q, source: r.source, sourceUrl: r.sourceUrl, licenseGuess: r.licenseGuess, kind: 'broll' });
+          if (e) added.push(e);
+        }
+      }
+    }
+
+    // VIDEO — Commons video (direct) always; YouTube via yt-dlp only when opted-in
+    if (want.has('video')) {
+      for (const q of (plan.video_queries || []).slice(0, 4)) {
+        for (const r of (await searchCommons(q, 2))) {
+          if (r.kind !== 'video') continue;
+          if (!fresh(r.sourceUrl)) continue;
+          const e = await media.downloadVideoFile({ url: r.full, slug, query: q, source: r.source, sourceUrl: r.sourceUrl, licenseGuess: r.licenseGuess });
+          if (e) added.push(e);
+        }
+      }
+      if (allowVideoDownload) {
+        for (const q of (plan.video_queries || []).slice(0, 2)) {
+          for (const r of (await searchYouTube(q, 1))) {
+            if (!fresh(r.sourceUrl)) continue;
+            try {
+              const e = await media.downloadVideoYtDlp({ url: r.full, slug, query: q, source: r.source, sourceUrl: r.sourceUrl });
+              if (e) added.push(e);
+            } catch (err) { console.warn('  video download skipped:', err.message); }
+          }
+        }
+      }
+    }
+
+    // SCREEN RECORDINGS — scroll-capture the subject's public pages
+    if (want.has('screen')) {
+      for (const t of (plan.screenrec_targets || []).slice(0, 3)) {
+        if (!t.url || !fresh(t.url)) continue;
+        try {
+          const e = await media.screenRecord({ url: t.url, slug, label: t.label || t.url, scrollSec: 10 });
+          if (e) added.push(e);
+        } catch (err) { console.warn('  screen recording skipped:', err.message); }
+      }
+    }
+
+    // REC-VIDEO — find video pages via Serper, screen-RECORD the playing embed
+    // (~20s, silent). Capped at 3 videos regardless of `max` (each is slow).
+    if (want.has('rec-video')) {
+      for (const q of (plan.video_queries || []).slice(0, 3)) {
+        for (const r of (await searchSerperVideos(q, 1))) {
+          if (!fresh(r.sourceUrl)) continue;
+          try {
+            const clips = await media.screenRecordVideo({ url: r.full, slug, label: q, captureSec: 20, startSec: 15 });
+            added.push(...clips);
+          } catch (err) { console.warn('  rec-video skipped:', err.message); }
+        }
+      }
+    }
+
+    const persisted = media.appendManifest(slug, added);
+    res.json({ slug, plan, added: persisted, manifest: media.readManifest(slug) });
+  } catch (err) {
+    console.error('media/source error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/media/manifest/:slug', (req, res) => {
+  res.json({ slug: req.params.slug, manifest: media.readManifest(req.params.slug), coverage: media.readCoverage(req.params.slug) });
+});
+
+app.post('/api/media/approve', async (req, res) => {
+  const { slug, id, role } = req.body || {};
+  try {
+    const entry = media.approve(slug, id, role);          // move file → work/
+    const asset = await enrichAsset(slug, entry);          // Claude vision → contract fields
+    media.upsertAsset(slug, asset);                        // write into work/assets.json
+    const coverage = recomputeCoverage(slug);              // refresh work/coverage.json
+    res.json({ success: true, entry, asset, coverage });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/media/reject', (req, res) => {
+  const { slug, id } = req.body || {};
+  try {
+    const entry = media.reject(slug, id);                  // delete file + drop from assets.json
+    const coverage = recomputeCoverage(slug);
+    res.json({ success: true, entry, coverage });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Rebuild work/assets.json + coverage.json from ALL currently-approved assets
+// (re-enriches each). Use to backfill cases approved before enrichment existed.
+app.post('/api/media/finalize', async (req, res) => {
+  const { slug } = req.body || {};
+  try {
+    const approved = media.readManifest(slug).filter((e) => e.status === 'approved');
+    media.writeAssets(slug, { version: 1, slug, assets: [] });
+    for (const e of approved) {
+      const asset = await enrichAsset(slug, e);
+      media.upsertAsset(slug, asset);
+    }
+    const coverage = recomputeCoverage(slug);
+    res.json({ success: true, count: approved.length, assets: media.readAssets(slug), coverage });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Claude vision-ranks the pending candidates → role assignments (used by --auto).
+app.post('/api/media/rank', async (req, res) => {
+  const { slug } = req.body || {};
+  try {
+    const pending = media.readManifest(slug).filter((e) => e.status === 'candidate');
+    if (!pending.length) return res.json({ ranking: { portrait_id: '', still_ids: [], clip_ids: [], reject_ids: [] } });
+
+    const content = [{ type: 'text', text: `Subject slug: ${slug}. Candidate assets follow. Assign roles by id.` }];
+    let imgCount = 0;
+    for (const e of pending) {
+      content.push({ type: 'text', text: `id=${e.id} kind=${e.kind} dims=${e.width}x${e.height} dur=${e.durationSec}s source=${e.source} query="${e.query}"` });
+      // include up to 12 image thumbnails for vision; videos/screenrecs by metadata only
+      if (e.kind === 'image' && imgCount < 12) {
+        try {
+          const abs = path.join(media.remotionPublicDir(), e.file);
+          const buf = fs.readFileSync(abs);
+          const ext = path.extname(abs).toLowerCase();
+          const mt = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+          content.push({ type: 'image', source: { type: 'base64', media_type: mt, data: buf.toString('base64') } });
+          imgCount += 1;
+        } catch {}
+      }
+    }
+    const data = await callClaude({
+      system: prompts.RANK_SYSTEM,
+      tools: [prompts.RANK_TOOL],
+      tool_choice: { type: 'tool', name: 'emit_ranking' },
+      max_tokens: 1024,
+      messages: [{ role: 'user', content }],
+    });
+    const ranking = data.content?.find((b) => b.type === 'tool_use')?.input || { still_ids: [], clip_ids: [] };
+    res.json({ ranking });
+  } catch (err) {
+    console.error('media/rank error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Serve staged + work media files to the review UI. `path` is the manifest
+// `file` value (relative to the Remotion public dir, e.g. cases/<slug>/work/...).
+app.get('/api/media/file', (req, res) => {
+  const rel = req.query.path || '';
+  const root = media.remotionPublicDir();
+  const target = path.resolve(root, rel);
+  if (!target.startsWith(path.resolve(root))) return res.status(403).end();
+  if (!fs.existsSync(target)) return res.status(404).end();
+  res.sendFile(target);
+});
+
 app.listen(PORT, () => {
   console.log(`SEQ Image Sourcer running at http://localhost:${PORT}`);
+  console.log(`  Claude key: ${CLAUDE_KEY ? 'configured' : 'MISSING (set SEQ_INTERNAL_ANTHROPIC_API_KEY)'}`);
+  console.log(`  Remotion public dir: ${media.remotionPublicDir()}`);
 });
