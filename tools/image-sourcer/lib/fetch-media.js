@@ -212,18 +212,76 @@ function extFromUrl(url, fallback) {
   return fallback;
 }
 
+// Detect the TRUE image type from magic bytes (extensions lie — e.g. WebP bytes
+// saved as .jpg). Returns { ext, mime } or null. Claude vision supports
+// jpeg/png/gif/webp; avif/heic are flagged so we can skip the vision block.
+function sniffImageType(file) {
+  let fd;
+  try { fd = fs.openSync(file, "r"); } catch { return null; }
+  const b = Buffer.alloc(16);
+  let n = 0;
+  try { n = fs.readSync(fd, b, 0, 16, 0); } finally { fs.closeSync(fd); }
+  if (n < 12) return null;
+  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return { ext: ".jpg", mime: "image/jpeg" };
+  if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return { ext: ".png", mime: "image/png" };
+  if (b.slice(0, 4).toString("latin1") === "RIFF" && b.slice(8, 12).toString("latin1") === "WEBP") return { ext: ".webp", mime: "image/webp" };
+  if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46) return { ext: ".gif", mime: "image/gif" };
+  if (b.slice(4, 8).toString("latin1") === "ftyp") {
+    const brand = b.slice(8, 12).toString("latin1");
+    if (/avif|avis/i.test(brand)) return { ext: ".avif", mime: "image/avif" };
+    if (/heic|heix|mif1|hevc/i.test(brand)) return { ext: ".heic", mime: "image/heic" };
+  }
+  return null;
+}
+
+// Claude can natively decode these for vision; others (avif/heic/unknown) get
+// text-only enrichment.
+const VISION_MIMES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
+
+// If a file's extension doesn't match its real bytes (e.g. webp-in-.jpg), rename
+// it to the correct extension and update the manifest entry's path. Returns the
+// (possibly updated) entry. Used before enrichment so paths + media types are honest.
+function normalizeImageExt(slug, entry) {
+  if (!entry || entry.kind !== "image") return entry;
+  const rel = entry.workFile || entry.file;
+  const abs = path.join(remotionPublicDir(), rel);
+  if (!fs.existsSync(abs)) return entry;
+  const sniff = sniffImageType(abs);
+  if (!sniff) return entry;
+  const norm = (e) => (e === ".jpeg" ? ".jpg" : e.toLowerCase());
+  const curExt = path.extname(abs);
+  if (norm(curExt) === norm(sniff.ext)) return entry; // already correct
+  const newAbs = abs.slice(0, abs.length - curExt.length) + sniff.ext;
+  try { fs.renameSync(abs, newAbs); } catch { return entry; }
+  const newRel = path.relative(remotionPublicDir(), newAbs);
+  const man = readManifest(slug);
+  const e = man.find((x) => x.id === entry.id);
+  if (e) { e.file = newRel; e.workFile = newRel; writeManifest(slug, man); }
+  entry.file = newRel; entry.workFile = newRel;
+  return entry;
+}
+
 // ── Downloaders ───────────────────────────────────────────────────────────────
 // Each returns a manifest entry (status "candidate") or null on failure/too-small.
 async function downloadImage({ url, slug, query = "", source = "", sourceUrl = "", licenseGuess = "unknown", minW = 800, minH = 500 }) {
   ensureDir(stagingDir(slug));
   const id = mkId("image");
-  const file = path.join(stagingDir(slug), `${id}${extFromUrl(url, ".jpg")}`);
+  let file = path.join(stagingDir(slug), `${id}${extFromUrl(url, ".jpg")}`);
   try {
     const r = await fetch(url);
     if (!r.ok) return null;
     fs.writeFileSync(file, Buffer.from(await r.arrayBuffer()));
   } catch {
     return null;
+  }
+  // correct the extension from the real bytes (URLs/headers often lie)
+  const sniff = sniffImageType(file);
+  if (sniff) {
+    const norm = (e) => (e === ".jpeg" ? ".jpg" : e.toLowerCase());
+    if (norm(path.extname(file)) !== norm(sniff.ext)) {
+      const fixed = file.slice(0, file.length - path.extname(file).length) + sniff.ext;
+      try { fs.renameSync(file, fixed); file = fixed; } catch {}
+    }
   }
   const { width, height } = probeDims(file);
   if (width && height && (width < minW || height < minH)) {
@@ -618,7 +676,15 @@ function toAssetBase(slug, e) {
   else if (isImg) kind = "work";
   else kind = "b-roll";
   const license = mapLicense(e.licenseGuess);
-  const orientation = e.width && e.height ? (e.width > e.height ? "landscape" : e.width < e.height ? "portrait" : "square") : undefined;
+  // dims: trust the manifest, but re-probe if missing/0 (e.g. a file that was
+  // mislabeled at download time but is now a readable JPEG). Stays 0 → omitted
+  // for genuinely un-probeable formats (some VP8X WebP).
+  let width = e.width || 0, height = e.height || 0;
+  if (!width || !height) {
+    const d = probeDims(path.join(remotionPublicDir(), e.workFile || e.file));
+    if (d.width && d.height) { width = d.width; height = d.height; }
+  }
+  const orientation = width && height ? (width > height ? "landscape" : width < height ? "portrait" : "square") : undefined;
   // hero portrait (featured/portrait.<ext>) → priority 100 (title card);
   // extra portraits (featured/portrait-<id>.<ext>) → 70 (portrait-beat set).
   const isHeroPortrait = e.role === "portrait" && /(^|\/)portrait\.[a-z0-9]+$/i.test(rel);
@@ -630,8 +696,8 @@ function toAssetBase(slug, e) {
     kind,
     featured: e.role === "portrait",
     priority,
-    width: e.width || undefined,
-    height: e.height || undefined,
+    width: width || undefined,
+    height: height || undefined,
     orientation,
     source: e.sourceUrl || undefined,
     license,
@@ -678,6 +744,9 @@ module.exports = {
   probeDims,
   probeDuration,
   probeFps,
+  sniffImageType,
+  normalizeImageExt,
+  VISION_MIMES,
   downloadImage,
   downloadVideoFile,
   downloadVideoYtDlp,

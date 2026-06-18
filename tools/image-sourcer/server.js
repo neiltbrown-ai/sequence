@@ -21,16 +21,27 @@ const PORT = process.env.PORT || 3100;
 const CLAUDE_KEY = prompts.claudeKey();
 
 // Thin wrapper over the Anthropic messages API using the internal key.
-async function callClaude({ system, messages, tools, tool_choice, max_tokens = 1024, model = prompts.CLAUDE_MODEL }) {
+async function callClaude({ system, messages, tools, tool_choice, max_tokens = 1024, model = prompts.CLAUDE_MODEL, timeoutMs = 90000 }) {
   if (!CLAUDE_KEY) throw new Error('No internal Anthropic key (set SEQ_INTERNAL_ANTHROPIC_API_KEY)');
   const body = { model, max_tokens, system, messages };
   if (tools) body.tools = tools;
   if (tool_choice) body.tool_choice = tool_choice;
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': CLAUDE_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify(body),
-  });
+  // hard timeout so one slow/stuck call can't hang a finalize loop
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  let r;
+  try {
+    r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': CLAUDE_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+    });
+  } catch (e) {
+    throw new Error(e.name === 'AbortError' ? `Anthropic request timed out after ${timeoutMs}ms` : e.message);
+  } finally {
+    clearTimeout(timer);
+  }
   if (!r.ok) throw new Error(`Anthropic API returned ${r.status}: ${await r.text()}`);
   return r.json();
 }
@@ -907,29 +918,37 @@ async function buildMediaPlan(slug) {
 
 // ── Tier-B enrichment: describe one approved asset to the assets.json contract ──
 async function enrichAsset(slug, manifestEntry) {
+  // fix mislabeled extensions (webp-in-.jpg etc.) so the path + media type are honest
+  manifestEntry = media.normalizeImageExt(slug, manifestEntry);
   const base = media.toAssetBase(slug, manifestEntry);
   if (!CLAUDE_KEY) return base; // graceful: deterministic-only entry
   const plan = media.readPlan(slug) || {};
   const entities = plan.entities || [];
   const isImg = manifestEntry.kind === 'image';
+  // detect the real type; only send vision for formats Claude can decode
+  let visionable = false;
+  let buf, mime;
+  if (isImg) {
+    try {
+      const abs = path.join(media.remotionPublicDir(), manifestEntry.workFile || manifestEntry.file);
+      const sniff = media.sniffImageType(abs);
+      mime = sniff && sniff.mime;
+      if (mime && media.VISION_MIMES.has(mime)) {
+        buf = fs.readFileSync(abs);
+        visionable = true;
+      }
+    } catch { /* fall through to text-only */ }
+  }
   const content = [{
     type: 'text',
     text: [
       `Subject: ${plan.subject_name || slug}.`,
       entities.length ? `Known entities (use these keys for "entity"): ${entities.map((e) => `${e.key} (${e.label})`).join(', ')}.` : '',
       `Asset hint — kind:${base.kind}, source:${manifestEntry.source || ''}, search query:"${manifestEntry.query || ''}".`,
-      isImg ? 'Image follows.' : 'This is a VIDEO/screen-recording asset (no frame provided) — infer from the query/source; focalPoint can stay {0.5,0.5}.',
+      visionable ? 'Image follows.' : 'No frame/image is available for this asset — infer caption/tags/entity from the source + query; leave focalPoint {0.5,0.5}.',
     ].filter(Boolean).join('\n'),
   }];
-  if (isImg) {
-    try {
-      const abs = path.join(media.remotionPublicDir(), manifestEntry.workFile || manifestEntry.file);
-      const buf = fs.readFileSync(abs);
-      const ext = path.extname(abs).toLowerCase();
-      const mt = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
-      content.push({ type: 'image', source: { type: 'base64', media_type: mt, data: buf.toString('base64') } });
-    } catch { /* fall through to text-only */ }
-  }
+  if (visionable) content.push({ type: 'image', source: { type: 'base64', media_type: mime, data: buf.toString('base64') } });
   try {
     const data = await callClaude({
       system: prompts.ASSET_ENRICH_SYSTEM,
@@ -1205,19 +1224,36 @@ app.post('/api/media/reject', (req, res) => {
   }
 });
 
-// Rebuild work/assets.json + coverage.json from ALL currently-approved assets
-// (re-enriches each). Use to backfill cases approved before enrichment existed.
+// Rebuild work/assets.json + coverage.json from currently-approved assets.
+// INCREMENTAL: assets already enriched (have a caption) are kept as-is and only
+// have their deterministic fields refreshed (e.g. a corrected path) — so a
+// re-run only spends Claude on the ones still missing enrichment. `?force=1`
+// re-enriches everything. Each enrich is independently guarded (timeout +
+// try/catch), so one un-probeable asset can never stall the whole finalize.
 app.post('/api/media/finalize', async (req, res) => {
-  const { slug } = req.body || {};
+  const { slug, force } = req.body || {};
   try {
     const approved = media.readManifest(slug).filter((e) => e.status === 'approved');
+    const prior = new Map(media.readAssets(slug).assets.map((a) => [a._sourceId, a]));
     media.writeAssets(slug, { version: 1, slug, assets: [] });
+    let enriched = 0, reused = 0;
     for (const e of approved) {
-      const asset = await enrichAsset(slug, e);
+      const fixed = media.normalizeImageExt(slug, e); // honest path/ext first
+      const before = prior.get(e.id);
+      let asset;
+      if (!force && before && before.caption) {
+        // keep prior enrichment; refresh deterministic fields (path/dims/priority)
+        const baseNow = media.toAssetBase(slug, fixed);
+        asset = { ...baseNow, kind: before.kind || baseNow.kind, caption: before.caption, tags: before.tags, entity: before.entity, era: before.era, focalPoint: before.focalPoint, quality: before.quality };
+        reused++;
+      } else {
+        asset = await enrichAsset(slug, fixed); // self-guarded; never hangs
+        enriched++;
+      }
       media.upsertAsset(slug, asset);
     }
     const coverage = recomputeCoverage(slug);
-    res.json({ success: true, count: approved.length, assets: media.readAssets(slug), coverage });
+    res.json({ success: true, count: approved.length, enriched, reused, assets: media.readAssets(slug), coverage });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
