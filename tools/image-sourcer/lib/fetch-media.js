@@ -561,10 +561,17 @@ async function screenRecordVideo({ url, slug, label = "", captureSec = 20, start
   return entries;
 }
 
+// True if a hero portrait file (featured/portrait.<ext>) already exists.
+function heroPortraitExists(slug) {
+  const dir = path.join(workDir(slug), "featured");
+  return fs.existsSync(dir) && fs.readdirSync(dir).some((f) => /^portrait\.[a-z0-9]+$/i.test(f));
+}
+
 // ── Promotion: staging → work/ ──────────────────────────────────────────────────
-// role: "portrait" → work/featured/portrait.<ext> (subject hero, held out of
-// montage rotation); "still" → work/images/; "clip" → work/video/ (folder name
-// matches docs/ASSETS-MANIFEST.md).
+// role: "portrait" → work/featured/. The FIRST portrait becomes the hero
+// (portrait.<ext>, title card); additional portraits get unique names
+// (portrait-<id>.<ext>) so several can coexist for a portrait-montage beat.
+// "still" → work/images/; "clip" → work/video/ (folders match docs/ASSETS-MANIFEST.md).
 function approve(slug, id, role) {
   const e = getEntry(slug, id);
   if (!e) throw new Error(`no manifest entry ${id}`);
@@ -575,7 +582,7 @@ function approve(slug, id, role) {
   let destName;
   if (role === "portrait") {
     destDir = path.join(workDir(slug), "featured");
-    destName = `portrait${ext}`;
+    destName = heroPortraitExists(slug) ? `portrait-${id}${ext}` : `portrait${ext}`;
   } else if (role === "clip") {
     destDir = path.join(workDir(slug), "video");
     destName = `${id}${ext}`;
@@ -612,13 +619,17 @@ function toAssetBase(slug, e) {
   else kind = "b-roll";
   const license = mapLicense(e.licenseGuess);
   const orientation = e.width && e.height ? (e.width > e.height ? "landscape" : e.width < e.height ? "portrait" : "square") : undefined;
+  // hero portrait (featured/portrait.<ext>) → priority 100 (title card);
+  // extra portraits (featured/portrait-<id>.<ext>) → 70 (portrait-beat set).
+  const isHeroPortrait = e.role === "portrait" && /(^|\/)portrait\.[a-z0-9]+$/i.test(rel);
+  const priority = e.role === "portrait" ? (isHeroPortrait ? 100 : 70) : 50;
   const entry = {
     _sourceId: e.id,
     path: rel,
     type,
     kind,
     featured: e.role === "portrait",
-    priority: e.role === "portrait" ? 100 : 50,
+    priority,
     width: e.width || undefined,
     height: e.height || undefined,
     orientation,

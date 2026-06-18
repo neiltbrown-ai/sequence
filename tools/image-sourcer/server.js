@@ -1182,20 +1182,8 @@ app.get('/api/media/manifest/:slug', (req, res) => {
 app.post('/api/media/approve', async (req, res) => {
   const { slug, id, role } = req.body || {};
   try {
-    // Single portrait: there's one featured/portrait.* slot, so a new portrait
-    // demotes any existing approved portrait to a still (keeps the image; avoids
-    // the filename collision that left stale entries pointing at an overwritten file).
-    if (role === 'portrait') {
-      for (const old of media.readManifest(slug).filter((x) => x.id !== id && x.status === 'approved' && x.role === 'portrait')) {
-        try {
-          const demoted = media.approve(slug, old.id, 'still'); // featured/portrait.* → images/<id>
-          media.upsertAsset(slug, await enrichAsset(slug, demoted));
-        } catch {
-          media.setStatus(slug, old.id, 'rejected'); // file already gone → drop it
-          media.removeAsset(slug, old.id);
-        }
-      }
-    }
+    // Multiple portraits are allowed: the first becomes the hero (title card),
+    // extras join the portrait-montage set (see lib approve()). No demotion.
     const entry = media.approve(slug, id, role);          // move file → work/
     const asset = await enrichAsset(slug, entry);          // Claude vision → contract fields
     media.upsertAsset(slug, asset);                        // write into work/assets.json
