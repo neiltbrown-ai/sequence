@@ -1002,7 +1002,9 @@ app.post('/api/media/search', async (req, res) => {
       queries = (kind === 'video' ? p.video_queries : kind === 'broll' ? p.broll_queries : p.image_queries) || [];
     }
     queries = queries.slice(0, 8);
-    const seen = new Set((slug ? media.readManifest(slug) : []).map((e) => e.sourceUrl).filter(Boolean));
+    // mark results "added" only if they're LIVE in the queue — a rejected/removed
+    // source should appear addable again, not stuck as "added".
+    const seen = new Set((slug ? media.readManifest(slug) : []).filter((e) => e.status !== 'rejected').map((e) => e.sourceUrl).filter(Boolean));
     const dedup = new Set();
     const out = [];
     for (const q of queries) {
@@ -1042,10 +1044,16 @@ app.post('/api/media/add', async (req, res) => {
   const manifest = media.readManifest(slug);
   // de-dupe: screenrec-video produces several clips per video (unique per-clip
   // sourceUrls), so match on the original video URL; everything else by sourceUrl.
-  const dup = action === 'screenrec-video'
-    ? manifest.some((e) => e.videoUrl === url || (e.sourceUrl || '').startsWith(url + '#'))
-    : new Set(manifest.map((e) => e.sourceUrl)).has(sourceUrl || url);
-  if (dup) return res.json({ success: true, duplicate: true });
+  const matches = (e) => action === 'screenrec-video'
+    ? (e.videoUrl === url || (e.sourceUrl || '').startsWith(url + '#'))
+    : e.sourceUrl === (sourceUrl || url);
+  const existing = manifest.filter(matches);
+  // a LIVE (candidate/approved) match blocks; a previously-rejected source can be
+  // re-added — clear the rejected stubs so the fresh download isn't de-duped away.
+  if (existing.some((e) => e.status !== 'rejected')) {
+    return res.json({ success: true, duplicate: true });
+  }
+  if (existing.length) media.writeManifest(slug, manifest.filter((e) => !matches(e)));
   try {
     let entries; // screenRecordVideo returns several clips; others one
     if (action === 'image') {
