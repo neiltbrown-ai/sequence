@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { capture, AnalyticsEvent } from "@/lib/analytics/events";
 import SocialButtons from "@/components/auth/social-buttons";
 import AuthDivider from "@/components/auth/auth-divider";
 import AuthInput from "@/components/auth/auth-input";
@@ -95,6 +96,16 @@ function SignupForm() {
   } | null>(null);
   const [codeError, setCodeError] = useState("");
 
+  // Fire the conversion event once when the confirmation step is reached —
+  // regardless of how we got there (Stripe return, discount redeem, or 503 fallback).
+  const signupCompletedFired = useRef(false);
+  useEffect(() => {
+    if (step === 3 && !signupCompletedFired.current) {
+      signupCompletedFired.current = true;
+      capture(AnalyticsEvent.SignupCompleted, { plan: selectedPlan });
+    }
+  }, [step, selectedPlan]);
+
   // On confirmation step, verify the Stripe session to provision subscription
   // (fallback for when webhooks can't reach the server, e.g. localhost)
   useEffect(() => {
@@ -149,12 +160,14 @@ function SignupForm() {
 
     if (data.user) setSignupUserId(data.user.id);
 
+    capture(AnalyticsEvent.SignupAccountCreated, { plan: selectedPlan });
     setLoading(false);
     // Always show plan selection (step 1) so user can choose billing cycle
     setStep(1);
   };
 
   const handleSelectPlan = () => {
+    capture(AnalyticsEvent.SignupPlanSelected, { plan: selectedPlan });
     setStep(2);
   };
 
@@ -247,6 +260,10 @@ function SignupForm() {
       }
 
       if (data.url) {
+        capture(AnalyticsEvent.CheckoutStarted, {
+          plan: selectedPlan,
+          billing: selectedPlan === "library" ? "annual" : "monthly",
+        });
         window.location.href = data.url;
       }
     } catch (err) {
