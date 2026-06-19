@@ -525,13 +525,25 @@ async function _captureClip({ browser, embed, url, slug, startSec, captureSec, l
     try {
       duration = await page.$eval("video", (el, s) => { if (el.duration && isFinite(el.duration) && el.duration > s + 1) el.currentTime = s; return el.duration || 0; }, startSec);
     } catch {}
-    // adaptive buffer: wait until the player is actually playing at/near the seek
-    // target (far seeks on long videos need much longer than a fixed delay)
-    await page.waitForFunction((s) => {
+    // Wait until the capture window is actually BUFFERED (not just "ready") and
+    // playing. Far seeks (clips 2-4, deep into the video) buffer slowly; recording
+    // before the buffer fills captures a spinner over a frozen frame. Keep nudging
+    // play() and give it up to ~35s to load the window ahead.
+    await page.waitForFunction((cs) => {
       const v = document.querySelector("video");
-      return v && !v.seeking && v.readyState >= 3 && v.currentTime >= s - 2;
-    }, startSec, { timeout: 10000 }).catch(() => {});
-    await page.waitForTimeout(800);
+      if (!v) return false;
+      if (v.paused) { const p = v.play && v.play(); if (p && p.catch) p.catch(() => {}); }
+      if (v.seeking || v.readyState < 3) return false;
+      const t = v.currentTime;
+      const need = Math.min(v.duration || Infinity, t + cs + 2); // window + small margin
+      for (let i = 0; i < v.buffered.length; i++) {
+        if (v.buffered.start(i) <= t + 0.5 && v.buffered.end(i) >= need) return true;
+      }
+      return false;
+    }, captureSec, { timeout: 35000 }).catch(() => {});
+    // make sure it's playing right as the keep-window begins
+    await page.evaluate(() => { const v = document.querySelector("video"); if (v && v.paused) { const p = v.play && v.play(); if (p && p.catch) p.catch(() => {}); } }).catch(() => {});
+    await page.waitForTimeout(300);
     try {
       const box = await page.$eval("video", (el) => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; });
       if (box && box.w > 200 && box.h > 150) crop = box;
@@ -569,10 +581,17 @@ async function _captureClip({ browser, embed, url, slug, startSec, captureSec, l
   return { entry, duration };
 }
 
-// Screen-RECORD a playing video (interview/talk) — silent, cropped to the player.
-// Skips the first `startSec` (intros), and for longer videos grabs several spread
-// clips of `captureSec` each. Returns an ARRAY of manifest entries (one per clip).
-async function screenRecordVideo({ url, slug, label = "", captureSec = 20, startSec = 15, maxClips = 4 }) {
+// Screen-RECORD a playing video (interview/talk) — silent, cropped to the player,
+// starting ~startSec in (past intros). Returns an ARRAY with ONE clip.
+//
+// Intentionally ONE clip per video: YouTube actively errors out sustained/repeated
+// headless playback ("Something went wrong") after ~30-40s, and cold deep seeks
+// fail outright — so multiple/spread clips from a single YouTube video aren't
+// reliable via screen-recording (clips 2-N come back as error screens). Get
+// variety by recording several DIFFERENT videos. For multiple spread clips from
+// one long video, the reliable route is downloading it (yt-dlp) and slicing
+// locally — see downloadVideoYtDlp / the --allow-video-download path.
+async function screenRecordVideo({ url, slug, label = "", captureSec = 20, startSec = 15 }) {
   let chromium;
   try {
     ({ chromium } = require("playwright"));
@@ -581,42 +600,21 @@ async function screenRecordVideo({ url, slug, label = "", captureSec = 20, start
   }
   ensureDir(stagingDir(slug));
   const browser = await chromium.launch({ headless: true });
-  const entries = [];
   try {
-    // If this is a generic page (video embedded in an iframe / native player),
-    // resolve the underlying player so we record IT, not the static page. If we
-    // can't find a real player (bot-walled page, click-to-play, etc.), skip with
-    // a clear message instead of recording a page where nothing plays.
+    // resolve a real player for generic/embed pages; skip bot-walled pages
     let target = url;
     if (!isKnownPlayer(url)) {
       const resolved = await resolveEmbedSource(browser, url);
-      if (!resolved) {
-        throw new Error("no playable video found on this page (bot-protected or click-to-play) — try the YouTube version of this video");
-      }
+      if (!resolved) throw new Error("no playable video found on this page (bot-protected or click-to-play) — try the YouTube version of this video");
       target = resolved;
     }
     const embed = toEmbed(target);
-    // first clip at startSec — also tells us the source duration
-    const first = await _captureClip({ browser, embed, url, slug, startSec, captureSec, label });
-    if (first.entry) entries.push(first.entry);
-    const dur = first.duration || 0;
-    // long enough for more? spread additional clips across the remainder
-    if (dur > startSec + captureSec * 2 + 10) {
-      const usableEnd = dur - captureSec - 5;
-      const n = Math.min(maxClips, Math.max(2, Math.round(dur / 180))); // ~1 clip / 3 min
-      for (let i = 1; i < n; i++) {
-        const off = startSec + ((usableEnd - startSec) * i) / (n - 1);
-        try {
-          const c = await _captureClip({ browser, embed, url, slug, startSec: off, captureSec, label });
-          if (c.entry) entries.push(c.entry);
-        } catch (e) { console.warn(`  clip @${Math.round(off)}s skipped:`, e.message); }
-      }
-    }
+    const c = await _captureClip({ browser, embed, url, slug, startSec, captureSec, label });
+    if (!c.entry) throw new Error(`no clip captured for ${url}`);
+    return [c.entry];
   } finally {
     await browser.close().catch(() => {});
   }
-  if (!entries.length) throw new Error(`no clips captured for ${url}`);
-  return entries;
 }
 
 // True if a hero portrait file (featured/portrait.<ext>) already exists.
