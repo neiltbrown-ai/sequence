@@ -39,6 +39,12 @@ export default function PostHogProvider({
 }) {
   useEffect(() => {
     if (!POSTHOG_KEY || posthog.__loaded) return;
+    // Don't pollute the production project with local-dev / test traffic.
+    // Preview + production deploys have real hostnames and still track.
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0") {
+      return;
+    }
     posthog.init(POSTHOG_KEY, {
       api_host: "/ingest", // same-origin reverse proxy (see next.config.ts)
       ui_host: POSTHOG_HOST, // so dashboard links resolve to the real app
