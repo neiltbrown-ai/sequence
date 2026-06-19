@@ -445,8 +445,12 @@ async function screenRecord({ url, slug, label = "", scrollSec = 10, source = "s
 }
 
 // Normalize a video page URL to an autoplay+muted embed the headless browser can
-// actually play. Falls back to the raw page (we try to play its first <video>).
-function toEmbed(url) {
+// actually play, STARTING at startSec. Critically, the start time goes in the URL
+// (&t=Ns) so YouTube initializes the player AT that point — a post-load JS seek to
+// a non-trivial offset makes the watch page throw "Something went wrong", but a
+// native URL start plays cleanly at any in-range offset. Falls back to the raw page.
+function toEmbed(url, startSec = 0) {
+  const t = Math.max(0, Math.round(startSec || 0));
   try {
     const u = new URL(url);
     let id;
@@ -456,13 +460,10 @@ function toEmbed(url) {
       else if (u.pathname.startsWith("/shorts/")) id = u.pathname.split("/")[2];
       else if (u.pathname.startsWith("/embed/")) id = u.pathname.split("/")[2];
     }
-    // NOTE: YouTube embeds frequently return Error 150/153 in headless (embedding
-    // disabled / origin check). The watch page plays reliably — we record it and
-    // crop to the <video> element's box to drop the surrounding YouTube chrome.
-    if (id) return `https://www.youtube.com/watch?v=${id}`;
+    if (id) return `https://www.youtube.com/watch?v=${id}${t ? `&t=${t}s` : ""}`;
     if (u.hostname.includes("vimeo.com")) {
       const vid = u.pathname.split("/").filter(Boolean)[0];
-      if (/^\d+$/.test(vid)) return `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1`;
+      if (/^\d+$/.test(vid)) return `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1${t ? `#t=${t}s` : ""}`;
     }
   } catch {}
   return url;
@@ -521,14 +522,15 @@ async function _captureClip({ browser, embed, url, slug, startSec, captureSec, l
       if (v) { v.muted = true; const p = v.play && v.play(); if (p && p.catch) p.catch(() => {}); }
     }).catch(() => {});
     await page.waitForTimeout(4000); // let the player load + autoplay begin
-    // read source duration + seek past the intro
+    // The start point came from the URL (&t=Ns), so the player initializes there —
+    // do NOT JS-seek (that's what triggers YouTube's "Something went wrong"). Just
+    // read the source duration.
     try {
-      duration = await page.$eval("video", (el, s) => { if (el.duration && isFinite(el.duration) && el.duration > s + 1) el.currentTime = s; return el.duration || 0; }, startSec);
+      duration = await page.$eval("video", (el) => (el.duration && isFinite(el.duration) ? el.duration : 0));
     } catch {}
     // Wait until the capture window is actually BUFFERED (not just "ready") and
-    // playing. Far seeks (clips 2-4, deep into the video) buffer slowly; recording
-    // before the buffer fills captures a spinner over a frozen frame. Keep nudging
-    // play() and give it up to ~35s to load the window ahead.
+    // playing. Deeper starts buffer slower; recording before the buffer fills
+    // captures a spinner over a frozen frame. Keep nudging play(); up to ~35s.
     await page.waitForFunction((cs) => {
       const v = document.querySelector("video");
       if (!v) return false;
@@ -581,17 +583,29 @@ async function _captureClip({ browser, embed, url, slug, startSec, captureSec, l
   return { entry, duration };
 }
 
-// Screen-RECORD a playing video (interview/talk) — silent, cropped to the player,
-// starting ~startSec in (past intros). Returns an ARRAY with ONE clip.
-//
-// Intentionally ONE clip per video: YouTube actively errors out sustained/repeated
-// headless playback ("Something went wrong") after ~30-40s, and cold deep seeks
-// fail outright — so multiple/spread clips from a single YouTube video aren't
-// reliable via screen-recording (clips 2-N come back as error screens). Get
-// variety by recording several DIFFERENT videos. For multiple spread clips from
-// one long video, the reliable route is downloading it (yt-dlp) and slicing
-// locally — see downloadVideoYtDlp / the --allow-video-download path.
-async function screenRecordVideo({ url, slug, label = "", captureSec = 20, startSec = 15 }) {
+// Quick metadata pass: load the player and read source duration (no recording).
+async function probeVideoMeta(browser, embed) {
+  const ctx = await browser.newContext({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" });
+  const page = await ctx.newPage();
+  let dur = 0;
+  try {
+    await page.goto(embed, { waitUntil: "load", timeout: 30000 }).catch(() => {});
+    await page.evaluate(() => { const v = document.querySelector("video"); if (v) { v.muted = true; const p = v.play && v.play(); if (p && p.catch) p.catch(() => {}); } }).catch(() => {});
+    await page.waitForFunction(() => { const v = document.querySelector("video"); return v && isFinite(v.duration) && v.duration > 0; }, null, { timeout: 12000 }).catch(() => {});
+    dur = await page.$eval("video", (el) => (isFinite(el.duration) ? el.duration : 0)).catch(() => 0);
+  } catch {}
+  await ctx.close().catch(() => {});
+  return dur;
+}
+
+// Screen-RECORD a playing video (interview/talk) — silent, cropped to the player.
+// Short video → one clip at startSec. Longer video → several clips SPREAD across
+// the runtime, each a fresh load that starts natively at its offset via the URL
+// (&t=Ns). That native start is the key: a post-load JS seek to a deep offset makes
+// YouTube error out, but loading AT the timestamp plays cleanly — so spread clips
+// work again. Each clip plays only ~captureSec, staying under YouTube's
+// sustained-headless-playback limit. Returns an ARRAY of entries (one per clip).
+async function screenRecordVideo({ url, slug, label = "", captureSec = 20, startSec = 15, maxClips = 4 }) {
   let chromium;
   try {
     ({ chromium } = require("playwright"));
@@ -608,10 +622,28 @@ async function screenRecordVideo({ url, slug, label = "", captureSec = 20, start
       if (!resolved) throw new Error("no playable video found on this page (bot-protected or click-to-play) — try the YouTube version of this video");
       target = resolved;
     }
-    const embed = toEmbed(target);
-    const c = await _captureClip({ browser, embed, url, slug, startSec, captureSec, label });
-    if (!c.entry) throw new Error(`no clip captured for ${url}`);
-    return [c.entry];
+    const dur = await probeVideoMeta(browser, toEmbed(target, 0));
+    const n = dur ? Math.min(maxClips, Math.max(1, Math.round(dur / 180))) : 1; // ~1 clip / 3 min
+
+    // spread the clip start offsets across the runtime
+    const offsets = [];
+    if (n <= 1 || !dur) {
+      offsets.push(startSec);
+    } else {
+      const usableEnd = Math.max(startSec + captureSec, dur - captureSec - 5);
+      for (let i = 0; i < n; i++) offsets.push(Math.round(startSec + ((usableEnd - startSec) * i) / (n - 1)));
+    }
+
+    const entries = [];
+    for (const off of offsets) {
+      try {
+        const embed = toEmbed(target, off); // native start at this offset
+        const c = await _captureClip({ browser, embed, url, slug, startSec: off, captureSec, label });
+        if (c.entry) entries.push(c.entry);
+      } catch (e) { console.warn(`  clip @${off}s skipped:`, e.message); }
+    }
+    if (!entries.length) throw new Error(`no clips captured for ${url}`);
+    return entries;
   } finally {
     await browser.close().catch(() => {});
   }

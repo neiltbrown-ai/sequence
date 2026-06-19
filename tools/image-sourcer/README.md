@@ -53,16 +53,16 @@ node ../remotion/scripts/source-media.mjs <slug> \
 
 Media kinds: `stills` (Google/Commons images) · `broll` (Pexels stock video) ·
 `screen` (scroll-capture the subject's sites) · `rec-video` (find interviews/talks
-via Serper video search and **screen-record the playing video**, silent — skips
-the first ~15s of intros, **one ~20s clip per video**; most rights-defensible way
-to get footage of the person) · `video` (direct Commons video; + YouTube via
-yt-dlp only with `--allow-video-download`).
+via Serper video search and **screen-record the playing video**, silent — several
+~20s clips spread across longer videos; most rights-defensible way to get footage
+of the person) · `video` (direct Commons video; + YouTube via yt-dlp only with
+`--allow-video-download`).
 
-**Why one clip per video:** YouTube actively errors out sustained/repeated
-headless playback ("Something went wrong") after ~30-40s, and cold deep seeks
-fail — so reliable multi-clip screen-recording of a single video isn't possible.
-Get variety by recording several DIFFERENT videos. For multiple spread clips from
-ONE long video, download it (`--allow-video-download`, yt-dlp) and slice locally.
+**Multi-clip technique:** each clip loads the video **natively at its timestamp**
+(`&t=Ns` in the URL) on a fresh page, then records ~20s. This is essential — a
+post-load JS *seek* to a deep offset makes YouTube throw "Something went wrong",
+but initializing the player AT the timestamp plays cleanly at any depth. Clip
+count scales with length (~1 per 3 min, capped at 4).
 
 **Browse & pick** has three modes: **images**, **videos** (web footage of the
 subject → screen-recorded on click), and **b-roll** (stock clips from Pexels +
