@@ -122,12 +122,13 @@ body { background: var(--dark); color: var(--light); font-family: var(--font-san
     <div class="manual-row">
       <input type="text" id="manualUrl" placeholder="…or paste an image / video / page URL" />
       <select id="manualAction">
+        <option value="extract-images">extract images (gallery/page)</option>
         <option value="image">image</option>
         <option value="screenrec-video">screen-rec video</option>
         <option value="screenrec-page">screen-rec page</option>
         <option value="video-file">download video file</option>
       </select>
-      <button class="btn secondary" id="addUrlBtn">Add URL</button>
+      <button class="btn secondary" id="addUrlBtn">Go</button>
     </div>
     <div class="status-line" id="searchStatus"></div>
     <div class="grid results" id="results"></div>
@@ -378,12 +379,23 @@ $('addUrlBtn').onclick = async () => {
   if (!slug || !url) return searchStatus('Enter a case slug and a URL.', true);
   const action = $('manualAction').value;
   $('addUrlBtn').disabled = true;
-  searchStatus(`<span class="spin"></span> Adding ${action}…`);
   try {
-    const r = await api('/api/media/add', { slug, url, action, source: 'manual', sourceUrl: url });
-    searchStatus(r.duplicate ? 'Already in the queue.' : 'Added to review queue.');
-    $('manualUrl').value = '';
-    load(slug);
+    if (action === 'extract-images') {
+      // scrape a gallery/page → show its images in the results grid to pick
+      searchStatus(`<span class="spin"></span> Extracting images from page (scrolling to load all)…`);
+      const { results } = await api('/api/media/extract', { slug, url });
+      const grid = $('results');
+      grid.innerHTML = '';
+      if (!results.length) grid.innerHTML = '<div class="empty">No images found on that page.</div>';
+      for (const r of results) grid.appendChild(resultCard(slug, r));
+      searchStatus(`${results.length} image(s) from the page — click to add.`);
+    } else {
+      searchStatus(`<span class="spin"></span> Adding ${action}…`);
+      const r = await api('/api/media/add', { slug, url, action, source: 'manual', sourceUrl: url });
+      searchStatus(r.duplicate ? 'Already in the queue.' : 'Added to review queue.');
+      $('manualUrl').value = '';
+      load(slug);
+    }
   } catch (x) { searchStatus(x.message, true); }
   $('addUrlBtn').disabled = false;
 };

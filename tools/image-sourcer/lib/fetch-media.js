@@ -501,6 +501,56 @@ async function resolveEmbedSource(browser, url) {
   return found;
 }
 
+// Scrape the content images off a web page (e.g. a Behance project gallery whose
+// brand-new images Google hasn't indexed yet). Loads headless, scrolls to trigger
+// lazy-loading, collects sizable images. Returns search-result-shaped items (NOT
+// downloaded) for the review grid to pick from. Launches its own browser.
+async function extractPageImages(url, { max = 60 } = {}) {
+  let chromium;
+  try { ({ chromium } = require("playwright")); }
+  catch { throw new Error("playwright not installed. Run: npm install playwright && npx playwright install chromium"); }
+  const browser = await chromium.launch({ headless: true });
+  const ctx = await browser.newContext({
+    userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  });
+  const page = await ctx.newPage();
+  let items = [];
+  try {
+    await page.goto(url, { waitUntil: "load", timeout: 40000 }).catch(() => {});
+    for (let i = 0; i < 16; i++) { await page.evaluate(() => window.scrollBy(0, window.innerHeight)).catch(() => {}); await page.waitForTimeout(450); }
+    items = await page.evaluate(() => {
+      const seen = new Set();
+      const res = [];
+      for (const im of document.querySelectorAll("img")) {
+        let s = im.currentSrc || im.src || "";
+        if (!s || !/^https?:/.test(s) || s.startsWith("data:")) continue;
+        const w = im.naturalWidth || 0, h = im.naturalHeight || 0;
+        const isBehance = /mir-s3-cdn-cf\.behance\.net\/project_modules/.test(s);
+        if (isBehance) {
+          if (/project_modules\/(disp|115|202|404)(_webp)?\//.test(s)) continue; // tiny variants
+        } else if (w < 500 || h < 400) {
+          continue; // generic page: keep only sizable content images
+        }
+        if (seen.has(s)) continue;
+        seen.add(s);
+        res.push({ url: s, w, h });
+      }
+      return res;
+    });
+  } catch {}
+  await ctx.close().catch(() => {});
+  await browser.close().catch(() => {});
+  let host = "page";
+  try { host = new URL(url).hostname.replace(/^www\./, ""); } catch {}
+  return items.slice(0, max).map((it) => ({
+    full: it.url, thumb: it.url, kind: "image", addAction: "image",
+    source: host.includes("behance") ? "Behance" : host,
+    sourceUrl: it.url, pageUrl: url,
+    licenseGuess: "editorial / unverified",
+    width: it.w || 0, height: it.h || 0,
+  }));
+}
+
 // Capture ONE clip of a playing video starting at `startSec`. Seeks the player
 // past intros, then keeps the LAST `captureSec` of the recording (-sseof) so the
 // trim is deterministic regardless of how long the page took to load. Returns
@@ -784,6 +834,7 @@ module.exports = {
   screenRecord,
   screenRecordVideo,
   resolveEmbedSource,
+  extractPageImages,
   isKnownPlayer,
   approve,
   reject,

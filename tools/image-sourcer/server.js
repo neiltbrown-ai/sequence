@@ -1057,6 +1057,21 @@ app.post('/api/media/search', async (req, res) => {
   }
 });
 
+// Extract images directly off a page (e.g. a Behance gallery whose brand-new
+// images Google hasn't indexed). Returns pickable results for the grid.
+app.post('/api/media/extract', async (req, res) => {
+  const { url, slug } = req.body || {};
+  if (!url) return res.status(400).json({ error: 'url required' });
+  try {
+    const results = await media.extractPageImages(url);
+    const seen = new Set((slug ? media.readManifest(slug) : []).filter((e) => e.status !== 'rejected').map((e) => e.sourceUrl).filter(Boolean));
+    res.json({ count: results.length, results: results.map((r) => ({ ...r, query: 'page extract', inManifest: seen.has(r.sourceUrl) })) });
+  } catch (err) {
+    console.error('media/extract error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Add ONE picked/pasted item: download or screen-record it into staging +
 // manifest. Covers grid picks AND manual URL paste. action:
 //   image · screenrec-video (capture a playing video) · screenrec-page (scroll a
