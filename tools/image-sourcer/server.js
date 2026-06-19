@@ -773,7 +773,10 @@ async function searchSerper(query, num = 6, minW = 800, minH = 500) {
         thumb: img.imageUrl,
         kind: 'image',
         source: img.source || 'Google',
-        sourceUrl: img.link || img.imageUrl,
+        // dedupe/identity by the IMAGE url (one page can hold many images, e.g. a
+        // Behance project) — pageUrl keeps the human "source" link.
+        sourceUrl: img.imageUrl,
+        pageUrl: img.link || img.imageUrl,
         licenseGuess: 'editorial / unverified',
         width: img.imageWidth || 0,
         height: img.imageHeight || 0,
@@ -796,7 +799,8 @@ async function searchCommons(query, num = 6) {
         thumb: ii.thumburl || ii.url,
         kind: (ii.mime || '').startsWith('video') ? 'video' : 'image',
         source: 'Wikimedia Commons',
-        sourceUrl: ii.descriptionurl || ii.url,
+        sourceUrl: ii.url,
+        pageUrl: ii.descriptionurl || ii.url,
         licenseGuess: ii.extmetadata?.LicenseShortName?.value || 'Wikimedia Commons',
         width: ii.width || 0,
         height: ii.height || 0,

@@ -325,7 +325,7 @@ function resultCard(slug, r) {
         ${dims ? `<span class="badge">${dims}</span>` : ''}
         <span class="badge lic">${r.licenseGuess || ''}</span>
       </div>
-      <div class="meta">${r.source || ''}${r.sourceUrl ? ` · <a href="${r.sourceUrl}" target="_blank" rel="noopener">src ↗</a>` : ''}</div>
+      <div class="meta">${r.source || ''}${(r.pageUrl || r.sourceUrl) ? ` · <a href="${r.pageUrl || r.sourceUrl}" target="_blank" rel="noopener">src ↗</a>` : ''}</div>
       <div class="actions"></div>
     </div>`;
   const actions = el.querySelector('.actions');
