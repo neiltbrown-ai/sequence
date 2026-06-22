@@ -134,9 +134,6 @@ function AIChatFlow({
   const snapshotRef = useRef<ConversationContextSnapshot>({ mode: initialMode });
   const conversationIdRef = useRef(initialConversationId);
 
-  // Track last saved message count to avoid redundant saves
-  const lastSavedCountRef = useRef(0);
-
   // Keep refs in sync with state
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { snapshotRef.current = snapshot; }, [snapshot]);
@@ -145,8 +142,6 @@ function AIChatFlow({
   // Determine starting messages: restored from DB or fresh welcome
   const startingMessages = useMemo(() => {
     if (initialMessages && initialMessages.length > 0) {
-      // Mark the saved count so we don't re-save on mount
-      lastSavedCountRef.current = initialMessages.length;
       return initialMessages;
     }
     return [getWelcomeMessage(hasAssessment)];
@@ -222,27 +217,10 @@ function AIChatFlow({
   const isLoading = status === "submitted" || status === "streaming";
   const hasError = status === "error" || !!error;
 
-  // ── Client-side message persistence ──────────────────────────
-  // Save messages to DB when an exchange completes (status becomes "ready")
-  useEffect(() => {
-    if (status !== "ready") return;
-    if (!conversationIdRef.current) return;
-    if (messages.length <= 1) return; // Don't save just the welcome message
-    if (messages.length === lastSavedCountRef.current) return; // Already saved this state
-
-    lastSavedCountRef.current = messages.length;
-
-    // Fire-and-forget save
-    fetch("/api/advisor/conversations/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        conversationId: conversationIdRef.current,
-        messages,
-        mode: modeRef.current,
-      }),
-    }).catch((err) => console.error("Failed to save conversation:", err));
-  }, [status, messages]);
+  // Message persistence is server-side only: the /api/advisor/chat route saves the full
+  // UIMessage[] in its toUIMessageStreamResponse onFinish. The client used to also POST to
+  // /api/advisor/conversations/save, but two writers raced and the server path is the
+  // single canonical writer now (see route.ts). No client-side save here on purpose.
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
