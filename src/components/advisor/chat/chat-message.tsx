@@ -384,8 +384,19 @@ function renderToolPart(
   if (part.state === "input-available" || part.state === "input-streaming") {
     const args = part.input || {};
 
-    // Display tools are server-executed but render visuals from their input args
+    // Display tools render their visual from the input args. Wait until input
+    // is fully available — rendering from half-streamed args passes partial
+    // (often undefined) arrays into the chart/table components, whose
+    // unguarded .map() then throws and crashes the whole chat with a
+    // client-side exception.
     if (DISPLAY_TOOLS.has(toolName)) {
+      if (part.state === "input-streaming") {
+        return (
+          <div className="adv-chat-tool-loading">
+            <span className="adv-chat-tool-spinner" />
+          </div>
+        );
+      }
       return renderDisplayTool(toolName, args as Record<string, unknown>);
     }
 
@@ -530,8 +541,13 @@ function renderClientTool(
 
 function renderDisplayTool(toolName: string, args: Record<string, unknown>) {
   const noop = () => {};
+  // Defensive: never render a display visual without its required data array.
+  // A malformed or incomplete tool call (missing rows/dimensions/etc.) would
+  // otherwise hit an unguarded .map() inside the component and crash the chat.
+  const isArr = (k: string) => Array.isArray(args[k]);
   switch (toolName) {
     case "show_bar_chart":
+      if (!isArr("rows")) return null;
       return (
         <ChatBarChart
           title={args.title as string | undefined}
@@ -540,6 +556,7 @@ function renderDisplayTool(toolName: string, args: Record<string, unknown>) {
         />
       );
     case "show_entity_chart":
+      if (!isArr("children")) return null;
       return (
         <ChatEntityChart
           title={args.title as string | undefined}
@@ -549,6 +566,7 @@ function renderDisplayTool(toolName: string, args: Record<string, unknown>) {
         />
       );
     case "show_metrics":
+      if (!isArr("metrics")) return null;
       return (
         <ChatMetrics
           metrics={args.metrics as { value: string; label: string }[]}
@@ -556,6 +574,7 @@ function renderDisplayTool(toolName: string, args: Record<string, unknown>) {
         />
       );
     case "show_data_table":
+      if (!isArr("headers") || !isArr("rows")) return null;
       return (
         <ChatDataTable
           title={args.title as string | undefined}
@@ -565,6 +584,7 @@ function renderDisplayTool(toolName: string, args: Record<string, unknown>) {
         />
       );
     case "show_radar_chart":
+      if (!isArr("dimensions")) return null;
       return (
         <ChatRadarChart
           title={args.title as string | undefined}
@@ -573,6 +593,7 @@ function renderDisplayTool(toolName: string, args: Record<string, unknown>) {
         />
       );
     case "show_flywheel":
+      if (!isArr("steps")) return null;
       return (
         <ChatFlywheel
           title={args.title as string | undefined}
