@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentAssessment } from "@/lib/assessment/current-assessment";
 import { redirect } from "next/navigation";
 import SettingsTabs from "@/components/portal/settings-tabs";
 import type { CreativeIdentitySnapshot } from "@/types/creative-identity";
@@ -40,24 +41,10 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
   const columns =
     "id, status, current_section, current_question, detected_stage, archetype_primary, creative_mode, discipline, sub_discipline, misalignment_flags, completed_at";
 
-  const [{ data: completed }, { data: anyLatest }] = await Promise.all([
-    admin
-      .from("assessments")
-      .select(columns)
-      .eq("user_id", user.id)
-      .eq("status", "completed")
-      .order("completed_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    admin
-      .from("assessments")
-      .select(columns)
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
-  const assessment = completed ?? anyLatest;
+  // Shared selection rule (see getCurrentAssessment): prefer latest completed,
+  // fall back to latest in-progress. Same helper the AI advisor uses, so the
+  // Creative Identity tab and the advisor never disagree about the current row.
+  const assessment = await getCurrentAssessment(admin, user.id, columns);
 
   // Trust `completed_at` as the definitive completion signal — more robust
   // than the status string (which could be out of sync in edge cases or

@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentAssessment } from "@/lib/assessment/current-assessment";
 import type {
   MemberContext,
   AssessmentContext,
@@ -15,8 +16,11 @@ export async function buildMemberContext(
 ): Promise<MemberContext> {
   const admin = createAdminClient();
 
-  // Load profile, latest assessment, latest plan, and actions in parallel
-  const [profileResult, assessmentResult, subscriptionResult, partialResult] =
+  // Load profile, current assessment, subscription, and partial in parallel.
+  // The assessment goes through the shared getCurrentAssessment() helper so the
+  // advisor grounds itself in the SAME row Settings and the Roadmap consider
+  // current (prefer-latest-completed) — not whichever row is newest by created_at.
+  const [profileResult, assessment, subscriptionResult, partialResult] =
     await Promise.all([
       admin
         .from("profiles")
@@ -25,13 +29,7 @@ export async function buildMemberContext(
         )
         .eq("id", userId)
         .single(),
-      admin
-        .from("assessments")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
+      getCurrentAssessment(admin, userId),
       admin
         .from("subscriptions")
         .select("status, plan")
@@ -50,7 +48,6 @@ export async function buildMemberContext(
     ]);
 
   const profile = profileResult.data;
-  const assessment = assessmentResult.data;
   const subscription = subscriptionResult.data;
   const partial = partialResult.data;
 

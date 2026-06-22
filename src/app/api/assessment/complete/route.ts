@@ -178,6 +178,27 @@ export async function POST(request: Request) {
     })
     .eq("id", assessmentId);
 
+  // Keep the profile's identity cache in sync with the assessment that just
+  // completed. These profile columns (creative_mode / detected_stage /
+  // archetype_primary / assessment_completed_at) were previously written only
+  // at signup and then left to drift, so the profile could permanently
+  // disagree with the member's latest assessment. Non-fatal: a failed sync
+  // must not fail completion — the assessments row is the system of record.
+  try {
+    await admin
+      .from("profiles")
+      .update({
+        creative_mode:
+          (answers.creative_mode as string) ?? assessment.creative_mode ?? null,
+        detected_stage: stageResult.detectedStage,
+        archetype_primary: primaryArchetype.id,
+        assessment_completed_at: completedAt,
+      })
+      .eq("id", user.id);
+  } catch (err) {
+    console.error("assessment/complete: profile identity sync failed", err);
+  }
+
   // Build the snapshot the wizard's completion screen renders. Shape matches
   // CreativeIdentitySnapshot so the same portrait component works in both
   // Settings → Creative Identity and the wizard payoff view.
