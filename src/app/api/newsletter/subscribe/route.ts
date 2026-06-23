@@ -4,9 +4,10 @@ import { Resend } from "resend";
 import { sendEmail, logEmail } from "@/lib/email/send";
 import { newsletterWelcomeEmailHtml } from "@/lib/email/templates/newsletter-welcome";
 import { generateToken } from "@/app/api/newsletter/unsubscribe/route";
+import { getAppUrl } from "@/lib/app-url";
 
 const RESEND_AUDIENCE_ID = "f91a8f7d-666b-4d30-8a5b-406bff5e9824";
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://insequence.so";
+const APP_URL = getAppUrl();
 
 export async function POST(req: NextRequest) {
   try {

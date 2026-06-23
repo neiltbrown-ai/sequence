@@ -7,8 +7,9 @@ import {
   type NewsletterData,
 } from "@/lib/email/templates/newsletter";
 import { generateToken } from "@/app/api/newsletter/unsubscribe/route";
+import { getAppUrl } from "@/lib/app-url";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://insequence.so";
+const APP_URL = getAppUrl();
 
 export async function POST(req: NextRequest) {
   // Verify admin

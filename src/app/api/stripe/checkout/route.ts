@@ -2,6 +2,23 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe/client";
 import { STRIPE_PRICES } from "@/lib/plans";
+import { getAppUrl } from "@/lib/app-url";
+
+/**
+ * Validate a caller-supplied return path before it's concatenated into the
+ * Stripe success/cancel URLs. Only same-origin, root-relative paths are
+ * allowed — anything that could redirect off-domain (`//host`, `@host`, a
+ * scheme, or CRLF/whitespace) falls back to the default. Without this, a
+ * crafted `returnPath` like `@evil.com` would turn `${origin}${returnPath}`
+ * into `https://www.insequence.so@evil.com` — an off-site redirect.
+ */
+function sanitizeReturnPath(input: unknown, fallback = "/signup"): string {
+  if (typeof input !== "string") return fallback;
+  if (!input.startsWith("/")) return fallback; // must be root-relative
+  if (input.startsWith("//") || input.startsWith("/\\")) return fallback; // not protocol-relative
+  if (/[@:\\\s]/.test(input)) return fallback; // no userinfo/scheme/CRLF/space
+  return input;
+}
 
 /**
  * POST /api/stripe/checkout
@@ -77,7 +94,7 @@ export async function POST(request: Request) {
   }
 
   const stripe = getStripe();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
 
   try {
     // Check if user already has a Stripe customer ID
@@ -110,8 +127,8 @@ export async function POST(request: Request) {
       customerId = customer.id;
     }
 
-    const successBase = returnPath || "/signup";
-    const cancelBase = returnPath || "/signup";
+    const successBase = sanitizeReturnPath(returnPath);
+    const cancelBase = sanitizeReturnPath(returnPath);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sessionConfig: any = {

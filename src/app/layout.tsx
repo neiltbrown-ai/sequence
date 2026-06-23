@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { PT_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import VercelAnalytics from "@/components/analytics/vercel-analytics";
+import { getAppUrl } from "@/lib/app-url";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +17,7 @@ const ptMono = PT_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://insequence.so";
+const siteUrl = getAppUrl();
 
 export const metadata: Metadata = {
   title: {
@@ -59,7 +60,7 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${ptMono.variable}`}>
       <body className="antialiased">
         {children}
-        <Analytics />
+        <VercelAnalytics />
         <SpeedInsights />
       </body>
     </html>

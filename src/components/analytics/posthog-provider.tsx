@@ -4,6 +4,7 @@ import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
+import { syncOptOutFromQuery } from "@/lib/analytics/opt-out";
 
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const POSTHOG_HOST =
@@ -18,6 +19,13 @@ function PageViewTracker() {
 
   useEffect(() => {
     if (!pathname || !posthog.__loaded) return;
+    // Honor the per-browser analytics opt-out (shared with Vercel Analytics).
+    // Sync the ?analytics=off|on toggle, then opt the PostHog client in/out.
+    if (syncOptOutFromQuery(window.location.search)) {
+      posthog.opt_out_capturing();
+      return;
+    }
+    posthog.opt_in_capturing();
     let url = window.location.origin + pathname;
     const qs = searchParams?.toString();
     if (qs) url += `?${qs}`;
