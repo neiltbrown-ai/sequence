@@ -70,9 +70,17 @@ export function CbRelatedCard({ num, label, title, desc, href }: CbRelatedCardPr
   }
 
   // If we ended up with a non-num href (case study or article), rewrite
-  // it to the portal path when we're inside the portal
+  // it to the portal path. Related case studies always point to the
+  // auth-gated `/library/case-studies/...` route — matching related
+  // Structures (resolved above) — so a logged-out visitor clicking one
+  // is sent to the login screen. Articles stay contextual (only rewritten
+  // when already inside the portal).
   if (resolvedHref && !num) {
-    resolvedHref = contextualHref(resolvedHref, inPortal);
+    if (resolvedHref.startsWith("/case-studies/")) {
+      resolvedHref = resolvedHref.replace("/case-studies/", "/library/case-studies/");
+    } else {
+      resolvedHref = contextualHref(resolvedHref, inPortal);
+    }
   }
 
   const content = (

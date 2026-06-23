@@ -59,6 +59,13 @@ export default function PostHogProvider({
       person_profiles: "identified_only", // don't profile anonymous marketing traffic
       capture_pageview: false, // handled manually by PageViewTracker
       capture_pageleave: true,
+      // Cookieless: store nothing on the device (no cookies, no localStorage).
+      // This keeps us banner-free under EU/UK ePrivacy / PECR — nothing is
+      // written to the user's device, so no prior-consent requirement is
+      // triggered. Trade-off: each pageview is a fresh anonymous session, so
+      // returning-visitor / unique-user counts are not tracked. See the legal
+      // page Cookie Policy, which is written to match this configuration.
+      persistence: "memory",
     });
   }, []);
 

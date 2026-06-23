@@ -19,7 +19,7 @@ export default function LegalPage() {
           {/* Terms of Service */}
           <article className="lg-section" id="terms">
             <h2 className="lg-heading">Terms of Service</h2>
-            <p className="lg-updated">Last updated: April 9, 2026</p>
+            <p className="lg-updated">Last updated: June 23, 2026</p>
 
             <h3 className="lg-subheading">1. Acceptance of Terms</h3>
             <p className="lg-text">
@@ -38,7 +38,10 @@ export default function LegalPage() {
 
             <h3 className="lg-subheading">4. Subscription and Billing</h3>
             <p className="lg-text">
-              Paid memberships are billed on a recurring basis (monthly or annually) through Stripe. You authorize us to charge your payment method at the agreed-upon intervals. You may cancel your subscription at any time through your account settings or the Stripe customer portal. Cancellation takes effect at the end of the current billing period. We do not offer refunds for partial billing periods.
+              Paid memberships are billed on a recurring basis (monthly or annually) through Stripe. You authorize us to charge your payment method at the agreed-upon intervals. You may cancel your subscription at any time through your account settings or the Stripe customer portal. Cancellation takes effect at the end of the current billing period, and you keep access until then.
+            </p>
+            <p className="lg-text">
+              If you are a consumer in the United Kingdom or European Union, you have a statutory right to cancel within 14 days of your initial purchase and receive a full refund, in accordance with UK and EU consumer protection law. To exercise this right, contact us at <a href="mailto:hello@insequence.so">hello@insequence.so</a>. This right is in addition to your ability to cancel at any time, and nothing in these Terms limits any non-waivable rights you have under the consumer law of your country of residence.
             </p>
 
             <h3 className="lg-subheading">5. Intellectual Property</h3>
@@ -85,7 +88,7 @@ export default function LegalPage() {
           {/* Privacy Policy */}
           <article className="lg-section" id="privacy">
             <h2 className="lg-heading">Privacy Policy</h2>
-            <p className="lg-updated">Last updated: April 9, 2026</p>
+            <p className="lg-updated">Last updated: June 23, 2026</p>
 
             <h3 className="lg-subheading">1. Information We Collect</h3>
             <p className="lg-text">
@@ -104,7 +107,7 @@ export default function LegalPage() {
 
             <h3 className="lg-subheading">3. Information Sharing</h3>
             <p className="lg-text">
-              We do not sell your personal information. We share data only with: Stripe (payment processing), Supabase (database hosting), Resend (email delivery), and Anthropic (AI processing). These providers process data in accordance with their own privacy policies and our data processing agreements.
+              We do not sell your personal information, and we do not share it for cross-context behavioral advertising. We share data only with service providers who help us operate the Service: Stripe (payment processing), Supabase (database hosting), Vercel (application hosting and aggregate usage analytics), Resend (email delivery), PostHog (product analytics), and Anthropic (AI processing). These providers process data in accordance with their own privacy policies and our data processing agreements.
             </p>
 
             <h3 className="lg-subheading">4. Data Retention</h3>
@@ -114,12 +117,15 @@ export default function LegalPage() {
 
             <h3 className="lg-subheading">5. Your Rights</h3>
             <p className="lg-text">
-              You have the right to: access your personal data; correct inaccurate data; delete your account and data; export your data; opt out of marketing communications; and withdraw consent for data processing. To exercise these rights, contact us at <a href="mailto:hello@insequence.so">hello@insequence.so</a>.
+              You have the right to: access your personal data; correct inaccurate data; delete your account and data; export your data; opt out of marketing communications; opt out of analytics on any device (see the Cookie Policy below); and withdraw consent for data processing. To exercise these rights, contact us at <a href="mailto:hello@insequence.so">hello@insequence.so</a>.
+            </p>
+            <p className="lg-text">
+              <strong>California residents:</strong> under the CCPA/CPRA you have the rights described above, and you may not be discriminated against for exercising them. We do not sell your personal information or share it for cross-context behavioral advertising, so we do not offer a separate &quot;Do Not Sell or Share My Personal Information&quot; option.
             </p>
 
             <h3 className="lg-subheading">6. Cookies</h3>
             <p className="lg-text">
-              We use essential cookies for authentication and session management. We do not use advertising or tracking cookies. Analytics data is collected without personally identifying information.
+              We use essential cookies only — for authentication and session management. Our analytics (PostHog and Vercel) run in a cookieless configuration that stores no information on your device, so no consent banner is required. We do not use advertising cookies or third-party tracking cookies, and we do not sell cookie data. Anonymous visitors are not profiled, and you can opt out of analytics on any device at any time (see the Cookie Policy below).
             </p>
 
             <h3 className="lg-subheading">7. Security</h3>
@@ -127,17 +133,22 @@ export default function LegalPage() {
               We implement industry-standard security measures including encryption in transit (TLS), encrypted data at rest, row-level security on our database, and secure authentication via Supabase. No system is 100% secure, and we cannot guarantee absolute security.
             </p>
 
-            <h3 className="lg-subheading">8. Children</h3>
+            <h3 className="lg-subheading">8. International Data Transfers</h3>
+            <p className="lg-text">
+              In Sequence is operated from the United States, and our service providers (including Stripe, Supabase, Vercel, Resend, PostHog, and Anthropic) process data in the United States. If you access the Service from outside the United States, your information will be transferred to and processed in the United States, where data protection laws may differ from those in your country. Where required, such transfers are made under appropriate safeguards, such as the Standard Contractual Clauses.
+            </p>
+
+            <h3 className="lg-subheading">9. Children</h3>
             <p className="lg-text">
               The Service is not intended for users under 18. We do not knowingly collect data from children. If we learn we have collected data from a child under 18, we will delete it promptly.
             </p>
 
-            <h3 className="lg-subheading">9. Changes</h3>
+            <h3 className="lg-subheading">10. Changes</h3>
             <p className="lg-text">
               We may update this Privacy Policy from time to time. We will notify you of material changes via email or through the Service.
             </p>
 
-            <h3 className="lg-subheading">10. Contact</h3>
+            <h3 className="lg-subheading">11. Contact</h3>
             <p className="lg-text">
               For privacy-related questions, contact us at <a href="mailto:hello@insequence.so">hello@insequence.so</a>.
             </p>
@@ -146,10 +157,13 @@ export default function LegalPage() {
           {/* Cookie Policy */}
           <article className="lg-section" id="cookies">
             <h2 className="lg-heading">Cookie Policy</h2>
-            <p className="lg-updated">Last updated: April 9, 2026</p>
+            <p className="lg-updated">Last updated: June 23, 2026</p>
 
             <p className="lg-text">
-              In Sequence uses only essential cookies required for the Service to function. These include authentication session cookies (to keep you logged in) and preference cookies (such as theme selection). We do not use advertising cookies, tracking cookies, or third-party analytics cookies. No consent banner is required because we only use strictly necessary cookies.
+              In Sequence uses only essential cookies required for the Service to function — authentication session cookies (to keep you logged in) and preference cookies (such as theme selection). Our analytics (PostHog and Vercel) run in a cookieless configuration: they store no cookies or other identifiers on your device and do not profile you across sessions or sites. Because we set no non-essential cookies, no consent banner is required. We do not use advertising cookies or third-party tracking cookies.
+            </p>
+            <p className="lg-text">
+              As a courtesy, you can still opt out of all analytics on a given device at any time, without affecting your use of the Service, by adding <code>?analytics=off</code> to any page URL. Your choice is remembered in that browser; you can opt back in with <code>?analytics=on</code>.
             </p>
           </article>
 

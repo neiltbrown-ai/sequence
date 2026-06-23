@@ -39,7 +39,7 @@ export default function PricingPage() {
               <span className="pr-plan-price-term">/ year</span>
             </div>
             <p className="pr-plan-desc">
-              Full access to every structure, case study, and framework in the library.
+              Get access to every structure, case study, and framework in the library.
             </p>
             <ul className="pr-plan-features">
               <li>35+ deal structures with negotiation scripts</li>
