@@ -1029,6 +1029,7 @@ body {
   .image-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
+<link rel="stylesheet" href="/shared.css">
 </head>
 <body>
 
@@ -1036,22 +1037,63 @@ body {
   Server offline — Claude query generation unavailable
 </div>
 
-<header class="header">
-  <div class="header-brand">
-    <h1>In Sequence</h1>
-    <span>Image Sourcer</span>
+<button class="sb-expand" id="sbExpand" onclick="toggleSidebar()" title="Expand sidebar (])">&rsaquo;</button>
+
+<div class="app">
+<!-- ============ LEFT SIDEBAR ============ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="sb-brand">
+      <h1>In Sequence</h1>
+      <span>Sourcer</span>
+    </div>
+    <button class="sb-collapse" onclick="toggleSidebar()" title="Collapse sidebar ([)">&lsaquo;</button>
   </div>
-  <div class="header-spacer"></div>
-  <div class="header-actions">
-    <span class="selected-badge" id="globalSelectedBadge"></span>
-    <a class="header-btn" href="/media.html" style="text-decoration:none">video / media →</a>
-    <button class="header-btn" onclick="togglePanel('promptPanel')">edit prompt</button>
-    <button class="header-btn" onclick="togglePanel('keysPanel')">keys</button>
+
+  <div class="sidebar-body">
+    <!-- Subject Picker -->
+    <div class="sb-section sb-picker">
+      <div class="sb-label">Subjects</div>
+      <input type="text" id="subjectSearch" class="sb-search" placeholder="Search subjects…" oninput="renderSubjectList()" autocomplete="off">
+      <div class="sb-filters" id="subjectFilters">
+        <span class="sb-chip active" data-type="" onclick="setSubjectFilter('')">All</span>
+        <span class="sb-chip" data-type="case-studies" onclick="setSubjectFilter('case-studies')">Cases</span>
+        <span class="sb-chip" data-type="articles" onclick="setSubjectFilter('articles')">Articles</span>
+        <span class="sb-chip" data-type="structures" onclick="setSubjectFilter('structures')">Structures</span>
+      </div>
+      <div class="subject-list" id="subjectList">
+        <div class="subject-empty">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Selected-subject context -->
+    <div class="sb-section sb-context" id="subjectContext" style="display:none"></div>
+  </div>
+
+  <div class="sidebar-footer">
     <div class="key-indicators" id="keyIndicators"></div>
-    <button class="add-btn" onclick="togglePanel('pickPanel')" style="background: var(--gold)">Pick Content</button>
-    <button class="add-btn" onclick="togglePanel('addPanel')">+ Manual</button>
+    <div class="sb-footer-actions">
+      <button class="sb-foot-btn" onclick="togglePanel('addPanel')" title="Add a manual subject">+ manual</button>
+      <button class="sb-foot-btn" onclick="togglePanel('promptPanel')" title="Edit query prompt">prompt</button>
+      <button class="sb-foot-btn" onclick="togglePanel('keysPanel')" title="API keys">keys</button>
+    </div>
   </div>
-</header>
+</aside>
+
+<!-- ============ MAIN COLUMN ============ -->
+<div class="main-col">
+
+<!-- Destination switch (shown once a subject is selected) -->
+<div class="dest-bar" id="destBar" style="display:none">
+  <div class="dest-switch" id="destSwitch">
+    <button class="dest-btn active" data-dest="page" onclick="setDestination('page')">Page Images</button>
+    <button class="dest-btn" data-dest="video" id="destVideoBtn" onclick="setDestination('video')">Video Media</button>
+  </div>
+  <button class="dest-find-btn" id="pageFindBtn" style="display:none" onclick="startPageSourcing(currentSubject)" title="Generate queries with Claude and search all sources">Find page images →</button>
+  <div class="dest-context" id="destContext"></div>
+  <div class="dest-spacer"></div>
+  <span class="selected-badge" id="globalSelectedBadge"></span>
+</div>
 
 <!-- Prompt Editor Panel -->
 <div class="panel" id="promptPanel">
@@ -1077,35 +1119,6 @@ body {
     </label>
     <p class="keys-note">Keys are stored in your browser only and never sent to the server.</p>
     <button class="btn-secondary" onclick="saveKeys()">Save Keys</button>
-  </div>
-</div>
-
-<!-- Pick Content Panel -->
-<div class="panel" id="pickPanel">
-  <div class="add-form" style="max-width: 800px">
-    <div class="form-row" style="display: flex; gap: 12px; align-items: flex-end;">
-      <div style="flex: 0 0 160px;">
-        <label for="pickTypeFilter">Type</label>
-        <select id="pickTypeFilter" onchange="filterPickFiles()">
-          <option value="">All types</option>
-          <option value="articles">Articles</option>
-          <option value="case-studies">Case Studies</option>
-          <option value="structures">Structures</option>
-        </select>
-      </div>
-      <div style="flex: 1;">
-        <label for="pickSearch">Search</label>
-        <input type="text" id="pickSearch" placeholder="Search by title..." oninput="filterPickFiles()">
-      </div>
-    </div>
-    <div class="form-row">
-      <select id="pickFileSelect" size="10" style="height: auto; min-height: 240px; font-family: var(--font-mono); font-size: 11px;" onchange="onPickFileChange()"></select>
-    </div>
-    <div id="pickSlotPreview" style="margin-top: 12px;"></div>
-    <div class="form-actions">
-      <button class="btn-primary" id="pickSubmitBtn" onclick="submitPickContent()" disabled>Source Images for This Content &rarr;</button>
-      <button class="btn-cancel" onclick="togglePanel('pickPanel')">Cancel</button>
-    </div>
   </div>
 </div>
 
@@ -1158,9 +1171,67 @@ body {
 <!-- Main Content Area -->
 <main class="main" id="mainContent">
   <div class="empty-state" id="emptyState">
-    <p>Add a content piece to begin sourcing images</p>
+    <p>Pick a subject from the sidebar to begin sourcing</p>
   </div>
 </main>
+
+<!-- Video Media workspace (shown when destination = video) — ported from media.html -->
+<div id="videoWorkspace" style="display:none">
+  <div class="controls">
+    <span class="vm-case">case: <b id="vmCaseSlug">—</b></span>
+    <button class="btn secondary" id="loadBtn" title="Reload manifest + coverage">Reload</button>
+    <button class="btn secondary" id="finalizeBtn" title="Rebuild work/assets.json + coverage.json from approved assets">Finalize → assets.json</button>
+    <span class="vm-spacer"></span>
+    <button class="btn secondary" id="sourceBtn" title="Quick automatic grab (uses options →)">⚡ Auto-fill</button>
+    <button class="btn ghost" id="optsBtn" title="auto-fill options">⚙</button>
+  </div>
+  <div class="autofill-opts" id="autofillOpts" hidden>
+    <span class="seg">
+      <label><input type="checkbox" class="kind" value="stills" checked> stills</label>
+      <label><input type="checkbox" class="kind" value="broll" checked> b-roll</label>
+      <label><input type="checkbox" class="kind" value="screen"> screen-rec</label>
+      <label><input type="checkbox" class="kind" value="rec-video"> rec-video</label>
+      <label><input type="checkbox" class="kind" value="video"> video</label>
+    </span>
+    <label>count <input type="number" id="max" value="8" min="1" max="40"></label>
+    <label><input type="checkbox" id="allowvid"> allow yt-dlp download</label>
+  </div>
+  <div class="status-line" id="status"></div>
+  <div class="status-line" id="coverage"></div>
+
+  <div class="panel" id="browsePanel">
+    <div class="panel-head">
+      <strong>Find media</strong>
+      <span class="seg">
+        <label><input type="radio" name="searchkind" value="image" checked> images</label>
+        <label><input type="radio" name="searchkind" value="video"> videos</label>
+        <label><input type="radio" name="searchkind" value="broll"> b-roll</label>
+      </span>
+      <input type="text" id="q" placeholder="search term (e.g. George Lucas 1977 on set) — or click a query below" />
+      <button class="btn" id="searchBtn">Search</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="manual-row">
+      <input type="text" id="manualUrl" placeholder="…or paste an image / video / page URL" />
+      <select id="manualAction">
+        <option value="extract-images">extract images (gallery/page)</option>
+        <option value="image">image</option>
+        <option value="screenrec-video">screen-rec video</option>
+        <option value="screenrec-page">screen-rec page</option>
+        <option value="video-file">download video file</option>
+      </select>
+      <button class="btn secondary" id="addUrlBtn">Go</button>
+    </div>
+    <div class="status-line" id="searchStatus"></div>
+    <div class="grid results" id="results"></div>
+  </div>
+
+  <h2 class="section-title">Review queue</h2>
+  <div class="grid" id="grid"></div>
+</div>
+
+</div><!-- /.main-col -->
+</div><!-- /.app -->
 
 <!-- Selection Review Panel -->
 <div class="review-panel" id="reviewPanel">
@@ -1306,6 +1377,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPrompt();
   loadKeys();
   checkServer();
+  loadSubjects();
+
+  // Restore collapsed sidebar state
+  if (localStorage.getItem('seq_sidebar_collapsed') === '1') {
+    document.body.classList.add('sb-collapsed');
+  }
 
   document.getElementById('contentTitle').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') submitContent();
@@ -1313,7 +1390,219 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('manualQueries').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') submitContent();
   });
+
+  // Sidebar collapse shortcuts: [ collapse, ] expand
+  document.addEventListener('keydown', (e) => {
+    const t = e.target.tagName;
+    if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return;
+    if (e.key === '[') setSidebarCollapsed(true);
+    else if (e.key === ']') setSidebarCollapsed(false);
+  });
 });
+
+// ===================== Subject-first navigation =====================
+let subjects = [];
+let currentSubject = null;
+let currentDest = 'page';
+let subjectTypeFilter = '';
+
+async function loadSubjects() {
+  try {
+    const res = await fetch('/api/subjects');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    subjects = data.subjects || [];
+  } catch {
+    subjects = [];
+  }
+  renderSubjectList();
+}
+
+function setSubjectFilter(type) {
+  subjectTypeFilter = type;
+  document.querySelectorAll('.sb-filters .sb-chip').forEach(c =>
+    c.classList.toggle('active', c.dataset.type === type));
+  renderSubjectList();
+}
+
+function renderSubjectList() {
+  const search = (document.getElementById('subjectSearch').value || '').toLowerCase();
+  const list = document.getElementById('subjectList');
+  const filtered = subjects.filter(s => {
+    if (subjectTypeFilter && s.type !== subjectTypeFilter) return false;
+    if (search && !s.title.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  if (!filtered.length) {
+    list.innerHTML = '<div class="subject-empty">No subjects match</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(s => {
+    const typeLabel = s.type === 'case-studies' ? 'CASE' : s.type === 'articles' ? 'ART' : 'STR';
+    const active = currentSubject && currentSubject.id === s.id ? ' active' : '';
+    const dots = s.destinations.map(d => `<span class="subj-dest-dot ${d}" title="${d} destination"></span>`).join('');
+    const fill = `${s.page.filledSlots}/${s.page.totalSlots}`;
+    return `<div class="subject-row${active}" onclick="selectSubject('${s.id}')">
+      <div class="subject-row-main">
+        <div class="subject-row-title">${escapeHtml(s.title)}</div>
+        <div class="subject-row-meta"><span class="subj-type">${typeLabel}</span><span>${fill}</span>${dots}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectSubject(id) {
+  const s = subjects.find(x => x.id === id);
+  if (!s) return;
+  currentSubject = s;
+  renderSubjectList();
+  renderSubjectContext(s);
+
+  const hasVideo = s.destinations.includes('video');
+  document.getElementById('destBar').style.display = 'flex';
+  document.getElementById('destVideoBtn').style.display = hasVideo ? '' : 'none';
+  setDestination('page');
+}
+
+function renderSubjectContext(s) {
+  const el = document.getElementById('subjectContext');
+  el.style.display = 'block';
+  const typeLabel = s.type === 'case-studies' ? 'Case study' : s.type === 'articles' ? 'Article' : 'Structure';
+  let html = `<div class="sb-context-title">${escapeHtml(s.title)}</div>`;
+  html += `<div class="sb-context-row"><span>type</span><b>${typeLabel}</b></div>`;
+  html += `<div class="sb-context-row"><span>page slots</span><b>${s.page.filledSlots}/${s.page.totalSlots} filled</b></div>`;
+  if (s.video) {
+    html += `<div class="sb-context-row"><span>video plan</span><b>${s.video.hasPlan ? 'ready' : '—'}</b></div>`;
+    html += `<div class="sb-context-row"><span>video assets</span><b>${s.video.approved} ✓ · ${s.video.candidates} queued</b></div>`;
+  }
+  el.innerHTML = html;
+}
+
+function setDestination(dest) {
+  if (!currentSubject) return;
+  if (dest === 'video' && !currentSubject.destinations.includes('video')) return;
+  currentDest = dest;
+  document.querySelectorAll('.dest-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.dest === dest));
+  updateDestContext();
+  if (dest === 'page') {
+    showPageMode();
+    renderPageMode();
+  } else {
+    document.getElementById('pageFindBtn').style.display = 'none';
+    showVideoMode();
+  }
+}
+
+// Page mode is on-demand: show existing results if any, otherwise a CTA — never
+// auto-fire a Claude query/search (that wasted tokens when the user only wanted video).
+function renderPageMode() {
+  const hasBlock = currentSubject && contentBlocks.some(b => b.contentFile === currentSubject.path);
+  document.getElementById('pageFindBtn').style.display = hasBlock ? 'none' : '';
+  renderBlocks();
+  if (!contentBlocks.length) {
+    const es = document.getElementById('emptyState');
+    es.innerHTML = currentSubject
+      ? `<p>Ready to source page images for <b style="color:var(--light)">${escapeHtml(currentSubject.title)}</b>.</p>
+         <p style="margin-top:12px"><button class="add-btn" onclick="startPageSourcing(currentSubject)">Find page images →</button></p>
+         <p style="margin-top:10px; font-family:var(--font-mono); font-size:11px; color:var(--muted)">Nothing is generated until you click — no auto-search.</p>`
+      : '<p>Pick a subject from the sidebar to begin sourcing</p>';
+  }
+}
+
+function updateDestContext() {
+  const el = document.getElementById('destContext');
+  if (!currentSubject) { el.innerHTML = ''; return; }
+  const what = currentDest === 'page' ? 'page images → MDX frontmatter' : 'video media → Remotion pile';
+  el.innerHTML = `<b>${escapeHtml(currentSubject.title)}</b> · ${what}`;
+}
+
+function showPageMode() {
+  document.getElementById('mainContent').style.display = '';
+  document.getElementById('videoWorkspace').style.display = 'none';
+}
+
+function showVideoMode() {
+  document.getElementById('mainContent').style.display = 'none';
+  const ws = document.getElementById('videoWorkspace');
+  ws.style.display = 'block';
+  if (typeof renderVideoWorkspace === 'function') {
+    renderVideoWorkspace(currentSubject);
+  } else {
+    ws.innerHTML = '<div class="empty-state"><p>Video Media workspace — coming next</p></div>';
+  }
+}
+
+// Build (or focus) the page-images block for a subject — slot-aware query gen.
+// Only ever runs on explicit user action (the "Find page images" button).
+async function startPageSourcing(subject) {
+  if (!subject) return;
+  const findBtn = document.getElementById('pageFindBtn');
+  if (findBtn) findBtn.style.display = 'none';
+  let block = contentBlocks.find(b => b.contentFile === subject.path);
+  if (block) { renderBlocks(); return; }
+
+  block = {
+    id: Date.now(),
+    type: subject.type === 'case-studies' ? 'case study' : subject.type === 'articles' ? 'article' : 'structure',
+    title: subject.title,
+    excerpt: subject.excerpt || '',
+    queries: [],
+    results: {},
+    selected: new Map(),
+    positions: new Map(),
+    slots: subject.slots || [],
+    slotQueries: null,
+    contentFile: subject.path
+  };
+  contentBlocks.unshift(block);
+  renderBlocks();
+
+  if (block.slots.length > 0 && serverOnline) {
+    block.status = 'generating';
+    renderBlocks();
+    try {
+      const res = await fetch('/api/queries/slots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: subject.type,
+          title: subject.title,
+          excerpt: subject.excerpt,
+          discipline: subject.discipline || '',
+          slots: block.slots
+        })
+      });
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      const data = await res.json();
+      block.slotQueries = data.slotQueries;
+      const allQueries = [];
+      for (const queries of Object.values(data.slotQueries)) {
+        for (const q of queries) if (!allQueries.includes(q)) allQueries.push(q);
+      }
+      block.queries = allQueries;
+      block.status = 'searching';
+      renderBlocks();
+      await searchImages(block);
+    } catch (err) {
+      console.error('Slot query generation error:', err);
+      block.status = 'error';
+      block.error = err.message;
+      renderBlocks();
+    }
+  } else {
+    await generateQueries(block);
+  }
+}
+
+function setSidebarCollapsed(collapsed) {
+  document.body.classList.toggle('sb-collapsed', collapsed);
+  localStorage.setItem('seq_sidebar_collapsed', collapsed ? '1' : '0');
+}
+function toggleSidebar() {
+  setSidebarCollapsed(!document.body.classList.contains('sb-collapsed'));
+}
+// ===================================================================
 
 // Server check
 async function checkServer() {
@@ -1876,7 +2165,7 @@ async function regenerateBlock(blockId) {
     renderBlocks();
 
     try {
-      const file = pickFiles.find(f => f.path === block.contentFile) || {};
+      const file = subjects.find(f => f.path === block.contentFile) || {};
       const res = await fetch('/api/queries/slots', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2722,153 +3011,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeLightbox();
 });
 
-// ===== Pick Content Workflow =====
-let pickFiles = [];
-let pickSelectedFile = null;
-
-async function loadPickFiles() {
-  try {
-    const res = await fetch('/api/content');
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    pickFiles = data.files;
-  } catch {
-    pickFiles = [];
-  }
-  filterPickFiles();
-}
-
-function filterPickFiles() {
-  const typeFilter = document.getElementById('pickTypeFilter').value;
-  const search = document.getElementById('pickSearch').value.toLowerCase();
-  const fileSelect = document.getElementById('pickFileSelect');
-
-  const filtered = pickFiles.filter(f => {
-    if (typeFilter && f.type !== typeFilter) return false;
-    if (search && !f.title.toLowerCase().includes(search)) return false;
-    return true;
-  });
-
-  fileSelect.innerHTML = filtered.map(f => {
-    const typeLabel = f.type === 'case-studies' ? 'CS' : f.type === 'articles' ? 'ART' : 'STR';
-    const slotStatus = f.totalSlots > 0 ? ` [${f.filledSlots}/${f.totalSlots} images]` : '';
-    return `<option value="${escapeHtml(f.path)}">[${typeLabel}] ${escapeHtml(f.title)}${slotStatus}</option>`;
-  }).join('');
-
-  pickSelectedFile = null;
-  document.getElementById('pickSlotPreview').innerHTML = '';
-  document.getElementById('pickSubmitBtn').disabled = true;
-}
-
-async function onPickFileChange() {
-  const filePath = document.getElementById('pickFileSelect').value;
-  if (!filePath) return;
-
-  const file = pickFiles.find(f => f.path === filePath);
-  if (!file) return;
-
-  pickSelectedFile = file;
-  document.getElementById('pickSubmitBtn').disabled = false;
-
-  // Show slot preview
-  const preview = document.getElementById('pickSlotPreview');
-  if (file.slots && file.slots.length > 0) {
-    preview.innerHTML = `
-      <div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">
-        ${file.totalSlots} image slots — ${file.filledSlots} filled, ${file.totalSlots - file.filledSlots} empty
-      </div>
-      <div class="slot-preview-grid">
-        ${file.slots.map(slot => {
-          const isFilled = !!slot.current;
-          return `
-            <div class="slot-preview-card">
-              <div class="slot-role">${escapeHtml(slot.role)}</div>
-              <div class="slot-label">${escapeHtml(slot.label)}</div>
-              <div class="slot-status ${isFilled ? 'filled' : 'empty'}">${isFilled ? 'Filled' : 'Empty'}</div>
-              ${slot.context ? `<div style="color: var(--muted); font-size: 9px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(slot.context)}">${escapeHtml(slot.context.slice(0, 60))}...</div>` : ''}
-            </div>`;
-        }).join('')}
-      </div>`;
-  } else {
-    preview.innerHTML = `<div style="font-family: var(--font-mono); font-size: 11px; color: var(--muted);">No image slots detected</div>`;
-  }
-}
-
-async function submitPickContent() {
-  if (!pickSelectedFile) return;
-
-  const file = pickSelectedFile;
-  const block = {
-    id: Date.now(),
-    type: file.type === 'case-studies' ? 'case study' : file.type === 'articles' ? 'article' : 'structure',
-    title: file.title,
-    excerpt: file.excerpt || '',
-    queries: [],
-    results: {},
-    selected: new Map(),
-    positions: new Map(),
-    slots: file.slots || [],
-    slotQueries: null,
-    contentFile: file.path
-  };
-
-  contentBlocks.unshift(block);
-  togglePanel('pickPanel');
-  renderBlocks();
-
-  // Generate per-slot queries
-  if (block.slots.length > 0 && serverOnline) {
-    block.status = 'generating';
-    renderBlocks();
-
-    try {
-      const res = await fetch('/api/queries/slots', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: file.type,
-          title: file.title,
-          excerpt: file.excerpt,
-          discipline: file.discipline || '',
-          slots: block.slots
-        })
-      });
-
-      if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      const data = await res.json();
-      block.slotQueries = data.slotQueries;
-
-      // Flatten all slot queries into one list for searching
-      const allQueries = [];
-      for (const queries of Object.values(data.slotQueries)) {
-        for (const q of queries) {
-          if (!allQueries.includes(q)) allQueries.push(q);
-        }
-      }
-      block.queries = allQueries;
-      block.status = 'searching';
-      renderBlocks();
-      await searchImages(block);
-    } catch (err) {
-      console.error('Slot query generation error:', err);
-      block.status = 'error';
-      block.error = err.message;
-      renderBlocks();
-    }
-  } else {
-    // Fallback to original query generation
-    await generateQueries(block);
-  }
-}
-
-// Auto-load pick files when panel opens
-const origTogglePanel = togglePanel;
-togglePanel = function(id) {
-  origTogglePanel(id);
-  if (id === 'pickPanel' && document.getElementById('pickPanel').classList.contains('open')) {
-    loadPickFiles();
-  }
-};
+// (Legacy "Pick Content" panel workflow removed — superseded by the sidebar
+//  Subject Picker + startPageSourcing(). Regen path now reads `subjects`.)
 
 // When block has a contentFile, auto-set it in send-to-content
 const origOpenSendToContent = openSendToContent;
@@ -2889,6 +3033,272 @@ openSendToContent = async function() {
     updateSendPreview();
   }
 };
+
+// ===================== Video Media workspace (ported from media.html) =====================
+// Self-contained IIFE: all helpers are local so none collide with the image-sourcer
+// globals above. Driven by the selected subject's video slug rather than a slug input.
+(function () {
+  let VSLUG = '';
+  const $ = (id) => document.getElementById(id);
+  const status = (msg, err) => { const s = $('status'); s.innerHTML = msg; s.className = 'status-line' + (err ? ' err' : ''); };
+  const fileUrl = (p) => `/api/media/file?path=${encodeURIComponent(p)}`;
+
+  function showCoverage(cov) {
+    const el = $('coverage');
+    if (!cov) { el.textContent = ''; return; }
+    const ents = Object.entries(cov.entities || {});
+    const parts = ents.map(([k, v]) => `${k}: ${v.strength} (${v.images}i/${v.videos}v)`);
+    const flags = [cov.needsPortrait ? 'needs portrait' : '', cov.needsBRoll ? 'needs b-roll' : ''].filter(Boolean);
+    el.innerHTML = (parts.length ? 'coverage — ' + parts.join(' · ') : '') + (flags.length ? `  ⚠ ${flags.join(', ')}` : '');
+  }
+
+  async function api(path, body) {
+    const r = await fetch(path, {
+      method: body ? 'POST' : 'GET',
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || r.status);
+    return data;
+  }
+
+  function card(slug, e) {
+    const el = document.createElement('div');
+    el.className = 'card' + (e.status === 'approved' ? ' approved' : e.status === 'rejected' ? ' rejected' : '');
+    const isImg = e.kind === 'image';
+    const preview = isImg
+      ? `<img class="thumb" src="${fileUrl(e.file)}" loading="lazy" />`
+      : `<video class="thumb" src="${fileUrl(e.file)}" muted playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()"></video>`;
+    const dur = e.durationSec ? `${e.durationSec.toFixed(1)}s` : '';
+    const dims = e.width ? `${e.width}×${e.height}` : '';
+    el.innerHTML = `
+      ${preview}
+      <div class="card-body">
+        <div class="badges">
+          <span class="badge kind">${e.kind}</span>
+          ${dims ? `<span class="badge">${dims}</span>` : ''}
+          ${dur ? `<span class="badge">${dur}</span>` : ''}
+          <span class="badge lic">${e.licenseGuess || 'unknown'}</span>
+          ${e.status !== 'candidate' ? `<span class="badge status-${e.status}">${e.status}${e.role ? ' · ' + e.role : ''}</span>` : ''}
+        </div>
+        <div class="meta">${e.source || ''}${e.query ? ' · "' + e.query + '"' : ''}${e.sourceUrl ? ` · <a href="${e.sourceUrl}" target="_blank" rel="noopener">source ↗</a>` : ''}</div>
+        ${e.rightsNote ? `<div class="meta" style="color:var(--gold)">⚠ ${e.rightsNote}</div>` : ''}
+        <div class="actions"></div>
+      </div>`;
+    const actions = el.querySelector('.actions');
+    if (e.status === 'candidate') {
+      const mk = (label, role) => {
+        const b = document.createElement('button');
+        b.className = 'btn'; b.textContent = label;
+        b.onclick = async () => {
+          b.disabled = true; status(`<span class="spin"></span> Approving + enriching…`);
+          try { const r = await api('/api/media/approve', { slug, id: e.id, role }); showCoverage(r.coverage); status('Approved → work/. assets.json updated.'); load(slug); }
+          catch (x) { status(x.message, true); b.disabled = false; }
+        };
+        return b;
+      };
+      if (isImg) actions.appendChild(mk('Portrait', 'portrait'));
+      actions.appendChild(mk(isImg ? 'Still' : 'Clip', isImg ? 'still' : 'clip'));
+      const rej = document.createElement('button');
+      rej.className = 'btn reject'; rej.textContent = 'Reject';
+      rej.onclick = async () => { try { const r = await api('/api/media/reject', { slug, id: e.id }); showCoverage(r.coverage); load(slug); } catch (x) { status(x.message, true); } };
+      actions.appendChild(rej);
+    } else if (e.status === 'approved') {
+      const rm = document.createElement('button');
+      rm.className = 'btn reject'; rm.textContent = 'Remove';
+      rm.title = 'Delete this approved asset from work/ + assets.json';
+      rm.onclick = async () => {
+        rm.disabled = true; status(`<span class="spin"></span> Removing…`);
+        try { const r = await api('/api/media/reject', { slug, id: e.id }); showCoverage(r.coverage); status('Removed from work/ + assets.json.'); load(slug); }
+        catch (x) { status(x.message, true); rm.disabled = false; }
+      };
+      actions.appendChild(rm);
+    }
+    return el;
+  }
+
+  function render(slug, manifest) {
+    const grid = $('grid');
+    grid.innerHTML = '';
+    const visible = manifest.filter((e) => e.status !== 'rejected');
+    if (!visible.length) { grid.innerHTML = '<div class="empty">No assets yet. Use Find media above, or ⚡ Auto-fill.</div>'; return; }
+    const order = { candidate: 0, approved: 1 };
+    visible.sort((a, b) => (order[a.status] - order[b.status]));
+    for (const e of visible) grid.appendChild(card(slug, e));
+    const c = visible.filter((e) => e.status === 'candidate').length;
+    const a = visible.filter((e) => e.status === 'approved').length;
+    status(`${visible.length} assets · ${c} pending review · ${a} approved into work/`);
+  }
+
+  async function load(slug) {
+    if (!slug) return;
+    try {
+      const { manifest, coverage } = await api(`/api/media/manifest/${encodeURIComponent(slug)}`);
+      render(slug, manifest);
+      showCoverage(coverage);
+    } catch (x) { status(x.message, true); }
+  }
+
+  function resetForSlug() {
+    showCoverage(null);
+    $('grid').innerHTML = '';
+    $('results').innerHTML = '';
+    $('chips').innerHTML = '';
+    $('searchStatus').innerHTML = '';
+    status('');
+  }
+
+  $('loadBtn').onclick = () => { load(VSLUG); loadChips(VSLUG); };
+
+  $('finalizeBtn').onclick = async () => {
+    if (!VSLUG) return status('No case selected.', true);
+    $('finalizeBtn').disabled = true;
+    status(`<span class="spin"></span> Enriching approved assets → work/assets.json …`);
+    try {
+      const { count, coverage } = await api('/api/media/finalize', { slug: VSLUG });
+      status(`Wrote work/assets.json (${count} approved asset${count === 1 ? '' : 's'} enriched) + coverage.json.`);
+      showCoverage(coverage);
+    } catch (x) { status(x.message, true); }
+    $('finalizeBtn').disabled = false;
+  };
+
+  $('optsBtn').onclick = () => { const o = $('autofillOpts'); o.hidden = !o.hidden; };
+
+  $('sourceBtn').onclick = async () => {
+    if (!VSLUG) return status('No case selected.', true);
+    const kinds = [...document.querySelectorAll('#videoWorkspace .kind:checked')].map((c) => c.value);
+    if (!kinds.length) return status('Pick at least one media type.', true);
+    const max = parseInt($('max').value, 10) || 8;
+    const allowVideoDownload = $('allowvid').checked;
+    $('sourceBtn').disabled = true;
+    showCoverage(null);
+    status(`<span class="spin"></span> Planning + searching + downloading (this can take a minute)…`);
+    try {
+      const { added, manifest } = await api('/api/media/source', { slug: VSLUG, kinds, max, allowVideoDownload });
+      render(VSLUG, manifest);
+      showCoverage((await api(`/api/media/manifest/${encodeURIComponent(VSLUG)}`)).coverage);
+      status(`Sourced ${added.length} new candidate(s). Review below.`);
+      loadChips(VSLUG);
+    } catch (x) { status(x.message, true); }
+    $('sourceBtn').disabled = false;
+  };
+
+  // ── Browse & pick ──
+  const searchStatus = (msg, err) => { const s = $('searchStatus'); s.innerHTML = msg; s.className = 'status-line' + (err ? ' err' : ''); };
+  const searchKind = () => document.querySelector('#videoWorkspace input[name="searchkind"]:checked').value;
+
+  async function loadChips(slug) {
+    const box = $('chips');
+    box.innerHTML = '';
+    if (!slug) return;
+    let plan;
+    try { ({ plan } = await api(`/api/media/plan/${encodeURIComponent(slug)}`)); } catch { return; }
+    if (!plan) { box.innerHTML = '<span class="meta">No suggested queries yet — type a search above, or run ⚡ Auto-fill once to generate them.</span>'; return; }
+    const k = searchKind();
+    const qs = (k === 'video' ? plan.video_queries : k === 'broll' ? plan.broll_queries : plan.image_queries) || [];
+    for (const q of qs) {
+      const c = document.createElement('span');
+      c.className = 'chip'; c.textContent = q;
+      c.onclick = () => { $('q').value = q; doSearch(); };
+      box.appendChild(c);
+    }
+  }
+
+  function resultCard(slug, r) {
+    const el = document.createElement('div');
+    el.className = 'card result-card' + (r.inManifest ? ' added' : '');
+    const isVid = r.kind === 'video' || searchKind() !== 'image';
+    const preview = r.previewable
+      ? `<video class="thumb" src="${r.full}" poster="${r.thumb || ''}" muted loop playsinline preload="none" onmouseover="this.preload='auto';this.play()" onmouseout="this.pause()"></video>`
+      : `<img class="thumb" src="${r.thumb || r.full}" loading="lazy" />`;
+    const dims = r.width ? `${r.width}×${r.height}` : '';
+    el.innerHTML = `
+      ${preview}
+      <div class="card-body">
+        <div class="badges">
+          ${dims ? `<span class="badge">${dims}</span>` : ''}
+          <span class="badge lic">${r.licenseGuess || ''}</span>
+        </div>
+        <div class="meta">${r.source || ''}${(r.pageUrl || r.sourceUrl) ? ` · <a href="${r.pageUrl || r.sourceUrl}" target="_blank" rel="noopener">src ↗</a>` : ''}</div>
+        <div class="actions"></div>
+      </div>`;
+    const actions = el.querySelector('.actions');
+    const action = r.addAction || (isVid ? 'screenrec-video' : 'image');
+    const labels = { image: '+ Add', 'video-file': '+ Add clip', 'screenrec-video': 'Screen-record' };
+    const busy = { image: 'adding…', 'video-file': 'downloading…', 'screenrec-video': 'recording…' };
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn result-add';
+    addBtn.textContent = r.inManifest ? 'added ✓' : (labels[action] || '+ Add');
+    addBtn.disabled = !!r.inManifest;
+    addBtn.onclick = async () => {
+      addBtn.disabled = true; addBtn.textContent = busy[action] || 'adding…';
+      try {
+        const res = await api('/api/media/add', { slug, url: r.full, action, query: r.query, source: r.source, sourceUrl: r.sourceUrl, licenseGuess: r.licenseGuess });
+        addBtn.textContent = action === 'screenrec-video' && res.count > 1 ? `added ${res.count} clips ✓` : 'added ✓';
+        el.classList.add('added');
+        load(slug);
+      } catch (x) { addBtn.disabled = false; addBtn.textContent = 'retry'; searchStatus(x.message, true); }
+    };
+    actions.appendChild(addBtn);
+    return el;
+  }
+
+  async function doSearch() {
+    if (!VSLUG) return status('No case selected.', true);
+    const query = $('q').value.trim();
+    const kind = searchKind();
+    $('searchBtn').disabled = true;
+    searchStatus(`<span class="spin"></span> Searching ${kind}s…`);
+    try {
+      const { results } = await api('/api/media/search', { slug: VSLUG, query, kind });
+      const grid = $('results');
+      grid.innerHTML = '';
+      if (!results.length) { grid.innerHTML = '<div class="empty">No results. Try a different term.</div>'; }
+      for (const r of results) grid.appendChild(resultCard(VSLUG, r));
+      searchStatus(`${results.length} result(s)${query ? ` for “${query}”` : ' (plan queries)'} — click to add. ${kind === 'video' ? 'Each capture takes ~20s.' : ''}`);
+    } catch (x) { searchStatus(x.message, true); }
+    $('searchBtn').disabled = false;
+  }
+
+  $('searchBtn').onclick = doSearch;
+  $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+  document.querySelectorAll('#videoWorkspace input[name="searchkind"]').forEach((r) => r.addEventListener('change', () => loadChips(VSLUG)));
+
+  $('addUrlBtn').onclick = async () => {
+    const url = $('manualUrl').value.trim();
+    if (!VSLUG || !url) return searchStatus('No case selected, or empty URL.', true);
+    const action = $('manualAction').value;
+    $('addUrlBtn').disabled = true;
+    try {
+      if (action === 'extract-images') {
+        searchStatus(`<span class="spin"></span> Extracting images from page (scrolling to load all)…`);
+        const { results } = await api('/api/media/extract', { slug: VSLUG, url });
+        const grid = $('results');
+        grid.innerHTML = '';
+        if (!results.length) grid.innerHTML = '<div class="empty">No images found on that page.</div>';
+        for (const r of results) grid.appendChild(resultCard(VSLUG, r));
+        searchStatus(`${results.length} image(s) from the page — click to add.`);
+      } else {
+        searchStatus(`<span class="spin"></span> Adding ${action}…`);
+        const r = await api('/api/media/add', { slug: VSLUG, url, action, source: 'manual', sourceUrl: url });
+        searchStatus(r.duplicate ? 'Already in the queue.' : 'Added to review queue.');
+        $('manualUrl').value = '';
+        load(VSLUG);
+      }
+    } catch (x) { searchStatus(x.message, true); }
+    $('addUrlBtn').disabled = false;
+  };
+
+  // Entry point — called by showVideoMode() when a subject's Video Media tab is opened.
+  window.renderVideoWorkspace = function (subject) {
+    VSLUG = (subject && subject.video && subject.video.slug) || '';
+    $('vmCaseSlug').textContent = VSLUG || '—';
+    resetForSlug();
+    if (VSLUG) { load(VSLUG); loadChips(VSLUG); }
+  };
+})();
+// =========================================================================================
 
 // Util
 function escapeHtml(str) {

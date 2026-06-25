@@ -513,8 +513,9 @@ function extractImageSlots(type, fm, body) {
   return slots;
 }
 
-// GET /api/content — list MDX files available for image injection
-app.get('/api/content', (req, res) => {
+// Shared content scan — list all MDX files with their image slots.
+// Used by /api/content (image injection) and /api/subjects (unified picker).
+function listContentFiles() {
   const types = ['articles', 'case-studies', 'structures'];
   const files = [];
 
@@ -551,7 +552,53 @@ app.get('/api/content', (req, res) => {
   }
 
   files.sort((a, b) => a.title.localeCompare(b.title));
-  res.json({ files });
+  return files;
+}
+
+// GET /api/content — list MDX files available for image injection
+app.get('/api/content', (req, res) => {
+  res.json({ files: listContentFiles() });
+});
+
+// GET /api/subjects — unified subject list for the consolidated picker.
+// Every content piece is a "page" subject; case studies ALSO carry a "video"
+// destination (the Remotion media pile, keyed by the MDX filename slug).
+app.get('/api/subjects', (req, res) => {
+  const subjects = listContentFiles().map((f) => {
+    const destinations = ['page'];
+    const subject = {
+      id: f.path,
+      type: f.type,
+      title: f.title,
+      file: f.file,
+      path: f.path,
+      slug: f.slug,
+      excerpt: f.excerpt,
+      slots: f.slots,
+      destinations,
+      page: { filledSlots: f.filledSlots, totalSlots: f.totalSlots },
+    };
+    if (f.type === 'case-studies') {
+      // Media pile resolves case-studies/<slug>.mdx, so the video slug is the filename.
+      const vslug = f.file.replace(/\.mdx$/, '');
+      destinations.push('video');
+      let manifest = [];
+      let coverage = null;
+      let hasPlan = false;
+      try { manifest = media.readManifest(vslug) || []; } catch {}
+      try { coverage = media.readCoverage(vslug); } catch {}
+      try { hasPlan = !!media.readPlan(vslug); } catch {}
+      subject.video = {
+        slug: vslug,
+        hasPlan,
+        candidates: manifest.filter((e) => e.status === 'candidate').length,
+        approved: manifest.filter((e) => e.status === 'approved').length,
+        coverage,
+      };
+    }
+    return subject;
+  });
+  res.json({ subjects });
 });
 
 // GET /api/content/analyze/:type/:file — deep analysis of a single content file
