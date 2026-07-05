@@ -182,6 +182,20 @@ function CaseStudyRefCard({ name, slug }: { name: string; slug: string }) {
 }
 
 /** Parse inline markdown: [links](url), **bold**, *italic* */
+/**
+ * Allowlist link schemes before rendering an href from (AI-generated) markdown.
+ * Permits root-relative and anchor links plus http(s)/mailto absolute URLs;
+ * rejects javascript:/data:/vbscript: and protocol-relative (//host) URLs.
+ * Returns undefined when the URL is not safe to link.
+ */
+function safeHref(url: string): string | undefined {
+  const trimmed = url.trim();
+  if (trimmed.startsWith("//")) return undefined;
+  if (trimmed.startsWith("/") || trimmed.startsWith("#")) return trimmed;
+  if (/^(https?:|mailto:)/i.test(trimmed)) return trimmed;
+  return undefined;
+}
+
 function renderInline(text: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
   // Match: [link](url), **bold**, *italic*
@@ -203,8 +217,13 @@ function renderInline(text: string): React.ReactNode[] {
         const slug = url.replace("/library/case-studies/", "");
         nodes.push(<CaseStudyRefCard key={match.index} name={match[2]} slug={slug} />);
       } else {
+        const href = safeHref(url);
         nodes.push(
-          <a key={match.index} href={url} className="adv-chat-link">{match[2]}</a>
+          href ? (
+            <a key={match.index} href={href} className="adv-chat-link">{match[2]}</a>
+          ) : (
+            <span key={match.index}>{match[2]}</span>
+          )
         );
       }
     } else if (match[4]) {

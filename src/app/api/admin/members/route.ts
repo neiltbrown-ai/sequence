@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase/admin";
+import { sanitizePostgrestSearch } from "@/lib/utils/postgrest";
 
 const PAGE_SIZE = 50;
 
@@ -30,10 +31,11 @@ export async function GET(request: NextRequest) {
       { count: "exact" }
     );
 
-  // Search filter
-  if (search) {
+  // Search filter — sanitize before embedding into the PostgREST .or() string
+  const safeSearch = sanitizePostgrestSearch(search);
+  if (safeSearch) {
     query = query.or(
-      `full_name.ilike.%${search}%,email.ilike.%${search}%`
+      `full_name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%`
     );
   }
 
