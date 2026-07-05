@@ -1,9 +1,24 @@
 import { getAllCaseStudies } from "@/lib/content";
 import PageHeader from "@/components/portal/page-header";
-import CaseStudiesFiltersSidebar from "@/components/portal/case-studies-filters-sidebar";
+import CaseStudiesFiltersSidebar, {
+  type CaseStudyCard,
+} from "@/components/portal/case-studies-filters-sidebar";
 
 export default function PortalCaseStudiesPage() {
-  const studies = getAllCaseStudies();
+  const all = getAllCaseStudies();
+
+  // Project to only the fields the client sidebar/cards use — keeps stats,
+  // sections, and hero images out of the serialized payload.
+  const studies: CaseStudyCard[] = all.map((cs) => ({
+    slug: cs.slug,
+    title: cs.title,
+    excerpt: cs.excerpt,
+    coverImage: cs.coverImage,
+    discipline: cs.discipline,
+    tags: cs.tags,
+    industries: cs.industries,
+    disciplines: cs.disciplines,
+  }));
 
   return (
     <>

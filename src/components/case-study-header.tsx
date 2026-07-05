@@ -107,6 +107,8 @@ export default function CaseStudyHeader({
                   src={heroImage}
                   alt={heroAlt || title.replace(/<[^>]+>/g, "")}
                   style={heroPosition ? { objectPosition: heroPosition } : undefined}
+                  fetchPriority="high"
+                  decoding="async"
                 />
               </div>
               {heroCredit && (
