@@ -1,9 +1,11 @@
+import { escapeHtml } from "@/lib/utils/escape-html";
+
 export function bookDeliveryEmailHtml(
   firstName?: string,
   bookDownloadUrl?: string,
   unsubscribeUrl?: string
 ): string {
-  const greeting = firstName ? `Hi ${firstName},` : "Hi there,";
+  const greeting = firstName ? `Hi ${escapeHtml(firstName)},` : "Hi there,";
 
   return `<!DOCTYPE html>
 <html>

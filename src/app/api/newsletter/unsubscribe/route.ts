@@ -36,7 +36,17 @@ export async function GET(req: NextRequest) {
 }
 
 export async function generateToken(email: string): Promise<string> {
-  const secret = process.env.RESEND_API_KEY || "fallback-secret";
+  // Sign with a dedicated secret when available, otherwise the Resend key.
+  // Fail closed if neither is set — never fall back to a hardcoded literal,
+  // which would make every unsubscribe token forgeable. (Kept RESEND_API_KEY
+  // as the effective default so links in already-sent emails stay valid;
+  // migrating fully to NEWSLETTER_TOKEN_SECRET later needs dual-verification.)
+  const secret = process.env.NEWSLETTER_TOKEN_SECRET || process.env.RESEND_API_KEY;
+  if (!secret) {
+    throw new Error(
+      "Missing NEWSLETTER_TOKEN_SECRET / RESEND_API_KEY for unsubscribe token signing"
+    );
+  }
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",

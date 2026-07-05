@@ -73,7 +73,7 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    await renameConversation(conversationId, title.trim());
+    await renameConversation(conversationId, user.id, title.trim());
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Rename failed";
@@ -99,7 +99,7 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    await deleteConversation(conversationId);
+    await deleteConversation(conversationId, user.id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Delete failed";

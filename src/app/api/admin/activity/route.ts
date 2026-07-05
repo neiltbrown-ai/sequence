@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase/admin";
+import { escapeHtml } from "@/lib/utils/escape-html";
 
 interface ActivityItem {
   type: "signup" | "cancel" | "alert" | "assessment";
@@ -71,7 +72,7 @@ export async function GET() {
             : s.plan || "Unknown";
       items.push({
         type: "signup",
-        text: `<strong>${name}</strong> signed up — ${planLabel} plan`,
+        text: `<strong>${escapeHtml(name)}</strong> signed up — ${escapeHtml(planLabel)} plan`,
         time: s.created_at,
         userId: s.user_id,
       });
@@ -85,7 +86,7 @@ export async function GET() {
       const name = profile?.full_name || "Unknown";
       items.push({
         type: "cancel",
-        text: `<strong>${name}</strong> canceled their subscription`,
+        text: `<strong>${escapeHtml(name)}</strong> canceled their subscription`,
         time: c.updated_at,
         userId: c.user_id,
       });
@@ -97,7 +98,7 @@ export async function GET() {
     for (const f of failedPaymentsRes.data) {
       items.push({
         type: "alert",
-        text: `Payment failed for <strong>${f.recipient_email}</strong>`,
+        text: `Payment failed for <strong>${escapeHtml(f.recipient_email)}</strong>`,
         time: f.sent_at,
         userId: f.user_id ?? undefined,
       });
@@ -111,7 +112,7 @@ export async function GET() {
       const name = profile?.full_name || "Unknown";
       items.push({
         type: "assessment",
-        text: `<strong>${name}</strong> completed their assessment`,
+        text: `<strong>${escapeHtml(name)}</strong> completed their assessment`,
         time: a.completed_at!,
         userId: a.user_id,
       });
@@ -123,7 +124,7 @@ export async function GET() {
     for (const e of failedEmailsRes.data) {
       items.push({
         type: "alert",
-        text: `Email delivery failed: ${e.email_type} to <strong>${e.recipient_email}</strong>`,
+        text: `Email delivery failed: ${escapeHtml(e.email_type)} to <strong>${escapeHtml(e.recipient_email)}</strong>`,
         time: e.sent_at,
         userId: e.user_id ?? undefined,
       });

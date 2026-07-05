@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/send";
+import { escapeHtml } from "@/lib/utils/escape-html";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_FIELD = 5000;
 
 /**
  * POST /api/contact
@@ -15,6 +19,27 @@ export async function POST(request: Request) {
         { error: "Name, email, and message are required" },
         { status: 400 }
       );
+    }
+
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      typeof message !== "string" ||
+      (subject != null && typeof subject !== "string")
+    ) {
+      return NextResponse.json({ error: "Invalid field types" }, { status: 400 });
+    }
+
+    if (!EMAIL_RE.test(email) || email.length > 320) {
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    }
+
+    if (
+      name.length > MAX_FIELD ||
+      message.length > MAX_FIELD ||
+      (subject && subject.length > MAX_FIELD)
+    ) {
+      return NextResponse.json({ error: "Input too long" }, { status: 400 });
     }
 
     const inboxEmail = "insequence.so@gmail.com";
@@ -34,13 +59,13 @@ export async function POST(request: Request) {
         <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;max-width:600px;">
           <p style="font-size:11px;font-family:'Courier New',monospace;letter-spacing:0.1em;text-transform:uppercase;color:#999;">IN SEQUENCE — CONTACT FORM</p>
           <hr style="border:none;border-top:1px solid #e8e5e0;margin:16px 0;" />
-          <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
-          <p><strong>Type:</strong> ${typeLabel}</p>
-          ${subject ? `<p><strong>Subject:</strong> ${subject}</p>` : ""}
+          <p><strong>From:</strong> ${escapeHtml(name)} &lt;${escapeHtml(email)}&gt;</p>
+          <p><strong>Type:</strong> ${escapeHtml(typeLabel)}</p>
+          ${subject ? `<p><strong>Subject:</strong> ${escapeHtml(subject)}</p>` : ""}
           <hr style="border:none;border-top:1px solid #e8e5e0;margin:16px 0;" />
-          <p style="white-space:pre-wrap;line-height:1.6;">${message}</p>
+          <p style="white-space:pre-wrap;line-height:1.6;">${escapeHtml(message)}</p>
           <hr style="border:none;border-top:1px solid #e8e5e0;margin:16px 0;" />
-          <p style="font-size:12px;color:#999;">Reply directly to this email to respond to ${name}.</p>
+          <p style="font-size:12px;color:#999;">Reply directly to this email to respond to ${escapeHtml(name)}.</p>
         </div>
       `,
       replyTo: email,

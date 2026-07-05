@@ -163,11 +163,11 @@ export async function POST(request: Request) {
     },
     onFinish: async ({ messages }) => {
       try {
-        await saveConversationMessages(conversationId!, messages, mode, snapshot);
+        await saveConversationMessages(conversationId!, user.id, messages, mode, snapshot);
 
         // If an assessment was created during this conversation, link it
         if (snapshot?.assessmentId) {
-          await linkAssessmentToConversation(conversationId!, snapshot.assessmentId);
+          await linkAssessmentToConversation(conversationId!, user.id, snapshot.assessmentId);
         }
 
         // Auto-generate title from first user message on new conversations
@@ -180,7 +180,11 @@ export async function POST(request: Request) {
               title = title.substring(0, 60).replace(/\s\S*$/, "...");
             }
             const admin = createAdminClient();
-            await admin.from("ai_conversations").update({ title }).eq("id", conversationId!);
+            await admin
+              .from("ai_conversations")
+              .update({ title })
+              .eq("id", conversationId!)
+              .eq("user_id", user.id);
           }
         }
       } catch (err) {

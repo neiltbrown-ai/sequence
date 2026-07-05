@@ -1,9 +1,11 @@
+import { escapeHtml } from "@/lib/utils/escape-html";
+
 export function newsletterWelcomeEmailHtml(
   firstName?: string,
   unsubscribeUrl?: string,
   bookDownloadUrl?: string
 ): string {
-  const greeting = firstName ? `Welcome, ${firstName}.` : "Welcome.";
+  const greeting = firstName ? `Welcome, ${escapeHtml(firstName)}.` : "Welcome.";
 
   const bookBlock = bookDownloadUrl
     ? `

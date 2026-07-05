@@ -54,17 +54,19 @@ export async function loadConversation(conversationId: string) {
  */
 export async function saveConversationMessages(
   conversationId: string,
+  userId: string,
   messages: unknown[],
   mode: AdvisorMode,
   snapshot?: ConversationContextSnapshot
 ) {
   const admin = createAdminClient();
 
-  // Get existing modes_used to append
+  // Get existing modes_used to append (scoped to the owning user)
   const { data: existing } = await admin
     .from("ai_conversations")
     .select("modes_used")
     .eq("id", conversationId)
+    .eq("user_id", userId)
     .single();
 
   const modesUsed = existing?.modes_used || [];
@@ -82,7 +84,8 @@ export async function saveConversationMessages(
       last_message_at: new Date().toISOString(),
       context_snapshot: snapshot || null,
     })
-    .eq("id", conversationId);
+    .eq("id", conversationId)
+    .eq("user_id", userId);
 
   if (error) {
     console.error("Failed to save conversation messages:", error);
@@ -94,13 +97,15 @@ export async function saveConversationMessages(
  */
 export async function linkAssessmentToConversation(
   conversationId: string,
+  userId: string,
   assessmentId: string
 ) {
   const admin = createAdminClient();
   await admin
     .from("ai_conversations")
     .update({ assessment_id: assessmentId })
-    .eq("id", conversationId);
+    .eq("id", conversationId)
+    .eq("user_id", userId);
 }
 
 /**
@@ -155,12 +160,17 @@ export async function archiveConversation(conversationId: string) {
 /**
  * Rename a conversation.
  */
-export async function renameConversation(conversationId: string, title: string) {
+export async function renameConversation(
+  conversationId: string,
+  userId: string,
+  title: string
+) {
   const admin = createAdminClient();
   const { error } = await admin
     .from("ai_conversations")
     .update({ title })
-    .eq("id", conversationId);
+    .eq("id", conversationId)
+    .eq("user_id", userId);
 
   if (error) {
     throw new Error(`Failed to rename conversation: ${error.message}`);
@@ -170,12 +180,13 @@ export async function renameConversation(conversationId: string, title: string) 
 /**
  * Delete a conversation permanently.
  */
-export async function deleteConversation(conversationId: string) {
+export async function deleteConversation(conversationId: string, userId: string) {
   const admin = createAdminClient();
   const { error } = await admin
     .from("ai_conversations")
     .delete()
-    .eq("id", conversationId);
+    .eq("id", conversationId)
+    .eq("user_id", userId);
 
   if (error) {
     throw new Error(`Failed to delete conversation: ${error.message}`);

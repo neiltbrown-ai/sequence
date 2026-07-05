@@ -100,7 +100,11 @@ export async function POST(request: Request) {
   };
 
   if (evalId) {
-    await admin.from('deal_evaluations').update(evalData).eq('id', evalId);
+    await admin
+      .from('deal_evaluations')
+      .update(evalData)
+      .eq('id', evalId)
+      .eq('user_id', user.id);
   } else {
     const { data: inserted, error } = await admin
       .from('deal_evaluations')

@@ -1,5 +1,7 @@
+import { escapeHtml } from "@/lib/utils/escape-html";
+
 export function welcomeEmailHtml(firstName?: string): string {
-  const greeting = firstName ? `Welcome, ${firstName}` : "Welcome to In Sequence";
+  const greeting = firstName ? `Welcome, ${escapeHtml(firstName)}` : "Welcome to In Sequence";
 
   return `<!DOCTYPE html>
 <html>
