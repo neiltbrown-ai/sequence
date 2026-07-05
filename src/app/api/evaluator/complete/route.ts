@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { getAllCaseStudies, getAllStructures } from '@/lib/content';
 import { buildMemberContext } from '@/lib/advisor/context-builder';
 import { buildMemberContextPrompt } from '@/lib/advisor/system-prompts';
+import { enforceRateLimit } from '@/lib/rate-limit';
 import Anthropic from '@anthropic-ai/sdk';
 import type { DealVerdict, EvaluationScores, DealType, CreativeMode } from '@/types/evaluator';
 
@@ -57,7 +58,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const limited = await enforceRateLimit({
+    key: `ai:evaluator-complete:${user.id}`,
+    limit: 15,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
+
   const body = await request.json();
+
+  // Bound the client payload before it's stringified into the prompt + stored.
+  if (JSON.stringify(body ?? {}).length > 100_000) {
+    return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+  }
+
   const {
     evaluationId,
     userId,

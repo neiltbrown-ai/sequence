@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail, logEmail } from "@/lib/email/send";
 import { welcomeEmailHtml } from "@/lib/email/templates/welcome";
+import { enforceRateLimit, clientIp } from "@/lib/rate-limit";
 
 /**
  * POST /api/codes/redeem
@@ -11,6 +12,13 @@ import { welcomeEmailHtml } from "@/lib/email/templates/welcome";
  * Provisions a Full Access subscription directly — no Stripe involved.
  */
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit({
+    key: `public:codes-redeem:${clientIp(request)}`,
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
+
   let code: string;
   let signupUserId: string | undefined;
   let signupEmail: string | undefined;

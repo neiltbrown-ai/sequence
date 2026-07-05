@@ -10,6 +10,7 @@ import {
   linkAssessmentToConversation,
 } from "@/lib/advisor/message-store";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import type { AdvisorMode, ConversationContextSnapshot } from "@/types/advisor";
 
 export const maxDuration = 120;
@@ -97,7 +98,23 @@ export async function POST(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  // Chat is chattier than the one-shot AI routes; each message can fan out to
+  // up to 10 tool-loop model calls, so still cap it per user.
+  const limited = await enforceRateLimit({
+    key: `ai:advisor-chat:${user.id}`,
+    limit: 40,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
+
   const body = await request.json();
+
+  // Reject oversized payloads outright (a genuine chat history stays well under
+  // this; a multi-MB blob is abuse and would balloon input tokens).
+  if (JSON.stringify(body ?? {}).length > 500_000) {
+    return new Response("Payload too large", { status: 413 });
+  }
+
   const { messages: rawMessages, data: metadata } = body as {
     messages: UIMessage[];
     data?: {

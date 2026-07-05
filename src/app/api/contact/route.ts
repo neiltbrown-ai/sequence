@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/send";
 import { escapeHtml } from "@/lib/utils/escape-html";
+import { enforceRateLimit, clientIp } from "@/lib/rate-limit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_FIELD = 5000;
@@ -12,6 +13,13 @@ const MAX_FIELD = 5000;
  */
 export async function POST(request: Request) {
   try {
+    const limited = await enforceRateLimit({
+      key: `public:contact:${clientIp(request)}`,
+      limit: 5,
+      windowSeconds: 3600,
+    });
+    if (limited) return limited;
+
     const { name, email, inquiryType, subject, message } = await request.json();
 
     if (!name || !email || !message) {

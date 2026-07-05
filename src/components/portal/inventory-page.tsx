@@ -273,6 +273,7 @@ export default function InventoryPage({
               value={form.asset_name}
               onChange={(e) => setForm({ ...form, asset_name: e.target.value })}
               placeholder="e.g. Brand identity system for Acme Corp"
+              maxLength={200}
               autoFocus
             />
           </div>
@@ -332,6 +333,7 @@ export default function InventoryPage({
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="What is this asset? Context helps the analysis."
+              maxLength={2000}
               rows={2}
             />
           </div>
@@ -343,6 +345,7 @@ export default function InventoryPage({
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
               placeholder="e.g. gave creative direction free for 6 months"
+              maxLength={2000}
               rows={2}
             />
           </div>

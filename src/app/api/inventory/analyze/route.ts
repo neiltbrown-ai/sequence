@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { buildMemberContext } from "@/lib/advisor/context-builder";
 import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
 import { getAllStructures } from "@/lib/content";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import Anthropic from "@anthropic-ai/sdk";
 import type { AssetInventoryItem, InventoryAnalysisContent } from "@/types/inventory";
 
@@ -58,6 +59,14 @@ export async function POST() {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Expensive AI call (analysis + chained roadmap regen). Cap per user.
+  const limited = await enforceRateLimit({
+    key: `ai:inventory-analyze:${user.id}`,
+    limit: 15,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
 
   const admin = createAdminClient();
 
@@ -148,13 +157,22 @@ async function generateAnalysis(
 
     const structures = getStructureCatalog();
 
-    const userPrompt = `INVENTORY ITEMS (${items.length} total):
-${items.map((item, i) => `${i + 1}. "${item.asset_name}"
+    // Bound untrusted asset text before it enters the prompt — caps Claude input
+    // tokens (cost) and context-limit risk regardless of what was stored.
+    const MAX_PROMPT_ITEMS = 100;
+    const MAX_FIELD_CHARS = 2000;
+    const clampField = (s: string | null | undefined) => (s || "").slice(0, MAX_FIELD_CHARS);
+    const promptItems = items.slice(0, MAX_PROMPT_ITEMS);
+
+    const userPrompt = `INVENTORY ITEMS (${items.length} total${
+      items.length > MAX_PROMPT_ITEMS ? `, showing first ${MAX_PROMPT_ITEMS}` : ""
+    }):
+${promptItems.map((item, i) => `${i + 1}. "${clampField(item.asset_name)}"
    Type: ${item.asset_type}
    Ownership: ${item.ownership_status}
    Licensing Potential: ${item.licensing_potential}
-   Description: ${item.description || "None provided"}
-   Notes: ${item.notes || "None"}`).join("\n\n")}
+   Description: ${clampField(item.description) || "None provided"}
+   Notes: ${clampField(item.notes) || "None"}`).join("\n\n")}
 ${memberContextStr}
 
 AVAILABLE STRUCTURES (reference these by number when recommending):
