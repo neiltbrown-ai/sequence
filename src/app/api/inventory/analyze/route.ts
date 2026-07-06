@@ -5,6 +5,7 @@ import { buildMemberContext } from "@/lib/advisor/context-builder";
 import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
 import { getAllStructures } from "@/lib/content";
 import { enforceRateLimit } from "@/lib/rate-limit";
+import { hasActiveSubscription } from "@/lib/subscription";
 import Anthropic from "@anthropic-ai/sdk";
 import type { AssetInventoryItem, InventoryAnalysisContent } from "@/types/inventory";
 
@@ -58,6 +59,15 @@ export async function POST() {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Entitlement: authentication alone isn't enough — a Google-SSO account can
+  // exist with no subscription. Paid AI capability requires full_access.
+  if (!(await hasActiveSubscription(user.id, "full_access"))) {
+    return NextResponse.json(
+      { error: "Active subscription required" },
+      { status: 402 }
+    );
   }
 
   // Expensive AI call (analysis + chained roadmap regen). Cap per user.

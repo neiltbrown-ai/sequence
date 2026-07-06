@@ -5,6 +5,7 @@ import { getAllCaseStudies, getAllStructures } from '@/lib/content';
 import { buildMemberContext } from '@/lib/advisor/context-builder';
 import { buildMemberContextPrompt } from '@/lib/advisor/system-prompts';
 import { enforceRateLimit } from '@/lib/rate-limit';
+import { hasActiveSubscription } from '@/lib/subscription';
 import Anthropic from '@anthropic-ai/sdk';
 import type { DealVerdict, EvaluationScores, DealType, CreativeMode } from '@/types/evaluator';
 
@@ -56,6 +57,13 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (!(await hasActiveSubscription(user.id, 'full_access'))) {
+    return NextResponse.json(
+      { error: 'Active subscription required' },
+      { status: 402 }
+    );
   }
 
   const limited = await enforceRateLimit({

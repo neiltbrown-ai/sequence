@@ -11,6 +11,7 @@ import {
 } from "@/lib/advisor/message-store";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { enforceRateLimit } from "@/lib/rate-limit";
+import { hasActiveSubscription } from "@/lib/subscription";
 import type { AdvisorMode, ConversationContextSnapshot } from "@/types/advisor";
 
 export const maxDuration = 120;
@@ -96,6 +97,10 @@ export async function POST(request: Request) {
 
   if (!user) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  if (!(await hasActiveSubscription(user.id, "full_access"))) {
+    return new Response("Active subscription required", { status: 402 });
   }
 
   // Chat is chattier than the one-shot AI routes; each message can fan out to

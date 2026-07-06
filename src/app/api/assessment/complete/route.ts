@@ -6,6 +6,7 @@ import { matchArchetype } from "@/lib/assessment/archetype-matching";
 import { getArchetypeById } from "@/lib/assessment/archetypes";
 import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
 import { enforceRateLimit } from "@/lib/rate-limit";
+import { hasActiveSubscription } from "@/lib/subscription";
 import type { AssessmentAnswers, CreativeMode } from "@/types/assessment";
 import type { CreativeIdentitySnapshot } from "@/types/creative-identity";
 import { CREATIVE_IDENTITY_TOTAL_SECTIONS } from "@/types/creative-identity";
@@ -38,6 +39,13 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!(await hasActiveSubscription(user.id, "full_access"))) {
+    return NextResponse.json(
+      { error: "Active subscription required" },
+      { status: 402 }
+    );
   }
 
   const limited = await enforceRateLimit({

@@ -103,7 +103,15 @@ export async function updateSession(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(route + "/")
   );
 
-  if (user && isGatedRoute) {
+  // /dashboard is the member home and also requires an active subscription.
+  // Without this, a net-new Google-SSO account (a session but no subscription,
+  // since OAuth skips checkout) lands on an empty, dead-end dashboard. Any paid
+  // tier satisfies it.
+  const isDashboard =
+    pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const requiresSubscription = isGatedRoute || isDashboard;
+
+  if (user && requiresSubscription) {
     // Use service role client to bypass RLS for server-side subscription check
     const adminClient = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -124,10 +132,14 @@ export async function updateSession(request: NextRequest) {
       .maybeSingle();
 
     if (!subscription) {
-      // No active subscription at all — redirect to pricing
+      // Authenticated but never subscribed (classically: Google SSO straight
+      // from the login page). Send them FORWARD into plan-selection + checkout
+      // on their existing session — NOT to /pricing, which routes back through
+      // "create account with Google" and produces a perceived infinite loop.
       const url = request.nextUrl.clone();
-      url.pathname = "/pricing";
-      url.searchParams.set("reason", "subscription_required");
+      url.pathname = "/signup";
+      url.search = "";
+      url.searchParams.set("checkout", "1");
       return NextResponse.redirect(url);
     }
 
