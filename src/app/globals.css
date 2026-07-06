@@ -3101,6 +3101,16 @@ h3.sec-label {
 .cb-p strong { color: var(--black); font-weight: 500; }
 .cb-p + .cb-grid { margin-top: 28px; }
 .cb-grid + .cb-grid { margin-top: 28px; }
+.cb-list {
+  grid-column: 3 / 7; font-family: var(--sans); font-size: 17px;
+  font-weight: 400; line-height: 1.75; color: var(--mid);
+  list-style: disc; padding-left: 1.25em;
+}
+.cb-list--ordered { list-style: decimal; }
+.cb-list-item { margin-top: 8px; padding-left: 4px; }
+.cb-list-item:first-child { margin-top: 0; }
+.cb-list-item::marker { color: var(--black); }
+.cb-list-item strong { color: var(--black); font-weight: 500; }
 .cb-p.has-dropcap::first-letter {
   float: left; font-size: 72px; font-weight: 200; line-height: .82;
   padding-right: 12px; padding-top: 6px; color: var(--black);

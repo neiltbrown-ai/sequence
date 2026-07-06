@@ -45,6 +45,26 @@ function CbStrong(props: React.ComponentProps<"strong">) {
   return <strong {...props} />;
 }
 
+function CbList(props: React.ComponentProps<"ul">) {
+  return (
+    <div className="cb-grid">
+      <ul className="cb-list" {...props} />
+    </div>
+  );
+}
+
+function CbOrderedList(props: React.ComponentProps<"ol">) {
+  return (
+    <div className="cb-grid">
+      <ol className="cb-list cb-list--ordered" {...props} />
+    </div>
+  );
+}
+
+function CbListItem(props: React.ComponentProps<"li">) {
+  return <li className="cb-list-item" {...props} />;
+}
+
 /**
  * MDX component map for case study pages.
  * Import and pass to <MDXRemote components={caseStudyMdxComponents} />
@@ -55,6 +75,9 @@ export const caseStudyMdxComponents = {
   h2: CbH2,
   h3: CbH3,
   strong: CbStrong,
+  ul: CbList,
+  ol: CbOrderedList,
+  li: CbListItem,
 
   /* Layout */
   CbSection,
