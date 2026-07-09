@@ -1,12 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase/admin";
+import { sanitizePostgrestSearch } from "@/lib/utils/postgrest";
 
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin();
   if (auth.error) return auth.error;
   const { admin } = auth;
 
-  const q = request.nextUrl.searchParams.get("q")?.trim() || "";
+  const raw = request.nextUrl.searchParams.get("q")?.trim() || "";
+  const q = sanitizePostgrestSearch(raw);
   if (q.length < 2) return NextResponse.json([]);
 
   const results: Array<{

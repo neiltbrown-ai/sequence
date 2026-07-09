@@ -41,7 +41,14 @@ export default function LibCard({
           to the solid background. */}
       {hasCover && (
         /* eslint-disable-next-line @next/next/no-img-element */
-        <img className="lib-card-cover-img" src={coverImage} alt="" aria-hidden />
+        <img
+          className="lib-card-cover-img"
+          src={coverImage}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          decoding="async"
+        />
       )}
       {isNew && <span className="lib-card-new" />}
       <div className="lib-card-type">

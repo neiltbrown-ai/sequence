@@ -5,12 +5,20 @@ import { sendEmail, logEmail } from "@/lib/email/send";
 import { newsletterWelcomeEmailHtml } from "@/lib/email/templates/newsletter-welcome";
 import { generateToken } from "@/app/api/newsletter/unsubscribe/route";
 import { getAppUrl } from "@/lib/app-url";
+import { enforceRateLimit, clientIp } from "@/lib/rate-limit";
 
 const RESEND_AUDIENCE_ID = "f91a8f7d-666b-4d30-8a5b-406bff5e9824";
 const APP_URL = getAppUrl();
 
 export async function POST(req: NextRequest) {
   try {
+    const limited = await enforceRateLimit({
+      key: `public:newsletter-subscribe:${clientIp(req)}`,
+      limit: 5,
+      windowSeconds: 3600,
+    });
+    if (limited) return limited;
+
     const { email, name, honeypot } = await req.json();
 
     // Bot prevention — honeypot field should be empty

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail, logEmail } from "@/lib/email/send";
 import { welcomeEmailHtml } from "@/lib/email/templates/welcome";
+import { enforceRateLimit, clientIp } from "@/lib/rate-limit";
 
 /**
  * POST /api/codes/redeem
@@ -11,6 +12,13 @@ import { welcomeEmailHtml } from "@/lib/email/templates/welcome";
  * Provisions a Full Access subscription directly — no Stripe involved.
  */
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit({
+    key: `public:codes-redeem:${clientIp(request)}`,
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
+
   let code: string;
   let signupUserId: string | undefined;
   let signupEmail: string | undefined;
@@ -28,17 +36,38 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Code is required" }, { status: 400 });
   }
 
-  // Get user from session or signup fallback
+  // Resolve identity from the session, or from the signup fallback used during
+  // the email-confirmation-pending flow (no live session yet).
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const userId = user?.id || signupUserId;
-  const userEmail = user?.email || signupEmail;
+  const admin = createAdminClient();
+
+  let userId: string | undefined;
+  let userEmail: string | undefined;
+
+  if (user) {
+    userId = user.id;
+    userEmail = user.email ?? undefined;
+  } else if (signupUserId && signupEmail) {
+    // Never trust the client-supplied id/email pair on its own — that would let
+    // anyone with a valid code provision Full Access onto an arbitrary account
+    // id. Verify the pair against the auth record before accepting it.
+    const { data: authUser, error: lookupErr } =
+      await admin.auth.admin.getUserById(signupUserId);
+    if (
+      lookupErr ||
+      !authUser?.user ||
+      (authUser.user.email ?? "").toLowerCase() !== signupEmail.toLowerCase()
+    ) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+    userId = authUser.user.id;
+    userEmail = authUser.user.email ?? undefined;
+  }
 
   if (!userId || !userEmail) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-
-  const admin = createAdminClient();
 
   // Validate the code
   const { data: codeData, error: codeError } = await admin

@@ -122,7 +122,7 @@ export interface Testimonial {
 
 // ── Generic readers ──────────────────────────
 
-function readDir(subdir: string) {
+function readDirUncached(subdir: string) {
   const dir = path.join(CONTENT_DIR, subdir);
   if (!fs.existsSync(dir)) return [];
   return fs
@@ -133,6 +133,23 @@ function readDir(subdir: string) {
       const { data, content } = matter(raw);
       return { frontmatter: data, content, filename };
     });
+}
+
+// Content files are static for the lifetime of a deployment, so parse each
+// subdir once per process and reuse it across requests — list pages otherwise
+// re-read + re-parse 100+ MDX files on every render. Bypassed in development so
+// authoring changes show up on refresh without restarting the dev server.
+const _dirCache = new Map<string, ReturnType<typeof readDirUncached>>();
+
+function readDir(subdir: string) {
+  if (process.env.NODE_ENV !== "production") {
+    return readDirUncached(subdir);
+  }
+  const cached = _dirCache.get(subdir);
+  if (cached) return cached;
+  const parsed = readDirUncached(subdir);
+  _dirCache.set(subdir, parsed);
+  return parsed;
 }
 
 // ── Case-study taxonomy validator ────────────

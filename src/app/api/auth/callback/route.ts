@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { hasActiveSubscription } from "@/lib/subscription";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -17,7 +18,18 @@ export async function GET(request: Request) {
         next === "/reset-password" ||
         data.session?.user?.recovery_sent_at;
 
-      const destination = isRecovery ? "/reset-password" : next;
+      let destination = isRecovery ? "/reset-password" : next;
+
+      // A net-new Google-SSO login lands here with a session but no
+      // subscription (OAuth skips checkout). Route those users into
+      // plan-selection + checkout on their existing session rather than the
+      // dead-end dashboard. Recovery flow is exempt.
+      if (!isRecovery) {
+        const userId = data.session?.user?.id;
+        if (userId && !(await hasActiveSubscription(userId))) {
+          destination = "/signup?checkout=1";
+        }
+      }
 
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";

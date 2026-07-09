@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe/client";
 import { STRIPE_PRICES } from "@/lib/plans";
 import { getAppUrl } from "@/lib/app-url";
@@ -156,9 +157,33 @@ export async function POST(request: Request) {
       },
     };
 
-    // Apply coupon or allow promotion codes (mutually exclusive)
-    if (couponId) {
-      sessionConfig.discounts = [{ coupon: couponId }];
+    // Apply coupon or allow promotion codes (mutually exclusive).
+    // Never trust the client-supplied couponId directly — re-derive it from the
+    // referenced code row and confirm the code is currently valid. Only a coupon
+    // that matches a live university code's stripe_coupon_id is honored; anything
+    // else falls through to Stripe promotion codes (no unauthorized discount).
+    let validatedCoupon: string | undefined;
+    if (couponId && codeType === "university" && codeId) {
+      const adminClient = createAdminClient();
+      const { data: uni } = await adminClient
+        .from("university_codes")
+        .select("stripe_coupon_id, active, expires_at, max_uses, current_uses")
+        .eq("id", codeId)
+        .maybeSingle();
+
+      const nowIso = new Date().toISOString();
+      if (
+        uni?.stripe_coupon_id === couponId &&
+        uni.active &&
+        (!uni.expires_at || uni.expires_at >= nowIso) &&
+        (!uni.max_uses || (uni.current_uses ?? 0) < uni.max_uses)
+      ) {
+        validatedCoupon = couponId;
+      }
+    }
+
+    if (validatedCoupon) {
+      sessionConfig.discounts = [{ coupon: validatedCoupon }];
     } else {
       sessionConfig.allow_promotion_codes = true;
     }

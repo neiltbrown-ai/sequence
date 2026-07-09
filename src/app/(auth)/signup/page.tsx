@@ -59,7 +59,18 @@ function SignupForm() {
   // Determine initial step from URL (e.g. returning from Stripe checkout)
   const stepParam = searchParams.get("step");
   const sessionId = searchParams.get("session_id");
-  const initialStep = stepParam === "confirmation" && sessionId ? 3 : 0;
+  // Checkout continuation: an already-authenticated account with no subscription
+  // (classically Google SSO, which skips checkout) is routed here to pick a plan
+  // and pay on their existing session. They must NOT be shown "create account"
+  // again — start at the plan step and hide the Back-to-account control, or the
+  // Back button would drop them into account creation and loop.
+  const isCheckoutContinuation = searchParams.get("checkout") === "1";
+  const initialStep =
+    stepParam === "confirmation" && sessionId
+      ? 3
+      : isCheckoutContinuation
+        ? 1
+        : 0;
 
   const [step, setStep] = useState(initialStep);
   const [firstName, setFirstName] = useState("");
@@ -422,13 +433,15 @@ function SignupForm() {
             </div>
 
             <div className="auth-actions">
-              <button
-                type="button"
-                className="auth-btn auth-btn--outline"
-                onClick={() => setStep(0)}
-              >
-                Back
-              </button>
+              {!isCheckoutContinuation && (
+                <button
+                  type="button"
+                  className="auth-btn auth-btn--outline"
+                  onClick={() => setStep(0)}
+                >
+                  Back
+                </button>
+              )}
               <button
                 type="button"
                 className="auth-btn"

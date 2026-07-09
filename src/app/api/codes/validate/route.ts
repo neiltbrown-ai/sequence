@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { enforceRateLimit, clientIp } from "@/lib/rate-limit";
 
 /**
  * POST /api/codes/validate
  *
  * Validates a discount or university code without redeeming it.
  * Public endpoint — no auth required (used during signup flow).
+ * Rate-limited per IP to blunt code enumeration / brute-force.
  */
 export async function POST(request: Request) {
+  const limited = await enforceRateLimit({
+    key: `public:codes-validate:${clientIp(request)}`,
+    limit: 15,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
+
   let code: string;
   let type: "discount" | "university";
 

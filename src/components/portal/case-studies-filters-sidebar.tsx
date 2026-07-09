@@ -41,8 +41,23 @@ function parseUrlState(params: URLSearchParams): SelectionState {
   return { industries, disciplines };
 }
 
+// Only the fields the sidebar filters + card renders actually need. Projecting
+// to this on the server keeps the full corpus's heavy frontmatter (stats,
+// sections, hero images) out of the client/RSC payload.
+export type CaseStudyCard = Pick<
+  CaseStudyMeta,
+  | "slug"
+  | "title"
+  | "excerpt"
+  | "coverImage"
+  | "discipline"
+  | "tags"
+  | "industries"
+  | "disciplines"
+>;
+
 function studyMatches(
-  s: CaseStudyMeta,
+  s: CaseStudyCard,
   selection: SelectionState
 ): boolean {
   if (selection.industries.size > 0) {
@@ -57,7 +72,7 @@ function studyMatches(
 }
 
 interface Props {
-  studies: CaseStudyMeta[];
+  studies: CaseStudyCard[];
 }
 
 export default function CaseStudiesFiltersSidebar({ studies }: Props) {

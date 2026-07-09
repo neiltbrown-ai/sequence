@@ -13,7 +13,10 @@ import {
 
 const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
 
-export const dynamic = "force-dynamic";
+// ISR: regenerate at most hourly instead of SSR-ing every request. The featured
+// case-study shuffle (Math.random in getFeaturedCaseStudies) runs at generation
+// time, so the highlighted cases rotate each hour rather than on every load.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "The Library",

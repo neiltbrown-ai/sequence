@@ -79,7 +79,8 @@ const ARCHETYPE_PREVIEWS: ArchetypePreview[] = [
   },
 ];
 
-export const dynamic = "force-dynamic";
+// Static page — renders hardcoded preview data + testimonials (file read). No
+// per-request data, so let it prerender rather than SSR on every visit.
 
 export const metadata: Metadata = {
   title: "The Platform",

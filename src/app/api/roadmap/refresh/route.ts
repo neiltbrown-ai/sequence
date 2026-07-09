@@ -2,6 +2,8 @@ import { NextResponse, after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createStrategicPlan } from "@/lib/roadmap/generate-plan";
+import { enforceRateLimit } from "@/lib/rate-limit";
+import { hasActiveSubscription } from "@/lib/subscription";
 
 // 300 (Vercel Pro): the roadmap generator now uses adaptive thinking, which
 // adds wall-clock latency to the after()-scheduled generation.
@@ -38,6 +40,20 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  if (!(await hasActiveSubscription(user.id, "full_access"))) {
+    return NextResponse.json(
+      { error: "Active subscription required" },
+      { status: 402 }
+    );
+  }
+
+  const limited = await enforceRateLimit({
+    key: `ai:roadmap-refresh:${user.id}`,
+    limit: 15,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
 
   // triggerReason is read but not yet persisted; reserved for future
   // audit / telemetry.

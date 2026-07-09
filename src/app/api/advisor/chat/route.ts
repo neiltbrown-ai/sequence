@@ -10,6 +10,8 @@ import {
   linkAssessmentToConversation,
 } from "@/lib/advisor/message-store";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { enforceRateLimit } from "@/lib/rate-limit";
+import { hasActiveSubscription } from "@/lib/subscription";
 import type { AdvisorMode, ConversationContextSnapshot } from "@/types/advisor";
 
 export const maxDuration = 120;
@@ -97,7 +99,27 @@ export async function POST(request: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  if (!(await hasActiveSubscription(user.id, "full_access"))) {
+    return new Response("Active subscription required", { status: 402 });
+  }
+
+  // Chat is chattier than the one-shot AI routes; each message can fan out to
+  // up to 10 tool-loop model calls, so still cap it per user.
+  const limited = await enforceRateLimit({
+    key: `ai:advisor-chat:${user.id}`,
+    limit: 40,
+    windowSeconds: 3600,
+  });
+  if (limited) return limited;
+
   const body = await request.json();
+
+  // Reject oversized payloads outright (a genuine chat history stays well under
+  // this; a multi-MB blob is abuse and would balloon input tokens).
+  if (JSON.stringify(body ?? {}).length > 500_000) {
+    return new Response("Payload too large", { status: 413 });
+  }
+
   const { messages: rawMessages, data: metadata } = body as {
     messages: UIMessage[];
     data?: {
@@ -163,11 +185,11 @@ export async function POST(request: Request) {
     },
     onFinish: async ({ messages }) => {
       try {
-        await saveConversationMessages(conversationId!, messages, mode, snapshot);
+        await saveConversationMessages(conversationId!, user.id, messages, mode, snapshot);
 
         // If an assessment was created during this conversation, link it
         if (snapshot?.assessmentId) {
-          await linkAssessmentToConversation(conversationId!, snapshot.assessmentId);
+          await linkAssessmentToConversation(conversationId!, user.id, snapshot.assessmentId);
         }
 
         // Auto-generate title from first user message on new conversations
@@ -180,7 +202,11 @@ export async function POST(request: Request) {
               title = title.substring(0, 60).replace(/\s\S*$/, "...");
             }
             const admin = createAdminClient();
-            await admin.from("ai_conversations").update({ title }).eq("id", conversationId!);
+            await admin
+              .from("ai_conversations")
+              .update({ title })
+              .eq("id", conversationId!)
+              .eq("user_id", user.id);
           }
         }
       } catch (err) {
