@@ -90,13 +90,11 @@ export default function AdvisorState1({
   // Check for ?prompt= query param (e.g. from roadmap AI Assist links)
   const queryPrompt = searchParams.get("prompt");
 
-  // ?path=map|deal|explore — deep-link straight into a guided flow (used by
-  // the advisor itself when explore mode hands off to the guided session).
+  // ?path=deal|explore — deep-link straight into a chat flow. ("map" is not
+  // a chat flow: the assessment lives in the standalone wizard at /assessment.)
   const rawQueryPath = searchParams.get("path");
   const queryPath: InitialPath | null =
-    rawQueryPath === "map" || rawQueryPath === "deal" || rawQueryPath === "explore"
-      ? rawQueryPath
-      : null;
+    rawQueryPath === "deal" || rawQueryPath === "explore" ? rawQueryPath : null;
 
   // View state: "list" shows conversation history, "chat" shows the active chat
   const hasConversations = serverConversations && serverConversations.length > 0;
@@ -123,11 +121,15 @@ export default function AdvisorState1({
 
   const handlePathSelect = useCallback(
     (path: InitialPath) => {
-      // All three paths run in-chat now: "map" renders the guided Where You
-      // Stand session (session frame + mirror beat), "deal" opens the
-      // pre-contract Deal Check mode. The old redirects to /assessment and
-      // /evaluate bypassed both new experiences — those routes remain
-      // reachable directly for the standalone wizard and the scored verdict.
+      // Neil's call (2026-07-10): the assessment lives in the standalone
+      // wizard — the chat-embedded assessment flow is the UX he built and
+      // abandoned before the wizard existed, and grafting a form into the
+      // chat column proved it again. Deal Check stays in-chat (conversation-
+      // native, pre-contract positioning).
+      if (path === "map") {
+        router.push("/assessment");
+        return;
+      }
       setSelectedPath(path);
       setChatKey((k) => k + 1);
       setConversationId(undefined);

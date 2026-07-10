@@ -8493,3 +8493,42 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 @media (max-width: 700px) {
   .session-frame-row { flex-wrap: wrap; gap: 8px 14px; }
 }
+
+/* ── Multi-select card: check sits inline-left of the label, not above it ── */
+.adv-comp-card-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.adv-comp-card-row .adv-comp-card-check {
+  width: 12px;
+  flex-shrink: 0;
+}
+.adv-comp-card-row + .adv-comp-card-desc {
+  padding-left: 20px;
+}
+
+/* ── Wizard progress meta: time-remaining + autosave promise ── */
+.asmt-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+}
+.asmt-progress-time {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+.asmt-progress-autosave {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--light);
+}

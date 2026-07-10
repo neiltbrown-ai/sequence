@@ -338,7 +338,7 @@ const Q2_CREATIVE_MODE: AssessmentQuestion = {
   options: [
     { value: 'maker', label: 'I make things and sell/license them directly', description: 'Artist selling work, musician releasing music, author publishing books' },
     { value: 'service', label: 'I make things for clients or employers', description: 'Freelancer, agency, in-house creative' },
-    { value: 'hybrid', label: 'I do both', description: 'Personal creative work + client/commercial work' },
+    { value: 'hybrid', label: 'A mix — my own work plus client work', description: 'Personal creative work + client/commercial work' },
     { value: 'performer', label: 'I perform, direct, or lead creative projects', description: 'Actor, director, choreographer, creative director' },
     { value: 'builder', label: "I'm building something", description: 'A studio, label, brand, or creative business' },
     { value: 'transition', label: "I'm between things or figuring it out" },

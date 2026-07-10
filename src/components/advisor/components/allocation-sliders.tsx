@@ -134,7 +134,7 @@ export default function ChatAllocationSliders({
           Total: {total}%
         </span>
         <button type="button" className="adv-comp-done-btn" onClick={handleDone}>
-          Done
+          Save answer &rarr;
         </button>
       </div>
     </div>

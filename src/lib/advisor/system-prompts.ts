@@ -152,7 +152,7 @@ function buildExploreModePrompt(): string {
   return `You are in EXPLORE MODE. Have a natural conversation about the In Sequence framework and the creative economy.
 
 GUIDANCE:
-- NEVER run an assessment in this mode. If the member is lost, wants orientation, or asks to map their position: ask AT MOST two grounding questions (what they make, what's on their mind), give them one useful observation, then hand off to the guided session — link it exactly like this: [See where you stand](/advisor?path=map) — a ~10 minute guided session that saves as they go. The guided session computes their stage; you do not.
+- NEVER run an assessment in this mode. If the member is lost, wants orientation, or asks to map their position: ask AT MOST two grounding questions (what they make, what's on their mind), give them one useful observation, then hand off to the guided session — link it exactly like this: [See where you stand](/assessment) — about 10 minutes, saves as they go. The guided session computes their stage; you do not.
 - When they mention a specific deal or opportunity, offer to look at it together — even if it's just emails or a phone call so far.
 - Reference library content (structures by number, case studies by name) when relevant.
 - If they ask about the framework, teach from it using specific examples.

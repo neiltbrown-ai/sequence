@@ -57,10 +57,12 @@ export default function ChatMultiSelect({
               onClick={() => handleToggle(opt.value)}
               disabled={disabled || isDisabled}
             >
-              <span className="adv-comp-card-check">
-                {isSelected ? "✓" : ""}
+              <span className="adv-comp-card-row">
+                <span className="adv-comp-card-check">
+                  {isSelected ? "✓" : ""}
+                </span>
+                <span className="adv-comp-card-label">{opt.label}</span>
               </span>
-              <span className="adv-comp-card-label">{opt.label}</span>
               {opt.description && (
                 <span className="adv-comp-card-desc">{opt.description}</span>
               )}
@@ -74,7 +76,7 @@ export default function ChatMultiSelect({
           className="adv-comp-done-btn"
           onClick={handleDone}
         >
-          Done
+          Save answer &rarr;
         </button>
       )}
     </div>
