@@ -728,6 +728,78 @@ export const updateDealStage = tool({
   },
 });
 
+// ── Portfolio Tools (simplification strategy §2.3 + §6, Phase 3b) ────
+//
+// The advisor writes to the same asset store the Portfolio page's form
+// does ("dual input") — the form and the conversation are two inputs
+// over one asset_inventory_items table.
+
+/** Maximum portfolio items per member — mirrors MAX_ITEMS in inventory-page.tsx */
+const MAX_PORTFOLIO_ITEMS = 25;
+
+/** Add an asset to the member's Portfolio mid-conversation */
+export const addAsset = tool({
+  description:
+    "Add something the member owns to their Portfolio when they mention it in conversation and confirm they want it tracked — a catalog, a course, a newsletter, a template system, an audience. Always confirm before adding ('Want me to add that to your Portfolio?'). Use the plain asset types: ip = things they've made, judgment = paid for their taste, relationship = who trusts them, process = how they work, audience = who follows them, brand = their name.",
+  inputSchema: z.object({
+    userId: z.string().describe("The member's user ID (from MEMBER PROFILE)"),
+    assetName: z
+      .string()
+      .describe('Short name for the asset, e.g. "Back catalog (40 tracks)" or "Weekly newsletter"'),
+    assetType: z.enum(["ip", "judgment", "relationship", "process", "audience", "brand"]),
+    ownershipStatus: z
+      .enum(["own_fully", "own_partially", "work_for_hire", "unclear", "no_ownership"])
+      .default("own_fully")
+      .describe("How much of it they own. Default own_fully unless they said otherwise"),
+    licensingPotential: z
+      .enum(["high", "medium", "low", "already_licensed", "not_applicable"])
+      .default("medium")
+      .describe("How licensable it is. Default medium unless the conversation says otherwise"),
+    description: z.string().optional().describe("One line of context about the asset"),
+    notes: z.string().optional().describe("Anything else worth remembering, in the member's words"),
+  }),
+  execute: async ({ userId, assetName, assetType, ownershipStatus, licensingPotential, description, notes }) => {
+    const admin = createAdminClient();
+
+    // Enforce the same 25-item cap the Portfolio form uses.
+    const { count, error: countError } = await admin
+      .from("asset_inventory_items")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId);
+
+    if (countError) {
+      return { success: false, error: countError.message };
+    }
+    const itemCount = count ?? 0;
+    if (itemCount >= MAX_PORTFOLIO_ITEMS) {
+      return {
+        success: false,
+        atCap: true,
+        message: `The Portfolio holds up to ${MAX_PORTFOLIO_ITEMS} assets and the member is at the limit. Nothing was added — suggest they visit /inventory to consolidate or remove an item first.`,
+      };
+    }
+
+    const { error } = await admin.from("asset_inventory_items").insert({
+      user_id: userId,
+      asset_name: assetName.trim(),
+      asset_type: assetType,
+      description: description?.trim() || null,
+      ownership_status: ownershipStatus,
+      licensing_potential: licensingPotential,
+      notes: notes?.trim() || null,
+      sort_order: itemCount,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return {
+      success: true,
+      message: `"${assetName}" was added to the member's Portfolio. It now shows on their Portfolio page.`,
+    };
+  },
+});
+
 // ── Tool Registry ──────────────────────────────────────────────────
 
 /**
@@ -761,6 +833,7 @@ export function getAdvisorTools() {
     update_member_file: updateMemberFile,
     start_deal_check: startDealCheck,
     update_deal_stage: updateDealStage,
+    add_asset: addAsset,
 
     // Display-only visual tools (server-executed, UI renders from input args)
     show_bar_chart: showBarChart,

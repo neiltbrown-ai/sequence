@@ -669,6 +669,7 @@ function isServerTool(toolName: string): boolean {
     "update_member_file",
     "start_deal_check",
     "update_deal_stage",
+    "add_asset",
   ];
   return serverTools.includes(toolName);
 }
@@ -687,6 +688,7 @@ function getToolLoadingLabel(toolName: string): string {
     update_member_file: "Updating your file...",
     start_deal_check: "Opening the deal file...",
     update_deal_stage: "Updating the deal...",
+    add_asset: "Adding to your Portfolio...",
   };
   return labels[toolName] || "Processing...";
 }
