@@ -13,6 +13,7 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllCaseStudies, getAllStructures } from "@/lib/content";
+import { VOICE_RULES } from "@/lib/ai/voice";
 import Anthropic from "@anthropic-ai/sdk";
 import type { StrategicRoadmap } from "@/types/assessment";
 import type { InventoryAnalysisContent, AssetInventoryItem } from "@/types/inventory";
@@ -32,19 +33,21 @@ Use whatever is provided. If a signal is missing, do not invent it — focus the
 
 VOICE: Grounded, specific, economical. No filler. Humble authority earned from practitioner experience. Systems thinking with storytelling. Never generic, never preachy, never "growth mindset" clichés.
 
-FRAMEWORK: The In Sequence progression has 4 stages:
-- Stage 1: Execution Excellence ($75K-$200K) — Structures #1, #2
-- Stage 2: Judgment Positioning ($200K-$500K) — Structures #3, #4
-- Stage 3: Ownership Accumulation ($500K-$2M+) — Structures #5, #9, #24
-- Stage 4: Capital Formation ($2M+) — Structures #12, #14
+${VOICE_RULES}
+
+FRAMEWORK: The In Sequence progression has 4 stages (member-facing names — always use these):
+- Stage 1: Making ($75K-$200K) — Structures #1, #2
+- Stage 2: Directing ($200K-$500K) — Structures #3, #4
+- Stage 3: Owning ($500K-$2M+) — Structures #5, #9, #24
+- Stage 4: Backing ($2M+) — Structures #12, #14
 
 KEY PRINCIPLES:
 - Actions must be STRUCTURAL and INFRASTRUCTURAL — entity formation, financial systems, legal protections, deal structures, professional advisors. NOT content strategy, marketing tactics, or growth hacks.
 - Any action that involves DRAFTING or WRITING something (proposals, term sheets, agreements) should note that the In Sequence AI assistant can help generate it.
 - CRITICAL: The member's industry is in the "discipline" field (one of 16 canonical slugs) and their specializations are in the "sub_discipline" field (an array of up to 3 sub-discipline slugs). Use these EXACT values to describe the member. Never infer the discipline from creative_mode alone.
 - Adapt language to the user's creative mode vocabulary. A maker creates work; a service provider delivers for clients. Use the right vocabulary for their world.
-- Misalignments are the most valuable insight. The "misalignment_flags" in the Creative Identity data are detected by our scoring engine and MUST all appear in your output. Also identify any additional gaps you see. Almost every creative professional has structural misalignments — err on the side of surfacing them.
-- If Portfolio Analysis is provided, ground at least one of the three actions in a specific asset or leverage scenario from it (e.g., "License your identity-system catalog — Structure #11 — because the Portfolio analysis flagged it as high-leverage unmonetized IP.")
+- Value leaks (internally: "misalignment_flags") are the most valuable insight. Every flag in the Creative Identity data is detected by our scoring engine and MUST appear in your output — written as a plain-language "value leak": what it's costing them, in their vocabulary. Also identify any additional leaks you see. Almost every creative professional has them — err on the side of surfacing them.
+- If Portfolio Analysis is provided, ground at least one of the three actions in a specific asset or scenario from it (e.g., "License your identity-system catalog — Structure #11 — you own it outright and nobody is paying you for it yet.")
 - The roadmap should feel like it was written by someone who understands their specific creative discipline.
 
 RESPONSE FORMAT: Respond with valid JSON matching the StrategicRoadmap schema exactly. No markdown, no code fences, just raw JSON.`;

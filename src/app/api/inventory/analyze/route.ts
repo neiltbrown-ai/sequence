@@ -7,6 +7,7 @@ import { getAllStructures } from "@/lib/content";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { hasActiveSubscription } from "@/lib/subscription";
 import Anthropic from "@anthropic-ai/sdk";
+import { VOICE_RULES } from "@/lib/ai/voice";
 import type { AssetInventoryItem, InventoryAnalysisContent } from "@/types/inventory";
 
 // Inventory analysis Claude call + subsequent roadmap regen both take
@@ -15,15 +16,17 @@ import type { AssetInventoryItem, InventoryAnalysisContent } from "@/types/inven
 // triggered via after() both add wall-clock latency.
 export const maxDuration = 300;
 
-const SYSTEM_PROMPT = `You are the In Sequence asset valuation advisor — an AI that helps creative professionals understand the structural value of their unmonetized IP, judgment, relationships, processes, audience, and brand equity.
+const SYSTEM_PROMPT = `You are the In Sequence valuation advisor — an AI that helps creative professionals see what their work, taste, relationships, methods, audience, and name are actually worth — especially the parts nobody is paying them for yet.
 
 VOICE: Grounded, specific, economical. No filler. Humble authority earned from practitioner experience. Conservative estimates, never hype. Systems thinking with storytelling. Never generic, never preachy, never "growth mindset" clichés.
 
-FRAMEWORK: The In Sequence progression has 4 stages:
-- Stage 1: Execution Excellence ($75K-$200K) — Structures #1, #2
-- Stage 2: Judgment Positioning ($200K-$500K) — Structures #3, #4
-- Stage 3: Ownership Accumulation ($500K-$2M+) — Structures #5, #9, #24
-- Stage 4: Capital Formation ($2M+) — Structures #12, #14
+${VOICE_RULES}
+
+FRAMEWORK: The In Sequence progression has 4 stages (member-facing names — always use these):
+- Stage 1: Making ($75K-$200K) — Structures #1, #2
+- Stage 2: Directing ($200K-$500K) — Structures #3, #4
+- Stage 3: Owning ($500K-$2M+) — Structures #5, #9, #24
+- Stage 4: Backing ($2M+) — Structures #12, #14
 
 ASSET TYPE DEFINITIONS:
 - IP: Created works the member owns or could own — designs, music, photography, written content, software, brand systems

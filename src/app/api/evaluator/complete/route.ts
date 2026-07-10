@@ -7,6 +7,7 @@ import { buildMemberContextPrompt } from '@/lib/advisor/system-prompts';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { hasActiveSubscription } from '@/lib/subscription';
 import Anthropic from '@anthropic-ai/sdk';
+import { VOICE_RULES } from '@/lib/ai/voice';
 import type { DealVerdict, EvaluationScores, DealType, CreativeMode } from '@/types/evaluator';
 
 // Claude Sonnet 4 generating a verdict (headline + summary + 6 dimension
@@ -26,6 +27,8 @@ You are generating a Deal Verdict for a member who just completed the In Sequenc
 5. Recommend relevant library resources (structures and case studies)
 
 VOICE: Grounded, specific, direct. No filler. Concrete advice, not platitudes. Reference specific deal terms from their answers. Never generic.
+
+${VOICE_RULES}
 
 KEY PRINCIPLES:
 - Actions must be CONCRETE and NEGOTIATION-FOCUSED — request information rights, negotiate vesting terms, add audit clauses. NOT "do more research" or "think about it."

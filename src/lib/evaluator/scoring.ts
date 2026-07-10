@@ -400,13 +400,13 @@ export function generateMisalignmentWarnings(
         if (dealType === 'service') {
           warnings.push({
             flag,
-            warning: 'Your assessment showed you have unmonetized IP and a pattern of work-for-hire agreements. This deal transfers all rights. Have you considered licensing specific usage instead of assigning ownership?',
+            warning: 'You own work that nobody is paying you for yet, and your contracts have a pattern of handing everything over (the term is work-for-hire). This deal transfers all rights too. Have you considered licensing specific usage instead of signing ownership away?',
             structureRef: { id: 27, slug: 'non-exclusive-licensing' },
           });
         } else if (dealType === 'licensing') {
           warnings.push({
             flag,
-            warning: 'Your assessment flagged unmonetized IP. This licensing deal directly addresses that gap. Make sure the terms are well-structured — particularly reversion, exclusivity scope, and territory limitations.',
+            warning: "You own work that isn't earning yet — this licensing deal directly addresses that. Make sure the terms hold up: when rights come back to you (reversion), how exclusive it is, and where it applies (territory).",
           });
         }
         break;
@@ -427,7 +427,7 @@ export function generateMisalignmentWarnings(
         if (dealType === 'equity') {
           warnings.push({
             flag,
-            warning: "Your assessment flagged that your entity structure doesn't match your income level. Before signing equity agreements, ensure your business entity can hold equity efficiently.",
+            warning: "You're earning more than your paperwork can handle. Before signing equity agreements, make sure your company is set up to hold shares efficiently — one conversation with your accountant.",
           });
         }
         break;
