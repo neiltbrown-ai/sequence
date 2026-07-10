@@ -36,7 +36,7 @@ export default function RoadmapDiagrams({
       {hasEntity && (
         <div className="rdmp-diagram-panel">
           <div className="rdmp-diagram-panel-head">
-            <span className="rdmp-diagram-label">Entity Structure</span>
+            <span className="rdmp-diagram-label">How Your Business Is Set Up</span>
             <span className="rdmp-diagram-sub">Current → Target</span>
           </div>
           <div className="rdmp-diagram-panel-body">
@@ -47,7 +47,7 @@ export default function RoadmapDiagrams({
       {hasFlywheel && (
         <div className="rdmp-diagram-panel">
           <div className="rdmp-diagram-panel-head">
-            <span className="rdmp-diagram-label">Value Flywheel</span>
+            <span className="rdmp-diagram-label">How It Compounds</span>
             <span className="rdmp-diagram-sub">How value compounds</span>
           </div>
           <div className="rdmp-diagram-panel-body">
@@ -71,8 +71,8 @@ function TabsLayout({
   const hasFlywheel = !!flywheel && flywheel.nodes.length > 0;
 
   const tabs: { label: string; key: string }[] = [];
-  if (hasEntity) tabs.push({ label: "Entity Structure", key: "entity" });
-  if (hasFlywheel) tabs.push({ label: "Value Flywheel", key: "flywheel" });
+  if (hasEntity) tabs.push({ label: "How Your Business Is Set Up", key: "entity" });
+  if (hasFlywheel) tabs.push({ label: "How It Compounds", key: "flywheel" });
 
   const [activeTab, setActiveTab] = useState(0);
   if (tabs.length === 0) return null;

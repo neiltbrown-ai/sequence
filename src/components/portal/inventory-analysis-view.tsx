@@ -46,7 +46,7 @@ export default function AnalysisView({
             <span className={`inv-summary-metric-value inv-leverage--${content.summary.leverage_score}`}>
               {content.summary.leverage_score.charAt(0).toUpperCase() + content.summary.leverage_score.slice(1)}
             </span>
-            <span className="inv-summary-metric-label">Leverage Score</span>
+            <span className="inv-summary-metric-label">Negotiating Power</span>
           </div>
         </div>
         <div className="inv-summary-insight">
@@ -161,7 +161,7 @@ export default function AnalysisView({
       {/* Leverage Scenarios — tabbed layout */}
       {content.scenarios.length > 0 && (
         <div className="inv-section">
-          <div className="set-section-title">Leverage Scenarios</div>
+          <div className="set-section-title">Paths Forward</div>
           <PortalTabs
             tabs={content.scenarios.map((s) => s.scenario_name)}
             summaryBar={

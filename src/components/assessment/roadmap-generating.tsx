@@ -18,7 +18,7 @@ const STAGES: ProgressStage[] = [
   { at: 12, label: "Mapping your position in the creative economy" },
   { at: 28, label: "Identifying structural misalignments" },
   { at: 48, label: "Building your personalized action playbook" },
-  { at: 68, label: "Designing entity structure and value flywheel" },
+  { at: 68, label: "Mapping how your business is set up and how it compounds" },
   { at: 85, label: "Finalizing your strategic roadmap" },
 ];
 

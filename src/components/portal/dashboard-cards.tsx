@@ -109,7 +109,7 @@ export function DashValuationCard({
             <span className={`dash-leverage-val ${leverageClass}`}>
               {leverageLabel}
             </span>
-            <div className="dash-val-range-sub">Leverage score</div>
+            <div className="dash-val-range-sub">Negotiating power</div>
             {rationale && (
               <p className="dash-leverage-rationale">{rationale}</p>
             )}
@@ -120,7 +120,7 @@ export function DashValuationCard({
           <>
             <div className="dash-card-rule" aria-hidden />
             <div className="dash-drivers">
-              <span className="dash-card-lbl">Drivers of Value</span>
+              <span className="dash-card-lbl">What’s Working For You</span>
               <ul className="dash-drivers-list">
                 {drivers.map((d) => {
                   const pct = Math.max(0, Math.min(100, d.pct));

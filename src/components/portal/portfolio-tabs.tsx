@@ -238,10 +238,12 @@ export default function PortfolioTabs({
                   <line x1="12" y1="22.08" x2="12" y2="12" />
                 </svg>
                 <h3 style={{ fontFamily: "var(--sans)", fontSize: "18px", fontWeight: 500, marginBottom: "8px" }}>
-                  Audit your unmonetized assets
+                  See what you&apos;re sitting on
                 </h3>
                 <p style={{ fontFamily: "var(--sans)", fontSize: "14px", color: "var(--mid)", lineHeight: 1.6, maxWidth: "400px", margin: "0 auto 24px" }}>
-                  Add your creative assets first, then run an AI analysis to get valuations, leverage scenarios, and a strategic roadmap.
+                  List the things you&apos;ve made, the people who trust you, the
+                  name you&apos;ve built — then run the analysis to see what it&apos;s
+                  worth and what it could pay you.
                 </p>
                 <button
                   type="button"

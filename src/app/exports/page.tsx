@@ -45,7 +45,7 @@ export default function ExportsPage() {
 
               {/* Visual: Value flywheel diagram */}
               <div style={{ background: "var(--white)", border: "1px solid var(--border)", borderRadius: "8px", padding: "24px" }}>
-                <div style={{ fontFamily: "var(--mono)", fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--light)", marginBottom: "16px" }}>YOUR PHOTOGRAPHY VALUE FLYWHEEL</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--light)", marginBottom: "16px" }}>HOW YOUR PHOTOGRAPHY COMPOUNDS</div>
                 <div style={{ display: "flex", justifyContent: "center", gap: "32px", alignItems: "center", padding: "16px 0" }}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ width: "100px", height: "100px", borderRadius: "50%", border: "1.5px solid var(--black)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontFamily: "var(--sans)", fontWeight: 500 }}>Commercial<br/>Clients</div>
@@ -266,7 +266,7 @@ export default function ExportsPage() {
               </div>
               <div>
                 <div style={{ fontFamily: "var(--sans)", fontSize: "36px", fontWeight: 200, letterSpacing: "-0.03em", color: "var(--black)" }}>Medium</div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--light)" }}>LEVERAGE SCORE</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--light)" }}>NEGOTIATING POWER</div>
               </div>
               <div>
                 <div style={{ fontFamily: "var(--sans)", fontSize: "36px", fontWeight: 200, letterSpacing: "-0.03em", color: "var(--black)" }}>5</div>

@@ -13,10 +13,10 @@ import type {
 } from "@/types/assessment";
 
 const STAGE_NAMES: Record<StageNumber, string> = {
-  1: "Execution Excellence",
-  2: "Judgment Positioning",
-  3: "Ownership Accumulation",
-  4: "Capital Formation",
+  1: "Making",
+  2: "Directing",
+  3: "Owning",
+  4: "Backing",
 };
 
 const STAGE_RANGES: Record<StageNumber, string> = {
@@ -484,7 +484,7 @@ export default function RoadmapPDF({
                 <Text style={s.stageRange}>{STAGE_RANGES[stage]}</Text>
               </View>
               <View>
-                <Text style={s.label}>Transition Readiness</Text>
+                <Text style={s.label}>Ready for the next stage?</Text>
                 <Text style={s.readinessValue}>
                   {roadmap.position.transition_readiness}
                 </Text>
@@ -537,7 +537,7 @@ export default function RoadmapPDF({
           <View style={s.section}>
             <View style={s.misalignmentCard}>
               <View style={s.misalignmentHeader}>
-                <Text style={s.misalignmentSectionTitle}>Structural Misalignments</Text>
+                <Text style={s.misalignmentSectionTitle}>Value Leaks</Text>
                 <Text style={s.misalignmentCount}>
                   ▲ {misalignments.length}
                 </Text>

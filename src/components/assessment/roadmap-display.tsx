@@ -14,10 +14,10 @@ import RoadmapAdvisoryCTA from "./roadmap-advisory-cta";
 import { resolveStructureSlug } from "@/lib/structure-slugs";
 
 const STAGE_NAMES: Record<number, string> = {
-  1: "Execution Excellence",
-  2: "Judgment Positioning",
-  3: "Ownership Accumulation",
-  4: "Capital Formation",
+  1: "Making",
+  2: "Directing",
+  3: "Owning",
+  4: "Backing",
 };
 
 const STAGE_RANGES: Record<number, string> = {
@@ -176,7 +176,7 @@ export default function RoadmapDisplay({
       : [];
 
   async function handleRegenerate() {
-    if (!confirm("Regenerate your roadmap? This will create a new plan with fresh actions, entity structure, and value flywheel — your previous plan is archived but no longer the active view.")) return;
+    if (!confirm("Refresh your roadmap? This builds a fresh plan — new moves, an updated map of how your business is set up and how it compounds. Your previous plan is archived but no longer the active view.")) return;
     setRegenerating(true);
     try {
       // /api/roadmap/refresh creates a NEW strategic_plan row (rather than
@@ -267,7 +267,7 @@ export default function RoadmapDisplay({
               <span className="rdmp-position-range">{STAGE_RANGES[stage]}</span>
             </div>
             <div className="rdmp-position-readiness">
-              <span className="str-stat-lbl">Transition Readiness</span>
+              <span className="str-stat-lbl">Ready for the next stage?</span>
               <span className={`str-stat-val rdmp-readiness--${roadmap.position.transition_readiness}`}>
                 {roadmap.position.transition_readiness}
               </span>
@@ -362,7 +362,7 @@ export default function RoadmapDisplay({
         <div className="rdmp-section rv vis rv-d1">
           <div className="rdmp-misalignments-card">
             <div className="rdmp-misalignments-header">
-              <span className="rdmp-misalignments-title">Structural Misalignments</span>
+              <span className="rdmp-misalignments-title">Value Leaks</span>
               <span className="rdmp-misalignments-count-triangle">
                 <svg viewBox="0 0 22 20" fill="none" width={22} height={20}>
                   <path d="M11 1L21 19H1L11 1Z" stroke="#ef4444" strokeWidth={1} fill="none" />

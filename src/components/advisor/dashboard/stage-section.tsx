@@ -22,7 +22,7 @@ export default function StageSection({
       <p className="adv-dash-stage-desc">{stageDescription}</p>
       <div className="adv-dash-stage-meta">
         <span className="adv-dash-readiness">
-          Transition readiness: <strong>{transitionReadiness}</strong>
+          Ready for the next stage: <strong>{transitionReadiness}</strong>
         </span>
         <a href="/assessment" className="adv-dash-retake">
           Retake assessment

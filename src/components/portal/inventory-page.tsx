@@ -10,6 +10,7 @@ import type {
 } from "@/types/inventory";
 import {
   ASSET_TYPE_LABELS,
+  ASSET_TYPE_DESCRIPTIONS,
   OWNERSHIP_LABELS,
   LICENSING_LABELS,
 } from "@/types/inventory";
@@ -19,14 +20,14 @@ import { toTitleCase } from "@/lib/utils";
 
 const MAX_ITEMS = 25;
 
-const ASSET_TYPES: { value: AssetType; label: string }[] = [
-  { value: "ip", label: "IP" },
-  { value: "judgment", label: "Judgment" },
-  { value: "relationship", label: "Relationship" },
-  { value: "process", label: "Process" },
-  { value: "audience", label: "Audience" },
-  { value: "brand", label: "Brand" },
-];
+// Labels + descriptions come from the canonical maps in @/types/inventory —
+// don't redefine the vocabulary locally.
+const ASSET_TYPES: { value: AssetType; label: string; description: string }[] =
+  (Object.keys(ASSET_TYPE_LABELS) as AssetType[]).map((value) => ({
+    value,
+    label: ASSET_TYPE_LABELS[value],
+    description: ASSET_TYPE_DESCRIPTIONS[value],
+  }));
 
 const OWNERSHIP_OPTIONS: { value: OwnershipStatus; label: string }[] = [
   { value: "own_fully", label: "Own Fully" },
@@ -237,9 +238,9 @@ export default function InventoryPage({
             Dashboard
           </a>
         </div>
-        <h1 className="page-title">Asset Inventory</h1>
+        <h1 className="page-title">Portfolio</h1>
         <p className="page-desc">
-          Audit your unmonetized IP and judgment. See what you&apos;re sitting on.
+          What you own, what it&apos;s worth, and what it could pay you.
         </p>
       </div>
 
@@ -287,11 +288,24 @@ export default function InventoryPage({
                   type="button"
                   className={`set-option-pill${form.asset_type === opt.value ? " selected" : ""}`}
                   onClick={() => setForm({ ...form, asset_type: opt.value })}
+                  title={opt.description}
                 >
                   {opt.label}
                 </button>
               ))}
             </div>
+            {/* A pill with no description is a quiz you can fail — always show
+                the selected type's plain-English description. */}
+            <p
+              style={{
+                fontFamily: "var(--sans)",
+                fontSize: "12.5px",
+                color: "var(--light)",
+                margin: "8px 0 0",
+              }}
+            >
+              {ASSET_TYPE_DESCRIPTIONS[form.asset_type]}
+            </p>
           </div>
 
           <div className="set-field" style={{ maxWidth: "none" }}>

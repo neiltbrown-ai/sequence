@@ -1,10 +1,10 @@
 import type { StageNumber } from "@/types/assessment";
 
 const STAGE_NAMES: Record<StageNumber, string> = {
-  1: "Execution Excellence",
-  2: "Judgment Positioning",
-  3: "Ownership Accumulation",
-  4: "Capital Formation",
+  1: "Making",
+  2: "Directing",
+  3: "Owning",
+  4: "Backing",
 };
 
 const STAGE_RANGES: Record<StageNumber, string> = {

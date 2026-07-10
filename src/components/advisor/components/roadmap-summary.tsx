@@ -28,10 +28,10 @@ interface RoadmapSummaryProps {
 }
 
 const STAGE_NAMES: Record<number, string> = {
-  1: "Execution Excellence",
-  2: "Judgment Positioning",
-  3: "Ownership Accumulation",
-  4: "Capital Formation",
+  1: "Making",
+  2: "Directing",
+  3: "Owning",
+  4: "Backing",
 };
 
 export default function ChatRoadmapSummary({
@@ -54,7 +54,7 @@ export default function ChatRoadmapSummary({
         </h3>
         <p className="adv-comp-roadmap-stage-desc">{stageDescription}</p>
         <span className="adv-comp-roadmap-readiness">
-          Transition readiness: {transitionReadiness}
+          Ready for the next stage: {transitionReadiness}
         </span>
       </div>
 

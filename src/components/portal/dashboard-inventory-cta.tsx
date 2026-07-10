@@ -29,7 +29,7 @@ export default function DashboardInventoryCTA({
             </div>
             <div className="inv-summary-metric">
               <span className="inv-summary-metric-value">{summary.leverage_score.charAt(0).toUpperCase() + summary.leverage_score.slice(1)}</span>
-              <span className="inv-summary-metric-label">Leverage Score</span>
+              <span className="inv-summary-metric-label">Negotiating Power</span>
             </div>
           </div>
           <div className="dash-tool-actions">
@@ -103,11 +103,11 @@ export default function DashboardInventoryCTA({
           </svg>
         </div>
         <div className="dash-asmt-cta-content">
-          <h2 className="dash-asmt-cta-title">Audit your unmonetized assets</h2>
+          <h2 className="dash-asmt-cta-title">See what you&apos;re sitting on</h2>
           <p className="dash-asmt-cta-desc">
-            Catalog what you&apos;ve created, judgment you&apos;ve given away, and
-            relationships you haven&apos;t priced. Get AI-powered valuations and a
-            leverage roadmap.
+            List the things you&apos;ve made, the people who trust you, the name
+            you&apos;ve built. Most members find something worth money in the
+            first ten minutes.
           </p>
           <div className="dash-asmt-cta-footer">
             <span className="dash-asmt-cta-time">

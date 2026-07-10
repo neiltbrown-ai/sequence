@@ -120,12 +120,26 @@ export type RoadmapAction = {
 /* ── Display labels ───────────────────────────────────────────────── */
 
 export const ASSET_TYPE_LABELS: Record<AssetType, string> = {
-  ip: "IP",
-  judgment: "Judgment",
-  relationship: "Relationship",
-  process: "Process",
-  audience: "Audience",
-  brand: "Brand",
+  ip: "Your work",
+  judgment: "Your taste",
+  relationship: "Who trusts you",
+  process: "How you work",
+  audience: "Who follows you",
+  brand: "Your name",
+};
+
+/**
+ * One-line descriptions — shown alongside the labels wherever a member picks
+ * a type ("a pill with no description is a quiz you can fail").
+ * Plain first, precise second: the technical term rides in parentheses.
+ */
+export const ASSET_TYPE_DESCRIPTIONS: Record<AssetType, string> = {
+  ip: "Songs, designs, photos, scripts — things you've made (the technical term is IP)",
+  judgment: "People pay you to decide, not just to do",
+  relationship: "Clients, collectors, collaborators who come back",
+  process: "Methods, templates, systems others could license",
+  audience: "Your list, subscribers, followers, fans",
+  brand: "What it means when your name is attached to something",
 };
 
 export const OWNERSHIP_LABELS: Record<OwnershipStatus, string> = {
