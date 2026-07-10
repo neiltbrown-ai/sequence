@@ -298,7 +298,7 @@ function SignupForm() {
           <>
             <h1 className="auth-title">Create your account</h1>
             <p className="auth-subtitle">
-              Start building leverage in your creative career.
+              Start keeping what you make.
             </p>
 
             <SocialButtons />

@@ -21,18 +21,18 @@ const siteUrl = getAppUrl();
 
 export const metadata: Metadata = {
   title: {
-    default: "Sequence — Own Your Future",
+    default: "Sequence — Own What You Create",
     template: "%s — Sequence",
   },
   description:
-    "Transform your portfolio of projects into a portfolio of assets.",
+    "Turn a portfolio of projects into a portfolio of assets.",
   metadataBase: new URL(siteUrl),
   openGraph: {
     type: "website",
     siteName: "Sequence",
-    title: "Sequence — Own Your Future",
+    title: "Sequence — Own What You Create",
     description:
-      "Transform your portfolio of projects into a portfolio of assets.",
+      "Turn a portfolio of projects into a portfolio of assets.",
     images: [
       {
         url: "/images/og-default.jpg",
@@ -44,9 +44,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sequence — Own Your Future",
+    title: "Sequence — Own What You Create",
     description:
-      "Transform your portfolio of projects into a portfolio of assets.",
+      "Turn a portfolio of projects into a portfolio of assets.",
     images: ["/images/og-default.jpg"],
   },
 };

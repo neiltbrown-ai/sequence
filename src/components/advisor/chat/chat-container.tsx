@@ -61,12 +61,41 @@ function getWelcomeMessage(hasAssessment: boolean): UIMessage {
       {
         type: "text",
         text: hasAssessment
-          ? "Welcome back. I\u2019m your strategic advisor \u2014 built on research into how the creative economy is restructuring and what creative professionals can do about it.\n\nWhat would you like to work on?"
-          : "Welcome to In Sequence. I\u2019m your strategic advisor \u2014 built on research into how the creative economy is restructuring and what creative professionals can do about it.\n\nChoose a path above, or type a question to get started.",
+          ? "Welcome back. I\u2019m your advisor \u2014 I know your file, and I\u2019ve mapped how 100+ working creatives structured their way to owning what they make.\n\nPick a starting point below, or ask me anything."
+          : "Welcome to In Sequence. I\u2019m your advisor \u2014 built on how 100+ working creatives structured their way to owning what they make.\n\nPick a starting point below, or ask me anything.",
       },
     ],
   };
 }
+
+// First-run suggested prompts \u2014 a fresh conversation must never open on a bare
+// text box (the old welcome said "Choose a path above" with no paths rendered).
+const SUGGESTED_PROMPTS: Array<{
+  label: string;
+  text: string;
+  mode: AdvisorMode;
+}> = [
+  {
+    label: "Someone sent me a deal \u2014 help me read it",
+    text: "I have a deal to evaluate",
+    mode: "evaluator",
+  },
+  {
+    label: "What should someone like me actually own?",
+    text: "What should someone like me actually own?",
+    mode: "explore",
+  },
+  {
+    label: "Show me someone like me who did this well",
+    text: "Show me a case study of someone like me who built real ownership \u2014 and what I can copy from it",
+    mode: "explore",
+  },
+  {
+    label: "I honestly don\u2019t know where to start",
+    text: "I honestly don\u2019t know where to start",
+    mode: "explore",
+  },
+];
 
 export default function ChatContainer({
   conversationId: initialConversationId,
@@ -279,6 +308,24 @@ function AIChatFlow({
     [sendMessage]
   );
 
+  // Suggested-prompt chips: shown only on a fresh conversation (welcome message
+  // alone, nothing sent yet, no path/prompt auto-send pending).
+  const showSuggestions =
+    messages.length === 1 &&
+    messages[0]?.id === "welcome" &&
+    !isLoading &&
+    !initialPath &&
+    !initialPrompt;
+
+  const handleSuggestion = useCallback(
+    (prompt: (typeof SUGGESTED_PROMPTS)[number]) => {
+      modeRef.current = prompt.mode;
+      setMode(prompt.mode);
+      sendMessage({ text: prompt.text });
+    },
+    [sendMessage]
+  );
+
   return (
     <div className={`adv-chat-container ${compact ? "compact" : ""} ${className}`}>
       {/* Progress bar (assessment/evaluator mode) */}
@@ -300,6 +347,22 @@ function AIChatFlow({
             onToolResult={(toolCallId, toolName, result) => handleToolResult(toolCallId, toolName, result)}
           />
         ))}
+
+        {/* First-run suggested prompts */}
+        {showSuggestions && (
+          <div className="adv-suggest-row">
+            {SUGGESTED_PROMPTS.map((prompt) => (
+              <button
+                key={prompt.label}
+                type="button"
+                className="adv-suggest-chip"
+                onClick={() => handleSuggestion(prompt)}
+              >
+                {prompt.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Loading indicator */}
         {isLoading && (
@@ -346,7 +409,7 @@ function AIChatFlow({
         placeholder={
           mode === "assessment"
             ? "Or type your answer..."
-            : "Type a message..."
+            : "Ask anything — e.g. “They offered me 2% — is that good?”"
         }
       />
     </div>

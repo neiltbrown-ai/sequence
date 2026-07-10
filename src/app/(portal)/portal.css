@@ -8159,3 +8159,37 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
 }
 [data-theme="dark"] .csf-drawer-apply { background: #e8e6e3; color: #1a1a1a; }
 [data-theme="dark"] .csf-facet-count-active { background: #e8e6e3; color: #1a1a1a; }
+
+/* ── Advisor first-run suggested prompts ─────────────────────────────
+   Rendered under the welcome message on fresh conversations only.
+   Aligned to message content (28px avatar + 12px gap). */
+.adv-suggest-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 2px 0 10px 40px;
+  max-width: 720px;
+}
+.adv-suggest-chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 9px 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s, border-color 0.15s;
+}
+.adv-suggest-chip:hover {
+  color: var(--black);
+  border-color: var(--black);
+}
+@media (max-width: 640px) {
+  .adv-suggest-row {
+    padding-left: 0;
+  }
+}
