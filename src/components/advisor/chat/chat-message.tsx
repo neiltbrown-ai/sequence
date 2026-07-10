@@ -666,6 +666,7 @@ function isServerTool(toolName: string): boolean {
     "get_structure_detail",
     "mark_action_status",
     "get_adaptive_questions",
+    "update_member_file",
   ];
   return serverTools.includes(toolName);
 }
@@ -681,6 +682,7 @@ function getToolLoadingLabel(toolName: string): string {
     get_structure_detail: "Loading structure...",
     mark_action_status: "Updating...",
     get_adaptive_questions: "Loading questions...",
+    update_member_file: "Updating your file...",
   };
   return labels[toolName] || "Processing...";
 }

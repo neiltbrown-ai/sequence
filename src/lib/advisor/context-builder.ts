@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentAssessment } from "@/lib/assessment/current-assessment";
+import { getMemberFile } from "@/lib/member-file/facts";
 import type {
   MemberContext,
   AssessmentContext,
@@ -16,11 +17,13 @@ export async function buildMemberContext(
 ): Promise<MemberContext> {
   const admin = createAdminClient();
 
-  // Load profile, current assessment, subscription, and partial in parallel.
-  // The assessment goes through the shared getCurrentAssessment() helper so the
-  // advisor grounds itself in the SAME row Settings and the Roadmap consider
-  // current (prefer-latest-completed) — not whichever row is newest by created_at.
-  const [profileResult, assessment, subscriptionResult, partialResult] =
+  // Load profile, current assessment, subscription, partial, and member file
+  // in parallel. The assessment goes through the shared getCurrentAssessment()
+  // helper so the advisor grounds itself in the SAME row Settings and the
+  // Roadmap consider current (prefer-latest-completed) — not whichever row is
+  // newest by created_at. The member file read degrades to [] if the
+  // member_file_facts table doesn't exist yet (migration 00021 lands later).
+  const [profileResult, assessment, subscriptionResult, partialResult, memberFile] =
     await Promise.all([
       admin
         .from("profiles")
@@ -45,6 +48,7 @@ export async function buildMemberContext(
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle(),
+      getMemberFile(userId, admin),
     ]);
 
   const profile = profileResult.data;
@@ -141,6 +145,7 @@ export async function buildMemberContext(
     subscription: subscription
       ? { status: subscription.status, plan: subscription.plan }
       : null,
+    memberFile,
   };
 }
 

@@ -1,6 +1,7 @@
 import type { MemberContext, AdvisorMode, ConversationContextSnapshot } from "@/types/advisor";
 import { VOICE_RULES } from "@/lib/ai/voice";
 import { CASE_STUDY_SLUGS } from "@/lib/case-study-slugs";
+import { formatFactsForPrompt } from "@/lib/member-file/facts";
 
 // ── Base Prompt (always active) ──────────────────────────────────
 
@@ -122,6 +123,13 @@ export function buildMemberContextPrompt(ctx: MemberContext): string {
     for (const action of ctx.actions) {
       parts.push(`  Action ${action.action_order} (${action.action_type}): ${action.status}${action.completed_at ? " ✓" : ""}`);
     }
+  }
+
+  // Member File (durable facts — §2.2)
+  if (ctx.memberFile && ctx.memberFile.length > 0) {
+    parts.push("\nMEMBER FILE (durable facts):");
+    parts.push(formatFactsForPrompt(ctx.memberFile));
+    parts.push("Prefer these facts over re-asking. If the member contradicts a fact, update it with update_member_file.");
   }
 
   return parts.join("\n");

@@ -6,6 +6,7 @@ import { matchArchetype } from "@/lib/assessment/archetype-matching";
 import { getArchetypeById } from "@/lib/assessment/archetypes";
 import { selectAdaptiveQuestions } from "@/lib/assessment/question-selection";
 import { getAllStructures, getAllCaseStudies } from "@/lib/content";
+import { upsertFacts } from "@/lib/member-file/facts";
 import type { AssessmentAnswers, CreativeMode, MisalignmentFlag, StageNumber } from "@/types/assessment";
 
 // ── Client-Rendered Tools (no execute — rendered in chat, user provides result) ────
@@ -567,6 +568,44 @@ export const getAdaptiveQuestions = tool({
   },
 });
 
+/** Save durable facts to the member file (simplification strategy §2.2) */
+export const updateMemberFile = tool({
+  description:
+    "Save durable facts about the member to their file whenever they state or you infer something lasting about their situation — discipline, what they own, how their business is set up, income shape, risk appetite, commitments they make. Fire this opportunistically during any conversation, not just when asked. Use 'stated' when they said it; 'inferred' (with provenance quoting their words) when you deduced it. Never store secrets, health, or anything not about their creative business.",
+  inputSchema: z.object({
+    userId: z.string().describe("The member's user ID (from MEMBER PROFILE)"),
+    facts: z
+      .array(
+        z.object({
+          fact: z
+            .string()
+            .describe("snake_case fact key, e.g. 'discipline', 'owns_masters', 'entity_setup'"),
+          value: z.union([z.string(), z.number(), z.boolean()]),
+          source: z.enum(["stated", "inferred"]),
+          confidence: z.enum(["low", "medium", "high"]),
+          provenance: z
+            .string()
+            .optional()
+            .describe("For inferred facts: quote the member's words, e.g. 'inferred from \"label owns everything\"'"),
+        })
+      )
+      .min(1),
+  }),
+  execute: async ({ userId, facts }) => {
+    const admin = createAdminClient();
+    const result = await upsertFacts(userId, facts, admin);
+
+    if (!result.ok) {
+      return { success: false, error: result.error };
+    }
+    return {
+      success: true,
+      saved: facts.length,
+      message: `Saved ${facts.length} fact${facts.length === 1 ? "" : "s"} to the member file.`,
+    };
+  },
+});
+
 // ── Tool Registry ──────────────────────────────────────────────────
 
 /**
@@ -597,6 +636,7 @@ export function getAdvisorTools() {
     get_structure_detail: getStructureDetail,
     mark_action_status: markActionStatus,
     get_adaptive_questions: getAdaptiveQuestions,
+    update_member_file: updateMemberFile,
 
     // Display-only visual tools (server-executed, UI renders from input args)
     show_bar_chart: showBarChart,

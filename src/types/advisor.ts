@@ -77,6 +77,8 @@ export type PartialAssessment = {
 
 // ── Member Context (built for system prompt) ──────────────────────────
 
+import type { MemberFileFact } from "@/lib/member-file/facts";
+
 export type MemberContext = {
   profile: {
     id: string;
@@ -94,6 +96,8 @@ export type MemberContext = {
   actions: ActionContext[];
   partialAssessment: Partial<PartialAssessment> | null;
   subscription: { status: string; plan: string } | null;
+  /** Member File durable facts (§2.2). Optional + empty until migration 00021 is applied. */
+  memberFile?: MemberFileFact[];
 };
 
 export type AssessmentContext = {
