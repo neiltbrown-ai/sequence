@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllStructures } from "@/lib/content";
 import PageHeader from "@/components/portal/page-header";
+import LibraryTabs from "@/components/portal/library-tabs";
 import StructuresFilters from "@/components/portal/structures-filters";
 
 export default function PortalStructuresPage() {
@@ -18,6 +19,7 @@ export default function PortalStructuresPage() {
         backHref="/dashboard"
         backLabel="Dashboard"
       />
+      <LibraryTabs active="structures" />
       <StructuresFilters
         models={models}
         compensation={compensation}

@@ -14,6 +14,7 @@ import DashboardInventoryCTA from "@/components/portal/dashboard-inventory-cta";
 import DashboardEvalCTA from "@/components/portal/dashboard-eval-cta";
 import DashboardProfileCta from "@/components/portal/dashboard-profile-cta";
 import DashboardRoadmapCTA from "@/components/portal/dashboard-roadmap-cta";
+import HomePlanCard, { type HomePlanAction } from "@/components/portal/home-plan-card";
 import DashboardNewContent from "@/components/portal/dashboard-new-content";
 import DashboardSavedPreview from "@/components/portal/dashboard-saved-preview";
 import DashboardLibraryStats from "@/components/portal/dashboard-library-stats";
@@ -28,7 +29,7 @@ import { createClient } from "@/lib/supabase/server";
 import { planTier } from "@/lib/plans";
 import { getRecommendations, getEditorialPicks, getNewContent, getCaseStudyRecommendationsForUser } from "@/lib/recommendations";
 import type { SignalColor } from "@/types/evaluator";
-import type { PlanSource, StageNumber, StrategicRoadmap } from "@/types/assessment";
+import type { ActionStatus, PlanSource, StageNumber, StrategicRoadmap } from "@/types/assessment";
 import type { InventoryAnalysisContent } from "@/types/inventory";
 
 const stripBr = (s: string) => s.replace(/<br\s*\/?>/gi, " ");
@@ -73,6 +74,11 @@ async function FullAccessDashboard() {
   let roadmapStageName: string | null = null;
   let roadmapSource: PlanSource | null = null;
   let roadmapActionsCompleted = 0;
+
+  // "Your next move" card data — the published plan's 3 actions + their
+  // live statuses. Null when no published plan exists (CTA flow instead).
+  let homePlanActions: HomePlanAction[] | null = null;
+  const homePlanStatuses: Partial<Record<1 | 2 | 3, ActionStatus>> = {};
 
   if (user) {
     const profileResult = await supabase
@@ -122,22 +128,15 @@ async function FullAccessDashboard() {
     inventoryCount = invCountResult.count || 0;
     assetsForRecs = (invAssetsResult.data as { asset_type: string }[]) || [];
 
-    // Load the user's latest strategic plan so the dashboard CTA can
-    // reflect whether a roadmap exists + its current state.
-    const [planResult, actionsResult] = await Promise.all([
-      supabase
-        .from("strategic_plans")
-        .select("id, status, source, plan_content")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from("assessment_actions")
-        .select("status")
-        .eq("user_id", user.id)
-        .eq("status", "completed"),
-    ]);
+    // Load the user's latest strategic plan so the dashboard can render
+    // the "Your next move" card (published plans) or the roadmap CTA.
+    const planResult = await supabase
+      .from("strategic_plans")
+      .select("id, status, source, plan_content")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
     if (planResult.data) {
       roadmapStatus = planResult.data.status as typeof roadmapStatus;
       roadmapSource = (planResult.data.source as PlanSource) || null;
@@ -146,8 +145,29 @@ async function FullAccessDashboard() {
         roadmapStage = (content.position.detected_stage as StageNumber) || null;
         roadmapStageName = content.position.stage_name || null;
       }
+
+      // Actions are scoped to THIS plan (same as /roadmap) — completion
+      // state from older regenerated plans doesn't carry forward.
+      const { data: planActions } = await supabase
+        .from("assessment_actions")
+        .select("action_order, status")
+        .eq("user_id", user.id)
+        .eq("plan_id", planResult.data.id);
+      for (const a of planActions ?? []) {
+        homePlanStatuses[a.action_order as 1 | 2 | 3] = a.status as ActionStatus;
+      }
+      roadmapActionsCompleted = (planActions ?? []).filter(
+        (a) => a.status === "completed"
+      ).length;
+
+      if (roadmapStatus === "published" && content?.actions?.length) {
+        homePlanActions = content.actions.map((a) => ({
+          order: a.order,
+          title: a.title,
+          why: a.why,
+        }));
+      }
     }
-    roadmapActionsCompleted = actionsResult.data?.length || 0;
 
     if (inventoryCount > 0) {
       const { data: analysis } = await supabase
@@ -213,7 +233,14 @@ async function FullAccessDashboard() {
 
   return (
     <>
-      <DashboardWelcome />
+      <DashboardWelcome hasPlan={!!homePlanActions} />
+
+      {/* Your next move — the plan's resting state on Home (Phase 1d,
+          strategy §11 "One move above the fold"). Renders when a published
+          plan exists; the full three-move depth stays on /roadmap. */}
+      {homePlanActions && (
+        <HomePlanCard actions={homePlanActions} statuses={homePlanStatuses} />
+      )}
 
       {/* Portfolio State — three cards surfacing actual data the member
           has generated. Promoted to the top of the dashboard so active
@@ -266,14 +293,19 @@ async function FullAccessDashboard() {
         <DashboardInventoryCTA assetCount={inventoryCount} summary={inventorySummary} />
       )}
 
-      <DashboardRoadmapCTA
-        status={roadmapStatus}
-        stage={roadmapStage}
-        stageName={roadmapStageName}
-        source={roadmapSource}
-        actionsCompleted={roadmapActionsCompleted}
-        actionsTotal={3}
-      />
+      {/* Roadmap CTA — only while there's no published plan (generating /
+          pending review / none). Once the plan is live, the "Your next
+          move" card above replaces it. */}
+      {!homePlanActions && (
+        <DashboardRoadmapCTA
+          status={roadmapStatus}
+          stage={roadmapStage}
+          stageName={roadmapStageName}
+          source={roadmapSource}
+          actionsCompleted={roadmapActionsCompleted}
+          actionsTotal={3}
+        />
+      )}
 
       {/* Deal Evaluator CTA — only when no deals evaluated yet. Once any
           deal exists, the Portfolio State Deals Evaluated card subsumes

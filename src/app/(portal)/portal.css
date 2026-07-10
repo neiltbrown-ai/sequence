@@ -8193,3 +8193,170 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
     padding-left: 0;
   }
 }
+
+/* ============================================
+   PHASE 1D — LIBRARY TABS + HOME "YOUR NEXT MOVE"
+   ============================================ */
+
+/* ── Library tabs ──
+   The Library nav item collapsed to one row; these tabs (Case Studies ·
+   Structures · Articles · Saved) are the way between the four list pages.
+   Reuses the .set-tabs / .set-tab pattern; this modifier only tunes
+   spacing under the PageHeader. */
+.lib-tabs {
+  margin: 4px 0 28px;
+}
+.lib-tabs .set-tab {
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ── Home plan card ("Your next move") ──
+   Recomposition of the dash-card shell: kicker row (mono label + move
+   count), headline, one-line why, inline dot+text status, one primary
+   pill + mono advisor text-link. Right column: compact vertical 3-step
+   move map. All colors via theme vars — no always-dark surface here. */
+.home-plan-card {
+  display: grid;
+  grid-template-columns: 1fr 170px;
+  gap: 36px;
+  cursor: default;
+}
+/* The card body isn't a link — keep the resting border on hover
+   (dash-card:hover darkens, which would read as clickable). */
+.home-plan-card:hover { border-color: var(--border); }
+
+.home-plan-kicker {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.home-plan-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--light);
+  white-space: nowrap;
+}
+
+.home-plan-title {
+  font-family: var(--sans);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  color: var(--black);
+  margin: 0 0 10px;
+}
+.home-plan-why {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--mid);
+  max-width: 52ch;
+  margin: 0 0 16px;
+}
+
+/* Inline status — dot + mono text, never a boxed chip */
+.home-plan-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 22px;
+}
+.home-plan-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.home-plan-dot--active { background: var(--accent, #b8860b); }
+.home-plan-dot--next { background: var(--light); }
+.home-plan-dot--done { background: var(--black); }
+
+.home-plan-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.home-plan-advisor-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  text-decoration: none;
+  transition: color .15s;
+}
+.home-plan-advisor-link:hover { color: var(--black); }
+
+/* ── Move map (right column) ── */
+.home-plan-map {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 2px;
+  border-left: 1px solid var(--border);
+  padding-left: 20px;
+  align-self: start;
+}
+.home-plan-map-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 0;
+}
+.home-plan-map-node {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.home-plan-map-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--mid);
+}
+/* done — filled node + strikethrough label */
+.home-plan-map-row--done .home-plan-map-node { background: var(--black); }
+.home-plan-map-row--done .home-plan-map-label {
+  text-decoration: line-through;
+  color: var(--light);
+}
+/* current — ring node + bold label */
+.home-plan-map-row--current .home-plan-map-node {
+  background: transparent;
+  border: 1.5px solid var(--black);
+}
+.home-plan-map-row--current .home-plan-map-label {
+  color: var(--black);
+  font-weight: 600;
+}
+/* next — empty node + faint label */
+.home-plan-map-row--next .home-plan-map-node {
+  background: transparent;
+  border: 1px solid var(--light);
+}
+.home-plan-map-row--next .home-plan-map-label { color: var(--light); }
+
+@media (max-width: 700px) {
+  .home-plan-card {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .home-plan-map {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding-left: 0;
+    padding-top: 16px;
+  }
+}

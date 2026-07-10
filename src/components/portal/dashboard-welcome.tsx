@@ -4,28 +4,27 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
-const MESSAGES = [
-  "Your personalized library — structures, case studies, and frameworks tailored to where you are.",
-  "New structures and case studies added weekly. The library keeps growing with you.",
-  "The creative economy is restructuring. You're building the leverage to navigate it.",
-  "Every deal structure here started with a practitioner. Real terms, real outcomes.",
-  "Ownership compounds. The structures you learn today shape the deals you negotiate tomorrow.",
-];
-
-function getRotatingMessage(): string {
-  // Rotate daily based on day-of-year
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
-  return MESSAGES[dayOfYear % MESSAGES.length];
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Morning";
+  if (hour < 18) return "Afternoon";
+  return "Evening";
 }
 
-export default function DashboardWelcome() {
+interface DashboardWelcomeProps {
+  /** True when the member has an active strategic plan — the sub-line
+      states position plainly instead of pointing at the first step. */
+  hasPlan?: boolean;
+}
+
+export default function DashboardWelcome({ hasPlan = false }: DashboardWelcomeProps) {
   const [firstName, setFirstName] = useState("");
-  const [message, setMessage] = useState("");
+  const [greeting, setGreeting] = useState("");
 
   useEffect(() => {
-    setMessage(getRotatingMessage());
+    // Computed client-side (member's local clock), post-hydration to avoid
+    // a server/client time mismatch.
+    setGreeting(getGreeting());
 
     async function loadName() {
       const supabase = createClient();
@@ -59,7 +58,12 @@ export default function DashboardWelcome() {
   return (
     <div className="welcome rv">
       <div className="welcome-left">
-        <div className="welcome-context">{message}</div>
+        <div className="welcome-name">
+          {greeting ? `${greeting}${firstName ? `, ${firstName}` : ""}.` : " "}
+        </div>
+        <div className="welcome-context">
+          {hasPlan ? "Here's where things stand." : "Here's where to start."}
+        </div>
       </div>
       <div className="welcome-right">
         <Link href="/library/structures" className="welcome-continue">

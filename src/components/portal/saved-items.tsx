@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import FilterBar from "@/components/portal/filter-bar";
 import PageHeader from "@/components/portal/page-header";
+import LibraryTabs from "@/components/portal/library-tabs";
 import SaveButton from "@/components/portal/save-button";
 
 export type SavedItem = {
@@ -96,6 +97,8 @@ export default function SavedItems({ items, recommendations }: SavedItemsProps) 
           backLabel="Dashboard"
         />
 
+        <LibraryTabs active="saved" />
+
         <div className="sav-empty">
           <svg
             className="sav-empty-icon"
@@ -162,6 +165,8 @@ export default function SavedItems({ items, recommendations }: SavedItemsProps) 
         backHref="/dashboard"
         backLabel="Dashboard"
       />
+
+      <LibraryTabs active="saved" />
 
       <FilterBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 

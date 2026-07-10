@@ -1,5 +1,6 @@
 import { getAllCaseStudies } from "@/lib/content";
 import PageHeader from "@/components/portal/page-header";
+import LibraryTabs from "@/components/portal/library-tabs";
 import CaseStudiesFiltersSidebar, {
   type CaseStudyCard,
 } from "@/components/portal/case-studies-filters-sidebar";
@@ -29,6 +30,7 @@ export default function PortalCaseStudiesPage() {
         backHref="/dashboard"
         backLabel="Dashboard"
       />
+      <LibraryTabs active="case-studies" />
       <CaseStudiesFiltersSidebar studies={studies} />
       <div className="page-footer" />
     </>

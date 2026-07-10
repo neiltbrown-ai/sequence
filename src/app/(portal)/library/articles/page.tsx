@@ -1,5 +1,6 @@
 import { getAllArticles } from "@/lib/content";
 import PageHeader from "@/components/portal/page-header";
+import LibraryTabs from "@/components/portal/library-tabs";
 import ArticlesFilters from "@/components/portal/articles-filters";
 
 export default function PortalArticlesPage() {
@@ -17,6 +18,7 @@ export default function PortalArticlesPage() {
         backHref="/dashboard"
         backLabel="Dashboard"
       />
+      <LibraryTabs active="articles" />
       <ArticlesFilters articles={articles} categories={categories} />
       <div className="page-footer" />
     </>

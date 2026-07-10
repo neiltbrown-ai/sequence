@@ -5,16 +5,10 @@ import { usePathname } from "next/navigation";
 import { usePortalShell } from "./portal-shell-context";
 import {
   DashboardIcon,
-  StructuresIcon,
   CaseStudiesIcon,
-  ArticlesIcon,
-  SavedIcon,
   SettingsIcon,
   AiAdvisorIcon,
-  RoadmapIcon,
   InventoryIcon,
-  EvaluateIcon,
-  CommunityIcon,
 } from "./icons";
 import type { AccessTier } from "@/lib/plans";
 
@@ -27,26 +21,15 @@ interface NavItem {
   requiredTier?: AccessTier;
 }
 
-// Nav flow reads as the member's journey:
-//   Dashboard → Portfolio (input) → Roadmap (output) → Evaluate (ongoing
-//   input that refreshes Roadmap) → Advisor (conversational layer over all)
+// Phase 1d nav collapse: five items instead of eleven (strategy §2.1).
+//   Home → Portfolio (what you own) → Advisor → Library (+ Settings below).
+// /roadmap, /evaluate, and /saved stay alive — they're reached from Home
+// and the Library tabs, not the nav.
 const TOP_ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: <DashboardIcon /> },
+  { href: "/dashboard", label: "Home", icon: <DashboardIcon /> },
   { href: "/inventory", label: "Portfolio", icon: <InventoryIcon />, requiredTier: "full_access" },
-  { href: "/roadmap", label: "Roadmap", icon: <RoadmapIcon />, requiredTier: "full_access" },
-  { href: "/evaluate", label: "Evaluate", icon: <EvaluateIcon />, requiredTier: "full_access" },
   { href: "/advisor", label: "Advisor", icon: <AiAdvisorIcon />, requiredTier: "full_access" },
-];
-
-const MIDDLE_ITEMS: NavItem[] = [
-  { href: "/saved", label: "Saved", icon: <SavedIcon />, requiredTier: "library" },
-  { href: "#", label: "Community", icon: <CommunityIcon />, disabled: true },
-];
-
-const LIBRARY_ITEMS: NavItem[] = [
-  { href: "/library/articles", label: "Articles", icon: <ArticlesIcon />, requiredTier: "library" },
-  { href: "/library/case-studies", label: "Case Studies", icon: <CaseStudiesIcon />, requiredTier: "library" },
-  { href: "/library/structures", label: "Structures", icon: <StructuresIcon />, requiredTier: "library" },
+  { href: "/library/case-studies", label: "Library", icon: <CaseStudiesIcon />, requiredTier: "library" },
 ];
 
 const BOTTOM_ITEMS: NavItem[] = [
@@ -81,6 +64,9 @@ export default function PortalSidebar() {
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
+    // Library covers every library section plus Saved (reached via its tabs)
+    if (href === "/library/case-studies")
+      return pathname.startsWith("/library") || pathname.startsWith("/saved");
     return pathname.startsWith(href);
   };
 
@@ -147,23 +133,9 @@ export default function PortalSidebar() {
           </button>
         </div>
 
-        {/* Top: Dashboard + Tools */}
+        {/* Top: Home · Portfolio · Advisor · Library */}
         <div className="sb-section">
           {TOP_ITEMS.map(renderNavItem)}
-        </div>
-
-        <div className="sb-divider" />
-
-        {/* Middle: Saved + Community */}
-        <div className="sb-section">
-          {MIDDLE_ITEMS.map(renderNavItem)}
-        </div>
-
-        <div className="sb-divider" />
-
-        {/* Library */}
-        <div className="sb-section">
-          {LIBRARY_ITEMS.map(renderNavItem)}
         </div>
 
         {/* Bottom */}
