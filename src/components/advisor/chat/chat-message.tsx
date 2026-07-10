@@ -467,9 +467,25 @@ function renderClientTool(
   args: Record<string, unknown>,
   onResult: (result: unknown) => void
 ) {
+  // The interactive components don't render their own questionText — in the
+  // AI-driven flow the question must be shown here or the member sees options
+  // with no question above them. (The assessment state-machine flow renders
+  // the question as its own message, so this header only exists in this path.)
+  const questionText =
+    typeof args.questionText === "string" ? args.questionText.trim() : "";
+  const questionHeader = questionText ? (
+    <p className="adv-chat-question-text">{questionText}</p>
+  ) : null;
+  const withQuestion = (component: React.ReactNode) => (
+    <>
+      {questionHeader}
+      {component}
+    </>
+  );
+
   switch (toolName) {
     case "show_option_cards":
-      return (
+      return withQuestion(
         <ChatOptionCards
           questionId={args.questionId as string}
           questionText={args.questionText as string}
@@ -479,7 +495,7 @@ function renderClientTool(
       );
 
     case "show_multi_select":
-      return (
+      return withQuestion(
         <ChatMultiSelect
           questionId={args.questionId as string}
           questionText={args.questionText as string}
@@ -490,7 +506,7 @@ function renderClientTool(
       );
 
     case "show_ranking":
-      return (
+      return withQuestion(
         <ChatRankingWidget
           questionId={args.questionId as string}
           questionText={args.questionText as string}
@@ -500,7 +516,7 @@ function renderClientTool(
       );
 
     case "show_allocation_sliders":
-      return (
+      return withQuestion(
         <ChatAllocationSliders
           questionId={args.questionId as string}
           questionText={args.questionText as string}
@@ -510,7 +526,7 @@ function renderClientTool(
       );
 
     case "show_slider":
-      return (
+      return withQuestion(
         <ChatSliderInput
           questionId={args.questionId as string}
           questionText={args.questionText as string}
@@ -520,7 +536,7 @@ function renderClientTool(
       );
 
     case "show_currency_input":
-      return (
+      return withQuestion(
         <ChatCurrencyInput
           questionId={args.questionId as string}
           questionText={args.questionText as string}
@@ -530,7 +546,7 @@ function renderClientTool(
       );
 
     case "show_free_text":
-      return (
+      return withQuestion(
         <ChatFreeTextInline
           questionId={args.questionId as string}
           questionText={args.questionText as string}

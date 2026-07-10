@@ -90,10 +90,18 @@ export default function AdvisorState1({
   // Check for ?prompt= query param (e.g. from roadmap AI Assist links)
   const queryPrompt = searchParams.get("prompt");
 
+  // ?path=map|deal|explore — deep-link straight into a guided flow (used by
+  // the advisor itself when explore mode hands off to the guided session).
+  const rawQueryPath = searchParams.get("path");
+  const queryPath: InitialPath | null =
+    rawQueryPath === "map" || rawQueryPath === "deal" || rawQueryPath === "explore"
+      ? rawQueryPath
+      : null;
+
   // View state: "list" shows conversation history, "chat" shows the active chat
   const hasConversations = serverConversations && serverConversations.length > 0;
   const [view, setView] = useState<"list" | "chat">(
-    queryPrompt ? "chat" : hasConversations ? "list" : "chat"
+    queryPrompt || queryPath ? "chat" : hasConversations ? "list" : "chat"
   );
 
   // Local conversations state (initialized from server, mutated on rename/delete)
@@ -101,28 +109,25 @@ export default function AdvisorState1({
 
   // Active conversation state
   const [conversationId, setConversationId] = useState(
-    queryPrompt ? undefined : initialConversationId
+    queryPrompt || queryPath ? undefined : initialConversationId
   );
   const [chatMessages, setChatMessages] = useState<UIMessage[] | undefined>(
-    queryPrompt ? undefined : (serverInitialMessages as UIMessage[] | undefined)
+    queryPrompt || queryPath ? undefined : (serverInitialMessages as UIMessage[] | undefined)
   );
   const [chatKey, setChatKey] = useState(0); // Key to force remount ChatContainer
 
-  const [selectedPath, setSelectedPath] = useState<InitialPath | null>(null);
+  const [selectedPath, setSelectedPath] = useState<InitialPath | null>(queryPath);
   const [initialPrompt, setInitialPrompt] = useState<string | null>(queryPrompt);
   const [loadingConvId, setLoadingConvId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const handlePathSelect = useCallback(
     (path: InitialPath) => {
-      if (path === "map") {
-        router.push("/assessment");
-        return;
-      }
-      if (path === "deal") {
-        router.push("/evaluate");
-        return;
-      }
+      // All three paths run in-chat now: "map" renders the guided Where You
+      // Stand session (session frame + mirror beat), "deal" opens the
+      // pre-contract Deal Check mode. The old redirects to /assessment and
+      // /evaluate bypassed both new experiences — those routes remain
+      // reachable directly for the standalone wizard and the scored verdict.
       setSelectedPath(path);
       setChatKey((k) => k + 1);
       setConversationId(undefined);
@@ -199,25 +204,25 @@ export default function AdvisorState1({
     return (
       <div className="adv-state-1">
         <div className="page-header">
-          <h1 className="page-title">AI Advisor</h1>
+          <h1 className="page-title">Advisor</h1>
         </div>
 
         {/* Path cards */}
         <div className="adv-path-cards">
           <button type="button" className="adv-path-card" onClick={() => handlePathSelect("deal")}>
             <span className="adv-path-card-icon"><DealIcon /></span>
-            <h3 className="adv-path-card-title">Evaluate a deal</h3>
-            <p className="adv-path-card-desc">Get clarity on a specific offer or opportunity.</p>
+            <h3 className="adv-path-card-title">Check a deal</h3>
+            <p className="adv-path-card-desc">Even if it&apos;s just emails and a phone call — paste what you have.</p>
           </button>
           <button type="button" className="adv-path-card" onClick={() => handlePathSelect("map")}>
             <span className="adv-path-card-icon"><MapIcon /></span>
-            <h3 className="adv-path-card-title">Map my position</h3>
-            <p className="adv-path-card-desc">Understand where you stand and what to do next.</p>
+            <h3 className="adv-path-card-title">See where you stand</h3>
+            <p className="adv-path-card-desc">A ~10 minute guided session. Saves as you go.</p>
           </button>
           <button type="button" className="adv-path-card" onClick={() => handlePathSelect("explore")}>
             <span className="adv-path-card-icon"><ExploreIcon /></span>
-            <h3 className="adv-path-card-title">Just exploring</h3>
-            <p className="adv-path-card-desc">Browse the framework, ask questions, see what&apos;s possible.</p>
+            <h3 className="adv-path-card-title">Ask anything</h3>
+            <p className="adv-path-card-desc">Or start with: &ldquo;I honestly don&apos;t know where to start.&rdquo;</p>
           </button>
         </div>
 
