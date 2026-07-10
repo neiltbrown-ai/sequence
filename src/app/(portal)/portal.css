@@ -701,6 +701,9 @@ img.lib-card-cover-img {
 .dash-deal-signal--green { background: #3d8b55; }
 .dash-deal-signal--yellow { background: #c89333; }
 .dash-deal-signal--red { background: #b0413e; }
+/* Pre-verdict deals (advisor-created, no scored verdict yet) — neutral
+   dot; the lifecycle stage renders as the mono status instead of a score. */
+.dash-deal-signal--neutral { background: var(--light); }
 .dash-deal-name {
   font-family: var(--sans);
   font-size: 14px;
@@ -724,6 +727,18 @@ img.lib-card-cover-img {
 .dash-deal-score {
   font-family: var(--sans);
   font-size: 13px;
+  color: var(--mid);
+  min-width: 56px;
+  text-align: right;
+}
+/* Lifecycle stage as mono status ("Conversation" / "Offer") — sits in
+   the score's slot for pre-verdict deals. Same register as .dash-deal-type
+   but --mid so it reads as status, not category. */
+.dash-deal-stage {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
   color: var(--mid);
   min-width: 56px;
   text-align: right;

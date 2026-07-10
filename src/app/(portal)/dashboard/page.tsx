@@ -189,14 +189,36 @@ async function FullAccessDashboard() {
 
     // Last 5 individual deals — fuels the new "Deals Evaluated" list
     // card (distinct from the existing aggregated DashboardEvalCTA).
-    const { data: recentDealsData } = await supabase
-      .from("deal_evaluations")
-      .select("id, deal_name, deal_type, overall_signal, overall_score, completed_at")
-      .eq("user_id", user.id)
-      .eq("status", "completed")
-      .order("completed_at", { ascending: false })
-      .limit(5);
-    recentDeals = (recentDealsData ?? []) as RecentDealRow[];
+    //
+    // Two queries, merged: the original scored-verdict query stays
+    // untouched, and a second tolerant query pulls advisor-created
+    // lifecycle deals (strategy §5). The second query enumerates the
+    // 00022 columns, so before that migration is applied it errors —
+    // we coalesce to [] and behavior is exactly pre-Phase-3a. Never
+    // fold the new columns into the first query: a missing column in
+    // an enumerated select fails the whole query.
+    const [{ data: recentDealsData }, { data: advisorDealsData }] = await Promise.all([
+      supabase
+        .from("deal_evaluations")
+        .select("id, deal_name, deal_type, overall_signal, overall_score, completed_at")
+        .eq("user_id", user.id)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false })
+        .limit(5),
+      supabase
+        .from("deal_evaluations")
+        .select("id, deal_name, deal_type, overall_signal, overall_score, completed_at, deal_stage")
+        .eq("user_id", user.id)
+        .eq("source", "advisor")
+        .eq("status", "in_progress")
+        .order("created_at", { ascending: false })
+        .limit(5),
+    ]);
+    // Active pre-verdict deals lead the list, then scored verdicts.
+    recentDeals = ([
+      ...(advisorDealsData ?? []),
+      ...(recentDealsData ?? []),
+    ] as RecentDealRow[]).slice(0, 5);
 
     const evals = evalResult.data ?? [];
     evalCount = evals.length;

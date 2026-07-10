@@ -74,8 +74,15 @@ export default async function EvaluatePage() {
 
   if (!user) redirect('/login');
 
-  // Load assessment context, in-progress evaluation, and completed evaluations
-  const [assessmentContext, existingResult, completedResult] = await Promise.all([
+  // Load assessment context, in-progress evaluation, completed evaluations,
+  // and advisor-created lifecycle deals (strategy §5, Phase 3a).
+  //
+  // The advisor-deals query is a separate tolerant path: it enumerates the
+  // 00022 columns (deal_stage, source), so before that migration is applied
+  // it errors and we coalesce to [] — the page behaves exactly as before.
+  // Never fold the new columns into the completed-evals query: a missing
+  // column in an enumerated select fails the whole query.
+  const [assessmentContext, existingResult, completedResult, advisorResult] = await Promise.all([
     loadAssessmentContext(user.id),
     supabase
       .from('deal_evaluations')
@@ -91,14 +98,27 @@ export default async function EvaluatePage() {
       .eq('user_id', user.id)
       .eq('status', 'completed')
       .order('completed_at', { ascending: false }),
+    supabase
+      .from('deal_evaluations')
+      .select('id, deal_name, deal_type, overall_score, overall_signal, completed_at, scores, deal_stage')
+      .eq('user_id', user.id)
+      .eq('source', 'advisor')
+      .eq('status', 'in_progress')
+      .order('created_at', { ascending: false }),
   ]);
+
+  // Active pre-verdict deals lead the list, then scored verdicts.
+  const completedEvaluations = [
+    ...((advisorResult.data as CompletedEvalSummary[]) ?? []),
+    ...((completedResult.data as CompletedEvalSummary[]) ?? []),
+  ];
 
   return (
     <EvaluatorFlow
       userId={user.id}
       assessmentContext={assessmentContext}
       existingEvaluation={existingResult.data as DealEvaluation | null}
-      completedEvaluations={(completedResult.data as CompletedEvalSummary[]) ?? []}
+      completedEvaluations={completedEvaluations}
     />
   );
 }

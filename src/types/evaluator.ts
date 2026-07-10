@@ -5,6 +5,12 @@ import type { CreativeMode, MisalignmentFlag } from './assessment';
 // ── Core Enums ──────────────────────────────────────────────────
 
 export type DealType = 'service' | 'equity' | 'licensing' | 'partnership' | 'revenue_share' | 'advisory';
+/** Deal lifecycle (strategy §5): a deal is a relationship with a timeline. */
+export type DealStage = 'conversation' | 'offer' | 'draft' | 'signed';
+/** Who opened the deal record: the /evaluate wizard or the advisor's pre-contract Deal Check. */
+export type DealRecordSource = 'wizard' | 'advisor';
+/** One entry in the advisor's per-stage positioning log (deal_evaluations.stage_notes). */
+export type StageNote = { stage: DealStage; at: string; summary: string };
 export type DimensionKey = 'financial' | 'career' | 'partner' | 'structure' | 'risk' | 'legal';
 export type SignalColor = 'green' | 'yellow' | 'red';
 export type EvaluationStatus = 'in_progress' | 'completed' | 'abandoned';
@@ -188,9 +194,17 @@ export type DealEvaluation = {
   started_at: string;
   completed_at: string | null;
   created_at: string;
+  // Deal lifecycle columns (migration 00022) — optional so reads stay
+  // valid before the migration is applied.
+  deal_stage?: DealStage | null;
+  stage_notes?: StageNote[] | null;
+  source?: DealRecordSource | null;
 };
 
-// Lightweight summary for listing completed evaluations
+// Lightweight summary for listing completed evaluations.
+// Pre-verdict advisor-created deals (strategy §5) also flow through this
+// shape: scores/signal null, deal_stage carries the lifecycle position.
+// deal_stage is optional so lists render unchanged before migration 00022.
 export type CompletedEvalSummary = {
   id: string;
   deal_name: string | null;
@@ -199,6 +213,7 @@ export type CompletedEvalSummary = {
   overall_signal: SignalColor | null;
   completed_at: string | null;
   scores: EvaluationScores | null;
+  deal_stage?: DealStage | null;
 };
 
 export type DealVerdictRecord = {

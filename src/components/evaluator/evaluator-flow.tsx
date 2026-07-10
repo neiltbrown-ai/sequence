@@ -490,6 +490,24 @@ const DEAL_TYPE_LABELS: Record<string, string> = {
   advisory: 'Advisory',
 };
 
+// Deal lifecycle labels (strategy §5) — shown on advisor-created deals
+// that don't have a scored verdict yet.
+const DEAL_STAGE_LABELS: Record<string, string> = {
+  conversation: 'Conversation',
+  offer: 'Offer',
+  draft: 'Draft',
+  signed: 'Signed',
+};
+
+/**
+ * A deal record without a verdict yet — advisor-created, pre-terms.
+ * Requires deal_stage to be present (migration 00022) so rows loaded
+ * before the migration keep the current scored-row treatment.
+ */
+function isPreVerdictDeal(ev: CompletedEvalSummary): boolean {
+  return ev.deal_stage != null && ev.overall_score == null && ev.overall_signal == null;
+}
+
 interface EvaluatorFlowProps {
   userId: string;
   assessmentContext: EvalAssessmentContext | null;
@@ -1079,13 +1097,25 @@ export function EvaluatorFlow({
         <div className="eval-list-section rv vis rv-d1">
           <div className="set-section-title">Deal Evaluations</div>
           <div className="inv-list">
-            {completedEvals.map((ev) => (
+            {completedEvals.map((ev) => {
+              // Pre-verdict deals (advisor-created, pre-terms): show the
+              // lifecycle stage instead of a score, and continue the
+              // conversation in /advisor rather than opening a verdict
+              // that doesn't exist.
+              const preVerdict = isPreVerdictDeal(ev);
+              return (
               <div
                 key={ev.id}
                 className="inv-card"
                 style={{ cursor: 'pointer' }}
                 data-cursor="arrow"
-                onClick={() => loadPastVerdict(ev.id)}
+                onClick={() => {
+                  if (preVerdict) {
+                    window.location.href = '/advisor';
+                  } else {
+                    loadPastVerdict(ev.id);
+                  }
+                }}
               >
                 <div className="inv-card-main">
                   <div className="inv-card-left">
@@ -1094,9 +1124,15 @@ export function EvaluatorFlow({
                       {ev.deal_type && (
                         <span className="inv-badge inv-badge--type">{DEAL_TYPE_LABELS[ev.deal_type] ?? ev.deal_type}</span>
                       )}
-                      <span className={`inv-badge eval-badge-signal eval-badge-${ev.overall_signal ?? 'yellow'}`}>
-                        {ev.overall_score?.toFixed(1) ?? '—'} / 10
-                      </span>
+                      {preVerdict ? (
+                        <span className="inv-badge inv-badge--type">
+                          {DEAL_STAGE_LABELS[ev.deal_stage!] ?? ev.deal_stage}
+                        </span>
+                      ) : (
+                        <span className={`inv-badge eval-badge-signal eval-badge-${ev.overall_signal ?? 'yellow'}`}>
+                          {ev.overall_score?.toFixed(1) ?? '—'} / 10
+                        </span>
+                      )}
                       {ev.completed_at && (
                         <span className="inv-badge">
                           {new Date(ev.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -1154,7 +1190,8 @@ export function EvaluatorFlow({
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

@@ -667,6 +667,8 @@ function isServerTool(toolName: string): boolean {
     "mark_action_status",
     "get_adaptive_questions",
     "update_member_file",
+    "start_deal_check",
+    "update_deal_stage",
   ];
   return serverTools.includes(toolName);
 }
@@ -683,6 +685,8 @@ function getToolLoadingLabel(toolName: string): string {
     mark_action_status: "Updating...",
     get_adaptive_questions: "Loading questions...",
     update_member_file: "Updating your file...",
+    start_deal_check: "Opening the deal file...",
+    update_deal_stage: "Updating the deal...",
   };
   return labels[toolName] || "Processing...";
 }

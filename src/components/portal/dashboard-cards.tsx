@@ -223,11 +223,31 @@ export type RecentDealRow = {
   overall_signal: SignalColor | null;
   overall_score: number | null;
   completed_at: string | null;
+  /** Lifecycle stage (migration 00022) — undefined when the column
+      doesn't exist yet; rows then render exactly as before. */
+  deal_stage?: string | null;
 };
 
 type DealsProps = {
   deals: RecentDealRow[];
 };
+
+/** Member-facing labels for the deal lifecycle (strategy §5). */
+const DEAL_STAGE_LABELS: Record<string, string> = {
+  conversation: "Conversation",
+  offer: "Offer",
+  draft: "Draft",
+  signed: "Signed",
+};
+
+/**
+ * A row without a verdict yet — advisor-created, pre-terms (strategy
+ * §5). Requires deal_stage to be present so pre-migration rows (and
+ * anything odd) keep the current scored-row treatment.
+ */
+function isPreVerdictDeal(d: RecentDealRow): boolean {
+  return d.deal_stage != null && d.overall_score == null && d.overall_signal == null;
+}
 
 export function DashDealsEvaluatedCard({ deals }: DealsProps) {
   if (!deals || deals.length === 0) return null;
@@ -241,27 +261,41 @@ export function DashDealsEvaluatedCard({ deals }: DealsProps) {
       </div>
       <Link href="/evaluate" className="dash-card-body-link">
         <ul className="dash-deals-list">
-          {deals.slice(0, 5).map((d) => (
-            <li key={d.id} className="dash-deal-row">
-              <span
-                className={`dash-deal-signal dash-deal-signal--${d.overall_signal ?? "unknown"}`}
-                aria-label={`Signal: ${d.overall_signal ?? "unknown"}`}
-              />
-              <span className="dash-deal-name">
-                {d.deal_name || "Untitled deal"}
-              </span>
-              <span className="dash-deal-meta">
-                {d.deal_type && (
-                  <span className="dash-deal-type">{d.deal_type}</span>
-                )}
-                {d.overall_score != null && (
-                  <span className="dash-deal-score">
-                    {Number(d.overall_score).toFixed(1)}/10
-                  </span>
-                )}
-              </span>
-            </li>
-          ))}
+          {deals.slice(0, 5).map((d) => {
+            // Pre-verdict deals (advisor-created, pre-terms): neutral
+            // dot + stage as the mono status, no score. Scored rows
+            // keep the existing signal/score treatment.
+            const preVerdict = isPreVerdictDeal(d);
+            return (
+              <li key={d.id} className="dash-deal-row">
+                <span
+                  className={`dash-deal-signal dash-deal-signal--${
+                    preVerdict ? "neutral" : d.overall_signal ?? "unknown"
+                  }`}
+                  aria-label={`Signal: ${preVerdict ? "no verdict yet" : d.overall_signal ?? "unknown"}`}
+                />
+                <span className="dash-deal-name">
+                  {d.deal_name || "Untitled deal"}
+                </span>
+                <span className="dash-deal-meta">
+                  {d.deal_type && (
+                    <span className="dash-deal-type">{d.deal_type}</span>
+                  )}
+                  {preVerdict ? (
+                    <span className="dash-deal-stage">
+                      {DEAL_STAGE_LABELS[d.deal_stage!] ?? d.deal_stage}
+                    </span>
+                  ) : (
+                    d.overall_score != null && (
+                      <span className="dash-deal-score">
+                        {Number(d.overall_score).toFixed(1)}/10
+                      </span>
+                    )
+                  )}
+                </span>
+              </li>
+            );
+          })}
         </ul>
         <div className="dash-deals-foot">
           <span>View all deals</span>

@@ -606,6 +606,128 @@ export const updateMemberFile = tool({
   },
 });
 
+// ── Deal Lifecycle Tools (simplification strategy §5, Phase 3a) ────
+//
+// A deal is a relationship with a timeline: conversation → offer →
+// draft → signed. These tools let the advisor open and update the
+// living deal record in deal_evaluations (source 'advisor') long
+// before real terms exist. They degrade gracefully until migration
+// 00022 is applied: a missing-column error returns a soft message and
+// the advisor keeps giving positioning advice regardless.
+
+const DEGRADED_DEAL_TRACKING_MESSAGE =
+  "Deal tracking will be available after the next update — nothing was saved, but continue giving the member positioning advice as normal.";
+
+/** True when the error is caused by the 00022 lifecycle columns not existing yet. */
+function isMissingLifecycleColumn(message: string | undefined): boolean {
+  if (!message) return false;
+  const m = message.toLowerCase();
+  const mentionsColumn = m.includes("column") || m.includes("schema cache");
+  const mentionsNewField =
+    m.includes("deal_stage") || m.includes("stage_notes") || m.includes("source");
+  return mentionsColumn && mentionsNewField;
+}
+
+/** Open a living deal record (pre-contract Deal Check) */
+export const startDealCheck = tool({
+  description:
+    "Open a living deal record when the member brings a specific deal — at ANY stage, including when they've only talked (conversation) or received an offer with no document yet. Call once per deal. The record carries the deal's arc across the weeks it takes to close; use update_deal_stage as it progresses. Creates no scores or verdict — the scored verdict only comes from the /evaluate wizard.",
+  inputSchema: z.object({
+    userId: z.string().describe("The member's user ID (from MEMBER PROFILE)"),
+    dealName: z
+      .string()
+      .describe('Short name for the deal, e.g. "Nike rebrand project" or "Label licensing offer"'),
+    dealType: z.enum(["service", "equity", "licensing", "partnership", "revenue_share", "advisory"]),
+    stage: z
+      .enum(["conversation", "offer", "draft", "signed"])
+      .describe("Where the deal stands on its timeline"),
+    summary: z
+      .string()
+      .describe("One or two plain sentences: where the deal stands and what was discussed"),
+  }),
+  execute: async ({ userId, dealName, dealType, stage, summary }) => {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from("deal_evaluations")
+      .insert({
+        user_id: userId,
+        status: "in_progress",
+        source: "advisor",
+        deal_type: dealType,
+        deal_name: dealName,
+        deal_stage: stage,
+        stage_notes: [{ stage, at: new Date().toISOString(), summary }],
+      })
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      if (isMissingLifecycleColumn(error?.message)) {
+        return { success: false, degraded: true, message: DEGRADED_DEAL_TRACKING_MESSAGE };
+      }
+      return { success: false, error: error?.message || "Failed to create deal record" };
+    }
+    return {
+      success: true,
+      dealId: data.id,
+      message: `Deal file opened for "${dealName}" at the ${stage} stage. It now shows on the member's dashboard and deal list.`,
+    };
+  },
+});
+
+/** Move a deal record along its lifecycle and log what changed */
+export const updateDealStage = tool({
+  description:
+    "Update a tracked deal's lifecycle stage (conversation → offer → draft → signed) and append a short summary of what changed to its notes. Call when the deal moves — a number arrives, a draft lands, they sign — or when a stage gets a meaningful update (same stage is fine).",
+  inputSchema: z.object({
+    userId: z.string().describe("The member's user ID (from MEMBER PROFILE)"),
+    dealId: z.string().describe("The deal ID returned by start_deal_check"),
+    stage: z.enum(["conversation", "offer", "draft", "signed"]),
+    summary: z
+      .string()
+      .describe("One or two plain sentences: what changed and where the deal stands now"),
+  }),
+  execute: async ({ userId, dealId, stage, summary }) => {
+    const admin = createAdminClient();
+
+    // Read the existing log first so the new entry appends, not overwrites.
+    const { data: existing, error: readError } = await admin
+      .from("deal_evaluations")
+      .select("stage_notes")
+      .eq("id", dealId)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (readError) {
+      if (isMissingLifecycleColumn(readError.message)) {
+        return { success: false, degraded: true, message: DEGRADED_DEAL_TRACKING_MESSAGE };
+      }
+      return { success: false, error: readError.message };
+    }
+    if (!existing) {
+      return { success: false, error: "Deal not found for this member" };
+    }
+
+    const notes = Array.isArray(existing.stage_notes) ? existing.stage_notes : [];
+    const { error } = await admin
+      .from("deal_evaluations")
+      .update({
+        deal_stage: stage,
+        stage_notes: [...notes, { stage, at: new Date().toISOString(), summary }],
+      })
+      .eq("id", dealId)
+      .eq("user_id", userId);
+
+    if (error) {
+      if (isMissingLifecycleColumn(error.message)) {
+        return { success: false, degraded: true, message: DEGRADED_DEAL_TRACKING_MESSAGE };
+      }
+      return { success: false, error: error.message };
+    }
+    return { success: true, message: `Deal moved to the ${stage} stage and the note was logged.` };
+  },
+});
+
 // ── Tool Registry ──────────────────────────────────────────────────
 
 /**
@@ -637,6 +759,8 @@ export function getAdvisorTools() {
     mark_action_status: markActionStatus,
     get_adaptive_questions: getAdaptiveQuestions,
     update_member_file: updateMemberFile,
+    start_deal_check: startDealCheck,
+    update_deal_stage: updateDealStage,
 
     // Display-only visual tools (server-executed, UI renders from input args)
     show_bar_chart: showBarChart,
