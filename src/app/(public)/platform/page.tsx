@@ -8,6 +8,7 @@ import { getTestimonials } from "@/lib/content";
 import { ArchetypeSigil } from "@/components/shared/archetype-sigil";
 import { ArchetypeScroller } from "@/components/platform/archetype-scroller";
 import { getArchetypeById } from "@/lib/assessment/archetypes";
+import { STAGE_GLOSSES } from "@/lib/assessment/stage-labels";
 
 // Preview data for the public Platform page. Authoritative member data
 // comes from the Creative Identity flow; these are representative values
@@ -33,7 +34,10 @@ const ARCHETYPE_PREVIEWS: ArchetypePreview[] = [
     stage: 2,
     stageName: "Directing",
     incomeBand: "$200K–$500K",
-    frictionPoints: ["Judgment given away free", "Relationships not converted"],
+    frictionPoints: [
+      "You give away the most valuable thing you do — direction — for free",
+      "Relationships not converted",
+    ],
   },
   {
     id: "maker_without_structure",
@@ -61,21 +65,30 @@ const ARCHETYPE_PREVIEWS: ArchetypePreview[] = [
     stage: 3,
     stageName: "Owning",
     incomeBand: "$500K–$2M+",
-    frictionPoints: ["Income exceeds entity structure", "Judgment given away free"],
+    frictionPoints: [
+      "You're earning more than your paperwork can handle",
+      "You give away the most valuable thing you do — direction — for free",
+    ],
   },
   {
     id: "capital_allocator",
     stage: 4,
     stageName: "Backing",
     incomeBand: "$2M+",
-    frictionPoints: ["Governance fatigue across boards", "Allocation paralysis"],
+    frictionPoints: [
+      "Too many boards, not enough making",
+      "Too many places to put your money, no conviction about which",
+    ],
   },
   {
     id: "creative_principal",
     stage: 4,
     stageName: "Backing",
     incomeBand: "$2M+",
-    frictionPoints: ["Bandwidth fragmented across ventures", "Taste dilution at scale"],
+    frictionPoints: [
+      "Spread across so many projects that none of them compound",
+      "Your name is on more things than you can actually touch",
+    ],
   },
 ];
 
@@ -100,12 +113,12 @@ export default function PlatformPage() {
           <div className="lib-hero-sub-grid">
             <p className="lib-hero-desc rv">
               <strong>
-                Transform your portfolio of projects into a portfolio of assets.
+                Five tools, one question: what do you actually own?
               </strong>{" "}
-              Understand the economic value of your creativity &mdash; value
-              your assets, score any deal, map your progression, and get
-              personalized strategic guidance built on 35 structures and 100+
-              case studies.
+              See what your work is worth, check any deal before you sign, map
+              where you stand, and get guidance built on 35 structures and 100+
+              case studies. All of it in plain language &mdash; when a technical
+              term matters, we translate it on the spot.
             </p>
           </div>
         </div>
@@ -135,9 +148,9 @@ export default function PlatformPage() {
             </h3>
             <p className="tool-card-desc">
               Catalog your IP, revenue streams, and ownership positions in one
-              view. Understand what you own, what it&apos;s worth, and how
-              your portfolio of assets is compounding &mdash; or where the
-              gaps are. AI-powered valuations and leverage scenarios.
+              view. Understand what you own, what it&apos;s worth, and how it
+              compounds &mdash; or where the gaps are. AI-powered valuations,
+              and a clear read on where your position is strongest.
             </p>
             <ul className="tool-card-features">
               <li>IP and ownership position tracking</li>
@@ -164,13 +177,13 @@ export default function PlatformPage() {
             </h3>
             <p className="tool-card-desc">
               Multi-dimensional assessment across financial terms, risk
-              exposure, leverage position, and alignment with your career
+              exposure, your negotiating position, and fit with your career
               stage. Get a structured verdict with specific recommendations
               before you sign.
             </p>
             <ul className="tool-card-features">
               <li>Financial terms analysis and benchmarking</li>
-              <li>Risk and leverage scoring</li>
+              <li>Risk and negotiating-power scoring</li>
               <li>Red flag detection and protective clauses</li>
               <li>Stage-appropriate deal comparison</li>
             </ul>
@@ -249,12 +262,12 @@ export default function PlatformPage() {
               Creative Identity is how Sequence understands who you are as a
               working creative. A 10-minute guided flow asks about your
               discipline, creative mode, stage, and ambitions &mdash; and maps
-              you to one of six archetypes.
+              you to one of eight archetypes.
             </p>
             <ul className="archetypes-bullets">
               {[
                 ["Roadmap", "actions are weighted to your stage and archetype, not generic growth advice."],
-                ["Deal Evaluator", "every verdict is scored against your misalignment flags."],
+                ["Deal Evaluator", "every verdict is checked against your value leaks — the places your setup quietly works against you."],
                 ["AI Advisor", "context pre-loaded, no warm-up questions."],
                 ["Library", "structures and case studies ranked by relevance to your profile."],
               ].map(([label, desc]) => (
@@ -329,12 +342,15 @@ export default function PlatformPage() {
                         />
                       ))}
                     </div>
+                    <p className="archetype-card-desc">
+                      {STAGE_GLOSSES[p.stage]}
+                    </p>
                   </div>
                   <div className="archetype-card-stage-right">
                     <span className="archetype-card-meta-lbl">
-                      Income Band
+                      Typical Income
                     </span>
-                    <span className="archetype-card-income-val">
+                    <span className="archetype-card-stage-name">
                       {p.incomeBand}
                     </span>
                   </div>

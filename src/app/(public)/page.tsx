@@ -33,7 +33,7 @@ const TOOLS = [
   {
     num: "01",
     name: "Portfolio Analysis",
-    desc: "See what your body of work is actually worth, and where your leverage is hiding.",
+    desc: "See what your body of work is actually worth — and what nobody is paying you for yet.",
     tier: "Full Access",
   },
   {
@@ -71,9 +71,13 @@ export default function HomePage() {
           <div className="hero-title-cell">
             <h1 className="hero-title anim-text-up">Own what you create</h1>
             <p className="hero-subtitle rv">
-              Your creativity generates enormous value, but{" "}
-              <strong>how much of that value do you keep?</strong> Sequence helps
-              you transform a portfolio of projects into a portfolio of assets.
+              You&apos;ve spent a career making valuable things &mdash; songs,
+              brands, films, photographs &mdash; and signing them away on the
+              last page of someone else&apos;s contract. The difference between
+              the creators who ended up owning their work and the ones who
+              didn&apos;t wasn&apos;t talent. <strong>It was the deal.</strong>{" "}
+              Sequence teaches you how the deal works: what to ask for, what
+              never to sign, and how people like you got it right.
             </p>
           </div>
           <div className="hero-portrait-cell">
@@ -101,12 +105,12 @@ export default function HomePage() {
           <p className="callout-text rv rv-d1">
             The difference between a portfolio of projects and a portfolio of
             assets isn&apos;t talent, effort, or your network.{" "}
-            <strong>It&apos;s the deal structure.</strong>
+            <strong>It&apos;s the deal.</strong>
           </p>
           <p className="callout-text rv rv-d2" style={{ marginTop: "28px" }}>
             <strong>Work-for-hire is a wealth transfer program.</strong> You
-            build the asset; someone else keeps it. The deal structure is how you
-            stop giving it away.
+            build the asset; someone else keeps it. How the deal is built is how
+            you stop giving it away.
           </p>
         </div>
       </section>
@@ -219,13 +223,15 @@ export default function HomePage() {
             <p className="pr-plan-desc">
               Everything in the Library, plus the tools that make it personal.
               They walk the whole road with you &mdash; whether it takes a year
-              or a decade &mdash; as a portfolio of projects becomes a portfolio
-              of assets.{" "}
+              or a decade &mdash; as you come to own more of what you make.{" "}
               <strong>For creatives who mean to own what they build.</strong>
             </p>
             <ul className="pr-plan-features">
               <li>Everything in the Library</li>
-              <li>Portfolio Analysis &mdash; value your work, find your leverage</li>
+              <li>
+                Portfolio Analysis &mdash; see what your work is worth, and keep
+                more of it
+              </li>
               <li>Deal Evaluator &mdash; score any deal before you sign</li>
               <li>Roadmap &mdash; your next move toward ownership</li>
               <li>AI Advisor &mdash; a strategist who knows your work</li>

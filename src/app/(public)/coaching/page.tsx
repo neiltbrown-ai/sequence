@@ -18,11 +18,12 @@ export default function CoachingPage() {
           <div className="ph-meta-grid">
             <span className="ph-meta-lbl">[ADVISORY]</span>
             <p className="ph-meta-desc">
-              <strong>Strategic advisory for creative professionals</strong>{" "}
-              navigating complex deal structures, ownership transitions, and
-              career positioning. Also advising investment firms, family
-              offices, and angel investors on creative economy opportunities.
-              Limited availability — two engagement formats designed for depth.
+              <strong>Sometimes you need a person, not a platform.</strong>{" "}
+              Work through real deals with someone who has sat on both sides of
+              the table. Neil has advised the investment firms and family
+              offices that put money into creative work &mdash; which is exactly
+              why he knows how those deals are built. Limited availability — two
+              engagement formats designed for depth.
             </p>
           </div>
         </div>
@@ -143,14 +144,15 @@ export default function CoachingPage() {
             corporate creative roles to founder or advisory positions.
           </div>
           <div className="coach-who-item rv rv-d4">
-            <strong>Investment firms and RIAs</strong> seeking strategic insight
-            into creative economy deal structures, asset valuation, and
-            portfolio allocation across emerging creative asset classes.
+            <strong>Investment firms and wealth managers</strong> who want to
+            understand how creative careers actually make money &mdash; what a
+            catalog, a brand, or a body of work is worth, and how the deals
+            behind them are built.
           </div>
           <div className="coach-who-item rv rv-d5">
-            <strong>Angel investors and family offices</strong> evaluating
-            direct investments in creative ventures, IP-backed deals, and
-            creator-led businesses at the intersection of culture and capital.
+            <strong>Angel investors and family offices</strong> putting money
+            directly into creative ventures and the people who build them
+            &mdash; at the intersection of culture and capital.
           </div>
         </div>
       </section>
@@ -192,8 +194,8 @@ export default function CoachingPage() {
                 <h3 className="coach-structure-benefit-title">Deal structures built for ownership</h3>
                 <p className="coach-structure-benefit-desc">
                   Move beyond hourly and project-based work. Design equity,
-                  royalty, and revenue share structures that capture long-term
-                  value.
+                  royalty, and revenue share structures that keep paying you
+                  long after the work is done.
                 </p>
               </div>
             </div>
@@ -202,8 +204,9 @@ export default function CoachingPage() {
               <div>
                 <h3 className="coach-structure-benefit-title">Negotiation prep for high-stakes conversations</h3>
                 <p className="coach-structure-benefit-desc">
-                  Walk into every deal conversation with leverage, language,
-                  and a clear sense of what you&apos;re willing to accept.
+                  Walk into every deal conversation knowing exactly what to ask
+                  for, the language to use, and what you&apos;re willing to
+                  accept.
                 </p>
               </div>
             </div>

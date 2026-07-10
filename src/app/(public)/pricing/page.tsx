@@ -19,10 +19,12 @@ export default function PricingPage() {
           <div className="pr-hero-sub-grid">
             <p className="pr-hero-desc rv">
               <strong>
-                The complete playbook for building ownership in the creative
-                economy.
+                $19 a month. One caught clause pays for a decade of it.
               </strong>{" "}
-              Choose the level of access that fits where you are right now.
+              A lawyer bills $400 an hour to tell you what &ldquo;net
+              profits&rdquo; means. Sequence sits on your side of the table for
+              every deal you&apos;ll ever sign. Choose the level of access that
+              fits where you are right now.
             </p>
           </div>
         </div>
@@ -240,8 +242,9 @@ export default function PricingPage() {
             <span className="pr-item-num">[03]</span>
             <span className="pr-item-title">Reference Guides</span>
             <p className="pr-item-desc">
-              Deep dives on rights, royalties, equity structures, and the
-              protective mechanisms that matter most in creative deals.
+              Deep dives on what you keep, what keeps paying you, and the
+              protections to ask for &mdash; rights, royalties, equity, and the
+              clauses behind them.
             </p>
           </div>
           <div className="pr-item rv rv-d3">
@@ -366,7 +369,7 @@ export default function PricingPage() {
             <p className="pr-cta-desc rv rv-d1">
               <strong>From $12 per year.</strong> Every structure, case study, and
               framework — plus new content added weekly. The library grows. Your
-              leverage grows with it.
+              position gets stronger with it.
             </p>
             <div className="pr-cta-buttons rv rv-d2">
               <Link href="/signup?plan=library" className="btn btn--white">

@@ -117,9 +117,9 @@ export default function ResourcesPage() {
             <p className="structures-intro-text rv">
               <strong>35 deal structures</strong> &mdash; business models and
               compensation mechanisms &mdash; for creative professionals
-              shifting from time-based to outcome-based value capture. Each
-              includes templates, case studies, negotiation guidance, and
-              decision checklists.
+              shifting from getting paid for their time to keeping what they
+              make. Each includes templates, case studies, negotiation
+              guidance, and decision checklists.
             </p>
           </div>
         </div>
@@ -139,8 +139,8 @@ export default function ResourcesPage() {
             <p className="structures-gate-desc">
               <strong>$12 per year</strong> for the full library &mdash; every
               structure with the depth you need to actually negotiate, protect
-              yourself, and capture value. New structures and case studies added
-              weekly.
+              yourself, and keep what you make. New structures and case studies
+              added weekly.
             </p>
             <div
               className="structures-gate-cta"
@@ -179,8 +179,13 @@ export default function ResourcesPage() {
                 Common Manipulations
               </span>
               <span className="structures-gate-feature-desc">
-                Hollywood accounting, overhead allocation abuse, dilution
-                without protection, net vs. gross gaming, and rights creep.
+                The five ways a deal quietly pays you less than you earned:
+                Hollywood accounting &mdash; the project &ldquo;never
+                profits,&rdquo; so your share of profits is zero. Overhead games
+                &mdash; their costs come out of your side. Dilution &mdash; your
+                slice shrinks every time they raise money. Net vs. gross &mdash;
+                &ldquo;10% of net&rdquo; can mean 10% of nothing. Rights creep
+                &mdash; the contract takes more than the project needs.
               </span>
             </div>
             <div className="structures-gate-feature">
@@ -206,8 +211,10 @@ export default function ResourcesPage() {
                 Protective Mechanisms
               </span>
               <span className="structures-gate-feature-desc">
-                Audit rights, acceleration clauses, termination provisions, and
-                anti-dilution protections.
+                The four protections to ask for: the right to check their math
+                (audit rights), your shares vest if they sell (acceleration), a
+                clean way out (termination terms), and a slice that can&apos;t
+                be quietly shrunk (anti-dilution).
               </span>
             </div>
             <div className="structures-gate-feature">
@@ -232,7 +239,7 @@ export default function ResourcesPage() {
           <div className="cases-intro-grid">
             <p className="cases-intro-text rv">
               <strong>100+ case studies</strong> mapping how creative
-              professionals structured deals, captured value, and built
+              professionals structured deals, kept what they made, and built
               ownership &mdash; from independent musicians to billion-dollar
               holding companies. Each study documents the specific terms, the
               strategic reasoning, and the transferable lessons.
@@ -284,7 +291,7 @@ export default function ResourcesPage() {
               documents the actual deal structure, the strategic reasoning
               behind it, and the financial outcomes. Not theory. Not
               inspiration. The specific mechanics of how creative professionals
-              captured value.
+              kept what they made.
             </p>
             <div className="cases-gate-cta">
               <Link href="/signup" className="btn btn--white">
@@ -326,7 +333,7 @@ export default function ResourcesPage() {
                 Transferable Lessons
               </span>
               <span className="cases-gate-feature-desc">
-                What to replicate. What to avoid. The leverage points and timing
+                What to replicate. What to avoid. The pressure points and timing
                 that made each deal work &mdash; or not.
               </span>
             </div>
