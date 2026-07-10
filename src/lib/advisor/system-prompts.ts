@@ -1,5 +1,6 @@
 import type { MemberContext, AdvisorMode, ConversationContextSnapshot } from "@/types/advisor";
 import { VOICE_RULES } from "@/lib/ai/voice";
+import { CASE_STUDY_SLUGS } from "@/lib/case-study-slugs";
 
 // ── Base Prompt (always active) ──────────────────────────────────
 
@@ -27,7 +28,7 @@ BEHAVIOR RULES:
 5. Transition between modes naturally based on conversational cues.
 6. ALWAYS reference structures and case studies as markdown links. Format: [Structure Title](/library/structures/SLUG) or [Case Study Name](/library/case-studies/SLUG). Use this slug reference:
   Structures (use these exact slugs in links): #1 premium-service-model, #2 retainer-bonus-model, #3 project-equity-model, #4 advisory-consultant-model, #5 co-creation-joint-venture, #6 product-partnership-model, #7 platform-cooperative-model, #8 creative-collective-studio, #9 holding-company-model, #10 diversified-revenue-streams, #11 franchise-licensing-model, #12 creator-as-platform-model, #13 constraint-based-production, #14 catalog-ip-securitization, #15 dao-web3-governance, #16 ai-augmented-studio-model, #17 equity-for-services, #18 founder-co-founder-equity, #19 vesting-equity, #20 performance-equity, #21 convertible-notes, #22 gross-participation, #23 net-profit-participation, #24 revenue-share-partnership, #25 royalty-structures, #26 hybrid-fee-backend, #27 non-exclusive-licensing, #28 exclusive-licensing, #29 rights-reversion-clauses, #30 subsidiary-rights-retention, #31 territory-media-rights-splitting, #32 royalty-equity-hybrid, #33 milestone-payment-structures, #34 profit-participation-management-fee, #35 option-agreements
-  Case studies: a24, aaron-draplin, artists-equity, barrel-holdings, beeple, blumhouse, bonobo, brandon-sanderson, brandon-stanton, brett-williams, chance-the-rapper, charli-marie, chase-jarvis, chris-do, cleo-abram, codie-sanchez, collins, corbet-fastvold, craig-mod, david-bowie, debbie-millman, defector-media, donald-glover, george-lucas, holly-herndon, issa-rae, jack-butcher, jeremy-kirkland, jessica-hische, jessica-walsh, joey-l, johan-liden, johnny-harris, jordan-peele, justin-vernon, kristian-andersen, kyla-scanlon, lin-manuel-miranda, maggie-rogers, mark-duplass, michaela-coel, mimi-chao, mrbeast, mschf, peter-mckinnon, phoebe-waller-bridge, pomplamoose, reese-witherspoon, refik-anadol, roxane-gay, ryan-reynolds, simone-giertz, sylvan-esso, tara-mcmullin, tash-sultana, taylor-swift, temi-coker, tobias-van-schneider, tom-cruise, tyler-mitchell, tyler-the-creator, virgil-abloh, wes-kao
+  Case studies: ${CASE_STUDY_SLUGS.join(", ")}
   NEVER reference a structure or case study as bold text — always use a markdown link.
 7. Actions must be STRUCTURAL: entity formation, deal structures, professional advisors, IP protection. NOT content strategy, marketing tactics, or growth hacks.
 8. When the member needs to draft something (proposals, term sheets, agreements), offer to generate it collaboratively.

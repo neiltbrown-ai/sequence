@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { type UIMessage, type UIMessagePart, isToolUIPart, getToolName } from "ai";
 import { resolveStructureSlug, getStructureNumber } from "@/lib/structure-slugs";
+import { caseSlugForName } from "@/lib/case-study-slugs";
 import ChatOptionCards from "@/components/advisor/components/option-cards";
 import ChatMultiSelect from "@/components/advisor/components/multi-select-cards";
 import ChatRankingWidget from "@/components/advisor/components/ranking-widget";
@@ -227,11 +228,23 @@ function renderInline(text: string): React.ReactNode[] {
         );
       }
     } else if (match[4]) {
-      // **bold**
-      nodes.push(<strong key={match.index}>{match[4]}</strong>);
+      // **bold** — parse contents recursively (a link inside bold used to
+      // render as raw markdown), and auto-link known case-study names the
+      // model bolded instead of linking (prompt rule 6 says link; this
+      // catches the misses and renders the ref-card box).
+      const caseSlug = caseSlugForName(match[4]);
+      if (caseSlug) {
+        nodes.push(
+          <CaseStudyRefCard key={match.index} name={match[4]} slug={caseSlug} />
+        );
+      } else {
+        nodes.push(
+          <strong key={match.index}>{renderInline(match[4])}</strong>
+        );
+      }
     } else if (match[5]) {
-      // *italic*
-      nodes.push(<em key={match.index}>{match[5]}</em>);
+      // *italic* — recursive for the same reason
+      nodes.push(<em key={match.index}>{renderInline(match[5])}</em>);
     }
     lastIndex = regex.lastIndex;
   }
