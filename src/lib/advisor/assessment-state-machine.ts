@@ -24,6 +24,7 @@ import {
   SECTION_5_QUESTIONS,
   SUB_DISCIPLINES,
 } from "@/lib/assessment/questions";
+import { getMirrorBeat } from "@/lib/assessment/mirror-cases";
 
 // ── Message Types ──────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ export type AssessmentComponentType =
   | "allocation_sliders"
   | "slider"
   | "free_text"
+  | "mirror_cases"
   | "roadmap_summary"
   | "action_cards";
 
@@ -59,6 +61,7 @@ export type AssessmentPhase =
   | "intro"
   | "questioning"
   | "thinking"
+  | "mirror" // non-question interstitial after Q1 — doesn't advance the spine
   | "section_transition"
   | "computing"
   | "generating_roadmap"
@@ -93,6 +96,7 @@ export type AssessmentMachineAction =
   | { type: "START" }
   | { type: "ANSWER"; questionId: string; value: unknown; label: string }
   | { type: "THINKING_DONE" }
+  | { type: "MIRROR_CONTINUE" }
   | { type: "SET_ASSESSMENT_ID"; id: string }
   | {
       type: "SET_STAGE_RESULTS";
@@ -113,11 +117,11 @@ export type AssessmentMachineAction =
 // ── Constants ──────────────────────────────────────────────
 
 const ASSESSMENT_INTRO =
-  "This assessment covers five areas \u2014 your creative identity, how you feel about your work right now, the reality of your current business structure, a deeper dive based on what I learn, and where you want to go.\n\nTakes about 10 minutes. Let\u2019s start.";
+  "This covers five areas \u2014 who you are, how the work feels right now, where things actually stand, a deeper dive based on what I learn, and where you want to go.\n\nAbout 10 minutes. Your answers save as you go, so you can leave any time and pick back up. Let\u2019s start.";
 
 const SECTION_TRANSITIONS: Record<number, string> = {
   2: "Good. Now let\u2019s talk about how your work feels right now.",
-  3: "Noted. Now let\u2019s look at the reality of your current setup.",
+  3: "Last stretch of specifics \u2014 the unglamorous money stuff. Two minutes. This is what makes your plan real instead of generic.",
   4: "I\u2019ve computed your position. A few more questions to go deeper.",
   5: "Almost done. Let\u2019s talk about where you want to go.",
 };
@@ -338,9 +342,9 @@ function buildQuestionMessage(
   const options = getQuestionOptions(question, creativeMode);
   const componentType = mapAnswerTypeToComponent(question.answerType);
 
-  const text = introText
-    ? `${introText}\n\n${questionText}`
-    : questionText;
+  // Help text renders as a plain line before the (bolded) question.
+  const lines = [introText, question.helpText, questionText].filter(Boolean);
+  const text = lines.join("\n\n");
 
   const props: Record<string, unknown> = {
     questionId: question.id,
@@ -471,6 +475,30 @@ export function assessmentReducer(
       );
       const creativeMode = state.answers.creative_mode;
 
+      // Mirror beat: after Q1 (discipline), show three matched case
+      // studies before the next question. Non-question interstitial —
+      // it sits between beads and never advances the progress spine.
+      if (currentQ.id === "Q1" && !isLastInSection) {
+        const mirror = getMirrorBeat(state.answers.discipline || "");
+        if (mirror) {
+          const mirrorMsg: AssessmentChatMessage = {
+            id: msgId(),
+            role: "assistant",
+            text: `${reaction}\n\n${mirror.line}`,
+            component: {
+              type: "mirror_cases",
+              questionId: "mirror",
+              props: { cases: mirror.cases },
+            },
+          };
+          return {
+            ...state,
+            phase: "mirror",
+            messages: [...messagesWithoutThinking, mirrorMsg],
+          };
+        }
+      }
+
       // Case A: More questions in this section
       if (!isLastInSection) {
         const nextQ = state.questions[nextIdx];
@@ -527,6 +555,23 @@ export function assessmentReducer(
         questionIndex: 0,
         questions: nextQuestions,
         messages: [...messagesWithoutThinking, transMsg, firstQMsg],
+      };
+    }
+
+    case "MIRROR_CONTINUE": {
+      // Resume the spine after the mirror beat: show the next question
+      // in Section 1 (the sub-discipline select).
+      if (state.phase !== "mirror") return state;
+      const nextIdx = state.questionIndex + 1;
+      const nextQ = state.questions[nextIdx];
+      if (!nextQ) return state;
+      const userMsg = buildUserMessage("Keep going — where do you stand?");
+      const qMsg = buildQuestionMessage(nextQ, state.answers.creative_mode);
+      return {
+        ...state,
+        phase: "questioning",
+        questionIndex: nextIdx,
+        messages: [...state.messages, userMsg, qMsg],
       };
     }
 

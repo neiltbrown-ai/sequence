@@ -426,33 +426,33 @@ const Q6_INCOME: AssessmentQuestion = {
 const Q7_INCOME_STRUCTURE: AssessmentQuestion = {
   id: 'Q7',
   section: 'reality',
-  questionText: 'How is that income structured?',
+  questionText: 'Where does the money come from? Rough guesses are fine — nobody has exact percentages.',
   answerType: 'allocation',
   options: [
-    { value: 'salary', label: 'Salary / W-2 employment' },
+    { value: 'salary', label: 'A paycheck (salary / W-2)' },
     { value: 'fees_sales', label: 'Project fees / invoices' },
-    { value: 'retainer_commission', label: 'Retainer / ongoing contracts' },
-    { value: 'royalties', label: 'Royalties / licensing fees' },
-    { value: 'equity', label: 'Equity / profit participation' },
-    { value: 'products', label: 'Product revenue (courses, tools)' },
+    { value: 'retainer_commission', label: 'Ongoing contracts (retainers)' },
+    { value: 'royalties', label: 'Past work that keeps paying (royalties / licensing)' },
+    { value: 'equity', label: 'A share of profits or a company (equity)' },
+    { value: 'products', label: 'Products I sell (courses, tools)' },
     { value: 'other', label: 'Other' },
   ],
   optionVariants: {
     maker: [
-      { value: 'salary', label: 'Salary / employment' },
+      { value: 'salary', label: 'A paycheck (salary / employment)' },
       { value: 'fees_sales', label: 'Sales of original work' },
       { value: 'retainer_commission', label: 'Commissions / contracted work' },
-      { value: 'royalties', label: 'Royalties / licensing fees' },
-      { value: 'equity', label: 'Equity / profit participation' },
+      { value: 'royalties', label: 'Past work that keeps paying (royalties / licensing)' },
+      { value: 'equity', label: 'A share of profits or a company (equity)' },
       { value: 'products', label: 'Merch / products / publishing' },
       { value: 'other', label: 'Other' },
     ],
     performer: [
-      { value: 'salary', label: 'Salary / employment' },
+      { value: 'salary', label: 'A paycheck (salary / employment)' },
       { value: 'fees_sales', label: 'Performance fees / bookings' },
       { value: 'retainer_commission', label: 'Commissions / contracted work' },
-      { value: 'royalties', label: 'Royalties / residuals' },
-      { value: 'equity', label: 'Equity / profit participation' },
+      { value: 'royalties', label: 'Past work that keeps paying (royalties / residuals)' },
+      { value: 'equity', label: 'A share of profits or a company (equity)' },
       { value: 'products', label: 'Merch / products / publishing' },
       { value: 'other', label: 'Other' },
     ],
@@ -521,14 +521,14 @@ const Q8_WHAT_THEY_PAY_FOR: AssessmentQuestion = {
 const Q9_EQUITY: AssessmentQuestion = {
   id: 'Q9',
   section: 'reality',
-  questionText: 'Do you own equity, profit participation, royalty rights, or IP rights in anything beyond your own direct work?',
+  questionText: 'Beyond getting paid for the work itself, do you ever keep a piece of what you help build — a royalty that keeps paying, a share of profits, a slice of a company?',
   answerType: 'single_select',
   options: [
-    { value: 'none', label: 'No — never had an ownership or rights deal' },
+    { value: 'none', label: 'No — never had a deal like that' },
     { value: 'offered', label: "I've been offered one but it didn't happen" },
-    { value: 'one', label: 'Yes — 1 position (even if small)' },
-    { value: 'few', label: 'Yes — 2-3 positions' },
-    { value: 'portfolio', label: 'Yes — 4+ positions or a structured portfolio' },
+    { value: 'one', label: 'Yes — one piece (even if small)' },
+    { value: 'few', label: 'Yes — 2-3 pieces' },
+    { value: 'portfolio', label: 'Yes — 4+, or a real portfolio of them' },
   ],
   scoring: {
     none: { stage_1: 1.0 },
@@ -595,17 +595,17 @@ const Q10_DEMAND: AssessmentQuestion = {
 const Q11_STRUCTURE: AssessmentQuestion = {
   id: 'Q11',
   section: 'reality',
-  questionText: 'What is your current business structure?',
+  questionText: 'Is there a company between you and the checks — or does everything run through you personally?',
   answerType: 'single_select',
   options: [
-    { value: 'none', label: 'No formal structure (sole proprietor by default)' },
-    { value: 'sole_prop', label: 'Sole proprietorship (registered)' },
-    { value: 'llc', label: 'Single-member LLC' },
-    { value: 'llc_scorp', label: 'LLC taxed as S-Corp' },
-    { value: 'multi_entity', label: 'Multiple entities (LLC + Corp, holding company, etc.)' },
-    { value: 'corp', label: 'Corporation (C-Corp or S-Corp)' },
-    { value: 'w2', label: 'I work through an employer (W-2) with no separate entity' },
-    { value: 'unknown', label: "I don't know" },
+    { value: 'none', label: 'Nothing formal — the checks come straight to me', description: "the technical term is 'sole proprietor by default'" },
+    { value: 'sole_prop', label: "I registered as a business, but it's just me", description: 'a registered sole proprietorship' },
+    { value: 'llc', label: 'I have an LLC', description: 'a single-member LLC — the company signs, you own the company' },
+    { value: 'llc_scorp', label: 'I have an LLC with a tax setup my accountant recommended', description: "the technical term is 'LLC taxed as S-Corp' — it saves self-employment tax at higher incomes" },
+    { value: 'multi_entity', label: 'I have more than one company', description: 'e.g. an LLC plus a corporation, or a holding company that owns the others' },
+    { value: 'corp', label: 'I have a corporation', description: 'a C-Corp or S-Corp' },
+    { value: 'w2', label: "I'm an employee — my employer handles all of it (W-2)" },
+    { value: 'unknown', label: "I genuinely don't know", description: "that's common, and it's the first thing we'll help you sort out" },
   ],
   scoring: {
     none: { stage_1: 1.0 },
@@ -709,15 +709,15 @@ const Q_S1_IP: AssessmentQuestion = {
   answerType: 'single_select',
   optionVariants: {
     service: [
-      { value: 'client_owns', label: 'The client owns everything (work-for-hire)' },
-      { value: 'mixed', label: 'Mixed — some work-for-hire, some I retain rights' },
-      { value: 'i_retain', label: 'I retain IP and license usage to clients' },
+      { value: 'client_owns', label: 'The client owns everything I make for them (the technical term is work-for-hire)' },
+      { value: 'mixed', label: 'Mixed — some belongs to clients, some stays mine' },
+      { value: 'i_retain', label: 'I keep ownership and clients pay to use it (I license it)' },
       { value: 'never_thought', label: "I've never thought about this" },
     ],
     hybrid: [
-      { value: 'client_owns', label: 'The client owns everything (work-for-hire)' },
-      { value: 'mixed', label: 'Mixed — some work-for-hire, some I retain rights' },
-      { value: 'i_retain', label: 'I retain IP and license usage to clients' },
+      { value: 'client_owns', label: 'The client owns everything I make for them (the technical term is work-for-hire)' },
+      { value: 'mixed', label: 'Mixed — some belongs to clients, some stays mine' },
+      { value: 'i_retain', label: 'I keep ownership and clients pay to use it (I license it)' },
       { value: 'never_thought', label: "I've never thought about this" },
     ],
     maker: [
@@ -862,13 +862,14 @@ const Q_S3_NONEXEC: AssessmentQuestion = {
   id: 'Q-S3-NONEXEC',
   section: 'deep_dive',
   pool: 'stage_3',
-  questionText: "What percentage of your income comes from sources that don't require you to actively produce or perform?",
+  questionText: 'If you took a month off, how much money would still show up?',
+  helpText: 'This is the single best test of whether you own assets or a job.',
   answerType: 'single_select',
   options: [
-    { value: 'under_10', label: 'Less than 10%' },
-    { value: '10_25', label: '10-25%' },
-    { value: '25_50', label: '25-50%' },
-    { value: 'over_50', label: 'More than 50%' },
+    { value: 'under_10', label: 'Almost none — less than 10% of it' },
+    { value: '10_25', label: '10-25% of it' },
+    { value: '25_50', label: '25-50% of it' },
+    { value: 'over_50', label: 'More than half' },
   ],
   displayOrder: 2,
 };
@@ -896,10 +897,10 @@ const Q_S3_STRUCTURE: AssessmentQuestion = {
   questionText: 'How are your various income streams and business activities currently organized?',
   answerType: 'single_select',
   options: [
-    { value: 'one_entity', label: 'Everything runs through one entity or my personal name' },
-    { value: 'complicated', label: 'I have one entity but it\'s getting complicated' },
-    { value: 'multiple_unorganized', label: "I have multiple entities but they're not strategically organized" },
-    { value: 'holding', label: 'I have a holding company or parent entity organizing everything' },
+    { value: 'one_entity', label: 'Everything runs through one company or my personal name' },
+    { value: 'complicated', label: 'I have one company but it\'s getting complicated' },
+    { value: 'multiple_unorganized', label: "I have multiple companies but they're not strategically organized" },
+    { value: 'holding', label: 'I have a parent company that owns the others (a holding company)' },
     { value: 'need_help', label: 'I need help figuring out what structure makes sense' },
   ],
   displayOrder: 4,
@@ -1270,7 +1271,7 @@ const Q_IND_COMICS_1: AssessmentQuestion = {
   questionText: 'Who owns the IP of the comics or illustration work you create?',
   answerType: 'single_select',
   options: [
-    { value: 'wfh', label: 'All work-for-hire — publishers / clients own everything' },
+    { value: 'wfh', label: 'Publishers / clients own everything I make (work-for-hire)' },
     { value: 'mixed', label: 'Mixed — some work-for-hire, some I retain (often personal projects)' },
     { value: 'retain_royalties', label: 'I own most of my published work and have ongoing royalty rights' },
     { value: 'full_rights', label: 'I own the full IP and have negotiated reversion, foreign, and adaptation rights' },
@@ -1391,7 +1392,7 @@ const Q_IND_HOSP_2: AssessmentQuestion = {
     { value: 'profit_share', label: 'Profit share at the location level' },
     { value: 'founder_equity', label: 'Founder / operator equity that vests with role' },
     { value: 'royalty_plus_equity', label: 'Royalty or licensing income on the brand / IP, plus equity in operating entities' },
-    { value: 'gp_role', label: 'GP / investor role across a hospitality portfolio or fund' },
+    { value: 'gp_role', label: 'I help run or invest in a portfolio or fund (a GP / investor role)' },
   ],
   displayOrder: 2,
 };
@@ -1539,7 +1540,10 @@ const Q_AMB_4: AssessmentQuestion = {
 /** Fixed questions for Sections 1-3 and 5 (in order) */
 export const SECTION_1_QUESTIONS: AssessmentQuestion[] = [DISCIPLINE_GROUPS, Q2_CREATIVE_MODE];
 export const SECTION_2_QUESTIONS: AssessmentQuestion[] = [Q3_ENERGY, Q4_DRAINS, Q5_DREAM];
-export const SECTION_3_QUESTIONS: AssessmentQuestion[] = [Q6_INCOME, Q7_INCOME_STRUCTURE, Q8_WHAT_THEY_PAY_FOR, Q9_EQUITY, Q10_DEMAND, Q11_STRUCTURE];
+// Ownership questions first (the emotional core), then demand, then the
+// money/paperwork block last. Presentation-only reorder — scoring and
+// storage are keyed by question id / answer key, never by array position.
+export const SECTION_3_QUESTIONS: AssessmentQuestion[] = [Q8_WHAT_THEY_PAY_FOR, Q9_EQUITY, Q10_DEMAND, Q6_INCOME, Q7_INCOME_STRUCTURE, Q11_STRUCTURE];
 export const SECTION_5_QUESTIONS: AssessmentQuestion[] = [Q_AMB_1, Q_AMB_2, Q_AMB_3, Q_AMB_4];
 
 /** Stage-adaptive question pools for Section 4 */
@@ -1616,8 +1620,8 @@ export const SECTION_META = [
   {
     number: 3 as const,
     title: 'Current Reality',
-    intro: "Now let's map where things actually stand today.",
-    estimatedTime: '~3 min',
+    intro: 'Last stretch of specifics — the unglamorous money stuff. Two minutes. This is what makes your plan real instead of generic.',
+    estimatedTime: '~2 min',
   },
   {
     number: 4 as const,

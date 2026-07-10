@@ -13,6 +13,7 @@ import ChatRoadmapSummary from "@/components/advisor/components/roadmap-summary"
 interface AssessmentMessageProps {
   message: AssessmentChatMessage;
   onAnswer: (questionId: string, value: unknown, label: string) => void;
+  onMirrorContinue?: () => void;
   onRoadmapAction?: (value: string) => void;
   isLast?: boolean;
 }
@@ -20,6 +21,7 @@ interface AssessmentMessageProps {
 export default function AssessmentMessage({
   message,
   onAnswer,
+  onMirrorContinue,
   onRoadmapAction,
   isLast,
 }: AssessmentMessageProps) {
@@ -85,7 +87,13 @@ export default function AssessmentMessage({
         )}
         {message.component && (
           <div className="adv-chat-tool">
-            {renderComponent(message.component, onAnswer, onRoadmapAction, isLast)}
+            {renderComponent(
+              message.component,
+              onAnswer,
+              onRoadmapAction,
+              isLast,
+              onMirrorContinue
+            )}
           </div>
         )}
       </div>
@@ -97,7 +105,8 @@ function renderComponent(
   component: NonNullable<AssessmentChatMessage["component"]>,
   onAnswer: (questionId: string, value: unknown, label: string) => void,
   onRoadmapAction?: (value: string) => void,
-  isLast?: boolean
+  isLast?: boolean,
+  onMirrorContinue?: () => void
 ) {
   const { type, questionId, props } = component;
 
@@ -245,6 +254,39 @@ function renderComponent(
           }
         />
       );
+
+    case "mirror_cases": {
+      // Three matched case studies + continue affordance (mirror beat).
+      // Cards open in a new tab so a mid-session read doesn't lose the
+      // guided session's place.
+      const cases = props.cases as { name: string; slug: string }[];
+      return (
+        <div className="session-mirror">
+          <div className="session-mirror-cards">
+            {cases.map((c) => (
+              <a
+                key={c.slug}
+                href={`/library/case-studies/${c.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="adv-chat-ref-card"
+              >
+                <span className="adv-chat-ref-label">{c.name}</span>
+                <span className="adv-chat-ref-arrow">&rarr;</span>
+              </a>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="btn btn--filled"
+            disabled={!isLast}
+            onClick={() => onMirrorContinue?.()}
+          >
+            Keep going &mdash; where do you stand?
+          </button>
+        </div>
+      );
+    }
 
     case "roadmap_summary":
       return (

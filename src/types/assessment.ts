@@ -54,6 +54,7 @@ export type AssessmentQuestion = {
   maxSelections?: number;        // for multi_select
   isOptional?: boolean;          // skip allowed
   placeholder?: string;          // for free_text
+  helpText?: string;             // one-line plain-language context shown with the question
   displayOrder: number;
   isSubQuestion?: boolean;       // Q1 sub-discipline select
   parentQuestionId?: string;     // links sub-discipline to parent group

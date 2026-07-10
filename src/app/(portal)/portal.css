@@ -8360,3 +8360,121 @@ h1.str-title { font-family: var(--sans); font-size: clamp(28px, 4vw, 44px); font
     padding-top: 16px;
   }
 }
+
+/* ── Session frame — "Where You Stand" guided session chrome ──────
+   Docked header above the assessment chat thread (Phase 2b): mono
+   title, bead progress (one bead per section; done = filled, current
+   = accent, upcoming = faint ring — same dot language as
+   .home-plan-dot), within-section Q count, time left, autosave note.
+   All colors via theme vars — no always-dark surface here. */
+.session-frame {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0 8px;
+}
+.session-frame-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.session-frame-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--black);
+  white-space: nowrap;
+}
+.session-frame-beads {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.session-frame-bead {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.session-frame-bead--done { background: var(--black); }
+.session-frame-bead--current { background: var(--accent, #b8860b); }
+.session-frame-bead--upcoming {
+  background: transparent;
+  border: 1px solid var(--light);
+}
+.session-frame-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-left: 6px;
+  white-space: nowrap;
+}
+.session-frame-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  white-space: nowrap;
+}
+.session-frame-note {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .04em;
+  color: var(--light);
+  margin-top: 6px;
+}
+
+/* Completion summary the frame collapses into — inline dot + mono
+   text, never a boxed chip. */
+.session-frame-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  padding: 10px 0 4px;
+}
+.session-frame-summary-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--black);
+  flex-shrink: 0;
+}
+
+/* Mirror beat — three case ref cards + the continue pill
+   (reuses .adv-chat-ref-card and .btn.btn--filled). */
+.session-mirror {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+.session-mirror-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* One-line plain-language help under a wizard question
+   (AssessmentQuestion.helpText — e.g. the month-off test). */
+.asmt-question-help {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.5;
+  margin: -14px 0 24px;
+}
+
+@media (max-width: 700px) {
+  .session-frame-row { flex-wrap: wrap; gap: 8px 14px; }
+}

@@ -41,6 +41,9 @@ export default function QuestionRenderer({
   return (
     <div className="asmt-question">
       <h3 className="asmt-question-text">{text}</h3>
+      {question.helpText && (
+        <p className="asmt-question-help">{question.helpText}</p>
+      )}
 
       {question.answerType === "single_select" && (
         <SingleSelectCards

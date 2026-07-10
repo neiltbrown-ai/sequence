@@ -11,7 +11,7 @@ import { matchArchetype } from "@/lib/assessment/archetype-matching";
 import { selectAdaptiveQuestions } from "@/lib/assessment/question-selection";
 import { useAssessmentAutosave } from "@/hooks/use-assessment-autosave";
 import AssessmentMessage from "./assessment-message";
-import ChatProgressBar from "./chat-progress-bar";
+import SessionFrame from "./session-frame";
 import type { CreativeMode, StageNumber } from "@/types/assessment";
 
 interface AssessmentFlowProps {
@@ -163,6 +163,11 @@ export default function AssessmentFlow({
     []
   );
 
+  // Handle "keep going" after the mirror beat
+  const handleMirrorContinue = useCallback(() => {
+    dispatch({ type: "MIRROR_CONTINUE" });
+  }, []);
+
   // Handle roadmap action selection
   const handleRoadmapAction = useCallback(
     (value: string) => {
@@ -178,18 +183,18 @@ export default function AssessmentFlow({
     dispatch({ type: "ROADMAP_RETRY" });
   }, []);
 
-  const showProgress =
-    state.phase !== "intro" &&
-    state.phase !== "roadmap_revealed" &&
-    state.phase !== "complete";
+  const isComplete =
+    state.phase === "roadmap_revealed" || state.phase === "complete";
+  const showFrame = state.phase !== "intro" && !isComplete;
 
   return (
     <div className={`adv-chat-container ${className}`}>
-      {/* Progress bar */}
-      {showProgress && (
-        <ChatProgressBar
+      {/* Session frame — docked wizard chrome; unmounts on completion */}
+      {showFrame && (
+        <SessionFrame
           currentSection={state.section}
-          totalSections={5}
+          questionIndex={state.questionIndex}
+          questionCount={state.questions.length}
         />
       )}
 
@@ -200,10 +205,19 @@ export default function AssessmentFlow({
             key={message.id}
             message={message}
             onAnswer={handleAnswer}
+            onMirrorContinue={handleMirrorContinue}
             onRoadmapAction={handleRoadmapAction}
             isLast={idx === state.messages.length - 1}
           />
         ))}
+
+        {/* Compact summary line the frame collapses into on completion */}
+        {isComplete && (
+          <div className="session-frame-summary">
+            <span className="session-frame-summary-dot" aria-hidden />
+            Where you stand &mdash; complete &middot; saved to your profile
+          </div>
+        )}
 
         {/* Roadmap error with retry */}
         {state.roadmapError && (
@@ -232,7 +246,7 @@ export default function AssessmentFlow({
         <div className="adv-chat-input-container">
           <textarea
             className="adv-chat-input"
-            placeholder="Assessment in progress..."
+            placeholder="Session in progress — answer above"
             disabled
             rows={1}
           />
