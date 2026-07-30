@@ -58,6 +58,24 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // The fact-checked Collins rewrite was circulated at a temporary
+      // `collins-revised-draft` slug before replacing the case at `collins`.
+      // Keeps any link already shared from 404ing. Non-permanent so the slug
+      // stays reusable and browsers don't cache the hop indefinitely.
+      {
+        source: "/case-studies/collins-revised-draft",
+        destination: "/case-studies/collins",
+        permanent: false,
+      },
+      {
+        source: "/library/case-studies/collins-revised-draft",
+        destination: "/library/case-studies/collins",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
