@@ -59,22 +59,17 @@ export default function CaseStudyHeader({
         {/* Meta row — single row on desktop, stacked on mobile (via CSS) */}
         <div className="cs-header-meta rv rv-d1">
           <div className="cs-header-meta-grid">
+            {/* Separator dots are CSS ::after pseudo-elements on the item that
+                precedes them — that way a wrapped line never starts with a dot. */}
             <div className="cs-header-meta-inner">
               <span className="cs-header-tag">[Case {caseNum}]</span>
-              <span className="cs-header-dot" />
-              <span className="cs-header-cat">{discipline}</span>
+              <span className="cs-header-cat cs-header-cat--disc">
+                {discipline}
+              </span>
               {readTime && (
-                <>
-                  <span className="cs-header-dot" />
-                  <span className="cs-header-cat">{readTime} Min Read</span>
-                </>
+                <span className="cs-header-cat">{readTime} Min Read</span>
               )}
-              {confidence && (
-                <>
-                  <span className="cs-header-dot" />
-                  <CbConfidenceBadge level={confidence} />
-                </>
-              )}
+              {confidence && <CbConfidenceBadge level={confidence} />}
             </div>
             {saveButton}
           </div>

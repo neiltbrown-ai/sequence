@@ -3000,17 +3000,37 @@ h3.sec-label {
 .cs-back svg { width: 10px; height: 10px; }
 .cs-header-meta { padding: 0 var(--margin) 20px; }
 .cs-header-meta-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--gutter); align-items: center; }
-.cs-header-meta-inner { grid-column: 3 / 7; display: flex; align-items: center; gap: 12px; }
+.cs-header-meta-inner {
+  grid-column: 3 / 8; display: flex; align-items: center;
+  flex-wrap: wrap; column-gap: 12px; row-gap: 4px;
+}
+/* Public pages render no save button, so the meta row gets the full grid width.
+   Desktop-only — below 900px the row is left-flush with the title (see mobile block). */
+@media (min-width: 901px) {
+  .cs-header-meta-inner:only-child { grid-column: 3 / 9; }
+}
 .cs-header-meta-grid > .btn-bookmark { grid-column: 8; justify-self: end; }
 .cs-header-tag {
   font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
   color: var(--black); font-weight: 500;
 }
-.cs-header-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
+/* Separator dot rides on the item BEFORE it, so a wrapped line never begins
+   with a stray dot — it trails the previous line like a continuation mark. */
+.cs-header-meta-inner > *:not(:last-child)::after {
+  content: ""; display: inline-block; vertical-align: middle;
+  width: 3px; height: 3px; border-radius: 50%; background: var(--border);
+  margin-left: 12px;
+}
 .cs-header-cat {
   font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
   color: var(--light);
 }
+/* Each atom stays intact — brackets, "23 Min Read" and "[ Mixed ]" never break
+   mid-token. Only the discipline list may give ground (shrink, then ellipsis). */
+.cs-header-tag,
+.cs-header-cat,
+.cs-header-meta-inner .cb-confidence-badge { white-space: nowrap; }
+.cs-header-cat--disc { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .cb-confidence-badge {
   font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--light); text-decoration: none; cursor: pointer;
@@ -4022,7 +4042,8 @@ h3.sec-label {
     align-items: flex-start;
     gap: 6px;
   }
-  .cs-header-meta-inner .cs-header-dot { display: none; }
+  .cs-header-meta-inner > *:not(:last-child)::after { display: none; }
+  .cs-header-cat--disc { white-space: normal; overflow: visible; }
   .cs-hero-grid { grid-template-columns: 1fr; }
   .cs-hero-wrap { grid-column: 1; aspect-ratio: 4 / 3; }
   .cs-stat-val { font-size: 16px; white-space: normal; }
