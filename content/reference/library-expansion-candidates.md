@@ -42,7 +42,7 @@ The pattern is becoming a named alternative to VC, with active adherents and fun
 
 **The gap:** #8 Creative Collective / Studio is currently defined as "loosely organized collectives of independent creatives sharing resources, cross-referring work, collaborating on larger projects" — explicitly "5–20 independent creatives form a loose association... separate clients, separate finances, separate legal entities."
 
-That definition fits networks like Color Creative (a pipeline of independent writers being trained, referred, and placed) but doesn't fit unified studio companies like MSCHF (42 employees, VC-funded, single legal entity, employees not freelancers).
+That definition fits networks like Color Creative (a pipeline of independent writers being trained, referred, and placed) but doesn't fit unified studio companies like MSCHF (~30 employees, VC-funded, single legal entity, employees not freelancers).
 
 **Working name:** Creative Studio Company / Salaried Creative Collective
 
@@ -62,6 +62,15 @@ The "creative collective as a unified company" pattern is increasingly common (M
 **Estimated case fit:** MSCHF (already retroactively defensible if added); plus future creative-studio-company cases as the model proliferates.
 
 **Note:** The MSCHF case in this audit was preserved at `#8` (with href fixed to `creative-collective-studio`) as the closest available structure. If this expansion is approved, MSCHF would be re-attributed.
+
+**Update (2026-08-03, MSCHF re-audit):** New first-party evidence sharpens this candidate rather than resolving it. In two 2025 interviews (TBPN, Aug 2025; The Intelligent Marketer, Sept 9, 2025) Gabe Whaley describes MSCHF as "a holding company for creative enterprises" — "this house of entities" organized by category (footwear, luxury leather goods, fine art, plus undisclosed divisions), where each entity has "its own audience, its own leadership, its own team, own budget, own P&L," sitting on a shared back office of finance, legal, manufacturing, support, design, and marketing. The MSCHF case now carries **#9 Holding Company Model** as its lead structure on that basis, with #8 retained for how the room works internally (daily brainstorms, everyone in ideation, dedicated Librarian and Distro roles).
+
+This splits the candidate cleanly in two, and it's worth deciding which one the library actually needs:
+
+- The **legal/economic form** is already covered by #9 — no new structure required.
+- What remains uncovered is the **internal operating model**: a single salaried entity with flat, company-wide ideation and a scheduled idea pipeline. That is the genuine gap, and it argues for a narrower entry than "Creative Studio Company" — something closer to *Shared-Authorship Studio* or *Ideation-Pipeline Studio*, describing how creative decisions get made rather than how the company is owned.
+
+Recommendation: rescope this candidate to the operating-model gap before adding it, and drop the ownership half (redundant with #9).
 
 ---
 
