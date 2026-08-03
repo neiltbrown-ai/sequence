@@ -74,7 +74,37 @@ Recommendation: rescope this candidate to the operating-model gap before adding 
 
 ---
 
-## 3. (Open slot)
+## 3. Catalytic Deployment / Release-Rather-Than-Capture
+
+**Surfaced from:** `ruth-ann-harnisch` conversion (2026-08-03), during a structure-mapping challenge that killed two of the case's four original attributions.
+
+**The gap:** all thirty-five structures in the library describe a mechanism for **capturing** value from work you set in motion — fees, royalties, equity, participation, licensing, platform take. The library has no entry for the deliberate inverse: deploying capital or judgment into infrastructure and structurally declining to retain a claim on it.
+
+This is not the same as charity-as-afterthought. In the Harnisch case it is the operating spine, it is repeated, and it is documented in fourteen years of IRS filings.
+
+**Defining elements:**
+1. **Vehicle:** flow-through rather than endowment — refilled by contributions, emptied by grants, corpus deliberately not accumulated (TheHF disbursed ~$18.3M FY2011–FY2024 while net assets never exceeded $3.93M and once fell to $186,382)
+2. **Position:** no fee, no equity, no transaction cut, no governance seat retained in the funded entity
+3. **Exit:** built-to-hand-off — the institution is expected to outlive the funder's involvement and to be operated by others (SupporTED → TED; Institute of Coaching → ICF funding; Funny Girls → The Second City)
+4. **Return sought:** the thing continuing to exist, plus optionality on being early in a field before institutional capital arrives
+5. **Compensation:** frequently $0, including officer compensation and advisory positions
+
+**Why the near-miss structures don't work:**
+- **#12 Creator-as-Platform** is the obvious candidate and is precisely wrong. Its economics are 5–30% platform fees, subscriptions, transaction commissions, 8–15x revenue enterprise value. On the single dimension that makes #12 a structure rather than a description, the catalytic funder is its inverse. The Harnisch case originally carried #12 as a headline section; it was cut for this reason.
+- **#4 Advisory/Consultant** is built on selling judgment at $500–2,000/hr or $25–100K/month retainers. An unpaid advisory position attached to an equity stake removes the only variable #4 concerns itself with.
+- **#33 Milestone Payment Structures** was also mis-attributed in the same case for "first money in vs. last money in." #33 is phased payment of a services fee against deliverables, from the recipient's seat. Capital-stack *positioning* by a financier is a different thing entirely and is currently unnamed in the library — possibly a fourth candidate of its own.
+
+**The reader problem it would solve:** the Creative Majority practitioner's chronic failure is being right early and capturing nothing. Harnisch is the case where that outcome was *chosen*, which makes the trade-off legible instead of tragic — but the library currently has no vocabulary for describing a chosen non-capture, so a case author's only options are to stretch #12 or to say nothing.
+
+**Provisional library number:** #38, or possibly a non-numbered "counter-structure" annex, since it is arguably the negative space of the library rather than another entry in it. Worth deciding which.
+
+**Estimated case fit:** `ruth-ann-harnisch` (immediate); likely retroactive fits among existing patron/funder-adjacent cases. Low volume, high explanatory value.
+
+**Open question for the editor:** whether the library should carry counter-structures at all. If the answer is no, the convention should instead be that cases name the gap in prose — which is what `ruth-ann-harnisch` now does in its "Why No Structure Fits" subsection, and which may be the cleaner precedent.
+
+---
+
+## 4. (Open slot)
 
 Future expansion candidates can be added here as the audit and post-audit case work surfaces them.
 
