@@ -2028,10 +2028,10 @@ h3.sec-label {
 .ab-img-caption { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--light); margin-top: 12px; }
 .ab-img-credit { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
 .art-hero-credit { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
-.cs-hero-credit { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 8px; grid-column: 1 / 9; }
+.cs-hero-credit { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 8px; grid-column: 1 / -1; }
 .ab-grid.is-img { margin-top: 56px; }
 .ab-grid.is-img + .ab-grid { margin-top: 56px; }
-.ab-img-full { grid-column: 1 / 9; }
+.ab-img-full { grid-column: 1 / -1; }
 .ab-img-full img { width: 100%; object-fit: cover; }
 .ab-grid.is-img-full { margin-top: 64px; }
 .ab-grid.is-img-full + .ab-grid { margin-top: 64px; }
@@ -3061,7 +3061,7 @@ h3.sec-label {
 .cs-hero { padding: 56px var(--margin) 0; }
 .cs-hero-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--gutter); }
 .cs-hero-wrap {
-  grid-column: 1 / 9; overflow: hidden; border-radius: 4px;
+  grid-column: 1 / -1; overflow: hidden; border-radius: 4px;
   aspect-ratio: 21 / 9; position: relative; background: var(--black);
 }
 .cs-hero-img { width: 100%; height: 100%; object-fit: cover; }
